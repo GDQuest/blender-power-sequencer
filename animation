@@ -1,0 +1,6 @@
+# This will contain the operators and functions related to animation in the video sequence editor. This can be things like animating image transitions by quickly setting up a mask, etc.
+# the add-on itself could come with a collection of image sequences to act as masks.
+# Beyond that, this should also help with some animation presets like maybe in out fade, but also animating a title in and out…
+# Then, all of the animation tools that relate to motion video in the 3-D view should be put into another add-on? Also first check if it is impossible with animation nodes before creating any specific animation tool.
+
+# TODO: List functions you want to add

@@ -1,0 +1,22 @@
+      # AUDIO STRIPS
+      elif entry == 'audio':
+          audio_channel = empty_channel + 2
+          audio_path = directory + '\\' + 'audio'
+          audio_files = []
+          for audio in os.listdir(path=(directory + '\\' + entry)):
+              filename = audio.lower()
+              if '.wav' in filename or '.mp3' in filename:
+                  audio_files.append( { 'name': audio } )
+          sequencer.sound_strip_add(sequencer_area, filepath = audio_path + "\\" + audio, frame_start = 1, channel = audio_channel)
+      # IMAGE STRIPS
+      elif entry == 'img':
+          image_channel = empty_channel + 3
+          image_path = directory + '\\' + 'img'
+          images = []
+          for image in os.listdir(path=(directory + '\\' + entry)):
+              filename = image.lower()
+              if '.jpg' in filename or '.png' in filename:
+                  images.append( { 'name' : image } )
+          strip_duration = 72
+          end_frame = 1 + strip_duration * len(images)
+          sequencer.image_strip_add(sequencer_area, directory = image_path, files = images, frame_start = 1, frame_end = end_frame, channel = image_channel)

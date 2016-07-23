@@ -1,0 +1,94 @@
+import bpy
+import bgl
+import blf
+
+
+def draw_callback_px(self, context):
+    print("mouse points", len(self.mouse_path))
+
+    region = context.region
+    active = context.scene.sequence_editor.active_strip
+    if active is None:
+        return
+
+    # Convert the active strip's (frame, channel) to (x, y) coordinates
+    x = active.frame_final_start
+    y = active.channel
+    x, y = region.view2d.view_to_region(x, y)
+
+    font_id = 0  # XXX, need to find out how best to get this.
+    blf.position(font_id, x, y, 0)
+    blf.size(font_id, 20, 72)
+    # region_to_view gives the region coords.  x is frame, y is channel.
+    x, y = region.view2d.region_to_view(*self.mouse_path[-1])
+    blf.draw(font_id, "Hello Word %d %d" % (x, y))
+    # move the frame to the mouse
+    context.scene.frame_set(x)
+
+
+class ModalDrawOperator(bpy.types.Operator):
+    """Draw a line with the mouse"""
+    bl_idname = "sequencer.modal_operator"
+    bl_label = "Simple Modal Sequencer Operator"
+
+    def modal(self, context, event):
+        context.area.tag_redraw()
+        region = context.region
+
+        if event.type == 'MOUSEMOVE':
+            self.mouse_path.append((event.mouse_region_x, event.mouse_region_y
+                                    ))
+
+        elif event.type == 'LEFTMOUSE':
+            bpy.types.SpaceSequenceEditor.draw_handler_remove(self._handle,
+                                                              'WINDOW')
+            return {"FINISHED"}
+
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            bpy.types.SpaceSequenceEditor.draw_handler_remove(self._handle,
+                                                              'WINDOW')
+            return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        if context.area.type == 'SEQUENCE_EDITOR':
+            # the arguments we pass the the callback
+            args = (self, context)
+            # Add the region OpenGL drawing callback
+            # draw in view space with 'POST_VIEW' and 'PRE_VIEW'
+            self._handle = bpy.types.SpaceSequenceEditor.draw_handler_add(
+                draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
+
+            self.mouse_path = []
+
+            context.window_manager.modal_handler_add(self)
+            return {'RUNNING_MODAL'}
+        else:
+            self.report({'WARNING'},
+                        "You need to be in the Video Sequence Editor to use this tool. Operation cancelled.")
+            return {'CANCELLED'}
+
+
+class MouseCut(bpy.types.Operator):
+    """Cuts the strip sitting under the mouse"""
+    bl_idname = "gdquest_vse.mouse_cut"
+    bl_label = "Cut strip with mouse"
+    bl_options = {'REGISTER'}
+    # Shortcut: Ctrl Click
+
+    @classmethod
+    def poll(cls, context):
+        return bpy.context.scene is not None
+
+    def execute(self, context):
+        sequencer = bpy.ops.sequencer
+
+        frame, channel = context.region.view2d.region_to_view(
+            x=event.mouse_region_x,
+            y=event.mouse_region_y)
+        bpy.ops.anim.change_frame(frame=frame)
+        sequencer.cut(frame=bpy.context.scene.frame_current,
+                      type='SOFT',
+                      side='BOTH')
+        return {"FINISHED"}

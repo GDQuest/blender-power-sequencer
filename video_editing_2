@@ -1,0 +1,119 @@
+# TODO: register bug to fix (see blender console)
+
+# TODO: Replace fade side with enum to simplify code?
+class FadeStrip(bpy.types.Operator):
+    """Fades the strip in or out"""
+    bl_idname = "gdquest_vse.fade_strip"
+    bl_label = "Fade strip in or out"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    # Shortcut: Ctrl F / Alt F
+    duration = bpy.props.FloatProperty(
+        name="fade length",
+        description="Length of the fade in seconds",
+        default=1.0,
+        min=0.0,
+        max=64.0)
+    fade_side = bpy.props.StringProperty(
+        name="Snap side",
+        description="Handle side to use to snap to, either left or right",
+        default='LEFT')
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
+
+    def execute(self, context):
+        fps = bpy.context.scene.render.fps
+        fade_length = self.duration * fps
+
+        # TODO: CHECK IF KEYFRAMES ALREADY EXIST, IN WHICH CASE OVERRIDE FADE
+        # TODO: See if possible to tag the sequence somehow to know if a fade was applied by this operator? Will make it easier to override
+        for s in bpy.context.selected_sequences:
+            # key_high is the key with the highest value, key_low has the lowest value (0 opacity or volume)
+            key_high = s.frame_final_start
+
+            # Store frames to key based on the fade_side we want to fade
+            if self.fade_side == 'LEFT':
+                key_low = key_high + fade_length
+                pass
+            elif self.fade_side == 'RIGHT':
+                key_low = key_high - fade_length
+                pass
+
+            # Inserting keyframes
+            if (s.type == "SOUND"):
+                original_volume = s.volume
+                s.volume = 0
+                s.keyframe_insert(data_path='volume', frame=key_low)
+                s.volume = original_volume
+                s.keyframe_insert(data_path='volume', frame=key_high)
+                pass
+            else:
+                original_alpha = s.blend_alpha
+                s.blend_alpha = 0
+                s.keyframe_insert(data_path='blend_alpha', frame=key_low)
+                s.blend_alpha = original_alpha
+                s.keyframe_insert(data_path='blend_alpha', frame=key_high)
+                pass
+            pass
+        return {"FINISHED"}
+
+# TODO: Add a clear fades operator
+class TimeCursorCut(bpy.types.Operator):
+    """Cuts the strips sitting under the time cursor"""
+    bl_idname = "gdquest_vse.time_cursor_cut"
+    bl_label = "Time Cursor Cut"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
+
+    def execute(self, context):
+        # Cuts a sound/video strip the time cursor overlaps, or linked, or everything under the cursor
+        # v1: cuts everything under the time cursor
+        sequencer = bpy.ops.sequencer
+        scene = bpy.context.scene
+        seq_ed = scene.sequence_editor
+        current_frame = scene.frame_current
+
+        strips = []
+
+        # Search through all top level sequences
+        # TEST IN META STRIP to see if it works
+        for s in seq_ed.sequences:
+            # if the time cursor is over the strip, add it to the list
+            if s.frame_final_start < current_frame < s.frame_final_end:
+                strips.append(s)
+                pass
+            pass
+
+        if len(strips) > 0:
+            sequencer.select_all(action='DESELECT')
+            for s in strips:
+                s.select = True
+                pass
+            sequencer.cut(frame=current_frame, type='SOFT', side='BOTH')
+            sequencer.select_all(action='DESELECT')
+            pass
+        return {"FINISHED"}
+
+
+class CutStrip(bpy.types.Operator):
+    """Cuts like the normal cut tool, but selects both sides after the cut"""
+    bl_idname = "gdquest_vse.cut_strip"
+    bl_label = "Cut selected strips"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
+
+    def execute(self, context):
+        sequencer = bpy.ops.sequencer
+        sequencer.cut(frame=bpy.context.scene.frame_current,
+                      type='SOFT',
+                      side='RIGHT')
+        sequencer.select_more()
+        return {"FINISHED"}
