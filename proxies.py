@@ -1,5 +1,10 @@
 import bpy
 
+# TODO: Add useful functions to work with Velvet Revoler
+# TODO: Quick make proxies from local files with Revolver
+# TODO: extend Revolver to make proxy for PICS too
+
+
 # Sets video strips as proxies
 # TODO: Only if setting enabled in preferences
 class SetVideosProxies(bpy.types.Operator):
@@ -28,7 +33,7 @@ class SetVideosProxies(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class VSEQFSetting(bpy.types.PropertyGroup):
+class SettingsProxies(bpy.types.PropertyGroup):
     proxy_on_import = bpy.props.BoolProperty(
     name = "Set and build videos strips as proxies when importing local footage",
     default = True)

@@ -1,34 +1,3 @@
-# Import IMAGES to strips and set CUSTOM PROXY
-
-# import bpy, os
-#
-# dir="your_full_path_to_sequences_directory"  #not include files
-# dirproxy="full_path_to_proxy_file"                  #including proxy file
-#
-# file=[]
-# for i in os.listdir(dir):
-#     frame={"name":i}
-#     file.append(frame)
-#
-# bpy.ops.sequencer.image_strip_add( \
-#         directory = dir, \
-#         files = file, \
-#         frame_start=0, \
-#         channel=2, \
-#         filemode=9)
-#
-# editor=bpy.data.scenes[0].sequence_editor
-# seq=editor.sequences
-# stripname=file[0].get("name")
-# mystrip=seq[stripname]
-#
-# mystrip.use_proxy=True
-# mystrip.use_proxy_custom_file=True
-# mystrip.proxy.filepath=dirproxy
-
-
-
-
 # Keymap that changes operator property!
 
 # assert not bpy.context.user_preferences.inputs.use_emulate_nu mpad

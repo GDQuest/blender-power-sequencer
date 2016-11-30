@@ -1,0 +1,35 @@
+# Copy of the native ops to add a custom property - extend it so it can initialize the property
+
+class WM_OT_properties_add(Operator):
+    bl_idname = "wm.properties_add"
+    bl_label = "Add Property"
+    bl_options = {'UNDO', 'INTERNAL'}
+
+    data_path = rna_path
+
+    def execute(self, context):
+        from rna_prop_ui import rna_idprop_ui_prop_get
+
+        data_path = self.data_path
+        item = eval("context.%s" % data_path)
+
+        def unique_name(names):
+            prop = "prop"
+            prop_new = prop
+            i = 1
+            while prop_new in names:
+                prop_new = prop + str(i)
+                i += 1
+
+            return prop_new
+
+        prop = unique_name(item.keys())
+
+        item[prop] = 1.0
+
+        # not essential, but without this we get [#31661]
+        prop_ui = rna_idprop_ui_prop_get(item, prop)
+        prop_ui["soft_min"] = prop_ui["min"] = 0.0
+        prop_ui["soft_max"] = prop_ui["max"] = 1.0
+
+        return {'FINISHED'}

@@ -3,4 +3,27 @@
 # Beyond that, this should also help with some animation presets like maybe in out fade, but also animating a title in and out…
 # Then, all of the animation tools that relate to motion video in the 3-D view should be put into another add-on? Also first check if it is impossible with animation nodes before creating any specific animation tool.
 
-# TODO: List functions you want to add
+# TODO: List functions to add
+
+# TODO: title animation
+class AnimationLibrary(bpy.types.Operator):
+    bl_idname = "gdquest_vse.animation_library"
+    bl_label = "Animation library"
+    bl_description = "Adds animation to selected strips."
+    bl_options = {"REGISTER", "UNDO"}
+
+    both_sides = bpy.props.BoolProperty(
+        name="Both sides",
+        description=
+        "Animate both the start and the end of the strip",
+        default=True)
+    # presets = bpy.props.EnumProperty()
+
+    @classmethod
+    def poll(cls, context):
+        return context.active_object is not None
+
+    def execute(self, context):
+        sequencer = bpy.ops.sequencer
+
+        return {"FINISHED"}

@@ -1,7 +1,8 @@
 import bpy
 import os
+from enum import Enum
 
-def find_empty_channel(mode = 'ABOVE'):
+def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
     Takes the optional argument mode: 'ABOVE' or 'ANY'
     'ABOVE' finds the first empty channel above all of the other strips
@@ -21,8 +22,8 @@ def find_empty_channel(mode = 'ABOVE'):
         # Add the channels of all sequences to a list
         channels.append(s.channel)
 
-    # Remove duplicates by converting channels to a set
-    # Convert back to a list and sort the channel numbers
+# Remove duplicates by converting channels to a set
+# Convert back to a list and sort the channel numbers
     channels = sorted(list(set(channels)))
 
     for i in range(50):
@@ -42,21 +43,20 @@ def find_empty_channel(mode = 'ABOVE'):
     else:
         return empty_channel
 
-
 # Changes parameters of the image strips. CALLED BACK ON IMPORT
 # Currently: adds transform effect, sets to alpha over
 # TODO: Move parameters to PropertyGroup and preferences
 # TODO: add option to add fade in and/or out
-# TODO: add option to add default animation (ease in/out on X axis) on transform FX
-def setup_image_strips(strips = None):
+# TODO: add option to add default animation (ease in/out on X axis) on transform FX?
+def setup_image_strips(sequences=None):
     sequencer = bpy.ops.sequencer
     seq_ed = bpy.context.scene.sequence_editor
 
-    if strips != None:
-        # Ensure that no other strip is selected to add FX strips to the right target
+    if sequences != None:
+        # Ensure that no other strip is selected to add FX sequences to the right target
         sequencer.select_all(action='DESELECT')
 
-        for s in strips:
+        for s in sequences:
             if s.type == 'IMAGE':
                 # Set the strip active so that we can
                 seq_ed.active_strip = s
@@ -66,30 +66,93 @@ def setup_image_strips(strips = None):
                 seq_ed.active_strip.select = False
             else:
                 print("The strip " + s.name + " is not an image strip")
-        print("Successfully processed " + str(len(strips)) + " image strips")
+        print("Successfully processed " + str(len(sequences)) +
+              " image sequences")
         return True
     else:
-        print("You didn't pass any strips")
+        print("You didn't pass any sequences")
+        return False
+
+
+def is_revolver_proxy(filename):
+    return True if '_proxy.' in filename else False
+
+
+class FileTypes(Enum):
+    psd = "PSD"
+    img = ("PNG", "JPG", "JPEG")
+    sound = ("WAV", "MP3", "OGG")
+    video = ("MP4", "AVI", "MTS")
+
+
+
+def is_type(filename=None, file_type=None):
+    """Checks if a file is of a certain type that can be loaded by Blender (image, audio, video...)
+    Input: filename (including the file extensions), and the file_type to check (pass an entry from the FileTypes Enum)
+    Returns True if the file extension is in the file type.
+
+    Example uses:
+    is_type("folder\\subfolder\\footage.mp4", FileTypes.video) returns True
+    is_type("video.mp4", FileTypes.sound) returns False """
+
+    file_extension = filename[filename.rfind(".") + 1:].upper()
+    # print(filename + " / " + file_extension)
+    # print(file_type.value)
+
+    if file_extension in file_type.value:
+        return True
+    else:
         return False
 
 
 
 
-# TODO: optimize to import all strips of a given type at once using a dictionary
-# TODO: Do not reimport existing strips, import only the new ones and refresh the sequencer
-# TODO: Dive into sub-folders for video strips (i.e. /video/**/*.MTS), 1 level deeper
-# TODO: Option to automatically remove audio from the imported video strips (if importing wav audio files)
+# DONE but doesn't change performances: optimize to import all strips of a given type at once using a dictionary
+# DONE: import audio in first channel
+# DONE: Dive into sub-folders for video strips (i.e. /video/**/*.MTS), 1 level deeper
+# TODO: By default, do not reimport existing strips, import only the new ones and refresh the sequencer - But option to always import all
+# DONE: Option to automatically remove audio from the imported video strips (if importing wav audio files)
 # TODO: After import, if video and audio files have the same name, remove audio channel from video and sync remaining audio and video strips (if there's audio channel with video)
-# TODO: Use preference to change default image length
+# TODO: Use add-on preferences to change default image length
+# DONE: Encapsulate "if '.jpg' in item or '.png' in item:" by a smarter function like is_type('image') ? So we can support new file extensions more easily (i.e. .psd etc.)
+# DONE: Add basic support for Revolver add-on: skip files with _proxy at end
+    # DONE: Encapsulate that in a function for when more file types and naming conventions get added to Revolver. is_revolver_proxy(file_path)
+# DONE: Option to import PSD files as image strips
+# DONE: PS files import - don't treat folders generated by PS as img sequences, instead, add content to the list of files to import
+# DONE: Stop animation playback before importing
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
     bl_label = "Import local footage"
     bl_description = "Import video and audio from the project folder to VSE strips"
-    bl_options = {"REGISTER"}
+    bl_options = {'REGISTER', 'UNDO'}
 
-    always_import = bpy.props.BoolProperty( name = "Always Reimport", description = "If true, always import all local files to new strips. If False, only import new files (check if footage has already been imported to the VSE).", default = False)
-    video_keep_audio = bpy.props.BoolProperty( name = "Keep audio from video files", description = "If False, the audio that comes with video files will not be imported", default = False)
-    img_length = bpy.props.IntProperty( name = "Image strip length", description = "Controls the duration of the imported image strips length", default = 96, min = 1)
+    always_import = bpy.props.BoolProperty(
+        name="Always Reimport",
+        description=
+        "If true, always import all local files to new strips. If False, only import new files (check if footage has already been imported to the VSE).",
+        default=False)
+    video_keep_audio = bpy.props.BoolProperty(
+        name="Keep audio from video files",
+        description=
+        "If False, the audio that comes with video files will not be imported",
+        default=False)
+    img_length = bpy.props.IntProperty(
+        name="Image strip length",
+        description=
+        "Controls the duration of the imported image strips length",
+        default=96,
+        min=1)
+    # PSD related features
+    import_psd = bpy.props.BoolProperty(
+        name="Import PSD as image",
+        description=
+        "When True, psd files will be imported as individual image strips",
+        default=False)
+    ps_assets_as_img = bpy.props.BoolProperty(
+        name="Import PS assets as images",
+        description=
+        "Imports the content of folders generated by Photoshop's quick export function as individual image strips",
+        default=True)
 
     @classmethod
     def poll(cls, context):
@@ -100,8 +163,16 @@ class ImportLocalFootage(bpy.types.Operator):
         context = bpy.context
         wm = context.window_manager
 
+        # Stop the animation playback
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+
         # Sequencer Area to force Blender to import of the strips to the VSE, even if the current context is not the VSE
-        sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0], 'blend_data': context.blend_data, 'scene': context.scene, 'window': wm.windows[0], 'screen': bpy.data.screens['Video Editing'], 'area': bpy.data.screens['Video Editing'].areas[2]}
+        sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0],
+                          'blend_data': context.blend_data,
+                          'scene': context.scene,
+                          'window': wm.windows[0],
+                          'screen': bpy.data.screens['Video Editing'],
+                          'area': bpy.data.screens['Video Editing'].areas[2]}
 
         if bpy.data.is_saved:
             path = bpy.data.filepath
@@ -111,51 +182,54 @@ class ImportLocalFootage(bpy.types.Operator):
             # If there are already strips in the VSE, we have to check the names of the imported files against the existing strips to not duplicate them on import
             # Only new video files have to be imported
             # TODO: Make this behavior optional
-            # always_import = self.always_import
-            # video_keep_audio = self.video_keep_audio
-            always_import = True
-            video_keep_audio = False
+            always_import = self.always_import
+            keep_audio = self.video_keep_audio
             # If we're keeping the audio channel of the video files, we'll need to offset other audio and img strips by 1 channel
-            channel_for_audio = 1 if video_keep_audio else 0
+            channel_for_audio = 1 if keep_audio else 0
             check_strip_names = False
 
-            if always_import == False and len(context.sequences) > 0:
-                for s in context.sequences:
-                    if s.type in ['MOVIE', 'SOUND', 'IMAGE']:
-                        check_strip_names = True
-                        break
+            # ------------
+            # TODO: REIMPORT - CHECK FOR EXISTING SEQUENCES TO KNOW WHICH FILES TO REIMPORT / Tag imported files with a blender SCENE custom property? That way no need to check all sequences, and can import per scene
+            # ------------
+            # if not always_import and len(context.sequences) > 0:
+            #     for s in context.sequences:
+            #         if s.type in ['MOVIE', 'SOUND', 'IMAGE']:
+            #             check_strip_names = True
+            #             break
 
-            # Store project folder
+# Store project folder
             directory = path[:len(path) - (len(project_name) + 1)]
             print("\n" + directory)
 
             # Finds first empty channel above all strips to place the new strips
-            empty_channel = find_empty_channel(mode = 'ABOVE')
+            empty_channel = find_empty_channel(mode='ABOVE')
             # Check if there's a subfolder in the blend project folder named 'video' and loop through content
             for entry in os.listdir(path=directory):
+                # ------------
                 # VIDEO STRIPS
+                # ------------
                 if entry == 'video':
                     # Ensure that there is something in the folder
                     video_path = directory + '\\' + 'video'
                     video_folder_content = os.listdir(path=video_path)
                     if len(video_folder_content) > 0:
                         strip_insert_frame = 1
-                        video_channel = empty_channel
+                        video_channel = empty_channel + 1
                         # We have to make a dictionary of video filenames to quickly import
                         videos = []
                         subfolders = []
 
                         for video in video_folder_content:
                             # If filename is .mp4 or any video format, import to the VSE
-                            filename = video.lower()
-                            if '.mts' in filename or '.mp4' in filename:
+                            if is_type(video, FileTypes.video):
                                 if check_strip_names:
                                     for s in context.sequences:
                                         if not video in s.name:
-                                            videos.append({ 'name': video })
+                                            videos.append({'name': video})
                                             break
-                                else:
-                                    videos.append({ 'name': video })
+                                # Checking for revolver proxy names
+                                elif not is_revolver_proxy(video):
+                                    videos.append({'name': video})
                             # Find and save subfolders of the //video folder, 1 level deep
                             else:
                                 subfolder = os.path.join(video_path, video)
@@ -165,46 +239,118 @@ class ImportLocalFootage(bpy.types.Operator):
                         # TODO: tag the videos strips per folder
                         if subfolders:
                             for folder in subfolders:
-                                for video in os.listdir(path = folder):
-                                    filename = video.lower()
-                                    if '.mts' in filename or '.mp4' in filename:
-                                        videos.append({ 'name': os.path.split(folder)[1] + "/" + video })
-                        sequencer.movie_strip_add(sequencer_area, filepath = video_path + "\\" + video, files = videos, frame_start = 1, channel = video_channel, sound = video_keep_audio)
+                                for video in os.listdir(path=folder):
+                                    if is_type(video, FileTypes.video):
+                                        videos.append({'name': os.path.split(
+                                            folder)[1] + "/" + video})
+                        sequencer.movie_strip_add(
+                            sequencer_area,
+                            filepath=video_path + "\\" + video,
+                            files=videos,
+                            frame_start=1,
+                            channel=video_channel,
+                            sound=keep_audio)
+                # ------------
                 # AUDIO STRIPS
+                # ------------
                 elif entry == 'audio':
-                    audio_folder_content = os.listdir(path=(directory + '\\' + entry))
+                    audio_folder_content = os.listdir(
+                        path=(directory + '\\' + entry))
                     if len(audio_folder_content) > 0:
                         strip_insert_frame = 1
                         # We have to reset the empty_channel and starting frame to add the audio strips
-                        audio_channel = empty_channel + 1 + channel_for_audio
+                        audio_channel = empty_channel
                         audio_path = directory + '\\' + 'audio'
 
                         for audio in audio_folder_content:
-                            filename = audio.lower()
-                            if '.wav' in filename or '.mp3' in filename:
-                                sequencer.sound_strip_add(sequencer_area, filepath = audio_path + "\\" + audio, frame_start = strip_insert_frame, channel = audio_channel)
-                                strip_insert_frame += context.sequences[0].frame_final_duration
-                # IMAGE STRIPS
+                            if is_type(audio, FileTypes.sound):
+                                sequencer.sound_strip_add(
+                                    sequencer_area,
+                                    filepath=audio_path + "\\" + audio,
+                                    frame_start=strip_insert_frame,
+                                    channel=audio_channel)
+                                strip_insert_frame += context.sequences[
+                                    0].frame_final_duration
+
+# ------------
+# IMAGE STRIPS
+# ------------
                 elif entry == 'img':
-                    img_folder_content = os.listdir(path=(directory + '\\' + entry))
+                    img_folder_content = os.listdir(
+                        path=directory + '\\' + entry)
                     if len(img_folder_content) > 0:
                         strip_insert_frame = 1
-                        strip_duration = self.img_length
                         image_channel = empty_channel + 2 + channel_for_audio
                         image_path = directory + '\\' + 'img'
 
                         for image in img_folder_content:
-                            filename = image.lower()
-                            if '.jpg' in filename or '.png' in filename:
-                                sequencer.image_strip_add(sequencer_area, directory = image_path, files = [{ 'name' : image }], frame_start = strip_insert_frame, frame_end = strip_insert_frame + strip_duration, channel = image_channel)
-                                strip_insert_frame += strip_duration + 1
+                            # Ensure that the file is an image, and manages optional PSD import
+                            is_image = is_type(
+                                image, FileTypes.
+                                img) if not self.import_psd else is_type(
+                                    image, FileTypes.img) or is_type(
+                                        image, FileTypes.psd)
+                            if is_image:
+                                sequencer.image_strip_add(
+                                    sequencer_area,
+                                    directory=image_path,
+                                    files=[{'name': image}],
+                                    frame_start=strip_insert_frame,
+                                    frame_end=strip_insert_frame +
+                                    self.img_length,
+                                    channel=image_channel)
+                                strip_insert_frame += self.img_length + 1
+                            # LOADING IMAGE SEQUENCE
+                            # If there's a subfolder that contains a list of image, we load it as an image strip
+                            else:
+                                subfolder = os.path.join(image_path, image)
+                                if os.path.isdir(subfolder):
+                                    subfolder_files = os.listdir(
+                                        path=subfolder)
+                                    if len(subfolder_files) > 0:
+                                        # PHOTOSHOP
+                                        # Find folders generated by PS's quick export function (ends with '-assets')
+                                        is_assets_folder = True if subfolder[
+                                            len(subfolder) -
+                                            7:] == '-assets' and self.ps_assets_as_img else False
 
-        # store image strips in a list to then process them using the setup_image_strips() function
+                                        image_files = []
+                                        for item in subfolder_files:
+                                            if is_type(item, FileTypes.img):
+                                                # If the folder was generated by PS, we add each picture as an individual strip
+                                                if is_assets_folder:
+                                                    sequencer.image_strip_add(
+                                                        sequencer_area,
+                                                        directory=subfolder,
+                                                        files=[{'name': item}],
+                                                        frame_start=
+                                                        strip_insert_frame,
+                                                        frame_end=
+                                                        strip_insert_frame +
+                                                        self.img_length,
+                                                        channel=image_channel)
+                                                    strip_insert_frame += self.img_length + 1
+                                                # Else we append the files to a list to import the whole sequence as a unique strip
+                                                else:
+                                                    image_files.append({'name':
+                                                                        item})
+                                        # Adding the image files in the folder as a unique sequence
+                                        if len(image_files) > 0:
+                                            sequencer.image_strip_add(
+                                                sequencer_area,
+                                                directory=subfolder,
+                                                files=image_files,
+                                                frame_start=strip_insert_frame,
+                                                frame_end=strip_insert_frame +
+                                                len(image_files),
+                                                channel=image_channel)
+                                            strip_insert_frame += self.img_length + 1
+
+# Store image strips in a list to then process them using the setup_image_strips() function
         image_strips = []
         for s in context.sequences:
             if s.type == 'IMAGE':
                 image_strips.append(s)
-                pass
         # Process all image strips so that they are ready to be used for editing
         setup_image_strips(image_strips)
 

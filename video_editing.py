@@ -1,12 +1,12 @@
-import bpy
 import os
-from math import ceil
-from operator import attrgetter
 from enum import Enum
+from math import ceil
+
+import bpy
 
 
 # -----
-# Global variables
+# GLOBAL VARIABLES
 # -----
 class SearchMode(Enum):
     next = 1
@@ -14,71 +14,80 @@ class SearchMode(Enum):
     all = 3
     pass
 
+sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
+                  'effect': ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER',
+                             'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY',
+                             'OVER_DROP', 'WIPE', 'GLOW', 'TRANSFORM', 'COLOR',
+                             'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR'),
+                  'sound': 'SOUND',
+                  'image': 'IMAGE',
+                  'img': 'IMAGE'}
+
+
 # -----
-# Functions
+# FUNCTIONS
 # -----
-# Returns the video sequence following the active one
-def find_next_sequences(mode, pick_sound=False, pick_image=False):
-    # some handy variables. All selected sequences, the active one, the current scene and current frame.
-    selected = bpy.context.selected_sequences
+
+# TODO: refactor code - clean up / get the user to pass sequences to work on?
+def find_next_sequences(mode=SearchMode.next,
+                        sequences=None,
+                        pick_sound=False):
+    """Returns a sequence or a list of sequences following the active one"""
+    
+    if sequences == None:
+        sequences = bpy.context.scene.sequence_editor.sequences
+    
     active = bpy.context.scene.sequence_editor.active_strip
-    scene = bpy.context.scene
-    frame = scene.frame_current
+    # scene = bpy.context.scene
+    # frame = bpy.context.scene.frame_current
     # Stores the sequences after the selected sequence
     nexts = []
     nexts_far = []
     same_channel = []
 
     # Find all selected sequences to the right of the active sequence
-    if selected != []:
-        for s in selected:
-            # current sequence is after selected sequence or is overlapping it
-            if (s.frame_final_start >= active.frame_final_end) or (
-                    s.frame_final_start > active.frame_final_start) & (
-                        s.frame_final_start < active.frame_final_end) & (
-                            s.frame_final_end > active.frame_final_end):
-                # store strips in 2 lists: neighboring ones and distant ones (in terms of channels)
-                if abs(s.channel - active.channel) < 2:
-                    # Skip sound type in channel by default
-                    if pick_sound == False and s.type == 'SOUND':
-                        pass
-                    elif pick_image == False and s.type == 'IMAGE':
+    if sequences:
+        for seq in sequences:
+            # If current sequence is after selected sequence or is overlapping it
+            if (seq.frame_final_start >= active.frame_final_end) or (
+                    seq.frame_final_start > active.frame_final_start) & (
+                        seq.frame_final_start < active.frame_final_end) & (
+                            seq.frame_final_end > active.frame_final_end):
+                if abs(seq.channel - active.channel) > 2:
+                    nexts_far.append(seq)
+                else:
+                    if seq.type in sequence_types['sound'] && pick_sound == False:
                         pass
                     else:
-                        nexts.append(s)
-                        if mode == SearchMode.channel.value and s.channel == active.channel:
-                            same_channel.append(s)
-                else:
-                    nexts_far.append(s)
-
-    if mode == SearchMode.channel.value:
-        # In channel mode, return all strips in the same channel
+                        nexts.append(seq)
+                        if mode is SearchMode.channel and seq.channel == active.channel:
+                            same_channel.append(seq)
+    
+    # Store the sequences to return
+    next_sequences = None
+    if mode is SearchMode.channel:
         return same_channel
     elif len(nexts) > 0:
-        # Returns the sequence with the closest starting frame, in a neighboring channel in priority
         return min(
             nexts,
-            key=
-            lambda next: (next.frame_final_start - active.frame_final_start))
-    # If there are no strips in neighbor channels, it fades with the closest overlapping strip
+            key=lambda next: (next.frame_final_start - active.frame_final_start))
     elif len(nexts_far) > 0:
-        return min(
-            nexts_far,
-            key=
-            lambda next: (next.frame_final_start - active.frame_final_start))
-    else:
-        return False
+        next_sequences = min(nexts_far, key=lambda next: (
+            next.frame_final_start - active.frame_final_start))
+
+    return next_sequences
 
 
-def fade_create(sequences = None, fade_length = 12, fade_type = 'both'):
+# --------------
+# FADE MANAGEMENT
+# --------------
+def fade_create(sequences=None, fade_length=12, fade_type='both'):
     """Takes a list of sequences, and adds a fade to the left, right or to both sides of the VSE strips
     fade_length: length of the fade in frames
     fade_type: 'left', 'right' or 'both' """
 
     scene = bpy.context.scene
-    # anim_data = scene.animation_data
 
-    # If there's no existing animation data and action in the scene, we create them.
     if scene.animation_data == None:
         scene.animation_data_create()
     if scene.animation_data.action == None:
@@ -93,7 +102,6 @@ def fade_create(sequences = None, fade_length = 12, fade_type = 'both'):
         fade_clear(sequences)
 
         for s in sequences:
-            # Setting up tuples to add keyframes for the fades later
             s_start = s.frame_final_start
             s_end = s.frame_final_end
 
@@ -108,30 +116,32 @@ def fade_create(sequences = None, fade_length = 12, fade_type = 'both'):
                 fade_fcurve = fcurves.new(
                     data_path=s.path_from_id(fade_curve_type))
 
-            # Value to fade from and to - currently always 1
             # TODO: give the option to use the fade_curve's highest value?
             fade_max_value = 1
 
             # Sanity check - only insert keyframes if the strip is long enough
             strip_min_length = fade_length * 2 if fade_type == 'both' else fade_length
 
-            if s.length > strip_min_length:
+            if s.frame_final_duration > strip_min_length:
                 # TODO: Smarter fades, that actually detect existing fades
-                # Storing keyframes from the sequence's opacity/volume fcurve
                 keyframes = fade_fcurve.keyframe_points
-                # FADES
+                
+                # CREATING FADE KEYFRAMES
                 if 'left' or 'both' in fade_type:
                     keyframes.insert(frame=fade_in_frames[0], value=0)
-                    keyframes.insert(frame=fade_in_frames[1], value=fade_max_value)
+                    keyframes.insert(frame=fade_in_frames[1],
+                                     value=fade_max_value)
                     if 'right' or 'both' in fade_type:
-                        keyframes.insert(frame=fade_out_frames[0], value=fade_max_value)
+                        keyframes.insert(frame=fade_out_frames[0],
+                                         value=fade_max_value)
                         keyframes.insert(frame=fade_out_frames[1], value=0)
             else:
-                print('The strip ' + s.name + ' is too short for the fade to be applied.')
+                print('The strip ' + s.name +
+                      ' is too short for the fade to be applied.')
     return len(sequences)
 
 
-def fade_find_fcurve(sequence = None):
+def fade_find_fcurve(sequence=None):
     """Checks if there's existing fade animation on a given video sequence.
     If so, returns the data path to the corresponding fcurve.
     Also returns the strip's fade type"""
@@ -139,7 +149,7 @@ def fade_find_fcurve(sequence = None):
     fcurves = bpy.context.scene.animation_data.action.fcurves
 
     if sequence:
-        if sequence.type == 'SOUND':
+        if sequence.type in sequence_types['sound']:
             fade_type = 'volume'
         else:
             fade_type = 'blend_alpha'
@@ -153,7 +163,7 @@ def fade_find_fcurve(sequence = None):
     return fade_fcurve, fade_type
 
 
-def fade_clear(sequences = None):
+def fade_clear(sequences=None):
     """Deletes all keyframes in the blend_alpha or volume fcurves of the provided sequences"""
 
     fcurves = bpy.context.scene.animation_data.action.fcurves
@@ -167,49 +177,138 @@ def fade_clear(sequences = None):
     else:
         return False
 
+# --------------
+# CUSTOM PROPERTIES
+# --------------
+
+# TODO: function to add a custom property, set it
+
+# def add_custom_property(sequences, name, value):
+#     """ Appends a new custom property to a list of sequences, and initializes it. """
+#     for s in sequences:
+#         bpy.ops.wm.properties_add(data_path="scene.sequence_editor")
+
+# def remove_custom_property(sequences, name):
+#     """ Removes a custom property from all selected strips, based on the property's name
+#     Takes a list of sequences as input """
+#     for s in sequences:
+#         pass
 
 # ---------------- Operators -----------------------
 # --------------------------------------------------
 
-# TODO: Fix poll methods, use queries that make more sense.
-
 # Auto add crossfade from the active clip to the closest next clip in the VSE
 # Currently doesn't have any options
+# DONE: Add property and option to force length of crossfade (i.e. 12 frames)
+# DONE: Make it work with pictures -> add fade from and to pictures
+# DONE: Refactor code - clean up
+# DONE: Extend the second strip when force_length is True by crossfade_length frames
+# DONE: If selected audio + video and audio is active, set video to active
+# DONE: If only one audio strip selected, report error to the user
+# TODO: Add custom properties to the sequences referencing the GAMMA_CROSS strip, to easily remove it or process it with Python
+# FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between the 2 selected strips
+# TODO: If crossfade between effect strips or 2 pictures, set crossfade strip to ALPHA_OVER
+# TODO: Add custom property to store the name/data_path of the GAMMA_CROSS effect added to both strips, so we can detect it later
+# TODO: The operator should preserve strips with linked times (1 video + 1 audio)
+# FIXME: Spotted an offset issue with a metastrip that was exactly self.crossfade_length frames before the end of the active strip
+# Happens in particular if the second strip is already in place - it adds
+# 10 frames at the end
+
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
     bl_description = "Adds a Gamma Cross fade layer effect between the selected layer and the closest one to its right."
     bl_options = {"REGISTER", "UNDO"}
 
+    crossfade_length = bpy.props.IntProperty(
+        name="Crossfade length",
+        description="Length of the crossfade in frames",
+        default=10,
+        min=1)
+    force_length = bpy.props.BoolProperty(
+        name="Force crossfade length",
+        description="When true, moves the second strip so the crossfade is of the length set in 'Crossfade Length'",
+
+        default=True)
+
     @classmethod
     def poll(cls, context):
         return context.active_object is not None
 
     def execute(self, context):
-        # Find the next sequence
-        first_sequence = bpy.context.scene.sequence_editor.active_strip
-        bpy.ops.sequencer.select_all(action='SELECT')
-        second_sequence = find_next_sequences(SearchMode.next)
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        sequencer = bpy.ops.sequencer
+        active_strip = bpy.context.scene.sequence_editor.active_strip
+        selected_sequences = bpy.context.selected_sequences
 
-        if (first_sequence != False) & (second_sequence != False):
+        # If the active strip is not a video or a meta strip, we need to run a
+        # few checks
+
+        if active_strip.type not in sequence_types['video']:
+            for s in selected_sequences:
+                if s.type in sequence_types['video']:
+                    bpy.context.scene.sequence_editor.active_strip = s
+                    active_strip = s
+                    break
+                pass
+            # If no strip in selection is a video, can't apply crossfade
+            if active_strip.type not in sequence_types['video']:
+                self.report(
+                    {"ERROR_INVALID_INPUT"},
+                    "You need to select a video sequence to add a crossfade")
+                return {"CANCELLED"}
+            pass
+
+        seq = [active_strip, find_next_sequences(SearchMode.next)]
+        # Force crossfade_length
+        if seq[0] and seq[1]:
+            if self.force_length:
+                # Setting up variables to properly relocate the second sequence
+                target_frame = seq[0].frame_final_end
+                frame_offset = -1 * \
+                    (seq[1].frame_final_start - seq[0].frame_final_end)
+
+                strip_duration = seq[1].frame_final_duration
+
+                # Moving and trimming the second sequence
+                seq[1].frame_final_start = target_frame
+                seq[1].frame_final_end = target_frame + strip_duration
+                sequencer.select_all(action='DESELECT')
+                seq[1].select = True
+                sequencer.slip(offset=frame_offset)
+                # Moving the left handle before we apply the crossfade
+                seq[1].frame_final_start -= self.crossfade_length
+                pass
+
             # Select only the 2 sequences required for the operation
-            first_sequence.select = True
-            second_sequence.select = True
+            for s in seq:
+                s.select = True
             # Set second strip active so the fade goes in the right direction
-            bpy.context.scene.sequence_editor.active_strip = second_sequence
-            # Add crossfade
-            bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
+            bpy.context.scene.sequence_editor.active_strip = seq[1]
+            sequencer.effect_strip_add(type='GAMMA_CROSS')
         return {"FINISHED"}
 
 
 # Makes it easier to speed up footage
-# TODO: Add property to change how much it gets sped up
+# DONE: Add property for speed multiplier
+# DONE: Fix error if selecting strip with audio
+# DONE: If audio strip is active, set a video strip active instead
+# DONE: Ensure that there's at least one relevant strip to speed up in the selection
+# TODO: if single strip selected that has a crossfade, remove it, store the source strips, run speed operator and add crossfade again
+# TODO: if there are multiple selected blocks of strips that are not connected in time, speed up each block separately
+# TODO: ? Tag the final meta strip with a custom property to know that the
+# footage was sped up
+
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_speed"
     bl_label = "Speed up Sequence"
     bl_description = "Adds a speed effect over your clip, sets its speed and size, and wraps it into a meta strip set to over drop for easier editing"
     bl_options = {"REGISTER", "UNDO"}
+
+    speed_factor = bpy.props.IntProperty(
+        name="Speed factor",
+        description="How many times the footage gets sped up",
+        default=2,
+        min=0)
 
     @classmethod
     def poll(cls, context):
@@ -221,27 +320,67 @@ class AddSpeed(bpy.types.Operator):
         active = scene.sequence_editor.active_strip
 
         selection = bpy.context.selected_sequences
-        num_selected_strips = len(selection)
 
-        if num_selected_strips == 0:
+        # If the active strip is not a video strip, ensure that there are video
+        # type strips in the selection and set the active strip to one of them
+
+        if active.type not in sequence_types['video']:
+            count = 0
+            for s in selection:
+                if s.type in sequence_types['video']:
+                    scene.sequence_editor.active_strip = active = s
+                    break
+                else:
+                    count += 1
+            if count == len(selection):
+                self.report(
+
+                    {"ERROR_INVALID_INPUT"},
+
+                    "You must select at least 1 video or meta strip to apply a speed effect - operation cancelled")
+
+                return {"CANCELLED"}
+
+
+        if len(selection) == 0:
             active.select = True
             pass
         elif len(selection) == 1 and active.name != selection[0].name:
             active = selection[0]
             scene.sequence_editor.active_strip = active
             sequencer.refresh_all()
-        # If multiple strips are selected, meta them
+        # Speed up with more than 1 selected strips
         elif len(selection) > 1:
+            # TODO: break down selection in blocks of strips that are connected
+            # in time, and apply the code below to each block separately.
+
+            def split_sequence_blocks(sequences):
+                """Breaks down a selection of sequences into sub-selections of strips connected in time.
+                Takes a list of sequences as input and returns a tuple of lists. Each returned list represents a block of sequences that are connected in time.
+                Use this function to apply an operator that works with blocks of sequences, like gdquest_vse.add_speed"""
+
+                # Sort sequences by start time
+                # Step through the sequences and mark the ones between which there's a gap with a breakpoint (cut index)
+                # Loop through the breakpoints to split the lists to return
+                pass
+
             bpy.ops.sequencer.select_grouped(type='EFFECT_LINK')
+            # If there are no effect strips with the selection, Blender will deselect everything. Then we have to use the original selection
+            # TODO: Check if it works if there are effects only on some of the
+            # selected strips?
+
+            for s in selection:
+                if not s in bpy.context.selected_sequences:
+                    s.select = True
             sequencer.meta_make()
-            active = selection[0]
+            active = scene.sequence_editor.active_strip
             pass
 
-        if active.type == 'MOVIE' or active.type == 'MOVIECLIP':
+        if active.type in sequence_types['video']:
             sequencer.effect_strip_add(type='SPEED')
             effect_strip = bpy.context.scene.sequence_editor.active_strip
             effect_strip.use_default_fade = False
-            effect_strip.speed_factor = 2
+            effect_strip.speed_factor = self.speed_factor
 
             # Select the originally selected strip and make it active
             sequencer.select_all(action='DESELECT')
@@ -249,7 +388,9 @@ class AddSpeed(bpy.types.Operator):
             active.select = True
             bpy.context.scene.sequence_editor.active_strip = active
 
-            # Setting the length of the video clip to reflect the change of size
+            # Setting the length of the video clip to reflect the change of
+            # size
+
             size = ceil(active.frame_final_duration /
                         effect_strip.speed_factor)
             endFrame = active.frame_final_start + size
@@ -261,8 +402,12 @@ class AddSpeed(bpy.types.Operator):
             pass
         return {"FINISHED"}
 
-
 # Shortcut: Shift + C
+# TODO: If only one selected strip per channel, concatenate all channels
+# individually
+
+
+
 class ConcatenateStrips(bpy.types.Operator):
     """Concatenates selected strips or a channel based on the active strip"""
     bl_idname = "gdquest_vse.concatenate_strips"
@@ -277,27 +422,31 @@ class ConcatenateStrips(bpy.types.Operator):
         sequences = []
         channels = []
 
-        # If only the active strip is selected, select all next seq in the same channel
+        # If only the active strip is selected, select all next seq in the same
+        # channel
+
         if len(bpy.context.selected_sequences) == 1:
-            bpy.ops.sequencer.select_all(action='SELECT')
             # Select all seqs in channel, including sound and image
-            sequences_in_channel = find_next_sequences(
-                SearchMode.channel.value, True, True)
-            bpy.ops.sequencer.select_all(action='DESELECT')
+            sequences_in_channel = find_next_sequences(mode=SearchMode.channel,
+                                                       sequences=None,
+                                                       pick_sound=True,
+                                                       pick_image=True)
             for s in sequences_in_channel:
                 s.select = True
-                pass
-            # We have to reselect the active strip, as find_next_sequences only returns next seqs in the channel
+            # We have to reselect the active strip, as find_next_sequences only
+            # returns next seqs in the channel
+
             bpy.context.scene.sequence_editor.active_strip.select = True
-            pass
         for s in bpy.context.selected_sequences:
-            if s.type == 'MOVIE' or s.type == 'SOUND' or s.type == 'META':
+            if s.type in sequence_types['video']:
                 sequences.append(s)
                 channels.append(s.channel)
                 pass
             pass
 
         if len(sequences) >= 1:
+            from operator import attrgetter
+
             # sort sequences by channel and frame start
             sequences = sorted(sequences,
                                key=attrgetter('channel', 'frame_final_start'))
@@ -305,10 +454,21 @@ class ConcatenateStrips(bpy.types.Operator):
             channels = list(channels)
             num_channels = len(channels)
 
+            # TODO: If the number of channels the sequences are spread other is equal to the number of selected sequences, then there's only 1 selected sequence per channel
+            # So then we select all next sequences in each channel
+            # Gotta refactor the find_next_sequences so we have to pass it a channel if mode == SearchMode.channel
+            # if num_channels == len(sequences):
+            #     for c in channels:
+            #         for s in find_next_sequences(mode=SearchMode.channel,
+            #                                                    sequences=None,
+            #                                                    pick_sound=True,
+            #                                                    pick_image=True)
             # loop over all channels to concatenate
             c = 0
             while c < num_channels:
-                # The sequences are ordered, so we know that the first sequence will be the first one we'll concatenate
+                # The sequences are ordered, so we know that the first sequence
+                # will be the first one we'll concatenate
+
                 concat_channel = channels[c]
                 concat_start = 0
                 for s in sequences:
@@ -318,7 +478,9 @@ class ConcatenateStrips(bpy.types.Operator):
                     pass
 
                 concat_sequences = []
-                # move sequences with the channel we want to concat from the original list to the empty one
+                # move sequences with the channel we want to concat from the
+                # original list to the empty one
+
                 for s in sequences:
                     if s.channel == concat_channel:
                         concat_sequences.append(s)
@@ -335,75 +497,87 @@ class ConcatenateStrips(bpy.types.Operator):
             pass
         return {"FINISHED"}
 
+
 # TODO: (?) filter selection down only to relevant strip types (video, sound, img, meta, transform etc.)
-# TODO: Smart filtering of the selection: apply fades to parent effects only
+# TODO: Smart filtering of the selection: apply fades to parent effects
+# only if possible
+
 class FadeStrips(bpy.types.Operator):
     bl_idname = "gdquest_vse.fade_strips"
     bl_label = "Fade strips"
     bl_description = "Fade left, right or both sides of all selected strips in the VSE"
     bl_options = {'REGISTER', 'UNDO'}
 
-    fade_length = bpy.props.IntProperty( name = "Fade length", description = "Length of the fade in frames", default = 12, min = 1)
-    fade_type = bpy.props.StringProperty( name = "Fade type", description = "Sides of the strips to apply the fade to. 'left', 'right' or 'both'", default = 'both')
+    fade_length = bpy.props.IntProperty(
+        name="Fade length",
+        description="Length of the fade in frames",
+        default=12,
+        min=1)
+    fade_type = bpy.props.StringProperty(
+        name="Fade type",
+        description="Sides of the strips to apply the fade to. 'left', 'right' or 'both'",
+
+        default='both')
 
     @classmethod
     def poll(cls, context):
         return True
 
     def execute(self, context):
-        fade_create(bpy.context.selected_sequences, self.fade_length, self.fade_type)
+        # TODO: Use selection or active strip otherwise
+        selected_sequences = bpy.context.selected_sequences if len(
+            bpy.context.
+            selected_sequences) > 0 else bpy.context.scene.sequence_editor.active_strip
+        fade_create(selected_sequences, self.fade_length, self.fade_type)
         return {"FINISHED"}
 
 
-
-# TODO: add property to change the max length of selected strips
+# DONE: add property to change the max length of selected strips
 class SelectShortStrips(bpy.types.Operator):
-    """Picks all the strips that are less than 8 frames long in the selection"""
     bl_idname = "gdquest_vse.select_short_strips"
     bl_label = "Select short strips"
-    bl_description = "Picks all the strips that are less than 8 frames long in the selection"
+    bl_description = "Filters the current selection down to the strips that are less than the 'Max strip length' frames long."
     bl_options = {'REGISTER', 'UNDO'}
+
+    max_strip_length = bpy.props.IntProperty(
+        name="Max strip length",
+        description="Length of the selected strips in frames",
+        default=8,
+        min=1)
 
     @classmethod
     def poll(cls, context):
         return context.scene is not None
 
     def execute(self, context):
-        selected = bpy.context.selected_sequences
-        sequencer = bpy.ops.sequencer
-        strips = []
-
-        if len(selected) > 0:
-            for s in selected:
-                if s.frame_final_duration < 8:
-                    strips.append(s)
-                    pass
-                pass
-            sequencer.select_all(action='DESELECT')
-            for s in strips:
-                s.select = True
-                pass
-            pass
+        for s in bpy.context.selected_sequences:
+            if s.frame_final_duration > self.max_strip_length:
+                s.select = False
         return {"FINISHED"}
 
-# TODO: Ensure that strips are sorted per channel and per starting or end frame based on snap side
+
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
     bl_idname = "gdquest_vse.smart_snap"
     bl_label = "Trim or extend strip to cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
-    side = bpy.props.StringProperty( name = "Snap side", description = "Handle side to use to snap to, either left or right", default = 'LEFT')
+    side = bpy.props.StringProperty(
+        name="Snap side",
+        description="Handle side to use to snap to, either LEFT or RIGHT",
+        default='LEFT')
 
     @classmethod
     def poll(cls, context):
         return context.scene is not None
 
     def execute(self, context):
-        # Extends, trims or snap every sequence based on the side we want to work with and the strip's position relative to cursor
+        # Extends, trims or snap every sequence based on the side we want to
+        # work with and the strip's position relative to cursor
+
         sequencer = bpy.ops.sequencer
         current_frame = bpy.context.scene.frame_current
-        side = self.side
+        side = self.side.upper()
 
         for s in bpy.context.selected_sequences:
             # Deselect handles
@@ -425,9 +599,67 @@ class SmartSnap(bpy.types.Operator):
         return {"FINISHED"}
 
 
+# TODO: write function?
+def is_channel_free(target_channel, start_frame, end_frame):
+    """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
+    # No need to use all sequences, only sequences at the active level
+    # Sort sequences on screen by starting frame
+    sequences = [
+        s for s in bpy.context.sequences if s.channel == target_channel]
+
+    for s in sequences:
+        if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
+            return False
+    return True
+
+
+# TODO: Basic functionality, move a strip to the neighboring channel if
+# it's empty, otherwise skip channels if possible
+
+class ChannelOffset(bpy.types.Operator):
+    """Moves selected strips up and down smartly. Can swap sequences or detect if a channel is not empty"""
+    bl_idname = "gdquest_vse.channel_offset"
+    bl_label = "Move sequences to other channels"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    offset_upwards = bpy.props.BoolProperty(
+        name="Offset upwards",
+        description="If True, the strips will move up. Else, they will move down.",
+        default=True)
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
+
+    def execute(self, context):
+        # Sort selected layers by channel, starting from highest value if going
+        # up
+
+        from operator import attrgetter
+        selected = sorted(bpy.context.selected_sequences, key=attrgetter(
+            'channel'), reverse=self.offset_upwards)
+
+
+        # TODO: Check and move channels in selection recursively, one by one
+        target_channel = selected[0].channel
+        target_channel = target_channel + 1 if self.offset_upwards else target_channel - 1
+
+        selection_start = min(selected, key=attrgetter('frame_final_start'))
+        selection_end = max(selected, key=attrgetter('frame_final_end'))
+
+        if is_channel_free(target_channel, start_frame=selection_start, end_frame=selection_end) and target_channel >= 1:
+            for s in selected:
+                if self.offset_upwards:
+                    s.channel += 1
+                elif s.channel > 1:
+                    s.channel -= 1
+
+        return {"FINISHED"}
+
 
 def register():
     bpy.utils.register_module(__name__)
+
 
 def unregister():
     bpy.utils.unregister_module(__name__)
