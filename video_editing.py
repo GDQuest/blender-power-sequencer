@@ -28,15 +28,28 @@ sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
 # FUNCTIONS
 # -----
 
+
+def is_channel_free(target_channel, start_frame, end_frame):
+    """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
+    # Sort sequences on screen by starting frame
+    sequences = [
+        s for s in bpy.context.sequences if s.channel == target_channel]
+
+    for s in sequences:
+        if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
+            return False
+    return True
+
 # TODO: refactor code - clean up / get the user to pass sequences to work on?
+
+
 def find_next_sequences(mode=SearchMode.next,
                         sequences=None,
                         pick_sound=False):
     """Returns a sequence or a list of sequences following the active one"""
-    
-    if sequences == None:
+    if sequences is None:
         sequences = bpy.context.scene.sequence_editor.sequences
-    
+
     active = bpy.context.scene.sequence_editor.active_strip
     # scene = bpy.context.scene
     # frame = bpy.context.scene.frame_current
@@ -48,7 +61,9 @@ def find_next_sequences(mode=SearchMode.next,
     # Find all selected sequences to the right of the active sequence
     if sequences:
         for seq in sequences:
-            # If current sequence is after selected sequence or is overlapping it
+            # If current sequence is after selected sequence or is overlapping
+            # it
+
             if (seq.frame_final_start >= active.frame_final_end) or (
                     seq.frame_final_start > active.frame_final_start) & (
                         seq.frame_final_start < active.frame_final_end) & (
@@ -56,13 +71,13 @@ def find_next_sequences(mode=SearchMode.next,
                 if abs(seq.channel - active.channel) > 2:
                     nexts_far.append(seq)
                 else:
-                    if seq.type in sequence_types['sound'] && pick_sound == False:
+                    if seq.type in sequence_types['sound'] and pick_sound is False:
                         pass
                     else:
                         nexts.append(seq)
                         if mode is SearchMode.channel and seq.channel == active.channel:
                             same_channel.append(seq)
-    
+
     # Store the sequences to return
     next_sequences = None
     if mode is SearchMode.channel:
@@ -125,7 +140,7 @@ def fade_create(sequences=None, fade_length=12, fade_type='both'):
             if s.frame_final_duration > strip_min_length:
                 # TODO: Smarter fades, that actually detect existing fades
                 keyframes = fade_fcurve.keyframe_points
-                
+
                 # CREATING FADE KEYFRAMES
                 if 'left' or 'both' in fade_type:
                     keyframes.insert(frame=fade_in_frames[0], value=0)
@@ -213,6 +228,7 @@ def fade_clear(sequences=None):
 # FIXME: Spotted an offset issue with a metastrip that was exactly self.crossfade_length frames before the end of the active strip
 # Happens in particular if the second strip is already in place - it adds
 # 10 frames at the end
+
 
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
@@ -341,7 +357,6 @@ class AddSpeed(bpy.types.Operator):
 
                 return {"CANCELLED"}
 
-
         if len(selection) == 0:
             active.select = True
             pass
@@ -405,7 +420,6 @@ class AddSpeed(bpy.types.Operator):
 # Shortcut: Shift + C
 # TODO: If only one selected strip per channel, concatenate all channels
 # individually
-
 
 
 class ConcatenateStrips(bpy.types.Operator):
@@ -598,21 +612,65 @@ class SmartSnap(bpy.types.Operator):
             s.select_left_handle = False
         return {"FINISHED"}
 
+# TODO: Ripple strips on the first transform
+class GrabStillImage(bpy.types.Operator):
+    """Grabs a still image from the active video strip, to quickly achieve pause effects"""
+    bl_idname = "gdquest_vse.grab_still_image"
+    bl_label = "Grab still image from active strip"
+    bl_options = {'REGISTER', 'UNDO'}
 
-# TODO: write function?
-def is_channel_free(target_channel, start_frame, end_frame):
-    """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
-    # No need to use all sequences, only sequences at the active level
-    # Sort sequences on screen by starting frame
-    sequences = [
-        s for s in bpy.context.sequences if s.channel == target_channel]
+    strip_duration = bpy.props.IntProperty(
+        name="Strip duration",
+        description="Duration of the still image strip in frames",
+        default=106)
 
-    for s in sequences:
-        if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
-            return False
-    return True
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
+
+    def execute(self, context):
+        scene = bpy.context.scene
+        active = scene.sequence_editor.active_strip
+        sequencer = bpy.ops.sequencer
+        transform = bpy.ops.transform
+
+        start_frame = scene.frame_current
+        offset = self.strip_duration
+
+        if active.type not in sequence_types['video']:
+            self.report({"ERROR_INVALID_INPUT"},
+                        "You must select a video or meta strip. You selected a strip of type"
+                        + str(active.type) + " instead.")
+            return {"CANCELLED"}
+        if not active.frame_final_start <= start_frame < active.frame_final_end:
+            self.report({"ERROR_INVALID_INPUT"},
+                        "Your time cursor must be on the frame you want \
+                        to convert to a still image.")
+            return {"CANCELLED"}
+        if start_frame == active.frame_final_start:
+            scene.frame_current = start_frame + 1
 
 
+        active.select = True
+        sequencer.cut(frame=scene.frame_current, type='SOFT', side='RIGHT')
+        transform.seq_slide(value=(offset, 0))
+        sequencer.cut(frame=scene.frame_current + offset + 1, type='SOFT', side='LEFT')
+        transform.seq_slide(value=(-offset, 0))
+
+        sequencer.meta_make()
+        active = scene.sequence_editor.active_strip
+        active.select_right_handle = True
+        transform.seq_slide(value=(offset, 0))
+
+        scene.frame_current = start_frame
+
+        active.select = True
+        active.select_right_handle = False
+        active.select_left_handle = False
+        return {"FINISHED"}
+
+
+# TODO: Extract function
 # TODO: Basic functionality, move a strip to the neighboring channel if
 # it's empty, otherwise skip channels if possible
 
@@ -638,7 +696,6 @@ class ChannelOffset(bpy.types.Operator):
         from operator import attrgetter
         selected = sorted(bpy.context.selected_sequences, key=attrgetter(
             'channel'), reverse=self.offset_upwards)
-
 
         # TODO: Check and move channels in selection recursively, one by one
         target_channel = selected[0].channel

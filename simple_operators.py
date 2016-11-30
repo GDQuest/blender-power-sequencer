@@ -11,7 +11,7 @@ class DeleteDirect(bpy.types.Operator):
     def poll(cls, context):
         return bpy.context.scene is not None
 
-    def execute(self, context):[]
+    def execute(self, context):
         bpy.ops.sequencer.delete()
         return {"FINISHED"}
 
@@ -34,3 +34,4 @@ class SaveDirect(bpy.types.Operator):
         else:
             bpy.ops.wm.save_as_mainfile({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
+        
