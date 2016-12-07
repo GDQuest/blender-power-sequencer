@@ -156,7 +156,6 @@ def fade_create(sequences=None, fade_length=12, fade_type='both'):
                       ' is too short for the fade to be applied.')
     return len(sequences)
 
-
 def fade_find_fcurve(sequence=None):
     """Checks if there's existing fade animation on a given video sequence.
     If so, returns the data path to the corresponding fcurve.
@@ -662,6 +661,7 @@ class GrabStillImage(bpy.types.Operator):
 
         sequencer.meta_make()
         active = scene.sequence_editor.active_strip
+        active.name = 'Still image'
         active.select_right_handle = True
         transform.seq_slide(value=(offset, 0))
 
@@ -676,7 +676,6 @@ class GrabStillImage(bpy.types.Operator):
 # to do: Extract function
 # to do: Basic functionality, move a strip to the neighboring channel if
 # it's empty, otherwise skip channels if possible
-
 class ChannelOffset(bpy.types.Operator):
     """Moves selected strips up and down smartly. Can swap sequences or detect if a channel is not empty"""
     bl_idname = "gdquest_vse.channel_offset"
@@ -716,6 +715,74 @@ class ChannelOffset(bpy.types.Operator):
 
         return {"FINISHED"}
 
+
+# class AddSimpleText(bpy.types.Operator):
+#     """Adds a text strip and sets it up to quickly add an animated note on the video"""
+#     bl_idname = "gdquest_vse.add_simple_text"
+#     bl_label = "Add a text strip and set it up quickly"
+#     bl_options = {'REGISTER', 'UNDO'}
+
+#     strip_duration = bpy.props.IntProperty(
+#         name="Duration",
+#         description="Length of the text strip in frames"
+#         default=96
+#     )
+#     text = bpy.props.StringProperty(
+#         name="Text",
+#         description="The text to display on screen"
+#         default="Text"
+#     )
+#     align_x = bpy.props.EnumProperty(
+#         items= [('left', 'left', 'Align to the left edge of the screen'),
+#                 ('middle', 'middle', 'Align to the middle of the screen'),
+#                 ('right', 'right', 'Align to the right edge of the screen')],
+#         name="Horizontal align",
+#         description="",
+#         default='right'
+#     )
+#     align_y = bpy.props.EnumProperty(
+#         items= [('top', 'top', 'Align to the top edge of the screen'),
+#                 ('middle', 'middle', 'Align to the middle of the screen'),
+#                 ('bottom', 'bottom', 'Align to the bottom edge of the screen')],
+#         name="Vertical align",
+#         description="",
+#         default='right'
+#     )
+#     animate = bpy.props.BoolProperty(
+#         name="Animate opacity",
+#         description="",
+#         default=True
+#     )
+
+#     @classmethod
+#     def poll(cls, context):
+#         return context.scene is not None
+
+#     def execute(self, context):
+#         sequencer = bpy.ops.sequencer
+#         current_frame = bpy.context.scene.frame_current
+
+#         sequencer.effect_strip_add(
+#             type='TEXT', frame_end=current_frame + self.strip_duration, replace_sel=True)
+        
+#         text_strip = bpy.context.selected_sequences[0]
+        
+#         init_text(text_strip, self.text, self.align_x, self.align_y, self.animate)
+
+#         def init_text(sequence, text, align_x, align_y, animate):
+#             sequence.name, sequence.text = text
+
+#             sequence.location = (0.0, 0.0)
+
+#             # FONT
+#             # ADD TRANSFORM
+#             # ADD FADE
+#             if animate:
+#                 pass
+
+#             return True
+        
+#         return {"FINISHED"}
 
 def register():
     bpy.utils.register_module(__name__)

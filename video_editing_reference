@@ -1,8 +1,3 @@
-import bpy
-import bgl
-import blf
-
-
 def draw_callback_px(self, context):
     print("mouse points", len(self.mouse_path))
 
@@ -36,8 +31,7 @@ class ModalDrawOperator(bpy.types.Operator):
         region = context.region
 
         if event.type == 'MOUSEMOVE':
-            self.mouse_path.append((event.mouse_region_x, event.mouse_region_y
-                                    ))
+            self.mouse_path.append((event.mouse_region_x, event.mouse_region_y))
 
         elif event.type == 'LEFTMOUSE':
             bpy.types.SpaceSequenceEditor.draw_handler_remove(self._handle,
@@ -70,25 +64,61 @@ class ModalDrawOperator(bpy.types.Operator):
             return {'CANCELLED'}
 
 
-class MouseCut(bpy.types.Operator):
-    """Cuts the strip sitting under the mouse"""
-    bl_idname = "gdquest_vse.mouse_cut"
-    bl_label = "Cut strip with mouse"
-    bl_options = {'REGISTER'}
-    # Shortcut: Ctrl Click
+class TimeCursorCut(bpy.types.Operator):
+    """Cuts the strips sitting under the time cursor"""
+    bl_idname = "gdquest_vse.time_cursor_cut"
+    bl_label = "Time Cursor Cut"
+    bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene is not None
+        return context.scene is not None
+
+    def execute(self, context):
+        # Cuts a sound/video strip the time cursor overlaps, or linked, or everything under the cursor
+        # v1: cuts everything under the time cursor
+        sequencer = bpy.ops.sequencer
+        scene = bpy.context.scene
+        seq_ed = scene.sequence_editor
+        current_frame = scene.frame_current
+
+        strips = []
+
+        # Search through all top level sequences
+        # TEST IN META STRIP to see if it works
+        for s in seq_ed.sequences:
+            # if the time cursor is over the strip, add it to the list
+            if s.frame_final_start < current_frame < s.frame_final_end:
+                strips.append(s)
+                pass
+            pass
+
+        if len(strips) > 0:
+            sequencer.select_all(action='DESELECT')
+            for s in strips:
+                s.select = True
+                pass
+            sequencer.cut(frame=current_frame, type='SOFT', side='BOTH')
+            sequencer.select_all(action='DESELECT')
+            pass
+        return {"FINISHED"}
+
+
+
+class CutStrip(bpy.types.Operator):
+    """Cuts like the normal cut tool, but selects both sides after the cut"""
+    bl_idname = "gdquest_vse.cut_strip"
+    bl_label = "Cut selected strips"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context.scene is not None
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-
-        frame, channel = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)
-        bpy.ops.anim.change_frame(frame=frame)
         sequencer.cut(frame=bpy.context.scene.frame_current,
                       type='SOFT',
-                      side='BOTH')
+                      side='RIGHT')
+        sequencer.select_more()
         return {"FINISHED"}
