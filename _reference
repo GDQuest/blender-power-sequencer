@@ -1,3 +1,27 @@
+# IMPORT MODULES
+
+import bpy
+import sys
+import os
+
+dir = os.path.dirname(bpy.data.filepath)
+if not dir in sys.path:
+    sys.path.append(dir )
+    #print(sys.path)
+
+import cityFunctions
+
+# this next part forces a reload in case you edit the source after you first start the blender session
+import importlib
+importlib.reload(cityFunctions)
+
+# this is optional and allows you to call the functions without specifying the package name
+from cityFunctions import *
+
+
+
+
+
 # Keymap that changes operator property!
 
 # assert not bpy.context.user_preferences.inputs.use_emulate_nu mpad

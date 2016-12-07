@@ -5,6 +5,7 @@ from math import floor
 
 
 # Shortcut: Ctrl Click
+# to do: give the ability to trim instead of cutting
 # to do: allow the user to set the selection mode in the preferences
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
@@ -13,11 +14,17 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = bpy.props.EnumProperty(
-        items= [('mouse', 'Mouse', 'Cut only the strip under the mouse'),
-                ('cursor', 'Time cursor', 'Cut all strips the time cursor overlaps')],
-        name="Cut mode",
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
+               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps')],
+        name="Selection mode",
         description="Cut only the strip under the mouse or all strips under the time cursor",
         default='mouse')
+    cut_mode = bpy.props.EnumProperty(
+        items=[('cut', 'Cut', 'Cut the strips'),
+               ('trim', 'Trim', 'Trim the selection')],
+        name='Cut mode',
+        description='Cut or trim the selection',
+        default='cut')
 
     @classmethod
     def poll(cls, context):
@@ -38,10 +45,13 @@ class MouseCut(bpy.types.Operator):
         sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
         for seq in sequences_to_select:
             seq.select = True
-
-        sequencer.cut(frame=bpy.context.scene.frame_current,
-                      type='SOFT',
-                      side='BOTH')
+        
+        if self.cut_mode == 'cut':
+            sequencer.cut(frame=bpy.context.scene.frame_current,
+                        type='SOFT',
+                        side='BOTH')
+        else:
+            bpy.ops.gdquest_vse.smart_snap()
         return {"FINISHED"}
 
 def mouse_select_sequences(frame=None, channel=None, mode='mouse'):
