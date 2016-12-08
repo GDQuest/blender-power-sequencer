@@ -192,6 +192,33 @@ def fade_clear(sequences=None):
     else:
         return False
 
+
+def select_strip_handle(sequences, side=None, frame=None):
+    """Select the left or right handles of the strips based on the frame number"""
+    if not side and sequences and frame:
+        return False
+
+    side = side.upper()
+
+    for seq in sequences:
+        seq.select_left_handle = False
+        seq.select_right_handle = False
+
+        handle_side = ''
+
+        start, end = seq.frame_final_start, seq.frame_final_end
+
+        if side == 'AUTO' and start <= frame <= end:
+            handle_side = 'LEFT' if abs(
+                frame - start) < seq.frame_final_duration / 2 else 'RIGHT'
+        elif side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
+            handle_side = side
+        else:
+            seq.select = False
+        if handle_side:
+            bpy.ops.sequencer.select_handles(side=handle_side)
+    return True
+
 # --------------
 # CUSTOM PROPERTIES
 # --------------
@@ -580,10 +607,11 @@ class SmartSnap(bpy.types.Operator):
 
     side = bpy.props.EnumProperty(
         items=[('left', 'Left', 'Left side'),
-               ('right', 'Right', 'Right side')],
+               ('right', 'Right', 'Right side'),
+               ('auto', 'Auto', 'Use the side closest to the time cursor')],
         name="Snap side",
         description="Handle side to use for the snap",
-        default='left')
+        default='auto')
 
     @classmethod
     def poll(cls, context):
@@ -593,7 +621,7 @@ class SmartSnap(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         current_frame = bpy.context.scene.frame_current
 
-        select_strip_handle_relative_to_cursor(
+        select_strip_handle(
             bpy.context.selected_sequences, self.side, current_frame)
 
         sequencer.snap(frame=current_frame)
@@ -602,23 +630,6 @@ class SmartSnap(bpy.types.Operator):
             s.select_right_handle = False
             s.select_left_handle = False
         return {"FINISHED"}
-
-def select_strip_handle_relative_to_cursor(sequences, side=None, frame=None):
-    """Select the left or right handles of the strips"""
-    if not side and sequences and frame:
-        return False
-
-    for s in sequences:
-        s.select_left_handle = False
-        s.select_right_handle = False
-
-        if side == 'left' and current_frame < s.frame_final_end:
-            sequencer.select_handles(side=side)
-        elif side == 'right' and current_frame > s.frame_final_start:
-            sequencer.select_handles(side=side)
-        else:
-            s.select = False
-    return True
 
 # to do: Ripple strips on the first transform
 class GrabStillImage(bpy.types.Operator):

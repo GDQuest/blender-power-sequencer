@@ -1,12 +1,15 @@
-import bpy
-import bgl
-import blf
 from math import floor
 
+import bgl
+import blf
+import bpy
+
+
+#to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
 # Shortcut: Ctrl Click
-# to do: give the ability to trim instead of cutting
 # to do: allow the user to set the selection mode in the preferences
+# to do: add option to auto remove space between strips on trim
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -45,16 +48,26 @@ class MouseCut(bpy.types.Operator):
         sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
         for seq in sequences_to_select:
             seq.select = True
-        
+
         if self.cut_mode == 'cut':
             sequencer.cut(frame=bpy.context.scene.frame_current,
-                        type='SOFT',
-                        side='BOTH')
+                          type='SOFT',
+                          side='BOTH')
         else:
-            bpy.ops.gdquest_vse.smart_snap()
+            bpy.ops.gdquest_vse.smart_snap(side='auto')
         return {"FINISHED"}
 
-def mouse_select_sequences(frame=None, channel=None, mode='mouse'):
+def find_sequence_trim_side(sequence=None, frame=None):
+    """Returns the strip's handle the time cursor is closest to"""
+    if not sequence and frame:
+        return None
+
+    if frame >= sequence.frame_final_duration / 2:
+        return 'right'
+    else:
+        return 'left'
+
+def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked = True):
     """Selects sequences based on the mouse position or using the time cursor"""
 
     selection = []
@@ -71,4 +84,10 @@ def mouse_select_sequences(frame=None, channel=None, mode='mouse'):
             selection.append(seq)
             if mode == 'mouse':
                 break
+    #to do: refactor
+    if select_linked and mode == 'mouse' and selection:
+        for seq in bpy.context.sequences:
+            if seq.channel != selection[0].channel:
+                if seq.frame_final_start == selection[0].frame_final_start and seq.frame_final_end == selection[0].frame_final_end:
+                    selection.append(seq)
     return selection
