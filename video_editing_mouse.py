@@ -1,13 +1,13 @@
+"""Video editing tools for Blender using the mouse"""
 from math import floor
 
-import bgl
-import blf
 import bpy
 
 
 #to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
 # Shortcut: Ctrl Click
+# to do: smart mode -> use selection if available and frame within selection, else use other modes
 # to do: allow the user to set the selection mode in the preferences
 # to do: add option to auto remove space between strips on trim
 class MouseCut(bpy.types.Operator):
@@ -18,10 +18,11 @@ class MouseCut(bpy.types.Operator):
 
     select_mode = bpy.props.EnumProperty(
         items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
-               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps')],
+               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
         description="Cut only the strip under the mouse or all strips under the time cursor",
-        default='mouse')
+        default='smart')
     cut_mode = bpy.props.EnumProperty(
         items=[('cut', 'Cut', 'Cut the strips'),
                ('trim', 'Trim', 'Trim the selection')],
@@ -35,6 +36,7 @@ class MouseCut(bpy.types.Operator):
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
+        selection = bpy.context.selected_sequences
 
         frame, channel = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
@@ -44,10 +46,11 @@ class MouseCut(bpy.types.Operator):
 
         bpy.ops.anim.change_frame(frame=frame)
 
-        sequencer.select_all(action='DESELECT')
-        sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
-        for seq in sequences_to_select:
-            seq.select = True
+        if self.select_mode != 'smart' or len(selection) == 0:
+            sequencer.select_all(action='DESELECT')
+            sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
+            for seq in sequences_to_select:
+                seq.select = True
 
         if self.cut_mode == 'cut':
             sequencer.cut(frame=bpy.context.scene.frame_current,
