@@ -7,9 +7,10 @@ import bpy
 #to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
 # Shortcut: Ctrl Click
-# to do: smart mode -> use selection if available and frame within selection, else use other modes
 # to do: allow the user to set the selection mode in the preferences
 # to do: add option to auto remove space between strips on trim
+# to do: smart mode - if not clicking on a specific strip with the mouse, use cursor mode
+# to do: check how it works with effect strips? Blender should handle that by itself
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -46,12 +47,16 @@ class MouseCut(bpy.types.Operator):
 
         bpy.ops.anim.change_frame(frame=frame)
 
-        if self.select_mode != 'smart' or len(selection) == 0:
+        if self.select_mode == 'cursor':
+            sequencer.select_all(action='SELECT')
+        elif self.select_mode != 'smart' or len(selection) == 0:
             sequencer.select_all(action='DESELECT')
             sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
+            if not sequences_to_select:
+                return {"CANCELLED"}
             for seq in sequences_to_select:
                 seq.select = True
-
+        
         if self.cut_mode == 'cut':
             sequencer.cut(frame=bpy.context.scene.frame_current,
                           type='SOFT',
@@ -70,27 +75,34 @@ def find_sequence_trim_side(sequence=None, frame=None):
     else:
         return 'left'
 
-def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked = True):
+def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
+
     """Selects sequences based on the mouse position or using the time cursor"""
 
     selection = []
-
-    print("frame: " + str(frame))
-    print("channel: " + str(channel))
-
     sequences = bpy.context.sequences
+
     if not sequences:
         return []
 
-    for seq in bpy.context.sequences:
-        if seq.channel == channel and seq.frame_final_start <= frame <= seq.frame_final_end:
+    for seq in sequences:
+        channel_check = True if seq.channel == channel else False
+        if channel_check or mode == 'cursor' \
+        and seq.frame_final_start <= frame <= seq.frame_final_end:
             selection.append(seq)
-            if mode == 'mouse':
+            if mode == 'mouse' or mode == 'smart' and channel_check:
                 break
-    #to do: refactor
-    if select_linked and mode == 'mouse' and selection:
-        for seq in bpy.context.sequences:
-            if seq.channel != selection[0].channel:
-                if seq.frame_final_start == selection[0].frame_final_start and seq.frame_final_end == selection[0].frame_final_end:
+
+    if len(selection) > 0:
+        # Select linked time sequences
+        if select_linked and mode in ('mouse', 'smart'):
+            for seq in sequences:
+                if seq.channel != selection[0].channel \
+                and seq.frame_final_start == selection[0].frame_final_start \
+                and seq.frame_final_end == selection[0].frame_final_end:
                     selection.append(seq)
+    # In smart mode, if we don't get any selection, we select everything
+    elif mode == 'smart':
+        selection = sequences
+
     return selection
