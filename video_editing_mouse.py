@@ -8,7 +8,7 @@ import bpy
 
 # Shortcut: Ctrl Click
 # to do: allow the user to set the selection mode in the preferences
-# to do: add option to auto remove space between strips on trim
+# fix me: don't remove_gaps if there's nothing else in the channel
 # to do: smart mode - if not clicking on a specific strip with the mouse, use cursor mode
 # to do: check how it works with effect strips? Blender should handle that by itself
 class MouseCut(bpy.types.Operator):
@@ -30,6 +30,10 @@ class MouseCut(bpy.types.Operator):
         name='Cut mode',
         description='Cut or trim the selection',
         default='cut')
+    remove_gaps = bpy.props.BoolProperty(
+        name="Remove gaps",
+        description="When trimming the sequences, remove gaps automatically",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -37,6 +41,7 @@ class MouseCut(bpy.types.Operator):
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
+        anim = bpy.ops.anim
         selection = bpy.context.selected_sequences
 
         frame, channel = context.region.view2d.region_to_view(
@@ -45,8 +50,9 @@ class MouseCut(bpy.types.Operator):
         frame = floor(frame)
         channel = floor(channel)
 
-        bpy.ops.anim.change_frame(frame=frame)
+        anim.change_frame(frame=frame)
 
+        # Strip selection
         if self.select_mode == 'cursor':
             sequencer.select_all(action='SELECT')
         elif self.select_mode != 'smart' or len(selection) == 0:
@@ -56,13 +62,19 @@ class MouseCut(bpy.types.Operator):
                 return {"CANCELLED"}
             for seq in sequences_to_select:
                 seq.select = True
-        
+
+        # Cut and trim
         if self.cut_mode == 'cut':
             sequencer.cut(frame=bpy.context.scene.frame_current,
                           type='SOFT',
                           side='BOTH')
         else:
             bpy.ops.gdquest_vse.smart_snap(side='auto')
+
+            if self.remove_gaps:
+                anim.change_frame(frame=frame - 1)
+                sequencer.gap_remove()
+                anim.change_frame(frame=frame)
         return {"FINISHED"}
 
 def find_sequence_trim_side(sequence=None, frame=None):

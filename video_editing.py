@@ -271,7 +271,6 @@ class AddCrossfade(bpy.types.Operator):
     force_length = bpy.props.BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade is of the length set in 'Crossfade Length'",
-
         default=True)
 
     @classmethod
