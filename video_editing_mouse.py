@@ -133,7 +133,6 @@ class MouseCut(bpy.types.Operator):
 
 # FIXME: Currently using seq_slide to move the sequences but creates bugs
 #        Check how builtin modal operators work instead
-# FIXME: Sequence preview with arrow keys doesn't work as expected - can't reach the middle
 class EditCrossfade(bpy.types.Operator):
     """Selects handles to edit crossfade and gives a preview of the fade point."""
     bl_idname = "gdquest_vse.edit_crossfade"
@@ -151,14 +150,24 @@ class EditCrossfade(bpy.types.Operator):
         self.seq_1, self.seq_2 = None, None
         self.crossfade_duration = None
         self.preview_ratio = 0.5
+        self.show_backdrop_init = bpy.context.space_data.show_backdrop
         print("Start")
 
     def __del__(self):
         print("End")
 
-    def modal(self, context, event):
-        # context.area.tag_redraw()
+    def update_time_cursor(self):
+        """Updates the position of the time cursor when the preview is active"""
+        if not self.show_preview:
+            return False
 
+        active = bpy.context.scene.sequence_editor.active_strip
+        cursor_pos = active.frame_final_start + \
+                     floor(active.frame_final_duration * self.preview_ratio)
+        bpy.context.scene.frame_set(cursor_pos)
+        return True
+
+    def modal(self, context, event):
         if event.type == 'MOUSEMOVE':
             self.last_frame = self.frame
             self.frame = context.region.view2d.region_to_view(
@@ -169,27 +178,29 @@ class EditCrossfade(bpy.types.Operator):
             if self.seq_1.frame_final_duration + offset - self.crossfade_duration > 1 and \
                self.seq_2.frame_final_duration - offset - self.crossfade_duration > 1:
                 bpy.ops.transform.seq_slide(value=(self.frame - self.last_frame, 0))
+            self.update_time_cursor()
+        elif event.type in {'LEFTMOUSE', 'RIGHTMOUSE', 'ESC'}:
+            if self.show_preview:
+                context.scene.frame_set(self.time_cursor_init_frame)
+                bpy.context.space_data.show_backdrop = self.show_backdrop_init
+            if event.type == 'LEFTMOUSE':
+                return {"FINISHED"}
+            elif event.type in {'RIGHTMOUSE', 'ESC'}:
+                return {'CANCELLED'}
 
-            # Time cursor
-            if self.show_preview:
-                active = bpy.context.scene.sequence_editor.active_strip
-                cursor_pos = active.frame_final_start + \
-                             floor(active.frame_final_duration * self.preview_ratio)
-                context.scene.frame_set(cursor_pos)
-        elif event.type == 'LEFTMOUSE':
-            if self.show_preview:
-                context.scene.frame_set(self.time_cursor_init_frame)
-            return {"FINISHED"}
-        elif event.type in {'RIGHTMOUSE', 'ESC'}:
-            if self.show_preview:
-                context.scene.frame_set(self.time_cursor_init_frame)
-            return {'CANCELLED'}
-        
-        if event.type in {'LEFT_ARROW', 'A'}:
-            self.preview_ratio = max(self.preview_ratio - 0.5, 0)
-        elif event.type in {'RIGHT_ARROW', 'D'}:
-            self.preview_ratio = min(self.preview_ratio + 0.5, 1)
+        # Preview frame and backdrop toggle
+        if event.value == 'PRESS':
+            if event.type in {'LEFT_ARROW', 'A'}:
+                self.preview_ratio = max(self.preview_ratio - 0.5, 0)
+                self.update_time_cursor()
+            elif event.type in {'RIGHT_ARROW', 'D'}:
+                self.preview_ratio = min(self.preview_ratio + 0.5, 1)
+                self.update_time_cursor()
+            elif event.type == 'P':
+                self.show_preview = True if not self.show_preview else False
+                bpy.context.space_data.show_backdrop = self.show_preview
         return {'RUNNING_MODAL'}
+
 
     def invoke(self, context, event):
         if not context.area.type == 'SEQUENCE_EDITOR':
@@ -220,6 +231,8 @@ class EditCrossfade(bpy.types.Operator):
             x=event.mouse_region_x,
             y=event.mouse_region_y)[0]
 
+        if self.show_preview:
+            bpy.context.space_data.show_backdrop = True
         # self.mouse_path = []
         # args = (self, context)
         # self._handle = bpy.types.SpaceSequenceEditor.draw_handler_add(
