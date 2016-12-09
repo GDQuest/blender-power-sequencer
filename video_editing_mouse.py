@@ -2,13 +2,66 @@
 from math import floor
 
 import bpy
+import blf
+
+# to do: move it to separate file and import both here and in video_edit.py
+sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
+                  'effect': ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER',
+                             'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY',
+                             'OVER_DROP', 'WIPE', 'GLOW', 'TRANSFORM', 'COLOR',
+                             'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR'),
+                  'sound': 'SOUND',
+                  'image': 'IMAGE',
+                  'img': 'IMAGE'}
+
+
+def find_sequence_trim_side(sequence=None, frame=None):
+    """Returns the strip's handle the time cursor is closest to"""
+    if not sequence and frame:
+        return None
+
+    if frame >= sequence.frame_final_duration / 2:
+        return 'right'
+    else:
+        return 'left'
+
+def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
+
+    """Selects sequences based on the mouse position or using the time cursor"""
+
+    selection = []
+    sequences = bpy.context.sequences
+
+    if not sequences:
+        return []
+
+    for seq in sequences:
+        channel_check = True if seq.channel == channel else False
+        if channel_check or mode == 'cursor' \
+        and seq.frame_final_start <= frame <= seq.frame_final_end:
+            selection.append(seq)
+            if mode == 'mouse' or mode == 'smart' and channel_check:
+                break
+
+    if len(selection) > 0:
+        # Select linked time sequences
+        if select_linked and mode in ('mouse', 'smart'):
+            for seq in sequences:
+                if seq.channel != selection[0].channel \
+                and seq.frame_final_start == selection[0].frame_final_start \
+                and seq.frame_final_end == selection[0].frame_final_end:
+                    selection.append(seq)
+    # In smart mode, if we don't get any selection, we select everything
+    elif mode == 'smart':
+        selection = sequences
+    return selection
 
 
 #to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
 # Shortcut: Ctrl Click
 # to do: allow the user to set the selection mode in the preferences
-# fix me: don't remove_gaps if there's nothing else in the channel
+# fix me: don't remove_gaps if there's nothing else in the channel before strip
 # to do: smart mode - if not clicking on a specific strip with the mouse, use cursor mode
 # to do: check how it works with effect strips? Blender should handle that by itself
 class MouseCut(bpy.types.Operator):
@@ -77,44 +130,120 @@ class MouseCut(bpy.types.Operator):
                 anim.change_frame(frame=frame)
         return {"FINISHED"}
 
-def find_sequence_trim_side(sequence=None, frame=None):
-    """Returns the strip's handle the time cursor is closest to"""
-    if not sequence and frame:
-        return None
 
-    if frame >= sequence.frame_final_duration / 2:
-        return 'right'
-    else:
-        return 'left'
+# FIXME: Currently using seq_slide to move the sequences but creates bugs
+#        Check how builtin modal operators work instead
+# FIXME: Sequence preview with arrow keys doesn't work as expected - can't reach the middle
+class EditCrossfade(bpy.types.Operator):
+    """Selects handles to edit crossfade and gives a preview of the fade point."""
+    bl_idname = "gdquest_vse.edit_crossfade"
+    bl_label = "Edit crossfade"
+    bl_options = {'REGISTER', 'UNDO'}
 
-def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
+    show_preview = bpy.props.BoolProperty(
+        name="Preview the crossfade",
+        description="Gives a preview of the crossfade sides, but can affect performances",
+        default=True)
 
-    """Selects sequences based on the mouse position or using the time cursor"""
+    def __init__(self):
+        self.time_cursor_init_frame = bpy.context.scene.frame_current
+        self.last_frame, self.frame = 0, 0
+        self.seq_1, self.seq_2 = None, None
+        self.crossfade_duration = None
+        self.preview_ratio = 0.5
+        print("Start")
 
-    selection = []
-    sequences = bpy.context.sequences
+    def __del__(self):
+        print("End")
 
-    if not sequences:
-        return []
+    def modal(self, context, event):
+        # context.area.tag_redraw()
 
-    for seq in sequences:
-        channel_check = True if seq.channel == channel else False
-        if channel_check or mode == 'cursor' \
-        and seq.frame_final_start <= frame <= seq.frame_final_end:
-            selection.append(seq)
-            if mode == 'mouse' or mode == 'smart' and channel_check:
-                break
+        if event.type == 'MOUSEMOVE':
+            self.last_frame = self.frame
+            self.frame = context.region.view2d.region_to_view(
+                x=event.mouse_region_x,
+                y=event.mouse_region_y)[0]
+            offset = self.frame - self.last_frame
 
-    if len(selection) > 0:
-        # Select linked time sequences
-        if select_linked and mode in ('mouse', 'smart'):
-            for seq in sequences:
-                if seq.channel != selection[0].channel \
-                and seq.frame_final_start == selection[0].frame_final_start \
-                and seq.frame_final_end == selection[0].frame_final_end:
-                    selection.append(seq)
-    # In smart mode, if we don't get any selection, we select everything
-    elif mode == 'smart':
-        selection = sequences
+            if self.seq_1.frame_final_duration + offset - self.crossfade_duration > 1 and \
+               self.seq_2.frame_final_duration - offset - self.crossfade_duration > 1:
+                bpy.ops.transform.seq_slide(value=(self.frame - self.last_frame, 0))
 
-    return selection
+            # Time cursor
+            if self.show_preview:
+                active = bpy.context.scene.sequence_editor.active_strip
+                cursor_pos = active.frame_final_start + \
+                             floor(active.frame_final_duration * self.preview_ratio)
+                context.scene.frame_set(cursor_pos)
+        elif event.type == 'LEFTMOUSE':
+            if self.show_preview:
+                context.scene.frame_set(self.time_cursor_init_frame)
+            return {"FINISHED"}
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            if self.show_preview:
+                context.scene.frame_set(self.time_cursor_init_frame)
+            return {'CANCELLED'}
+        
+        if event.type in {'LEFT_ARROW', 'A'}:
+            self.preview_ratio = max(self.preview_ratio - 0.5, 0)
+        elif event.type in {'RIGHT_ARROW', 'D'}:
+            self.preview_ratio = min(self.preview_ratio + 0.5, 1)
+        return {'RUNNING_MODAL'}
+
+    def invoke(self, context, event):
+        if not context.area.type == 'SEQUENCE_EDITOR':
+            self.report({'WARNING'},
+                        "You need to be in the Video Sequence Editor to use this tool. \
+                        Operation cancelled.")
+            return {'CANCELLED'}
+
+        active = bpy.context.scene.sequence_editor.active_strip
+
+        if active.type != "GAMMA_CROSS":
+            self.report({'WARNING'},
+                        "The active strip has to be a gamma cross for this tool to work. \
+                        Operation cancelled.")
+            return {"CANCELLED"}
+
+        self.seq_1, self.seq_2 = active.input_1, active.input_2
+        self.crossfade_duration = active.frame_final_duration
+
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        active.select = True
+        active.input_1.select_right_handle = True
+        active.input_2.select_left_handle = True
+        active.input_1.select = True
+        active.input_2.select = True
+
+        self.frame = context.region.view2d.region_to_view(
+            x=event.mouse_region_x,
+            y=event.mouse_region_y)[0]
+
+        # self.mouse_path = []
+        # args = (self, context)
+        # self._handle = bpy.types.SpaceSequenceEditor.draw_handler_add(
+        #     draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
+        context.window_manager.modal_handler_add(self)
+        return {'RUNNING_MODAL'}
+
+
+# def draw_callback_px(self, context):
+#     # print("mouse points", len(self.mouse_path))
+
+#     region = context.region
+#     active = context.scene.sequence_editor.active_strip
+#     if active is None:
+#         return
+
+#     x = active.frame_final_start
+#     y = active.channel
+#     x, y = region.view2d.view_to_region(x, y)
+
+#     font_id = 0  # XXX, need to find out how best to get this.
+#     blf.position(font_id, x, y, 0)
+#     blf.size(font_id, 20, 72)
+#     # region_to_view gives the region coords.  x is frame, y is channel.
+#     x, y = region.view2d.region_to_view(*self.mouse_path[-1])
+#     blf.draw(font_id, "Hello Word %d %d" % (x, y))
+#     context.scene.frame_set(x)

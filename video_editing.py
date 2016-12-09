@@ -260,7 +260,8 @@ def select_strip_handle(sequences, side=None, frame=None):
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
-    bl_description = "Adds a Gamma Cross fade layer effect between the selected layer and the closest one to its right."
+    bl_description = "Adds a Gamma Cross fade layer effect between \
+                      the selected layer and the closest one to its right."
     bl_options = {"REGISTER", "UNDO"}
 
     crossfade_length = bpy.props.IntProperty(
@@ -270,7 +271,8 @@ class AddCrossfade(bpy.types.Operator):
         min=1)
     force_length = bpy.props.BoolProperty(
         name="Force crossfade length",
-        description="When true, moves the second strip so the crossfade is of the length set in 'Crossfade Length'",
+        description="When true, moves the second strip so the crossfade \
+                     is of the length set in 'Crossfade Length'",
         default=True)
 
     @classmethod
@@ -280,13 +282,13 @@ class AddCrossfade(bpy.types.Operator):
     def execute(self, context):
         sequencer = bpy.ops.sequencer
         active_strip = bpy.context.scene.sequence_editor.active_strip
-        selected_sequences = bpy.context.selected_sequences
+        selection = bpy.context.selected_sequences
 
         # If the active strip is not a video or a meta strip, we need to run a
         # few checks
 
         if active_strip.type not in sequence_types['video']:
-            for s in selected_sequences:
+            for s in selection:
                 if s.type in sequence_types['video']:
                     bpy.context.scene.sequence_editor.active_strip = s
                     active_strip = s
