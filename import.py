@@ -101,7 +101,8 @@ def get_working_directory(path=None):
 
 
 # TODO: By default, do not reimport existing strips, import only the new ones and refresh the sequencer - But option to always import all
-# TODO: After import, if video and audio files have the same name, remove audio channel from video and sync remaining audio and video strips (if there's audio channel with video)
+# TODO: After import, callback sync_audio_and_video.
+#       If video and audio files have the same name, remove audio channel from video and sync remaining audio and video strips (if there's audio channel with video)
 # TODO: Use add-on preferences to change default image length
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
@@ -169,10 +170,6 @@ class ImportLocalFootage(bpy.types.Operator):
         empty_channel = find_empty_channel(mode='ABOVE')
         directory = get_working_directory(path)
 
-        # for entry in os.listdir(path=directory):
-        #     if entry in ['video', 'img', 'audio']:
-        #         video_files = get_files_from_folder(directory, entry)
-
         # TODO: REFACTOR AND USE FUNCTIONS
         for entry in os.listdir(path=directory):
             strip_insert_frame = 1
@@ -202,16 +199,10 @@ class ImportLocalFootage(bpy.types.Operator):
                             videos.append({'name': os.path.split(
                                 folder)[1] + "/" + video})
 
-                sequencer.movie_strip_add(
-                    sequencer_area,
-                    filepath=video_path + "\\" + video,
-                    files=videos,
-                    frame_start=1,
-                    channel=video_channel,
-                    sound=self.keep_audio)
+                sequencer.movie_strip_add(sequencer_area, filepath=video_path + "\\" + video,
+                                          files=videos, frame_start=1, channel=video_channel, sound=self.keep_audio)
             elif entry == 'audio':
-                audio_folder_content = os.listdir(
-                    path=(directory + '\\' + entry))
+                audio_folder_content = os.listdir(path=(directory + '\\' + entry))
 
                 if not audio_folder_content:
                     continue
@@ -222,12 +213,8 @@ class ImportLocalFootage(bpy.types.Operator):
                 for audio in audio_folder_content:
                     if is_type(audio, FileTypes.audio):
                         sequencer.sound_strip_add(
-                            sequencer_area,
-                            filepath=audio_path + "\\" + audio,
-                            frame_start=strip_insert_frame,
-                            channel=audio_channel)
-                        strip_insert_frame += context.sequences[
-                            0].frame_final_duration
+                            sequencer_area, filepath=audio_path + "\\" + audio, frame_start=strip_insert_frame, channel=audio_channel)
+                        strip_insert_frame += context.sequences[0].frame_final_duration
             elif entry == 'img':
                 img_folder_content = os.listdir(
                     path=directory + '\\' + entry)
@@ -248,17 +235,15 @@ class ImportLocalFootage(bpy.types.Operator):
                             directory=image_path,
                             files=[{'name': image}],
                             frame_start=strip_insert_frame,
-                            frame_end=strip_insert_frame +
-                            self.img_length,
+                            frame_end=strip_insert_frame + self.img_length,
                             channel=image_channel)
-                        strip_insert_frame += self.img_length + 1
-                    # LOADING IMAGE SEQUENCE
+                        strip_insert_frame += self.img_length + self.img_padding + 1
+                    # IMAGE SEQUENCE and ASSETS FOLDER
                     else:
                         subfolder = os.path.join(image_path, image)
                         if os.path.isdir(subfolder):
                             subfolder_files = os.listdir(path=subfolder)
                             if len(subfolder_files) > 0:
-                                # PHOTOSHOP
                                 is_ps_assets_folder = True if subfolder[
                                     len(subfolder) -
                                     7:] == '-assets' and self.ps_assets_as_img else False
@@ -275,7 +260,7 @@ class ImportLocalFootage(bpy.types.Operator):
                                                 frame_end=strip_insert_frame +
                                                 self.img_length,
                                                 channel=image_channel)
-                                            strip_insert_frame += self.img_length + 1
+                                            strip_insert_frame += self.img_length + self.img_padding + 1
                                         else:
                                             image_files.append({'name': item})
                                 if len(image_files) > 0:
@@ -284,10 +269,9 @@ class ImportLocalFootage(bpy.types.Operator):
                                         directory=subfolder,
                                         files=image_files,
                                         frame_start=strip_insert_frame,
-                                        frame_end=strip_insert_frame +
-                                        len(image_files),
+                                        frame_end=strip_insert_frame + len(image_files),
                                         channel=image_channel)
-                                    strip_insert_frame += self.img_length + 1
+                                    strip_insert_frame += self.img_length + self.img_padding + 1
         # PROCESSING IMAGE STRIPS
         image_strips = []
         for s in context.sequences:
@@ -322,3 +306,32 @@ def add_strip_from_file(filetype, directory, files, start, end, channel, keep_au
             sequencer_area, filepath=directory, frame_start=start, channel=channel)
 
     return "SUCCESS"
+
+
+def get_files_from_folder(path, folder_name, file_type):
+    """Returns a dictionary of files to add as strips to the VSE"""
+    if not path and folder_name and file_type:
+        return []
+
+    files, subfolders = [], []
+    path += '\\' + folder_name
+    folder_content = os.listdir(path=path)
+
+    if not folder_content:
+        return []
+
+    for file in folder_content:
+        if is_type(file, file_type) and not is_revolver_proxy(file):
+            files.append({'name': file})
+        elif file_type in [FileTypes.video, FileTypes.img]:
+            subfolder = os.path.join(path, file)
+            if os.path.isdir(subfolder):
+                subfolders.append(subfolder)
+
+    for folder in subfolders:
+        for file in os.listdir(path=folder):
+            if is_type(file, file_type):
+                files.append({'name': os.path.split(
+                    folder)[1] + "/" + file})
+
+    return files, subfolders
