@@ -34,6 +34,8 @@ def find_empty_channel(mode='ABOVE'):
 # TODO: Move parameters to PropertyGroup and preferences
 # TODO: add option to add fade in and/or out
 # TODO: add option to add default animation (ease in/out on X axis) on
+
+# TODO: Refactor to scale transform from the center
 def setup_image_strips(sequences=None):
     """Takes a list of image strips and adds a transform effect to them"""
     sequencer = bpy.ops.sequencer

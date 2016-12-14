@@ -37,8 +37,7 @@ def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked
 
     for seq in sequences:
         channel_check = True if seq.channel == channel else False
-        if channel_check or mode == 'cursor' \
-        and seq.frame_final_start <= frame <= seq.frame_final_end:
+        if channel_check and seq.frame_final_start <= frame <= seq.frame_final_end:
             selection.append(seq)
             if mode == 'mouse' or mode == 'smart' and channel_check:
                 break
@@ -95,7 +94,7 @@ class MouseCut(bpy.types.Operator):
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
         anim = bpy.ops.anim
-        selection = bpy.context.selected_sequences
+        # selection = bpy.context.selected_sequences
 
         frame, channel = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
@@ -104,17 +103,21 @@ class MouseCut(bpy.types.Operator):
         channel = floor(channel)
 
         anim.change_frame(frame=frame)
+        select_mode = self.select_mode
 
         # Strip selection
-        if self.select_mode == 'cursor':
+        if select_mode == 'cursor':
             sequencer.select_all(action='SELECT')
-        elif self.select_mode != 'smart' or len(selection) == 0:
-            sequencer.select_all(action='DESELECT')
-            sequences_to_select = mouse_select_sequences(frame, channel, self.select_mode)
-            if not sequences_to_select:
+        else:
+            sequences_to_select = mouse_select_sequences(frame, channel, select_mode)
+            if not sequences_to_select and select_mode == 'mouse':
                 return {"CANCELLED"}
-            for seq in sequences_to_select:
-                seq.select = True
+            elif select_mode == 'smart':
+                sequencer.select_all(action='SELECT')
+            else:
+                sequencer.select_all(action='DESELECT')
+                for seq in sequences_to_select:
+                    seq.select = True
 
         # Cut and trim
         if self.cut_mode == 'cut':
