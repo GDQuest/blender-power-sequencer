@@ -94,7 +94,7 @@ class MouseCut(bpy.types.Operator):
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
         anim = bpy.ops.anim
-        # selection = bpy.context.selected_sequences
+        selection = bpy.context.selected_sequences
 
         frame, channel = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
@@ -108,12 +108,23 @@ class MouseCut(bpy.types.Operator):
         # Strip selection
         if select_mode == 'cursor':
             sequencer.select_all(action='SELECT')
-        else:
-            sequences_to_select = mouse_select_sequences(frame, channel, select_mode)
-            if not sequences_to_select and select_mode == 'mouse':
-                return {"CANCELLED"}
-            elif select_mode == 'smart':
+        elif select_mode == 'smart' and selection:
+            use_selection = False
+
+            for seq in selection:
+                if seq.frame_final_start <= frame <= seq.frame_final_end:
+                    use_selection = True
+
+            if not use_selection:
                 sequencer.select_all(action='SELECT')
+        else:
+            # Smart can behave as mouse mode if the user clicks on a strip
+            sequences_to_select = mouse_select_sequences(frame, channel, select_mode)
+            if not sequences_to_select:
+                if select_mode == 'mouse':
+                    return {"CANCELLED"}
+                elif select_mode == 'smart':
+                    sequencer.select_all(action='SELECT')
             else:
                 sequencer.select_all(action='DESELECT')
                 for seq in sequences_to_select:
@@ -131,6 +142,8 @@ class MouseCut(bpy.types.Operator):
                 anim.change_frame(frame=frame - 1)
                 sequencer.gap_remove()
                 anim.change_frame(frame=frame)
+        
+        sequencer.select_all(action='DESELECT')
         return {"FINISHED"}
 
 
