@@ -3,6 +3,10 @@ from enum import Enum
 
 import bpy
 
+class ExportProperties():
+    RESOLUTION_X = 1920
+    RESOLUTION_Y = 1080
+    pass
 
 def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
@@ -31,15 +35,15 @@ def find_empty_channel(mode='ABOVE'):
     return empty_channel
 
 
-# TODO: Move parameters to PropertyGroup and preferences
-# TODO: add option to add fade in and/or out
-# TODO: add option to add default animation (ease in/out on X axis) on
-
-# TODO: Refactor to scale transform from the center
-def setup_image_strips(sequences=None):
-    """Takes a list of image strips and adds a transform effect to them"""
+# FIXME: Currently not getting image width and height (set to 0)
+def add_transform_effect(sequences=None):
+    """Takes a list of image strips and adds a transform effect to them.
+       Ensures that the pivot will be centered on the image"""
     sequencer = bpy.ops.sequencer
     sequence_editor = bpy.context.scene.sequence_editor
+    render = bpy.context.scene.render
+
+    sequences = [s for s in sequences if s.type in ('IMAGE', 'MOVIE')]
 
     if not sequences:
         return None
@@ -47,18 +51,52 @@ def setup_image_strips(sequences=None):
     sequencer.select_all(action='DESELECT')
 
     for s in sequences:
-        if s.type == 'IMAGE':
-            sequence_editor.active_strip = s
-            sequencer.effect_strip_add(type='TRANSFORM')
-            # The transform strip automatically becomes active and selected
-            sequence_editor.active_strip.blend_type = 'ALPHA_OVER'
-            sequence_editor.active_strip.select = False
-        else:
-            print("The strip " + s.name + " is not an image strip")
+        s.mute = True
+
+        image_width = s.elements[0].orig_width
+        image_height = s.elements[0].orig_height
+        res_x, res_y = render.resolution_x, render.resolution_y
+
+        print(image_width)
+        print(image_height)
+        sequence_editor.sequences_all["arrow-small.png"]
+
+        if image_width < res_x or image_height < res_y:
+            s.use_translation = True
+            s.transform.offset_x = (res_x - image_width) / 2
+            s.transform.offset_y = (res_y - image_height) / 2
+
+        sequence_editor.active_strip = s
+        sequencer.effect_strip_add(type='TRANSFORM')
+
+        active = sequence_editor.active_strip
+        active.name = "TRANSFORM-%s" % s.name
+        active.blend_type = 'ALPHA_OVER'
+        active.select = False
 
     print("Successfully processed " + str(len(sequences)) +
           " image sequences")
     return True
+
+
+# def calc_transform_effect_scale(sequence):
+#     """Takes a transform effect and returns the scale it should use
+#        to preserve the scale of its cropped input"""
+#     # if not (sequence or sequence.type == 'TRANSFORM'):
+#     #     raise AttributeError
+
+#     s = sequence.input_1
+
+#     crop_x, crop_y = s.elements[0].orig_width - (s.crop.min_x + s.crop.max_x),
+#                      s.elements[0].orig_height - (s.crop.min_y + s.crop.max_y)
+#     ratio_x, ratio_y = crop_x / render.resolution_x,
+#                        crop_y / render.resolution_y
+#     if ratio_x > 1 or ratio_y > 1:
+#         ratio_x /= ratio_y
+#         ratio_y /= ratio_x
+#     return ratio_x, ratio_y
+#     active.scale_start_x, active.scale_start_y = ratio_x ratio_y
+
 
 
 def is_revolver_proxy(filename):
@@ -67,7 +105,7 @@ def is_revolver_proxy(filename):
 
 
 class FileTypes(Enum):
-    """"""
+    """Tuples of file types for checks when importing files"""
     psd = "PSD"
     img = ("PNG", "JPG", "JPEG")
     audio = ("WAV", "MP3", "OGG")
@@ -106,6 +144,8 @@ def get_working_directory(path=None):
 # TODO: After import, callback sync_audio_and_video.
 #       If video and audio files have the same name, remove audio channel from video and sync remaining audio and video strips (if there's audio channel with video)
 # TODO: Use add-on preferences to change default image length
+# TODO: add option to add fade in and/or out by default
+# TODO: add option to add default animation (ease in/out on X axis) on
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
     bl_label = "Import local footage"
@@ -279,7 +319,7 @@ class ImportLocalFootage(bpy.types.Operator):
         for s in context.sequences:
             if s.type == 'IMAGE':
                 image_strips.append(s)
-        setup_image_strips(image_strips)
+        add_transform_effect(image_strips)
 
         sequencer.select_all(action='DESELECT')
 
