@@ -53,18 +53,18 @@ def add_transform_effect(sequences=None):
     for s in sequences:
         s.mute = True
 
-        image_width = s.elements[0].orig_width
-        image_height = s.elements[0].orig_height
-        res_x, res_y = render.resolution_x, render.resolution_y
+        # FIXME: orig_width and orig_height are always = to 0
+        # image_width = s.elements[0].orig_width
+        # image_height = s.elements[0].orig_height
+        # res_x, res_y = render.resolution_x, render.resolution_y
 
-        print(image_width)
-        print(image_height)
-        sequence_editor.sequences_all["arrow-small.png"]
+        # print(image_width)
+        # print(image_height)
 
-        if image_width < res_x or image_height < res_y:
-            s.use_translation = True
-            s.transform.offset_x = (res_x - image_width) / 2
-            s.transform.offset_y = (res_y - image_height) / 2
+        # if image_width < res_x or image_height < res_y:
+        #     s.use_translation = True
+        #     s.transform.offset_x = (res_x - image_width) / 2
+        #     s.transform.offset_y = (res_y - image_height) / 2
 
         sequence_editor.active_strip = s
         sequencer.effect_strip_add(type='TRANSFORM')
