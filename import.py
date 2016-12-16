@@ -181,11 +181,12 @@ def get_files_from_folder(path, folder_name, file_type):
     return files, subfolders
 
 
-# TODO: By default, do not reimport existing strips, import only the new ones and refresh the sequencer - But option to always import all
-# TODO: After import, callback sync_audio_and_video.
-#       If video and audio files have the same name, remove audio channel from video and sync remaining audio and video strips (if there's audio channel with video)
+# TODO: Only process newly added pictures
+# TODO: Refactor, walk directories and collect filepaths, then send to function
+#       to create strips
+# TODO: By default, do not reimport existing strips, import only the new ones
 # TODO: Use add-on preferences to change default image length
-# TODO: add option to add fade in and/or out by default
+# TODO: add option to add fade in and/or out by default to pictures
 # TODO: add option to add default animation (ease in/out on X axis) on
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
@@ -252,6 +253,7 @@ class ImportLocalFootage(bpy.types.Operator):
         channel_for_audio = 1 if self.keep_audio else 0
         empty_channel = find_empty_channel(mode='ABOVE')
         directory = get_working_directory(path)
+        created_img_strips = []
 
         # TODO: REFACTOR AND USE FUNCTIONS
         for entry in os.listdir(path=directory):
@@ -301,16 +303,16 @@ class ImportLocalFootage(bpy.types.Operator):
                         strip_insert_frame += context.sequences[
                             0].frame_final_duration
             elif entry == 'img':
-                img_folder_content = os.listdir(
+                content = os.listdir(
                     path=directory + '\\' + entry)
 
-                if not img_folder_content:
+                if not content:
                     continue
 
                 image_channel = empty_channel + 2 + channel_for_audio
                 image_path = directory + '\\' + entry
 
-                for image in img_folder_content:
+                for image in content:
                     is_image = is_type(image, FileTypes.img) if not self.import_psd \
                         else is_type(image, FileTypes.img) or is_type(image, FileTypes.psd)
 
@@ -321,7 +323,12 @@ class ImportLocalFootage(bpy.types.Operator):
                             files=[{'name': image}],
                             frame_start=strip_insert_frame,
                             frame_end=strip_insert_frame + self.img_length,
-                            channel=image_channel)
+                            channel=image_channel,
+                            replace_sel=True
+                            )
+
+                        for s in bpy.context.selected_sequences:
+                            created_img_strips.append(s)
                         strip_insert_frame += self.img_length + self.img_padding + 1
                     # IMAGE SEQUENCE and ASSETS FOLDER
                     else:
@@ -344,7 +351,11 @@ class ImportLocalFootage(bpy.types.Operator):
                                                 frame_start=strip_insert_frame,
                                                 frame_end=strip_insert_frame +
                                                 self.img_length,
-                                                channel=image_channel)
+                                                channel=image_channel,
+                                                replace_sel=True)
+                                            for s in bpy.context.selected_sequences:
+                                                created_img_strips.append(s)
+
                                             strip_insert_frame += self.img_length + self.img_padding + 1
                                         else:
                                             image_files.append({'name': item})
@@ -356,18 +367,17 @@ class ImportLocalFootage(bpy.types.Operator):
                                         frame_start=strip_insert_frame,
                                         frame_end=strip_insert_frame +
                                         len(image_files),
-                                        channel=image_channel)
+                                        channel=image_channel,
+                                        replace_sel=True)
+                                    for s in bpy.context.selected_sequences:
+                                        created_img_strips.append(s)
                                     strip_insert_frame += self.img_length + self.img_padding + 1
         # PROCESSING IMAGE STRIPS
-        image_strips = []
-        for s in context.sequences:
-            if s.type == 'IMAGE':
-                image_strips.append(s)
-        add_transform_effect(image_strips)
-
         sequencer.select_all(action='DESELECT')
-        for s in image_strips:
-            s.select = True
+        if created_img_strips:
+            add_transform_effect(created_img_strips)
+            for s in created_img_strips:
+                s.select = True
 
         return {"FINISHED"}
 
@@ -391,6 +401,9 @@ class SetupPictures(bpy.types.Operator):
             s for s in bpy.context.selected_sequences if s.type in ('IMAGE', 'MOVIE')]
 
         for s in sequences:
+            if s.use_translation and (s.offset_x != 0 or s.offset_y != 0):
+                continue
+
             image_width = s.elements[0].orig_width
             image_height = s.elements[0].orig_height
 
