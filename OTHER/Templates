@@ -1,0 +1,245 @@
+# OPERATORS
+class Operator(bpy.types.Operator):
+    bl_idname = "my_operator.operator_normal"
+    bl_label = "Operator Normal"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+
+class OperatorModal(bpy.types.Operator):
+    bl_idname = "my_operator.operator_modal"
+    bl_label = "Operator Modal"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def invoke(self, context, event):
+        context.window_manager.modal_handler_add(self)
+        return {"RUNNING_MODAL"}
+
+    def modal(self, context, event):
+
+        if event.type == "LEFTMOUSE":
+            return {"FINISHED"}
+
+        if event.type in {"RIGHTMOUSE", "ESC"}:
+            return {"CANCELLED"}
+
+        return {"RUNNING_MODAL"}
+
+
+class OperatorModalDraw(bpy.types.Operator):
+    bl_idname = "my_operator.operator_modal_draw"
+    bl_label = "Operator Modal Draw"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def invoke(self, context, event):
+        args = (self, context)
+        self._handle = bpy.types.SpaceView3D.draw_handler_add(self.draw_callback_px, args, "WINDOW", "POST_PIXEL")
+        context.window_manager.modal_handler_add(self)
+        return {"RUNNING_MODAL"}
+
+    def modal(self, context, event):
+        context.area.tag_redraw()
+
+        if event.type == "LEFTMOUSE":
+            return self.finish()
+
+        if event.type in {"RIGHTMOUSE", "ESC"}:
+            return self.finish()
+
+        return {"RUNNING_MODAL"}
+
+    def finish(self):
+        bpy.types.SpaceView3D.draw_handler_remove(self._handle, "WINDOW")
+        return {"FINISHED"}
+
+    def draw_callback_px(tmp, self, context):
+        pass
+
+
+# KEYMAPS
+addon_keymaps = []
+
+def register_keymaps():
+    addon = bpy.context.window_manager.keyconfigs.addon
+    km = addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
+    # insert keymap items here
+    kmi = km.keymap_items.new("gdquest_vse.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
+    kmi = km.keymap_items.new("gdquest_vse.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
+    addon_keymaps.append(km)
+
+
+def unregister_keymaps():
+    wm = bpy.context.window_manager
+    for km in addon_keymaps:
+        for kmi in km.keymap_items:
+            km.keymap_items.remove(kmi)
+        wm.keyconfigs.addon.keymaps.remove(km)
+    addon_keymaps.clear()
+
+
+# KEYMAPS with LOOP
+wm = bpy.context.window_manager
+
+deactivate_list = ['ONE', 'TWO', 'THREE']
+view3d_km_items = wm.keyconfigs.default.keymaps['3D View'].keymap_items
+for j in view3d_km_items:
+    if j.type in deactivate_list and j.name == 'Layers':
+        j.active = False
+
+
+keymap_mesh = {'ONE': "True, False, False",
+             'TWO': "False, True, False",
+             'THREE': "False, False, True"}
+
+km = wm.keyconfigs.default.keymaps['Mesh']
+for k, v in keymap_mesh.items():
+    new_shortcut = km.keymap_items.new('wm.context_set_value', k, 'PRESS')
+    new_shortcut.properties.data_path = 'tool_settings.mesh_select_mode'
+    new_shortcut.properties.value = v
+
+print('complete')
+
+
+# PIE MENUS
+from bpy.types import Menu
+
+class VIEW3D_PIE_SV_ops(bpy.types.Operator):
+
+    bl_idname = "nodes.pie_menu_enum"
+    bl_label = "Add Quick Node"
+
+    mode_options = [
+        ("option1", "option1", "", "CURVE_DATA", 0),
+        ("option2", "option2", "", "", 1),
+        ("option3", "option3", "", "", 2)
+    ]
+
+    selected_mode = bpy.props.EnumProperty(
+        items=mode_options,
+        description="offers....",
+        default="option1"
+    )
+
+    def execute(self, context):
+        print('added ', self.selected_mode)
+        return {'FINISHED'}
+
+
+class VIEW3D_PIE_template(Menu):
+    # label is displayed at the center of the pie menu.
+    bl_label = "Select Mode"
+
+    def draw(self, context):
+        layout = self.layout
+        pie = layout.menu_pie()
+        pie.operator_enum("nodes.pie_menu_enum", "selected_mode")
+
+
+def register():
+    bpy.utils.register_module(__name__)
+
+def unregister():
+    bpy.utils.unregister_module(__name__)
+
+if __name__ == "__main__":
+    register()
+
+    bpy.ops.wm.call_menu_pie(name="VIEW3D_PIE_template")
+
+
+# PIE MENUS CUSTOM STYLE
+import os
+import bpy.utils.previews
+from bpy.types import Menu, Operator
+from bpy.props import StringProperty
+
+bl_info = {
+    "name": "ViewPort Navigator Pie Menu (Demo - with custom icons)",
+    "author": "Dealga McArdle",
+    "version": (0, 0, 1),
+    "blender": (2, 7, 5),
+    "location": "Viewport",
+    "description": "Adds pie menu with viewport navigation options.",
+    "wiki_url": "",
+    "tracker_url": "",
+    "category": "3D View"}
+
+
+operator_behaviours = ['anchor', 'pinch', 'rotator']
+preview_collections = {}
+
+
+class VIEW3D_PM_NAV_ops(Operator):
+    bl_idname = "view3d.pie_menu_navigator"
+    bl_label = "Quickly Navigate 3dview"
+
+    b_type = StringProperty()
+
+    def execute(self, context):
+        if not self.b_type:
+            return {'CANCELLED'}
+
+        print('action path:', self.b_type)
+        return {'FINISHED'}
+
+
+class VIEW3D_MT_PIE_Menu_Nav(Menu):
+    bl_label = "Navigate"
+    bl_idname = "view3d.pie_menu_base"
+
+    def draw(self, context):
+        pcoll = preview_collections["nav_main"]
+        view_ops = "view3d.pie_menu_navigator"
+
+        pie = self.layout.menu_pie()
+        for behaviour in operator_behaviours:
+            icon = pcoll[behaviour]
+            pie.operator(view_ops, text=behaviour, icon_value=icon.icon_id).b_type = behaviour
+
+
+def register():
+    import bpy.utils.previews
+    pcoll = bpy.utils.previews.new()
+
+    icons_dir = os.path.join(os.path.dirname(__file__), "icons")
+
+    for img in operator_behaviours:
+        full_img_name = (img + ".png")
+        img_path = os.path.join(icons_dir, full_img_name)
+        pcoll.load(img, img_path, 'IMAGE')
+
+    preview_collections["nav_main"] = pcoll
+
+    bpy.utils.register_class(VIEW3D_PM_NAV_ops)
+    bpy.utils.register_class(VIEW3D_MT_PIE_Menu_Nav)
+
+
+def unregister():
+
+    for pcoll in preview_collections.values():
+        bpy.utils.previews.remove(pcoll)
+    preview_collections.clear()
+
+    bpy.utils.unregister_class(VIEW3D_MT_PIE_Menu_Nav)
+    bpy.utils.unregister_class(VIEW3D_PM_NAV_ops)
+
+
+if __name__ == "__main__":
+    register()

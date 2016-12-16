@@ -2,7 +2,7 @@
 from math import floor
 
 import bpy
-import blf
+# import blf
 
 # to do: move it to separate file and import both here and in video_edit.py
 sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
@@ -25,8 +25,11 @@ def find_sequence_trim_side(sequence=None, frame=None):
     else:
         return 'left'
 
-def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
 
+def mouse_select_sequences(frame=None,
+                           channel=None,
+                           mode='mouse',
+                           select_linked=True):
     """Selects sequences based on the mouse position or using the time cursor"""
 
     selection = []
@@ -47,16 +50,16 @@ def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked
         if select_linked and mode in ('mouse', 'smart'):
             for seq in sequences:
                 if seq.channel != selection[0].channel \
-                and seq.frame_final_start == selection[0].frame_final_start \
-                and seq.frame_final_end == selection[0].frame_final_end:
+                   and seq.frame_final_start == selection[0].frame_final_start \
+                   and seq.frame_final_end == selection[0].frame_final_end:
                     selection.append(seq)
     # In smart mode, if we don't get any selection, we select everything
     elif mode == 'smart':
         selection = sequences
     return selection
 
-
 #to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
+
 
 # Shortcut: Ctrl Click
 # to do: allow the user to set the selection mode in the preferences
@@ -70,15 +73,18 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = bpy.props.EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
-               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
-               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'
+                ), ('cursor', 'Time cursor',
+                    'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart',
+                'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
-        description="Cut only the strip under the mouse or all strips under the time cursor",
+        description=
+        "Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
     cut_mode = bpy.props.EnumProperty(
-        items=[('cut', 'Cut', 'Cut the strips'),
-               ('trim', 'Trim', 'Trim the selection')],
+        items=[('cut', 'Cut', 'Cut the strips'), ('trim', 'Trim',
+                                                  'Trim the selection')],
         name='Cut mode',
         description='Cut or trim the selection',
         default='cut')
@@ -89,7 +95,7 @@ class MouseCut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene is not None
+        return context is not None
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
@@ -119,7 +125,8 @@ class MouseCut(bpy.types.Operator):
                 sequencer.select_all(action='SELECT')
         else:
             # Smart can behave as mouse mode if the user clicks on a strip
-            sequences_to_select = mouse_select_sequences(frame, channel, select_mode)
+            sequences_to_select = mouse_select_sequences(frame, channel,
+                                                         select_mode)
             if not sequences_to_select:
                 if select_mode == 'mouse':
                     return {"CANCELLED"}
@@ -142,7 +149,7 @@ class MouseCut(bpy.types.Operator):
                 anim.change_frame(frame=frame - 1)
                 sequencer.gap_remove()
                 anim.change_frame(frame=frame)
-        
+
         sequencer.select_all(action='DESELECT')
         return {"FINISHED"}
 
@@ -157,7 +164,8 @@ class EditCrossfade(bpy.types.Operator):
 
     show_preview = bpy.props.BoolProperty(
         name="Preview the crossfade",
-        description="Gives a preview of the crossfade sides, but can affect performances",
+        description=
+        "Gives a preview of the crossfade sides, but can affect performances",
         default=True)
 
     def __init__(self):
@@ -179,7 +187,7 @@ class EditCrossfade(bpy.types.Operator):
 
         active = bpy.context.scene.sequence_editor.active_strip
         cursor_pos = active.frame_final_start + \
-                     floor(active.frame_final_duration * self.preview_ratio)
+            floor(active.frame_final_duration * self.preview_ratio)
         bpy.context.scene.frame_set(cursor_pos)
         return True
 
@@ -193,7 +201,8 @@ class EditCrossfade(bpy.types.Operator):
 
             if self.seq_1.frame_final_duration + offset - self.crossfade_duration > 1 and \
                self.seq_2.frame_final_duration - offset - self.crossfade_duration > 1:
-                bpy.ops.transform.seq_slide(value=(self.frame - self.last_frame, 0))
+                bpy.ops.transform.seq_slide(
+                    value=(self.frame - self.last_frame, 0))
             self.update_time_cursor()
         elif event.type in {'LEFTMOUSE', 'RIGHTMOUSE', 'ESC'}:
             if self.show_preview:
@@ -217,19 +226,20 @@ class EditCrossfade(bpy.types.Operator):
                 bpy.context.space_data.show_backdrop = self.show_preview
         return {'RUNNING_MODAL'}
 
-
     def invoke(self, context, event):
         if not context.area.type == 'SEQUENCE_EDITOR':
-            self.report({'WARNING'},
-                        "You need to be in the Video Sequence Editor to use this tool. \
+            self.report({
+                'WARNING'
+            }, "You need to be in the Video Sequence Editor to use this tool. \
                         Operation cancelled.")
             return {'CANCELLED'}
 
         active = bpy.context.scene.sequence_editor.active_strip
 
         if active.type != "GAMMA_CROSS":
-            self.report({'WARNING'},
-                        "The active strip has to be a gamma cross for this tool to work. \
+            self.report({
+                'WARNING'
+            }, "The active strip has to be a gamma cross for this tool to work. \
                         Operation cancelled.")
             return {"CANCELLED"}
 
@@ -255,7 +265,6 @@ class EditCrossfade(bpy.types.Operator):
         #     draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
-
 
 # def draw_callback_px(self, context):
 #     # print("mouse points", len(self.mouse_path))

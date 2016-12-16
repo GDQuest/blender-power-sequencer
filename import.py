@@ -3,10 +3,12 @@ from enum import Enum
 
 import bpy
 
+
 class ExportProperties():
     RESOLUTION_X = 1920
     RESOLUTION_Y = 1080
     pass
+
 
 def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
@@ -53,19 +55,6 @@ def add_transform_effect(sequences=None):
     for s in sequences:
         s.mute = True
 
-        # FIXME: orig_width and orig_height are always = to 0
-        # image_width = s.elements[0].orig_width
-        # image_height = s.elements[0].orig_height
-        # res_x, res_y = render.resolution_x, render.resolution_y
-
-        # print(image_width)
-        # print(image_height)
-
-        # if image_width < res_x or image_height < res_y:
-        #     s.use_translation = True
-        #     s.transform.offset_x = (res_x - image_width) / 2
-        #     s.transform.offset_y = (res_y - image_height) / 2
-
         sequence_editor.active_strip = s
         sequencer.effect_strip_add(type='TRANSFORM')
 
@@ -96,7 +85,6 @@ def add_transform_effect(sequences=None):
 #         ratio_y /= ratio_x
 #     return ratio_x, ratio_y
 #     active.scale_start_x, active.scale_start_y = ratio_x ratio_y
-
 
 
 def is_revolver_proxy(filename):
@@ -138,6 +126,59 @@ def get_working_directory(path=None):
     project_name = bpy.path.basename(path)
     directory = path[:len(path) - (len(project_name) + 1)]
     return directory
+
+
+def add_strip_from_file(filetype, directory, files, start, end, channel, keep_audio=False):
+    """Add a file or a list of files as a strip to the VSE"""
+    sequencer = bpy.ops.sequencer
+    wm = bpy.context.window_manager
+    sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0],
+                      'blend_data': bpy.context.blend_data,
+                      'scene': bpy.context.scene,
+                      'window': wm.windows[0],
+                      'screen': bpy.data.screens['Video Editing'],
+                      'area': bpy.data.screens['Video Editing'].areas[2]}
+
+    if filetype == FileTypes.img:
+        sequencer.image_strip_add(sequencer_area, directory=directory, files=files,
+                                  frame_start=start, frame_end=end, channel=channel)
+    elif filetype == FileTypes.video:
+        sequencer.movie_strip_add(sequencer_area, filepath=directory,
+                                  files=files, frame_start=start, channel=channel, sound=keep_audio)
+    elif filetype == FileTypes.audio:
+        sequencer.sound_strip_add(
+            sequencer_area, filepath=directory, frame_start=start, channel=channel)
+
+    return "SUCCESS"
+
+
+def get_files_from_folder(path, folder_name, file_type):
+    """Returns a dictionary of files to add as strips to the VSE"""
+    if not path and folder_name and file_type:
+        return []
+
+    files, subfolders = [], []
+    path += '\\' + folder_name
+    folder_content = os.listdir(path=path)
+
+    if not folder_content:
+        return []
+
+    for file in folder_content:
+        if is_type(file, file_type) and not is_revolver_proxy(file):
+            files.append({'name': file})
+        elif file_type in [FileTypes.video, FileTypes.img]:
+            subfolder = os.path.join(path, file)
+            if os.path.isdir(subfolder):
+                subfolders.append(subfolder)
+
+    for folder in subfolders:
+        for file in os.listdir(path=folder):
+            if is_type(file, file_type):
+                files.append({'name': os.path.split(
+                    folder)[1] + "/" + file})
+
+    return files, subfolders
 
 
 # TODO: By default, do not reimport existing strips, import only the new ones and refresh the sequencer - But option to always import all
@@ -244,7 +285,8 @@ class ImportLocalFootage(bpy.types.Operator):
                 sequencer.movie_strip_add(sequencer_area, filepath=video_path + "\\" + video,
                                           files=videos, frame_start=1, channel=video_channel, sound=self.keep_audio)
             elif entry == 'audio':
-                audio_folder_content = os.listdir(path=(directory + '\\' + entry))
+                audio_folder_content = os.listdir(
+                    path=(directory + '\\' + entry))
 
                 if not audio_folder_content:
                     continue
@@ -256,7 +298,8 @@ class ImportLocalFootage(bpy.types.Operator):
                     if is_type(audio, FileTypes.audio):
                         sequencer.sound_strip_add(
                             sequencer_area, filepath=audio_path + "\\" + audio, frame_start=strip_insert_frame, channel=audio_channel)
-                        strip_insert_frame += context.sequences[0].frame_final_duration
+                        strip_insert_frame += context.sequences[
+                            0].frame_final_duration
             elif entry == 'img':
                 img_folder_content = os.listdir(
                     path=directory + '\\' + entry)
@@ -311,7 +354,8 @@ class ImportLocalFootage(bpy.types.Operator):
                                         directory=subfolder,
                                         files=image_files,
                                         frame_start=strip_insert_frame,
-                                        frame_end=strip_insert_frame + len(image_files),
+                                        frame_end=strip_insert_frame +
+                                        len(image_files),
                                         channel=image_channel)
                                     strip_insert_frame += self.img_length + self.img_padding + 1
         # PROCESSING IMAGE STRIPS
@@ -322,58 +366,44 @@ class ImportLocalFootage(bpy.types.Operator):
         add_transform_effect(image_strips)
 
         sequencer.select_all(action='DESELECT')
+        for s in image_strips:
+            s.select = True
 
         return {"FINISHED"}
 
 
-def add_strip_from_file(filetype, directory, files, start, end, channel, keep_audio=False):
-    """Add a file or a list of files as a strip to the VSE"""
-    sequencer = bpy.ops.sequencer
-    wm = bpy.context.window_manager
-    sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0],
-                      'blend_data': bpy.context.blend_data,
-                      'scene': bpy.context.scene,
-                      'window': wm.windows[0],
-                      'screen': bpy.data.screens['Video Editing'],
-                      'area': bpy.data.screens['Video Editing'].areas[2]}
+class SetupPictures(bpy.types.Operator):
+    bl_idname = "gdquest_vse.setup_pictures"
+    bl_label = "Setup pictures"
+    bl_description = "Changes the parameters of your pictures"
+    bl_options = {"REGISTER"}
 
-    if filetype == FileTypes.img:
-        sequencer.image_strip_add(sequencer_area, directory=directory, files=files,
-                                  frame_start=start, frame_end=end, channel=channel)
-    elif filetype == FileTypes.video:
-        sequencer.movie_strip_add(sequencer_area, filepath=directory,
-                                  files=files, frame_start=start, channel=channel, sound=keep_audio)
-    elif filetype == FileTypes.audio:
-        sequencer.sound_strip_add(
-            sequencer_area, filepath=directory, frame_start=start, channel=channel)
+    @classmethod
+    def poll(cls, context):
+        return True
 
-    return "SUCCESS"
+    def execute(self, context):
+        sequencer = bpy.ops.sequencer
+        sequence_editor = bpy.context.scene.sequence_editor
+        render = bpy.context.scene.render
 
+        sequences = [
+            s for s in bpy.context.selected_sequences if s.type in ('IMAGE', 'MOVIE')]
 
-def get_files_from_folder(path, folder_name, file_type):
-    """Returns a dictionary of files to add as strips to the VSE"""
-    if not path and folder_name and file_type:
-        return []
+        for s in sequences:
+            image_width = s.elements[0].orig_width
+            image_height = s.elements[0].orig_height
 
-    files, subfolders = [], []
-    path += '\\' + folder_name
-    folder_content = os.listdir(path=path)
+            if image_width == 0 or image_height == 0:
+                continue
 
-    if not folder_content:
-        return []
+            res_x, res_y = render.resolution_x, render.resolution_y
 
-    for file in folder_content:
-        if is_type(file, file_type) and not is_revolver_proxy(file):
-            files.append({'name': file})
-        elif file_type in [FileTypes.video, FileTypes.img]:
-            subfolder = os.path.join(path, file)
-            if os.path.isdir(subfolder):
-                subfolders.append(subfolder)
+            print(image_width)
+            print(image_height)
 
-    for folder in subfolders:
-        for file in os.listdir(path=folder):
-            if is_type(file, file_type):
-                files.append({'name': os.path.split(
-                    folder)[1] + "/" + file})
-
-    return files, subfolders
+            if image_width < res_x or image_height < res_y:
+                s.use_translation = True
+                s.transform.offset_x = (res_x - image_width) / 2
+                s.transform.offset_y = (res_y - image_height) / 2
+        return {"FINISHED"}

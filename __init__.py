@@ -48,14 +48,21 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 import traceback
 
-def register():
-    try: bpy.utils.register_module(__name__)
-    except: traceback.print_exc()
 
-    print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
+def register():
+    try:
+        bpy.utils.register_module(__name__)
+    except:
+        traceback.print_exc()
+
+    print("Registered {} with {} modules".format(bl_info["name"],
+          len(modules)))
+
 
 def unregister():
-    try: bpy.utils.unregister_module(__name__)
-    except: traceback.print_exc()
+    try:
+        bpy.utils.unregister_module(__name__)
+    except:
+        traceback.print_exc()
 
     print("Unregistered {}".format(bl_info["name"]))
