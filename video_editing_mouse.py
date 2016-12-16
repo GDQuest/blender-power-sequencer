@@ -2,9 +2,10 @@
 from math import floor
 
 import bpy
+from bpy.props import BoolProperty, EnumProperty, IntProperty
 # import blf
 
-# to do: move it to separate file and import both here and in video_edit.py
+# TODO: move it to separate file and import both here and in video_edit.py
 sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
                   'effect': ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER',
                              'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY',
@@ -58,21 +59,19 @@ def mouse_select_sequences(frame=None,
         selection = sequences
     return selection
 
-#to do: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
+# TODO: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
 
 # Shortcut: Ctrl Click
-# to do: allow the user to set the selection mode in the preferences
-# fix me: don't remove_gaps if there's nothing else in the channel before strip
-# to do: smart mode - if not clicking on a specific strip with the mouse, use cursor mode
-# to do: check how it works with effect strips? Blender should handle that by itself
+# TODO: Option to move the time cursor back before the start of sel if trim
+# TODO: allow the user to set the selection mode in the preferences
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
     bl_label = "Cut strip with mouse"
     bl_options = {'REGISTER', 'UNDO'}
 
-    select_mode = bpy.props.EnumProperty(
+    select_mode = EnumProperty(
         items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'
                 ), ('cursor', 'Time cursor',
                     'Select all of the strips the time cursor overlaps'),
@@ -82,16 +81,26 @@ class MouseCut(bpy.types.Operator):
         description=
         "Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
-    cut_mode = bpy.props.EnumProperty(
+    cut_mode = EnumProperty(
         items=[('cut', 'Cut', 'Cut the strips'), ('trim', 'Trim',
                                                   'Trim the selection')],
         name='Cut mode',
         description='Cut or trim the selection',
         default='cut')
-    remove_gaps = bpy.props.BoolProperty(
+    remove_gaps = BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=False)
+    auto_move_cursor = BoolProperty(
+        name="Auto move cursor",
+        description="When trimming the sequence, auto move the cursor if playback is active",
+        default=True)
+    cursor_offset = IntProperty(
+        name="Cursor trim offset",
+        description="On trim, during playback, offset the cursor to better see if the cut works",
+        default=12,
+        min=0
+    )
 
     @classmethod
     def poll(cls, context):
@@ -148,7 +157,15 @@ class MouseCut(bpy.types.Operator):
             if self.remove_gaps:
                 anim.change_frame(frame=frame - 1)
                 sequencer.gap_remove()
-                anim.change_frame(frame=frame)
+
+                # Move time cursor back
+                if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
+                    from operator import attrgetter
+                    first_seq = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]
+                    frame = first_seq.frame_final_start - self.cursor_offset \
+                        if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
+                        else frame
+                    anim.change_frame(frame=frame)
 
         sequencer.select_all(action='DESELECT')
         return {"FINISHED"}
@@ -162,7 +179,7 @@ class EditCrossfade(bpy.types.Operator):
     bl_label = "Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 
-    show_preview = bpy.props.BoolProperty(
+    show_preview = BoolProperty(
         name="Preview the crossfade",
         description=
         "Gives a preview of the crossfade sides, but can affect performances",

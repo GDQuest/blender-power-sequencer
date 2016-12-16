@@ -618,8 +618,7 @@ class SmartSnap(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         current_frame = bpy.context.scene.frame_current
 
-        select_strip_handle(
-            bpy.context.selected_sequences, self.side, current_frame)
+        select_strip_handle(bpy.context.selected_sequences, self.side, current_frame)
 
         sequencer.snap(frame=current_frame)
 
