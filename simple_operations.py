@@ -1,5 +1,7 @@
+"""Simple operations like save, delete, open the project directory..."""
 import bpy
 from bpy.types import Operator
+
 
 class OpenProjectDirectory(Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
@@ -37,11 +39,10 @@ class DeleteDirect(bpy.types.Operator):
     bl_idname = "gdquest_vse.delete_direct"
     bl_label = "Delete Direct"
     bl_options = {'REGISTER', 'UNDO'}
-    # Shortcut: Delete
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene is not None
+        return True
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
@@ -54,17 +55,15 @@ class DeleteDirect(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: If file not saved, fire up save as
 class SaveDirect(bpy.types.Operator):
     """Saves current file without prompting for confirmation"""
     bl_idname = "gdquest_vse.save_direct"
     bl_label = "Save Direct"
     bl_options = {'REGISTER', 'UNDO'}
-    # Shortcut: Ctrl + S
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene is not None
+        return True
 
     def execute(self, context):
         if bpy.data.is_saved:

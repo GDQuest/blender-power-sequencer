@@ -5,16 +5,6 @@ import bpy
 from bpy.props import BoolProperty, EnumProperty, IntProperty
 # import blf
 
-# TODO: move it to separate file and import both here and in video_edit.py
-sequence_types = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
-                  'effect': ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER',
-                             'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY',
-                             'OVER_DROP', 'WIPE', 'GLOW', 'TRANSFORM', 'COLOR',
-                             'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR'),
-                  'sound': 'SOUND',
-                  'image': 'IMAGE',
-                  'img': 'IMAGE'}
-
 
 def find_sequence_trim_side(sequence=None, frame=None):
     """Returns the strip's handle the time cursor is closest to"""

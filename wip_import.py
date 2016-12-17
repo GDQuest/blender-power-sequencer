@@ -43,7 +43,6 @@ def find_empty_channel(mode='ABOVE'):
     return empty_channel
 
 
-# FIXME: Currently not getting image width and height (set to 0)
 def add_transform_effect(sequences=None):
     """Takes a list of image strips and adds a transform effect to them.
        Ensures that the pivot will be centered on the image"""
@@ -224,7 +223,7 @@ class ImportLocalFootage2(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         if not bpy.data.is_saved:

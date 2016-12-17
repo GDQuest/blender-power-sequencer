@@ -15,6 +15,13 @@ class FileTypes(Enum):
     audio = ("WAV", "MP3", "OGG")
     video = ("MP4", "AVI", "MTS")
 
+
+class SequenceTypes():
+    VIDEO = ('MOVIE', 'MOVIECLIP', 'META', 'SCENE')
+    EFFECT = ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER', 'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY', 'OVER_DROP', 'WIPE', 'GLOW', 'TRANSFORM', 'COLOR', 'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR')
+    SOUND = ('SOUND')
+    IMAGE = ('IMAGE')
+
 # TODO: Replace FileTypes with that
 class Extensions():
     """Tuples of file types for checks when importing files"""

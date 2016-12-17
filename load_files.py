@@ -212,7 +212,7 @@ class ImportLocalFootage(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         if not bpy.data.is_saved:

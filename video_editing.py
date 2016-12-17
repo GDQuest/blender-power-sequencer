@@ -1,34 +1,22 @@
 import os
-from enum import Enum
 from math import ceil
 
 import bpy
+from .functions.global_settings import SequenceTypes
 
 
 # -----
 # GLOBAL VARIABLES
 # -----
-class SearchMode(Enum):
-    next = 1
-    channel = 2
-    all = 3
-    pass
-
-SEQUENCE_TYPES = {'video': ('MOVIE', 'MOVIECLIP', 'META', 'SCENE'),
-                  'effect': ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER',
-                             'ALPHA_UNDER', 'GAMMA_CROSS', 'MULTIPLY',
-                             'OVER_DROP', 'WIPE', 'GLOW', 'TRANSFORM', 'COLOR',
-                             'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR'),
-                  'sound': 'SOUND',
-                  'image': 'IMAGE',
-                  'img': 'IMAGE'}
+class SearchMode():
+    NEXT = 1
+    CHANNEL = 2
+    ALL = 3
 
 
 # -----
 # FUNCTIONS
 # -----
-
-
 def is_channel_free(target_channel, start_frame, end_frame):
     """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
     # Sort sequences on screen by starting frame
@@ -42,7 +30,7 @@ def is_channel_free(target_channel, start_frame, end_frame):
 
 
 # TODO: refactor code - clean up / get the user to pass sequences to work on?
-def find_next_sequences(mode=SearchMode.next,
+def find_next_sequences(mode=SearchMode.NEXT,
                         sequences=None,
                         pick_sound=False):
     """Returns a sequence or a list of sequences following the active one"""
@@ -65,17 +53,17 @@ def find_next_sequences(mode=SearchMode.next,
                         seq.frame_final_end > active.frame_final_end):
             if abs(seq.channel - active.channel) > 2:
                 nexts_far.append(seq)
-            elif seq.type in SEQUENCE_TYPES['sound'] and not pick_sound:
+            elif seq.type in SequenceTypes.SOUND and not pick_sound:
                 pass
             else:
                 nexts.append(seq)
-                if mode is SearchMode.channel and \
+                if mode is SearchMode.CHANNEL and \
                    seq.channel == active.channel:
                     same_channel.append(seq)
 
     # Store the sequences to return
     next_sequences = None
-    if mode is SearchMode.channel:
+    if mode is SearchMode.CHANNEL:
         return same_channel
     elif len(nexts) > 0:
         return min(
@@ -160,7 +148,7 @@ def fade_find_fcurve(sequence=None):
     fcurves = bpy.context.scene.animation_data.action.fcurves
 
     if sequence:
-        if sequence.type in SEQUENCE_TYPES['sound']:
+        if sequence.type in SequenceTypes.SOUND:
             fade_type = 'volume'
         else:
             fade_type = 'blend_alpha'
@@ -283,22 +271,22 @@ class AddCrossfade(bpy.types.Operator):
         # If the active strip is not a video or a meta strip, we need to run a
         # few checks
 
-        if active_strip.type not in SEQUENCE_TYPES['video']:
+        if active_strip.type not in SequenceTypes.VIDEO:
             for s in selection:
-                if s.type in SEQUENCE_TYPES['video']:
+                if s.type in SequenceTypes.VIDEO:
                     bpy.context.scene.sequence_editor.active_strip = s
                     active_strip = s
                     break
                 pass
             # If no strip in selection is a video, can't apply crossfade
-            if active_strip.type not in SEQUENCE_TYPES['video']:
+            if active_strip.type not in SequenceTypes.VIDEO:
                 self.report(
                     {"ERROR_INVALID_INPUT"},
                     "You need to select a video sequence to add a crossfade")
                 return {"CANCELLED"}
             pass
 
-        seq = [active_strip, find_next_sequences(SearchMode.next)]
+        seq = [active_strip, find_next_sequences(SearchMode.NEXT)]
         # Force crossfade_length
         if seq[0] and seq[1]:
             if self.force_length:
@@ -364,10 +352,10 @@ class AddSpeed(bpy.types.Operator):
         # If the active strip is not a video strip, ensure that there are video
         # type strips in the selection and set the active strip to one of them
 
-        if active.type not in SEQUENCE_TYPES['video']:
+        if active.type not in SequenceTypes.VIDEO:
             count = 0
             for s in selection:
-                if s.type in SEQUENCE_TYPES['video']:
+                if s.type in SequenceTypes.VIDEO:
                     scene.sequence_editor.active_strip = active = s
                     break
                 else:
@@ -415,7 +403,7 @@ class AddSpeed(bpy.types.Operator):
             active = scene.sequence_editor.active_strip
             pass
 
-        if active.type in SEQUENCE_TYPES['video']:
+        if active.type in SequenceTypes.VIDEO:
             sequencer.effect_strip_add(type='SPEED')
             effect_strip = bpy.context.scene.sequence_editor.active_strip
             effect_strip.use_default_fade = False
@@ -454,85 +442,72 @@ class ConcatenateStrips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         sequences = []
         channels = []
+        context = bpy.context
 
-        # If only the active strip is selected, select all next seq in the same
-        # channel
-
-        if len(bpy.context.selected_sequences) == 1:
-            # Select all seqs in channel, including sound and image
-            sequences_in_channel = find_next_sequences(mode=SearchMode.channel,
+        if len(context.selected_sequences) == 1:
+            sequences_in_channel = find_next_sequences(mode=SearchMode.CHANNEL,
                                                        sequences=None,
                                                        pick_sound=True,
                                                        pick_image=True)
             for s in sequences_in_channel:
                 s.select = True
-            # We have to reselect the active strip, as find_next_sequences only
-            # returns next seqs in the channel
+            context.scene.sequence_editor.active_strip.select = True
 
-            bpy.context.scene.sequence_editor.active_strip.select = True
-        for s in bpy.context.selected_sequences:
-            if s.type in SEQUENCE_TYPES['video']:
+        for s in context.selected_sequences:
+            if s.type in SequenceTypes.VIDEO:
                 sequences.append(s)
                 channels.append(s.channel)
-                pass
-            pass
 
-        if len(sequences) >= 1:
-            from operator import attrgetter
+        if not len(sequences) >= 1:
+            return {'CANCELLED'}
 
-            # sort sequences by channel and frame start
-            sequences = sorted(sequences,
-                               key=attrgetter('channel', 'frame_final_start'))
-            channels = set(channels)
-            channels = list(channels)
-            num_channels = len(channels)
+        from operator import attrgetter
+        # sort sequences by channel and frame start
+        sequences = sorted(sequences,
+                            key=attrgetter('channel', 'frame_final_start'))
+        channels = set(channels)
+        channels = list(channels)
+        num_channels = len(channels)
 
-            # TODO: If the number of channels the sequences are spread other is equal to the number of selected sequences, then there's only 1 selected sequence per channel
-            # So then we select all next sequences in each channel
-            # Gotta refactor the find_next_sequences so we have to pass it a channel if mode == SearchMode.channel
-            # if num_channels == len(sequences):
-            #     for c in channels:
-            #         for s in find_next_sequences(mode=SearchMode.channel,
-            #                                                    sequences=None,
-            #                                                    pick_sound=True,
-            #                                                    pick_image=True)
-            # loop over all channels to concatenate
-            c = 0
-            while c < num_channels:
-                # The sequences are ordered, so we know that the first sequence
-                # will be the first one we'll concatenate
+        # TODO: If the number of channels the sequences are spread other is equal to the number of selected sequences, then there's only 1 selected sequence per channel
+        # So then we select all next sequences in each channel
+        # Gotta refactor the find_next_sequences so we have to pass it a channel if mode == SearchMode.CHANNEL
+        # if num_channels == len(sequences):
+        #     for c in channels:
+        #         for s in find_next_sequences(mode=SearchMode.CHANNEL,
+        #                                                    sequences=None,
+        #                                                    pick_sound=True,
+        #                                                    pick_image=True)
+        # loop over all channels to concatenate
+        c = 0
+        while c < num_channels:
+            # The sequences are ordered, so we know that the first sequence
+            # will be the first one we'll concatenate
 
-                concat_channel = channels[c]
-                concat_start = 0
-                for s in sequences:
-                    if s.channel == concat_channel:
-                        concat_start = s.frame_final_end
-                        break
-                    pass
+            concat_channel = channels[c]
+            concat_start = 0
+            for s in sequences:
+                if s.channel == concat_channel:
+                    concat_start = s.frame_final_end
+                    break
 
-                concat_sequences = []
-                # move sequences with the channel we want to concat from the
-                # original list to the empty one
+            concat_sequences = []
 
-                for s in sequences:
-                    if s.channel == concat_channel:
-                        concat_sequences.append(s)
-                        pass
-                    pass
-                concat_sequences.pop(0)
-                for s in concat_sequences:
-                    gap = s.frame_final_start - concat_start
-                    s.frame_start -= gap
-                    concat_start += s.frame_final_duration
-                    pass
-                pass
-                c += 1
-            pass
+            for s in sequences:
+                if s.channel == concat_channel:
+                    concat_sequences.append(s)
+            concat_sequences.pop(0)
+
+            for s in concat_sequences:
+                gap = s.frame_final_start - concat_start
+                s.frame_start -= gap
+                concat_start += s.frame_final_duration
+            c += 1
         return {"FINISHED"}
 
 
@@ -587,7 +562,7 @@ class SelectShortStrips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         for s in bpy.context.selected_sequences:
@@ -612,7 +587,7 @@ class SmartSnap(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
@@ -643,7 +618,7 @@ class GrabStillImage(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         scene = bpy.context.scene
@@ -654,7 +629,7 @@ class GrabStillImage(bpy.types.Operator):
         start_frame = scene.frame_current
         offset = self.strip_duration
 
-        if active.type not in SEQUENCE_TYPES['video']:
+        if active.type not in SequenceTypes.VIDEO:
             self.report({"ERROR_INVALID_INPUT"},
                         "You must select a video or meta strip. You selected a strip of type"
                         + str(active.type) + " instead.")
@@ -704,7 +679,7 @@ class ChannelOffset(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene is not None
+        return True
 
     def execute(self, context):
         # Sort selected layers by channel, starting from highest value if going
@@ -771,7 +746,7 @@ class ChannelOffset(bpy.types.Operator):
 
 #     @classmethod
 #     def poll(cls, context):
-#         return context.scene is not None
+#         return True
 
 #     def execute(self, context):
 #         sequencer = bpy.ops.sequencer
@@ -799,10 +774,3 @@ class ChannelOffset(bpy.types.Operator):
 #             return True
 
 #         return {"FINISHED"}
-
-def register():
-    bpy.utils.register_module(__name__)
-
-
-def unregister():
-    bpy.utils.unregister_module(__name__)

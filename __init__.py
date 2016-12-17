@@ -40,7 +40,7 @@ from enum import Enum
 # load and reload submodules
 ##################################
 
-from . import developer_utils
+from .functions import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 # register
