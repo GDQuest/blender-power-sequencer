@@ -2,7 +2,7 @@ import os
 import bpy
 
 
-class ExportProperties():
+class ProjectSettings():
     RESOLUTION_X = 1920
     RESOLUTION_Y = 1080
     pass

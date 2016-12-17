@@ -1,23 +1,7 @@
 import os
-from enum import Enum
+from .functions.global_settings import ProjectSettings, FileTypes
 
 import bpy
-
-
-# TODO: Move functions and helper classes to other files
-class ExportProperties():
-    RESOLUTION_X = 1920
-    RESOLUTION_Y = 1080
-    pass
-
-
-class FileTypes(Enum):
-    """Tuples of file types for checks when importing files"""
-    psd = "PSD"
-    img = ("PNG", "JPG", "JPEG")
-    audio = ("WAV", "MP3", "OGG")
-    video = ("MP4", "AVI", "MTS")
-
 
 def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
