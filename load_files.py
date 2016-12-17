@@ -4,10 +4,19 @@ from enum import Enum
 import bpy
 
 
+# TODO: Move functions and helper classes to other files
 class ExportProperties():
     RESOLUTION_X = 1920
     RESOLUTION_Y = 1080
     pass
+
+
+class FileTypes(Enum):
+    """Tuples of file types for checks when importing files"""
+    psd = "PSD"
+    img = ("PNG", "JPG", "JPEG")
+    audio = ("WAV", "MP3", "OGG")
+    video = ("MP4", "AVI", "MTS")
 
 
 def find_empty_channel(mode='ABOVE'):
@@ -90,14 +99,6 @@ def add_transform_effect(sequences=None):
 def is_revolver_proxy(filename):
     """Checks if the file is a proxy generated with FFMPEG"""
     return True if '_proxy.' in filename else False
-
-
-class FileTypes(Enum):
-    """Tuples of file types for checks when importing files"""
-    psd = "PSD"
-    img = ("PNG", "JPG", "JPEG")
-    audio = ("WAV", "MP3", "OGG")
-    video = ("MP4", "AVI", "MTS")
 
 
 def is_type(filename=None, file_type=None):

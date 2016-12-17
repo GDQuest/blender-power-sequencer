@@ -1,5 +1,50 @@
 import bpy
 
+class Operator(bpy.types.Operator):
+    bl_idname = "gdquest_vse.operator_normal"
+    bl_label = "Operator Normal"
+    bl_description = ""
+    bl_options = {"REGISTER"}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        return {"FINISHED"}
+
+
+class OpenProjectDirectory(Operator):
+    bl_idname = 'gdquest_vse.open_project_directory'
+    bl_label = 'Open project directory'
+    bl_description = 'Opens the Blender project directory in the explorer'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        from subprocess import Popen
+        from platform import system
+
+        from .load_files import get_working_directory
+
+        path = get_working_directory(path=bpy.data.filepath)
+
+        if not path:
+            self.report({'WARNING'}, "You have to save your project first.")
+            return {'CANCELLED'}
+
+        if system() == "Windows":
+            Popen(["explorer", path])
+        elif system() == "Darwin":
+            Popen(["open", path])
+        else:
+            Popen(["xdg-open", path])
+        return {'FINISHED'}
+
+
 class DeleteDirect(bpy.types.Operator):
     """Deletes without prompting for confirmation"""
     bl_idname = "gdquest_vse.delete_direct"
@@ -34,4 +79,3 @@ class SaveDirect(bpy.types.Operator):
         else:
             bpy.ops.wm.save_as_mainfile({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
-        
