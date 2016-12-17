@@ -1,18 +1,5 @@
 import bpy
-
-class Operator(bpy.types.Operator):
-    bl_idname = "gdquest_vse.operator_normal"
-    bl_label = "Operator Normal"
-    bl_description = ""
-    bl_options = {"REGISTER"}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        return {"FINISHED"}
-
+from bpy.types import Operator
 
 class OpenProjectDirectory(Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
@@ -57,7 +44,13 @@ class DeleteDirect(bpy.types.Operator):
         return bpy.context.scene is not None
 
     def execute(self, context):
+        selection = bpy.context.selected_sequences
         bpy.ops.sequencer.delete()
+
+        selection_length = len(selection)
+        report_message = 'Deleted ' + str(selection_length) + ' sequence'
+        report_message += 's' if selection_length > 1 else ''
+        self.report({'INFO'}, report_message)
         return {"FINISHED"}
 
 
@@ -78,4 +71,5 @@ class SaveDirect(bpy.types.Operator):
             bpy.ops.wm.save_mainfile()
         else:
             bpy.ops.wm.save_as_mainfile({'dict': "override"}, 'INVOKE_DEFAULT')
+        self.report({'INFO'}, 'File saved')
         return {"FINISHED"}
