@@ -3,55 +3,11 @@ from math import floor
 
 import bpy
 from bpy.props import BoolProperty, EnumProperty, IntProperty
+from .functions.sequences import mouse_select_sequences
 # import blf
 
 
-def find_sequence_trim_side(sequence=None, frame=None):
-    """Returns the strip's handle the time cursor is closest to"""
-    if not sequence and frame:
-        return None
-
-    if frame >= sequence.frame_final_duration / 2:
-        return 'right'
-    else:
-        return 'left'
-
-
-def mouse_select_sequences(frame=None,
-                           channel=None,
-                           mode='mouse',
-                           select_linked=True):
-    """Selects sequences based on the mouse position or using the time cursor"""
-
-    selection = []
-    sequences = bpy.context.sequences
-
-    if not sequences:
-        return []
-
-    for seq in sequences:
-        channel_check = True if seq.channel == channel else False
-        if channel_check and seq.frame_final_start <= frame <= seq.frame_final_end:
-            selection.append(seq)
-            if mode == 'mouse' or mode == 'smart' and channel_check:
-                break
-
-    if len(selection) > 0:
-        # Select linked time sequences
-        if select_linked and mode in ('mouse', 'smart'):
-            for seq in sequences:
-                if seq.channel != selection[0].channel \
-                   and seq.frame_final_start == selection[0].frame_final_start \
-                   and seq.frame_final_end == selection[0].frame_final_end:
-                    selection.append(seq)
-    # In smart mode, if we don't get any selection, we select everything
-    elif mode == 'smart':
-        selection = sequences
-    return selection
-
-
 # TODO: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
-
 # Shortcut: Ctrl Click
 # TODO: Option to move the time cursor back before the start of sel if trim
 # TODO: allow the user to set the selection mode in the preferences
@@ -266,29 +222,5 @@ class EditCrossfade(bpy.types.Operator):
 
         if self.show_preview:
             bpy.context.space_data.show_backdrop = True
-        # self.mouse_path = []
-        # args = (self, context)
-        # self._handle = bpy.types.SpaceSequenceEditor.draw_handler_add(
-        #     draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
-
-# def draw_callback_px(self, context):
-#     # print("mouse points", len(self.mouse_path))
-
-#     region = context.region
-#     active = context.scene.sequence_editor.active_strip
-#     if active is None:
-#         return
-
-#     x = active.frame_final_start
-#     y = active.channel
-#     x, y = region.view2d.view_to_region(x, y)
-
-#     font_id = 0  # XXX, need to find out how best to get this.
-#     blf.position(font_id, x, y, 0)
-#     blf.size(font_id, 20, 72)
-#     # region_to_view gives the region coords.  x is frame, y is channel.
-#     x, y = region.view2d.region_to_view(*self.mouse_path[-1])
-#     blf.draw(font_id, "Hello Word %d %d" % (x, y))
-#     context.scene.frame_set(x)

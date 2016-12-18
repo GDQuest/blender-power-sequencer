@@ -6,6 +6,20 @@ class ProjectSettings():
     RESOLUTION_Y = 1080
     PROXY_RESOLUTION_X = 640
     PROXY_RESOLUTION_Y = 360
+    PROXY_STRING = "_proxy"
+
+    class FOLDER_NAMES():
+        AUDIO = 'audio'
+        IMG = 'img'
+        VIDEO = 'video'
+    folders = ()
+
+
+ProjectSettings.folders = (
+    ProjectSettings.FOLDER_NAMES.AUDIO,
+    ProjectSettings.FOLDER_NAMES.IMG,
+    ProjectSettings.FOLDER_NAMES.VIDEO,
+    )
 
 
 class FileTypes(Enum):
@@ -44,3 +58,9 @@ class RENDER_SETTINGS():
                    2048, 10080000, 'AAC', 192)
         MP4_LOW = ('H264', 'MPEG4', 'H264', 18, 6000, 6000, 0, 224 * 8,
                     2048, 10080000, 'AAC', 192)
+
+
+class SearchMode():
+    NEXT = 1
+    CHANNEL = 2
+    ALL = 3

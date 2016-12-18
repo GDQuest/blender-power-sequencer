@@ -21,6 +21,39 @@ from cityFunctions import *
 
 
 
+# Draw handler
+
+# To leave in operator:
+
+# self.mouse_path = []
+# args = (self, context)
+# self._handle = bpy.types.SpaceSequenceEditor.draw_handler_add(
+#     draw_callback_px, args, 'WINDOW', 'POST_PIXEL')
+
+
+# def draw_callback_px(self, context):
+#     # print("mouse points", len(self.mouse_path))
+
+#     region = context.region
+#     active = context.scene.sequence_editor.active_strip
+#     if active is None:
+#         return
+
+#     x = active.frame_final_start
+#     y = active.channel
+#     x, y = region.view2d.view_to_region(x, y)
+
+#     font_id = 0  # XXX, need to find out how best to get this.
+#     blf.position(font_id, x, y, 0)
+#     blf.size(font_id, 20, 72)
+#     # region_to_view gives the region coords.  x is frame, y is channel.
+#     x, y = region.view2d.region_to_view(*self.mouse_path[-1])
+#     blf.draw(font_id, "Hello Word %d %d" % (x, y))
+#     context.scene.frame_set(x)
+
+
+
+
 
 # Keymap that changes operator property!
 

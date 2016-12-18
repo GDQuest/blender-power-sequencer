@@ -1,207 +1,9 @@
 import os
-from math import ceil
-
 import bpy
-from .functions.global_settings import SequenceTypes
+from .functions.global_settings import SequenceTypes, SearchMode
+from .functions.sequences import is_channel_free, find_next_sequences, select_strip_handle
 
 
-# -----
-# GLOBAL VARIABLES
-# -----
-class SearchMode():
-    NEXT = 1
-    CHANNEL = 2
-    ALL = 3
-
-
-# -----
-# FUNCTIONS
-# -----
-def is_channel_free(target_channel, start_frame, end_frame):
-    """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
-    # Sort sequences on screen by starting frame
-    sequences = [
-        s for s in bpy.context.sequences if s.channel == target_channel]
-
-    for s in sequences:
-        if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
-            return False
-    return True
-
-
-# TODO: refactor code - clean up / get the user to pass sequences to work on?
-def find_next_sequences(mode=SearchMode.NEXT,
-                        sequences=None,
-                        pick_sound=False):
-    """Returns a sequence or a list of sequences following the active one"""
-    if not sequences:
-        sequences = bpy.context.scene.sequence_editor.sequences
-        if not sequences:
-            return None
-
-    active = bpy.context.scene.sequence_editor.active_strip
-    nexts = []
-    nexts_far = []
-    same_channel = []
-
-    # Find all selected sequences to the right of the active sequence
-    for seq in sequences:
-
-        if (seq.frame_final_start >= active.frame_final_end) or (
-                seq.frame_final_start > active.frame_final_start) & (
-                    seq.frame_final_start < active.frame_final_end) & (
-                        seq.frame_final_end > active.frame_final_end):
-            if abs(seq.channel - active.channel) > 2:
-                nexts_far.append(seq)
-            elif seq.type in SequenceTypes.SOUND and not pick_sound:
-                pass
-            else:
-                nexts.append(seq)
-                if mode is SearchMode.CHANNEL and \
-                   seq.channel == active.channel:
-                    same_channel.append(seq)
-
-    # Store the sequences to return
-    next_sequences = None
-    if mode is SearchMode.CHANNEL:
-        return same_channel
-    elif len(nexts) > 0:
-        return min(
-            nexts,
-            key=lambda next: (next.frame_final_start - active.frame_final_start))
-    elif len(nexts_far) > 0:
-        next_sequences = min(nexts_far, key=lambda next: (
-            next.frame_final_start - active.frame_final_start))
-
-    return next_sequences
-
-
-# --------------
-# FADE MANAGEMENT
-# --------------
-def fade_create(sequences=None, fade_length=12, fade_type='both'):
-    """Takes a list of sequences, and adds a fade to the left, right or to both sides of
-     the VSE strips.
-    fade_length: length of the fade in frames
-    fade_type: 'left', 'right' or 'both' """
-
-    scene = bpy.context.scene
-
-    if scene.animation_data is None:
-        scene.animation_data_create()
-    if scene.animation_data.action is None:
-        action = bpy.data.actions.new(scene.name + "Action")
-        scene.animation_data.action = action
-
-    fcurves = scene.animation_data.action.fcurves
-
-    if sequences:
-        # For now, clear fades and re-create the animation data
-        # TODO: Smarter fades, that actually detect existing fades
-        fade_clear(sequences)
-
-        for s in sequences:
-            s_start = s.frame_final_start
-            s_end = s.frame_final_end
-
-            fade_in_frames = (s_start, s_start + fade_length)
-            fade_out_frames = (s_end - fade_length, s_end)
-
-            # TODO: Currently, the fades are always cleared, so fade_find_fcurve will always return None,
-            # but it does return fade_type, which we need.
-            fade_fcurve, fade_curve_type = fade_find_fcurve(s)
-            # In case there's no existing fade anim, we create it
-            if fade_fcurve is None:
-                fade_fcurve = fcurves.new(
-                    data_path=s.path_from_id(fade_curve_type))
-
-            # TODO: give the option to use the fade_curve's highest value?
-            fade_max_value = 1
-
-            # Sanity check - only insert keyframes if the strip is long enough
-            strip_min_length = fade_length * 2 if fade_type == 'both' else fade_length
-
-            if s.frame_final_duration > strip_min_length:
-                # TODO: Smarter fades, that actually detect existing fades
-                keyframes = fade_fcurve.keyframe_points
-
-                # CREATING FADE KEYFRAMES
-                if fade_type in ['left', 'both']:
-                    keyframes.insert(frame=fade_in_frames[0], value=0)
-                    keyframes.insert(frame=fade_in_frames[1],
-                                     value=fade_max_value)
-                if fade_type in ['right', 'both']:
-                    keyframes.insert(frame=fade_out_frames[0],
-                                     value=fade_max_value)
-                    keyframes.insert(frame=fade_out_frames[1], value=0)
-            else:
-                print('The strip ' + s.name +
-                      ' is too short for the fade to be applied.')
-    return len(sequences)
-
-
-def fade_find_fcurve(sequence=None):
-    """Checks if there's existing fade animation on a given video sequence.
-    If so, returns the data path to the corresponding fcurve.
-    Also returns the strip's fade type"""
-
-    fcurves = bpy.context.scene.animation_data.action.fcurves
-
-    if sequence:
-        if sequence.type in SequenceTypes.SOUND:
-            fade_type = 'volume'
-        else:
-            fade_type = 'blend_alpha'
-
-        fade_fcurve = None
-        for c in fcurves:
-            if (c.data_path == 'sequence_editor.sequences_all["' +
-                    sequence.name + '"].' + fade_type):
-                fade_fcurve = c
-                break
-    return fade_fcurve, fade_type
-
-
-def fade_clear(sequences=None):
-    """Deletes all keyframes in the blend_alpha or volume fcurves of the provided sequences"""
-
-    fcurves = bpy.context.scene.animation_data.action.fcurves
-
-    if sequences:
-        for s in sequences:
-            fade_fcurve = fade_find_fcurve(s)[0]
-            if fade_fcurve:
-                fcurves.remove(fade_fcurve)
-        return 'Done'
-    else:
-        return False
-
-
-def select_strip_handle(sequences, side=None, frame=None):
-    """Select the left or right handles of the strips based on the frame number"""
-    if not side and sequences and frame:
-        return False
-
-    side = side.upper()
-
-    for seq in sequences:
-        seq.select_left_handle = False
-        seq.select_right_handle = False
-
-        handle_side = ''
-
-        start, end = seq.frame_final_start, seq.frame_final_end
-
-        if side == 'AUTO' and start <= frame <= end:
-            handle_side = 'LEFT' if abs(
-                frame - start) < seq.frame_final_duration / 2 else 'RIGHT'
-        elif side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
-            handle_side = side
-        else:
-            seq.select = False
-        if handle_side:
-            bpy.ops.sequencer.select_handles(side=handle_side)
-    return True
 
 # --------------
 # CUSTOM PROPERTIES
@@ -210,7 +12,7 @@ def select_strip_handle(sequences, side=None, frame=None):
 # TODO: function to add a custom property, set it
 
 # def add_custom_property(sequences, name, value):
-#     """ Appends a new custom property to a list of sequences, and initializes it. """
+#     """ Appends a new custom property to a list of sequences, and initializes it."""
 #     for s in sequences:
 #         bpy.ops.wm.properties_add(data_path="scene.sequence_editor")
 
@@ -223,14 +25,6 @@ def select_strip_handle(sequences, side=None, frame=None):
 # ---------------- Operators -----------------------
 # --------------------------------------------------
 
-# Auto add crossfade from the active clip to the closest next clip in the VSE
-# Currently doesn't have any options
-# DONE: Add property and option to force length of crossfade (i.e. 12 frames)
-# DONE: Make it work with pictures -> add fade from and to pictures
-# DONE: Refactor code - clean up
-# DONE: Extend the second strip when force_length is True by crossfade_length frames
-# DONE: If selected audio + video and audio is active, set video to active
-# DONE: If only one audio strip selected, report error to the user
 # TODO: Add custom properties to the sequences referencing the GAMMA_CROSS strip, to easily remove it or process it with Python
 # FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between the 2 selected strips
 # TODO: If crossfade between effect strips or 2 pictures, set crossfade strip to ALPHA_OVER
@@ -239,8 +33,6 @@ def select_strip_handle(sequences, side=None, frame=None):
 # FIXME: Spotted an offset issue with a metastrip that was exactly self.crossfade_length frames before the end of the active strip
 # Happens in particular if the second strip is already in place - it adds
 # 10 frames at the end
-
-
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
@@ -325,7 +117,6 @@ class AddCrossfade(bpy.types.Operator):
 # TODO: if there are multiple selected blocks of strips that are not connected in time, speed up each block separately
 # TODO: ? Tag the final meta strip with a custom property to know that the
 # footage was sped up
-
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_speed"
     bl_label = "Speed up Sequence"
@@ -361,17 +152,11 @@ class AddSpeed(bpy.types.Operator):
                 else:
                     count += 1
             if count == len(selection):
-                self.report(
-
-                    {"ERROR_INVALID_INPUT"},
-
-                    "You must select at least 1 video or meta strip to apply a speed effect - operation cancelled")
-
+                self.report({"ERROR_INVALID_INPUT"}, "You must select at least 1 video or meta strip to apply a speed effect - operation cancelled")
                 return {"CANCELLED"}
 
         if len(selection) == 0:
             active.select = True
-            pass
         elif len(selection) == 1 and active.name != selection[0].name:
             active = selection[0]
             scene.sequence_editor.active_strip = active
@@ -417,7 +202,7 @@ class AddSpeed(bpy.types.Operator):
 
             # Setting the length of the video clip to reflect the change of
             # size
-
+            from math import ceil
             size = ceil(active.frame_final_duration /
                         effect_strip.speed_factor)
             endFrame = active.frame_final_start + size
@@ -511,42 +296,6 @@ class ConcatenateStrips(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: (?) filter selection down only to relevant strip types (video, sound, img, meta, transform etc.)
-# TODO: Smart filtering of the selection: apply fades to parent effects
-# only if possible
-
-class FadeStrips(bpy.types.Operator):
-    bl_idname = "gdquest_vse.fade_strips"
-    bl_label = "Fade strips"
-    bl_description = "Fade left, right or both sides of all selected strips in the VSE"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    fade_length = bpy.props.IntProperty(
-        name="Fade length",
-        description="Length of the fade in frames",
-        default=12,
-        min=1)
-    fade_type = bpy.props.EnumProperty(
-        items=[('both', 'Fade in and out', 'Fade selected strips in and out'),
-               ('left', 'Fade in', 'Fade in selected strips'),
-               ('right', 'Fade out', 'Fade out selected strips')],
-        name="Fade type",
-        description="Fade in, out, or both in and out. Default is both.",
-        default='both')
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        # TODO: Use selection or active strip otherwise
-        selected_sequences = bpy.context.selected_sequences if len(
-            bpy.context.
-            selected_sequences) > 0 else bpy.context.scene.sequence_editor.active_strip
-        fade_create(selected_sequences, self.fade_length, self.fade_type)
-        return {"FINISHED"}
-
-
 # DONE: add property to change the max length of selected strips
 class SelectShortStrips(bpy.types.Operator):
     bl_idname = "gdquest_vse.select_short_strips"
@@ -602,9 +351,8 @@ class SmartSnap(bpy.types.Operator):
             s.select_left_handle = False
         return {"FINISHED"}
 
+
 # TODO: Ripple strips on the first transform
-
-
 class GrabStillImage(bpy.types.Operator):
     """Grabs a still image from the active video strip, to quickly achieve pause effects"""
     bl_idname = "gdquest_vse.grab_still_image"
@@ -682,9 +430,6 @@ class ChannelOffset(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        # Sort selected layers by channel, starting from highest value if going
-        # up
-
         from operator import attrgetter
         selected = sorted(bpy.context.selected_sequences, key=attrgetter(
             'channel'), reverse=self.offset_upwards)
@@ -702,7 +447,6 @@ class ChannelOffset(bpy.types.Operator):
                     s.channel += 1
                 elif s.channel > 1:
                     s.channel -= 1
-
         return {"FINISHED"}
 
 
