@@ -96,23 +96,38 @@ class ImportLocalFootage2(bpy.types.Operator):
             # TODO: Ignore "_proxy" folders after coding proxy addon
             from glob import glob
             from os.path import basename
+            from .functions.global_settings import ProjectSettings
 
+            # TODO:
+            # Folder containing img files = img sequence BUT
+            # not for selected folders, i.e. ps/krita export folders
             for ext in file_extensions:
+                # Works for pictures too
                 source_pattern = directory + "\\"
                 pattern = source_pattern + ext
                 files.extend(glob(pattern))
-
                 if not recursive:
                     continue
                 pattern = source_pattern + "**\\" + ext
                 files.extend(glob(pattern))
 
+            # If img folder, if subfolders contain pics, add either content if assets folder else add folders as img seq
+            if basename(directory) == ProjectSettings.FOLDER_NAMES.IMG:
+                from os import listdir
+                from os.path import isdir
+
+                psd_names = [f for f in glob(directory + "\\*.psd")]
+                for i, name in enumerate(psd_names):
+                    psd_names[i] = name[len(directory):-4]
+                print(psd_names)
+
+                psd_folders = [f for f in listdir(directory) if f in psd_names]
+                for f in psd_folders:
+                    for ext in file_extensions:
+                        files.extend(glob(directory + "\\" + f + "\\" + ext))
+
             files = [path for path in files if not basename(path).endswith(ProjectSettings.PROXY_STRING)]
 
-            # TODO: Properly handle images
-            # Folder containing img files = img sequence BUT
-            # not for selected folders, i.e. ps/krita export folders
-            # if basename(directory) == ProjectSettings.FOLDER_NAMES.IMG:
 
             files_list = []
             for f in files:
@@ -122,12 +137,12 @@ class ImportLocalFootage2(bpy.types.Operator):
 
         # To add files, need a list of dictionaries like
         # {'name': 'path'} where path is relative to filepath
-        audio_files = find_files(folders['audio'], Extensions.AUDIO)
-        video_files = find_files(folders['video'], Extensions.VIDEO, recursive=True)
+        # audio_files = find_files(folders['audio'], Extensions.AUDIO)
+        # video_files = find_files(folders['video'], Extensions.VIDEO, recursive=True)
         img_files = find_files(folders['img'], Extensions.IMG, recursive=True)
 
-        print(audio_files)
-        print(video_files)
+        # print(audio_files)
+        # print(video_files)
         print(img_files)
 
         # PROCESSING IMAGE STRIPS

@@ -12,6 +12,7 @@ class ProjectSettings():
         AUDIO = 'audio'
         IMG = 'img'
         VIDEO = 'video'
+        IMG_ASSETS = '-assets'
     folders = ()
 
 

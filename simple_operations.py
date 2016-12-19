@@ -1,9 +1,8 @@
 """Simple operations like save, delete, open the project directory..."""
 import bpy
-from bpy.types import Operator
 
 
-class OpenProjectDirectory(Operator):
+class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
     bl_label = 'Open project directory'
     bl_description = 'Opens the Blender project directory in the explorer'
