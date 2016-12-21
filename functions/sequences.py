@@ -1,6 +1,6 @@
 """Sequence selection and editing related functions"""
 import bpy
-from .global_settings import SearchMode
+from .global_settings import SequenceTypes, SearchMode
 
 
 def find_empty_channel(mode='ABOVE'):

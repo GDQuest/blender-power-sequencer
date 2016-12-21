@@ -98,9 +98,7 @@ class ImportLocalFootage2(bpy.types.Operator):
             from os.path import basename
             from .functions.global_settings import ProjectSettings
 
-            # TODO:
-            # Folder containing img files = img sequence BUT
-            # not for selected folders, i.e. ps/krita export folders
+            # TODO: Folder containing img files = img sequence
             for ext in file_extensions:
                 # Works for pictures too
                 source_pattern = directory + "\\"
@@ -112,6 +110,11 @@ class ImportLocalFootage2(bpy.types.Operator):
                 files.extend(glob(pattern))
 
             # If img folder, if subfolders contain pics, add either content if assets folder else add folders as img seq
+            # TODO: Finish without img seq support
+            # For imgs, 1 call to add_strip = 1 img strip
+            # if the dict contains multiple files, you get an animated img sequence
+            # For individual img strips, call ops with one {'name': filename} for 
+            # each img file found
             if basename(directory) == ProjectSettings.FOLDER_NAMES.IMG:
                 from os import listdir
                 from os.path import isdir

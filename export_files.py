@@ -1,6 +1,4 @@
-import os
 import bpy
-
 
 def set_render_settings(resolution=None, encoding=None):
     """Sets the render dimensions and encoding settings based on presets
@@ -57,6 +55,10 @@ class RenderForWeb(bpy.types.Operator):
     encoding = RS.ENCODING.MP4_HIGH
     # render_folder
     # file_name
+    use_folder_name = bpy.props.BoolProperty(
+        name="Use folder name",
+        description="Use the folder to name the exported video, instead of the blend file",
+        default=True)
 
     @classmethod
     def poll(cls, context):
@@ -76,9 +78,13 @@ class RenderForWeb(bpy.types.Operator):
         if 'velvet_revolver' in bpy.context.user_preferences.addons.keys():
             bpy.ops.sequencer.proxy_editing_tofullres()
 
-        filename = bpy.path.basename(bpy.data.filepath)
-        filename = os.path.splitext(filename)[0]
-        filename += '.mp4'
-        bpy.context.scene.render.filepath = "//" + filename if filename != "" else "Video.mp4"
+        from os.path import splitext, dirname
+        path = bpy.data.filepath
+        name = dirname(path).rsplit(sep="\\", maxsplit=1)[-1] \
+            if self.use_folder_name else bpy.path.basename(path)
+        name = splitext(name)[0]
+        name += '.mp4'
+
+        bpy.context.scene.render.filepath = "//" + name if name else "Video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
         return {"FINISHED"}

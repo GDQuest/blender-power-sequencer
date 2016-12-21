@@ -60,8 +60,6 @@ class AddCrossfade(bpy.types.Operator):
         active_strip = bpy.context.scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
 
-        # If the active strip is not a video or a meta strip, we need to run a
-        # few checks
 
         if active_strip.type not in SequenceTypes.VIDEO:
             for s in selection:
