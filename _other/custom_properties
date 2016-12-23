@@ -1,5 +1,22 @@
 # Copy of the native ops to add a custom property - extend it so it can initialize the property
 
+# --------------
+# CUSTOM PROPERTIES
+# --------------
+
+# TODO: function to add a custom property, set it
+
+# def add_custom_property(sequences, name, value):
+#     """ Appends a new custom property to a list of sequences, and initializes it."""
+#     for s in sequences:
+#         bpy.ops.wm.properties_add(data_path="scene.sequence_editor")
+
+# def remove_custom_property(sequences, name):
+#     """ Removes a custom property from all selected strips, based on the property's name
+#     Takes a list of sequences as input """
+#     for s in sequences:
+#         pass
+
 class WM_OT_properties_add(Operator):
     bl_idname = "wm.properties_add"
     bl_label = "Add Property"

@@ -6,24 +6,6 @@ from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import is_channel_free, find_next_sequences, select_strip_handle
 
 
-
-# --------------
-# CUSTOM PROPERTIES
-# --------------
-
-# TODO: function to add a custom property, set it
-
-# def add_custom_property(sequences, name, value):
-#     """ Appends a new custom property to a list of sequences, and initializes it."""
-#     for s in sequences:
-#         bpy.ops.wm.properties_add(data_path="scene.sequence_editor")
-
-# def remove_custom_property(sequences, name):
-#     """ Removes a custom property from all selected strips, based on the property's name
-#     Takes a list of sequences as input """
-#     for s in sequences:
-#         pass
-
 # ---------------- Operators -----------------------
 # --------------------------------------------------
 
@@ -61,7 +43,6 @@ class AddCrossfade(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         active_strip = bpy.context.scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
-
 
         if active_strip.type not in SequenceTypes.VIDEO:
             for s in selection:
@@ -108,15 +89,9 @@ class AddCrossfade(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# Makes it easier to speed up footage
-# DONE: Add property for speed multiplier
-# DONE: Fix error if selecting strip with audio
-# DONE: If audio strip is active, set a video strip active instead
-# DONE: Ensure that there's at least one relevant strip to speed up in the selection
 # TODO: if single strip selected that has a crossfade, remove it, store the source strips, run speed operator and add crossfade again
 # TODO: if there are multiple selected blocks of strips that are not connected in time, speed up each block separately
-# TODO: ? Tag the final meta strip with a custom property to know that the
-# footage was sped up
+# TODO: ? Tag the final meta strip with a custom property to know that the footage was sped up, so it can be modified later
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_speed"
     bl_label = "Speed up Sequence"
@@ -214,11 +189,10 @@ class AddSpeed(bpy.types.Operator):
             pass
         return {"FINISHED"}
 
+
 # Shortcut: Shift + C
 # TODO: If only one selected strip per channel, concatenate all channels
 # individually
-
-
 class ConcatenateStrips(bpy.types.Operator):
     """Concatenates selected strips or a channel based on the active strip"""
     bl_idname = "gdquest_vse.concatenate_strips"
@@ -237,14 +211,13 @@ class ConcatenateStrips(bpy.types.Operator):
         if len(context.selected_sequences) == 1:
             sequences_in_channel = find_next_sequences(mode=SearchMode.CHANNEL,
                                                        sequences=None,
-                                                       pick_sound=True,
-                                                       pick_image=True)
+                                                       pick_sound=True)
             for s in sequences_in_channel:
                 s.select = True
             context.scene.sequence_editor.active_strip.select = True
 
         for s in context.selected_sequences:
-            if s.type in SequenceTypes.VIDEO:
+            if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.SOUND:
                 sequences.append(s)
                 channels.append(s.channel)
 
@@ -253,13 +226,11 @@ class ConcatenateStrips(bpy.types.Operator):
 
         from operator import attrgetter
         # sort sequences by channel and frame start
-        sequences = sorted(sequences,
-                            key=attrgetter('channel', 'frame_final_start'))
+        sequences = sorted(sequences, key=attrgetter('channel', 'frame_final_start'))
         channels = set(channels)
         channels = list(channels)
-        num_channels = len(channels)
 
-        # TODO: If the number of channels the sequences are spread other is equal to the number of selected sequences, then there's only 1 selected sequence per channel
+        # TODO: If the number of channels the sequences are spread over is equal to the number of selected sequences, then there's only 1 selected sequence per channel
         # So then we select all next sequences in each channel
         # Gotta refactor the find_next_sequences so we have to pass it a channel if mode == SearchMode.CHANNEL
         # if num_channels == len(sequences):
@@ -268,31 +239,19 @@ class ConcatenateStrips(bpy.types.Operator):
         #                                                    sequences=None,
         #                                                    pick_sound=True,
         #                                                    pick_image=True)
-        # loop over all channels to concatenate
-        c = 0
-        while c < num_channels:
-            # The sequences are ordered, so we know that the first sequence
-            # will be the first one we'll concatenate
-
-            concat_channel = channels[c]
+        for channel in channels:
             concat_start = 0
-            for s in sequences:
-                if s.channel == concat_channel:
-                    concat_start = s.frame_final_end
-                    break
-
             concat_sequences = []
-
             for s in sequences:
-                if s.channel == concat_channel:
+                if s.channel == channel:
                     concat_sequences.append(s)
+            concat_start = concat_sequences[0].frame_final_end
             concat_sequences.pop(0)
 
             for s in concat_sequences:
                 gap = s.frame_final_start - concat_start
                 s.frame_start -= gap
                 concat_start += s.frame_final_duration
-            c += 1
         return {"FINISHED"}
 
 
