@@ -409,45 +409,6 @@ class GrabStillImage(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: Extract function
-# TODO: Basic functionality, move a strip to the neighboring channel if
-# it's empty, otherwise skip channels if possible
-class ChannelOffset(bpy.types.Operator):
-    """Moves selected strips up and down smartly. Can swap sequences or detect if a channel is not empty"""
-    bl_idname = "gdquest_vse.channel_offset"
-    bl_label = "Move sequences to other channels"
-    bl_options = {'REGISTER', 'UNDO'}
-
-    offset_upwards = bpy.props.BoolProperty(
-        name="Offset upwards",
-        description="If True, the strips will move up. Else, they will move down.",
-        default=True)
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        from operator import attrgetter
-        selected = sorted(bpy.context.selected_sequences, key=attrgetter(
-            'channel'), reverse=self.offset_upwards)
-
-        # TODO: Check and move channels in selection recursively, one by one
-        target_channel = selected[0].channel
-        target_channel = target_channel + 1 if self.offset_upwards else target_channel - 1
-
-        selection_start = min(selected, key=attrgetter('frame_final_start'))
-        selection_end = max(selected, key=attrgetter('frame_final_end'))
-
-        if is_channel_free(target_channel, start_frame=selection_start, end_frame=selection_end) and target_channel >= 1:
-            for s in selected:
-                if self.offset_upwards:
-                    s.channel += 1
-                elif s.channel > 1:
-                    s.channel -= 1
-        return {"FINISHED"}
-
-
 # class AddSimpleText(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
 #     bl_idname = "gdquest_vse.add_simple_text"

@@ -31,10 +31,13 @@ def find_empty_channel(mode='ABOVE'):
 
 
 def is_channel_free(target_channel, start_frame, end_frame):
-    """Checks if the selected channel is empty or not. Optionally verifies that there is space in the channel in a certain timeframe"""
-    # Sort sequences on screen by starting frame
-    sequences = [
-        s for s in bpy.context.sequences if s.channel == target_channel]
+    """Checks if the selected channel is empty or not. Optionally verifies that
+       there is space in the channel in a certain timeframe"""
+
+    sequences = [s for s in bpy.context.sequences if s.channel == target_channel]
+    
+    print(start_frame)
+    print(end_frame)
 
     for s in sequences:
         if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
