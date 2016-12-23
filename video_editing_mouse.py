@@ -47,6 +47,10 @@ class MouseCut(bpy.types.Operator):
         name="Use linked time",
         description="In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
+    use_selection = BoolProperty(
+        name="Use selection",
+        description="In smart mode, use the active selection",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -69,7 +73,7 @@ class MouseCut(bpy.types.Operator):
         # Strip selection
         if select_mode == 'cursor':
             sequencer.select_all(action='SELECT')
-        elif select_mode == 'smart' and selection:
+        elif select_mode == 'smart' and selection and self.use_selection:
             use_selection = False
 
             for seq in selection:
