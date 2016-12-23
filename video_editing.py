@@ -1,5 +1,7 @@
 import os
 import bpy
+from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
+
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import is_channel_free, find_next_sequences, select_strip_handle
 
@@ -40,12 +42,12 @@ class AddCrossfade(bpy.types.Operator):
                       the selected layer and the closest one to its right."
     bl_options = {"REGISTER", "UNDO"}
 
-    crossfade_length = bpy.props.IntProperty(
+    crossfade_length = IntProperty(
         name="Crossfade length",
         description="Length of the crossfade in frames",
         default=10,
         min=1)
-    force_length = bpy.props.BoolProperty(
+    force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
                      is of the length set in 'Crossfade Length'",
@@ -121,7 +123,7 @@ class AddSpeed(bpy.types.Operator):
     bl_description = "Adds a speed effect over your clip, sets its speed and size, and wraps it into a meta strip set to over drop for easier editing"
     bl_options = {"REGISTER", "UNDO"}
 
-    speed_factor = bpy.props.IntProperty(
+    speed_factor = IntProperty(
         name="Speed factor",
         description="How many times the footage gets sped up",
         default=2,
@@ -301,7 +303,7 @@ class SelectShortStrips(bpy.types.Operator):
     bl_description = "Filters the current selection down to the strips that are less than the 'Max strip length' frames long."
     bl_options = {'REGISTER', 'UNDO'}
 
-    max_strip_length = bpy.props.IntProperty(
+    max_strip_length = IntProperty(
         name="Max strip length",
         description="Length of the selected strips in frames",
         default=8,
@@ -324,7 +326,7 @@ class SmartSnap(bpy.types.Operator):
     bl_label = "Trim or extend strip to cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
-    side = bpy.props.EnumProperty(
+    side = EnumProperty(
         items=[('left', 'Left', 'Left side'),
                ('right', 'Right', 'Right side'),
                ('auto', 'Auto', 'Use the side closest to the time cursor')],
@@ -357,7 +359,7 @@ class GrabStillImage(bpy.types.Operator):
     bl_label = "Grab still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
-    strip_duration = bpy.props.IntProperty(
+    strip_duration = IntProperty(
         name="Strip duration",
         description="Duration of the still image strip in frames",
         default=106)
@@ -415,17 +417,17 @@ class GrabStillImage(bpy.types.Operator):
 #     bl_label = "Add a text strip and set it up quickly"
 #     bl_options = {'REGISTER', 'UNDO'}
 
-#     strip_duration = bpy.props.IntProperty(
+#     strip_duration = IntProperty(
 #         name="Duration",
 #         description="Length of the text strip in frames"
 #         default=96
 #     )
-#     text = bpy.props.StringProperty(
+#     text = StringProperty(
 #         name="Text",
 #         description="The text to display on screen"
 #         default="Text"
 #     )
-#     align_x = bpy.props.EnumProperty(
+#     align_x = EnumProperty(
 #         items= [('left', 'left', 'Align to the left edge of the screen'),
 #                 ('middle', 'middle', 'Align to the middle of the screen'),
 #                 ('right', 'right', 'Align to the right edge of the screen')],
@@ -433,7 +435,7 @@ class GrabStillImage(bpy.types.Operator):
 #         description="",
 #         default='right'
 #     )
-#     align_y = bpy.props.EnumProperty(
+#     align_y = EnumProperty(
 #         items= [('top', 'top', 'Align to the top edge of the screen'),
 #                 ('middle', 'middle', 'Align to the middle of the screen'),
 #                 ('bottom', 'bottom', 'Align to the bottom edge of the screen')],
@@ -441,7 +443,7 @@ class GrabStillImage(bpy.types.Operator):
 #         description="",
 #         default='right'
 #     )
-#     animate = bpy.props.BoolProperty(
+#     animate = BoolProperty(
 #         name="Animate opacity",
 #         description="",
 #         default=True

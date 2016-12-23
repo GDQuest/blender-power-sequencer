@@ -1,6 +1,8 @@
 """Operators that add animation to the sequences
    These can include fades, transforms, etc."""
 import bpy
+from bpy.props import BoolProperty, IntProperty, EnumProperty
+
 
 # TODO: Smart filtering of the selection: apply fades to parent effects?
 class FadeStrips(bpy.types.Operator):
@@ -9,12 +11,12 @@ class FadeStrips(bpy.types.Operator):
     bl_description = "Fade left, right or both sides of all selected strips in the VSE"
     bl_options = {'REGISTER', 'UNDO'}
 
-    fade_length = bpy.props.IntProperty(
+    fade_length = IntProperty(
         name="Fade length",
         description="Length of the fade in frames",
         default=12,
         min=1)
-    fade_type = bpy.props.EnumProperty(
+    fade_type = EnumProperty(
         items=[('both', 'Fade in and out', 'Fade selected strips in and out'),
                ('left', 'Fade in', 'Fade in selected strips'),
                ('right', 'Fade out', 'Fade out selected strips')],
@@ -43,7 +45,7 @@ class AddAnimationFromLibrary(bpy.types.Operator):
     bl_description = "Adds animation to selected strips."
     bl_options = {"REGISTER", "UNDO"}
 
-    both_sides = bpy.props.BoolProperty(
+    both_sides = BoolProperty(
         name="Both sides",
         description="Animate both the start and the end of the strip",
         default=True)

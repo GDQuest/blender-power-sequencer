@@ -1,3 +1,5 @@
+from bpy.props import EnumProperty
+
 # OPERATORS
 class Operator(bpy.types.Operator):
     bl_idname = "my_operator.operator_normal"
@@ -131,7 +133,7 @@ class VIEW3D_PIE_SV_ops(bpy.types.Operator):
         ("option3", "option3", "", "", 2)
     ]
 
-    selected_mode = bpy.props.EnumProperty(
+    selected_mode = EnumProperty(
         items=mode_options,
         description="offers....",
         default="option1"

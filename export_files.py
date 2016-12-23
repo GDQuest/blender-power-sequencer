@@ -1,4 +1,6 @@
 import bpy
+from bpy.props import BoolProperty
+
 
 def set_render_settings(resolution=None, encoding=None):
     """Sets the render dimensions and encoding settings based on presets
@@ -55,7 +57,7 @@ class RenderForWeb(bpy.types.Operator):
     encoding = RS.ENCODING.MP4_HIGH
     # render_folder
     # file_name
-    use_folder_name = bpy.props.BoolProperty(
+    use_folder_name = BoolProperty(
         name="Use folder name",
         description="Use the folder to name the exported video, instead of the blend file",
         default=True)

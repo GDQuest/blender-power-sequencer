@@ -2,7 +2,7 @@
 from math import floor
 
 import bpy
-from bpy.props import BoolProperty, EnumProperty, IntProperty
+from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .functions.sequences import mouse_select_sequences
 # import blf
 
@@ -18,18 +18,15 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'
-                ), ('cursor', 'Time cursor',
-                    'Select all of the strips the time cursor overlaps'),
-               ('smart', 'Smart',
-                'Uses the selection if possible, else uses the other modes')],
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'), 
+               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
-        description=
-        "Cut only the strip under the mouse or all strips under the time cursor",
+        description="Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
     cut_mode = EnumProperty(
-        items=[('cut', 'Cut', 'Cut the strips'), ('trim', 'Trim',
-                                                  'Trim the selection')],
+        items=[('cut', 'Cut', 'Cut the strips'),
+               ('trim', 'Trim', 'Trim the selection')],
         name='Cut mode',
         description='Cut or trim the selection',
         default='cut')
@@ -45,8 +42,11 @@ class MouseCut(bpy.types.Operator):
         name="Cursor trim offset",
         description="On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
-        min=0
-    )
+        min=0)
+    select_linked = BoolProperty(
+        name="Use linked time",
+        description="In mouse or smart mode, always cut linked strips if this is checked",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -80,8 +80,7 @@ class MouseCut(bpy.types.Operator):
                 sequencer.select_all(action='SELECT')
         else:
             # Smart can behave as mouse mode if the user clicks on a strip
-            sequences_to_select = mouse_select_sequences(frame, channel,
-                                                         select_mode)
+            sequences_to_select = mouse_select_sequences(frame, channel, select_mode, self.select_linked)
             if not sequences_to_select:
                 if select_mode == 'mouse':
                     return {"CANCELLED"}

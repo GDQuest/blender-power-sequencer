@@ -119,10 +119,7 @@ def select_strip_handle(sequences, side=None, frame=None):
     return True
 
 
-def mouse_select_sequences(frame=None,
-                           channel=None,
-                           mode='mouse',
-                           select_linked=True):
+def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
     """Selects sequences based on the mouse position or using the time cursor"""
 
     selection = []

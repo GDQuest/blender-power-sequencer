@@ -3,6 +3,7 @@
    and offers more flexibility than the built-in proxies
    for simple video projects (online videos, tutorials, vlogs...)."""
 import bpy
+from bpy.props import BoolProperty, IntProperty
 
 # TODO: Add useful functions to work with Velvet Revoler
 # TODO: Quick make proxies from local files with Revolver
@@ -38,22 +39,22 @@ import bpy
 
 
 # class SettingsProxies(bpy.types.PropertyGroup):
-#     proxy_on_import = bpy.props.BoolProperty(
+#     proxy_on_import = BoolProperty(
 #     name = "Set and build videos strips as proxies when importing local footage",
 #     default = True)
-#     proxy_25 = bpy.props.BoolProperty(
+#     proxy_25 = BoolProperty(
 #     name = "Proxy at 25%",
 #     default = True)
-#     proxy_50 = bpy.props.BoolProperty(
+#     proxy_50 = BoolProperty(
 #     name = "Proxy at 50%",
 #     default = False)
-#     proxy_75 = bpy.props.BoolProperty(
+#     proxy_75 = BoolProperty(
 #     name = "Proxy at 75%",
 #     default = False)
-#     proxy_100 = bpy.props.BoolProperty(
+#     proxy_100 = BoolProperty(
 #     name = "Proxy at 100%",
 #     default = False)
-#     proxy_quality = bpy.props.IntProperty(
+#     proxy_quality = IntProperty(
 #     name = "Proxy JPG quality",
 #     default = 90,
 #     min = 1,
