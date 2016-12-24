@@ -13,14 +13,9 @@ class ProjectSettings():
         IMG = 'img'
         VIDEO = 'video'
         IMG_ASSETS = '-assets'
-    folders = ()
 
-
-ProjectSettings.folders = (
-    ProjectSettings.FOLDER_NAMES.AUDIO,
-    ProjectSettings.FOLDER_NAMES.IMG,
-    ProjectSettings.FOLDER_NAMES.VIDEO,
-    )
+    def __dir__(self):
+        return self.FOLDER_NAMES.AUDIO, self.FOLDER_NAMES.IMG, self.FOLDER_NAMES.VIDEO
 
 
 class FileTypes(Enum):
@@ -65,3 +60,14 @@ class SearchMode():
     NEXT = 1
     CHANNEL = 2
     ALL = 3
+
+
+class SequenceParams():
+    """A reference to valid parameters to use on sequences with operator.attrgetter"""
+    CHANNEL = 'channel'
+    FRAME_START = 'frame_final_start'
+    FRAME_END = 'frame_final_end'
+    FRAME_DURATION = 'frame_final_duration'
+
+    def __dir__(self):
+        return self.CHANNEL, self.FRAME_DURATION, self.FRAME_END, self.FRAME_START

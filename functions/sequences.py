@@ -8,7 +8,6 @@ def find_empty_channel(mode='ABOVE'):
     Takes the optional argument mode: 'ABOVE' or 'ANY'
     'ABOVE' finds the first empty channel above all of the other strips
     'ANY' finds the first empty channel, even if there are strips above it"""
-
     sequences = bpy.context.sequences
 
     if not sequences:
@@ -33,11 +32,7 @@ def find_empty_channel(mode='ABOVE'):
 def is_channel_free(target_channel, start_frame, end_frame):
     """Checks if the selected channel is empty or not. Optionally verifies that
        there is space in the channel in a certain timeframe"""
-
     sequences = [s for s in bpy.context.sequences if s.channel == target_channel]
-    
-    print(start_frame)
-    print(end_frame)
 
     for s in sequences:
         if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:

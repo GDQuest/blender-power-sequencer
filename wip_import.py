@@ -84,7 +84,7 @@ class ImportLocalFootage2(bpy.types.Operator):
         folders = {}
 
         for d in os.listdir(path=working_directory):
-            if d in ProjectSettings.folders:
+            if d in dir(ProjectSettings):
                 folders[d] = working_directory + "\\" + d
 
         def find_files(directory, file_extensions, recursive=False):

@@ -1,4 +1,3 @@
-import os
 import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
@@ -369,33 +368,6 @@ class GrabStillImage(bpy.types.Operator):
         active.select_left_handle = False
         return {"FINISHED"}
 
-
-class AudioSetVolume(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.audio_set_volume'
-    bl_label = 'Change audio strips volume'
-    bl_description = 'Change the volume of all selected audio strips (use F6)'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    volume = bpy.props.FloatProperty(
-        name="Volume",
-        description="The volume to use",
-        default=1.0,
-        min=0.0, max=4.0,
-        soft_min=0.0, soft_max=4.0,
-        step=5,
-        precision=2
-    )
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        sequences = [s for s in bpy.context.selected_sequences if s.type in SequenceTypes.SOUND]
-
-        for s in sequences:
-            s.volume = self.volume
-        return {'FINISHED'}
 
 # class AddSimpleText(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
