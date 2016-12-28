@@ -7,7 +7,11 @@ from .functions.sequences import is_channel_free, find_next_sequences, select_st
 
 # ---------------- Operators -----------------------
 # --------------------------------------------------
-
+# TODO: Rewrite cleanly
+# TODO: make it work with pictures and transform strips
+# TODO: If source strip has a special blending mode, use that for crossfade
+# TODO: If 2 strips selected and same type familly (visual or sound), crossfade from the bottom left one to the top right one
+# TODO: Chain crossfades if more than 2 strips selected?
 # TODO: Add custom properties to the sequences referencing the GAMMA_CROSS strip, to easily remove it or process it with Python
 # FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between the 2 selected strips
 # TODO: If crossfade between effect strips or 2 pictures, set crossfade strip to ALPHA_OVER
@@ -36,55 +40,47 @@ class AddCrossfade(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.active_object is not None
+        return True
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-        active_strip = bpy.context.scene.sequence_editor.active_strip
+        active = bpy.context.scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
 
-        if active_strip.type not in SequenceTypes.VIDEO:
-            for s in selection:
-                if s.type in SequenceTypes.VIDEO:
-                    bpy.context.scene.sequence_editor.active_strip = s
-                    active_strip = s
-                    break
-                pass
-            # If no strip in selection is a video, can't apply crossfade
-            if active_strip.type not in SequenceTypes.VIDEO:
-                self.report(
-                    {"ERROR_INVALID_INPUT"},
-                    "You need to select a video sequence to add a crossfade")
+        if len(selection) > 1:
+            self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to crossfade from")
+            return {"CANCELLED"}
+
+        if active.type not in SequenceTypes.VIDEO:
+            if selection[0].type in SequenceTypes.VIDEO:
+                bpy.context.scene.sequence_editor.active_strip = active = selection[0]
+            else:
+                self.report({"ERROR_INVALID_INPUT"}, "You need to select a video sequence to add a crossfade")
                 return {"CANCELLED"}
-            pass
 
-        seq = [active_strip, find_next_sequences(SearchMode.NEXT)]
+        seq = [active, find_next_sequences(SearchMode.NEXT)]
         # Force crossfade_length
-        if seq[0] and seq[1]:
-            if self.force_length:
-                # Setting up variables to properly relocate the second sequence
-                target_frame = seq[0].frame_final_end
-                frame_offset = -1 * \
-                    (seq[1].frame_final_start - seq[0].frame_final_end)
+        if not seq[0] and seq[1]:
+            return {"CANCELLED"}
 
-                strip_duration = seq[1].frame_final_duration
+        if self.force_length:
+            # Setting up variables to move the second sequence
+            target_frame = seq[0].frame_final_end
+            frame_offset = -1 * (seq[1].frame_final_start - seq[0].frame_final_end)
+            strip_duration = seq[1].frame_final_duration
+            # Moving and trimming the second sequence
+            seq[1].frame_final_start = target_frame
+            seq[1].frame_final_end = target_frame + strip_duration
+            sequencer.select_all(action='DESELECT')
+            seq[1].select = True
 
-                # Moving and trimming the second sequence
-                seq[1].frame_final_start = target_frame
-                seq[1].frame_final_end = target_frame + strip_duration
-                sequencer.select_all(action='DESELECT')
-                seq[1].select = True
-                sequencer.slip(offset=frame_offset)
-                # Moving the left handle before we apply the crossfade
-                seq[1].frame_final_start -= self.crossfade_length
-                pass
+            sequencer.slip(offset=frame_offset)
+            seq[1].frame_final_start -= self.crossfade_length
 
-            # Select only the 2 sequences required for the operation
-            for s in seq:
-                s.select = True
-            # Set second strip active so the fade goes in the right direction
-            bpy.context.scene.sequence_editor.active_strip = seq[1]
-            sequencer.effect_strip_add(type='GAMMA_CROSS')
+        for s in seq:
+            s.select = True
+        bpy.context.scene.sequence_editor.active_strip = seq[1]
+        sequencer.effect_strip_add(type='GAMMA_CROSS')
         return {"FINISHED"}
 
 
@@ -114,8 +110,9 @@ class AddSpeed(bpy.types.Operator):
 
         selection = bpy.context.selected_sequences
 
-        # If the active strip is not a video strip, ensure that there are video
-        # type strips in the selection and set the active strip to one of them
+        if not selection:
+            self.report({"ERROR_INVALID_INPUT"}, "No sequences selected. Operation cancelled")
+            return {"CANCELLED"}
 
         if active.type not in SequenceTypes.VIDEO:
             count = 0
@@ -126,66 +123,46 @@ class AddSpeed(bpy.types.Operator):
                 else:
                     count += 1
             if count == len(selection):
-                self.report({"ERROR_INVALID_INPUT"}, "You must select at least 1 video or meta strip to apply a speed effect - operation cancelled")
+                self.report({"ERROR_INVALID_INPUT"}, "You must select at least 1 video or meta strip to apply a speed effect. Operation cancelled")
                 return {"CANCELLED"}
 
-        if len(selection) == 0:
-            active.select = True
-        elif len(selection) == 1 and active.name != selection[0].name:
-            active = selection[0]
-            scene.sequence_editor.active_strip = active
-            sequencer.refresh_all()
-        # Speed up with more than 1 selected strips
+        # TODO: refactor to make it work without active sequence
+        # from .functions.sequences import slice_selection
+        # selection_blocks = slice_selection(selection)
+
+        # for sel in selection_blocks:
+        #     sequencer.select_all(action='DESELECT')
+        #     for s in sel:
+        #         s.select = True
+
+        if len(selection) == 1 and active.name != selection[0].name:
+            active = scene.sequence_editor.active_strip = selection[0]
+            # sequencer.refresh_all()
         elif len(selection) > 1:
-            # TODO: break down selection in blocks of strips that are connected
-            # in time, and apply the code below to each block separately.
-
-            def split_sequence_blocks(sequences):
-                """Breaks down a selection of sequences into sub-selections of strips connected in time.
-                Takes a list of sequences as input and returns a tuple of lists. Each returned list represents a block of sequences that are connected in time.
-                Use this function to apply an operator that works with blocks of sequences, like gdquest_vse.add_speed"""
-
-                # Sort sequences by start time
-                # Step through the sequences and mark the ones between which there's a gap with a breakpoint (cut index)
-                # Loop through the breakpoints to split the lists to return
-                pass
-
-            bpy.ops.sequencer.select_grouped(type='EFFECT_LINK')
-            # If there are no effect strips with the selection, Blender will deselect everything. Then we have to use the original selection
-            # TODO: Check if it works if there are effects only on some of the
-            # selected strips?
-
+            sequencer.select_grouped(type='EFFECT_LINK')
             for s in selection:
-                if not s in bpy.context.selected_sequences:
-                    s.select = True
+                s.select = True
             sequencer.meta_make()
             active = scene.sequence_editor.active_strip
-            pass
 
-        if active.type in SequenceTypes.VIDEO:
-            sequencer.effect_strip_add(type='SPEED')
-            effect_strip = bpy.context.scene.sequence_editor.active_strip
-            effect_strip.use_default_fade = False
-            effect_strip.speed_factor = self.speed_factor
+        sequencer.effect_strip_add(type='SPEED')
+        effect_strip = bpy.context.scene.sequence_editor.active_strip
+        effect_strip.use_default_fade = False
+        effect_strip.speed_factor = self.speed_factor
 
-            # Select the originally selected strip and make it active
-            sequencer.select_all(action='DESELECT')
-            active.select_right_handle = True
-            active.select = True
-            bpy.context.scene.sequence_editor.active_strip = active
+        sequencer.select_all(action='DESELECT')
+        active.select_right_handle = True
+        active.select = True
+        scene.sequence_editor.active_strip = active
 
-            # Setting the length of the video clip to reflect the change of
-            # size
-            from math import ceil
-            size = ceil(active.frame_final_duration /
-                        effect_strip.speed_factor)
-            endFrame = active.frame_final_start + size
-            sequencer.snap(frame=endFrame)
+        from math import ceil
+        size = ceil(active.frame_final_duration /
+                    effect_strip.speed_factor)
+        endFrame = active.frame_final_start + size
+        sequencer.snap(frame=endFrame)
 
-            effect_strip.select = True
-            sequencer.meta_make()
-            pass
-            pass
+        effect_strip.select = True
+        sequencer.meta_make()
         return {"FINISHED"}
 
 

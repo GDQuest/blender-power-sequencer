@@ -142,3 +142,40 @@ def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked
     elif mode == 'smart':
         selection = sequences
     return selection
+
+
+# FIXME: getting all blocks but 1
+def slice_selection(sequences):
+    """Takes a list of sequences and returns a list of lists of connected sequences"""
+    if not sequences:
+        return None
+
+    # order the sequences by starting frame.
+    from operator import attrgetter
+    sequences = sorted(sequences, key=attrgetter('frame_final_start'))
+
+    last_sequence = sequences[0]
+    break_indices = []
+    index = 1
+    for s in sequences:
+        if not s.frame_final_start <= last_sequence.frame_final_end:
+            break_indices.append(index)
+        last_sequence = s
+        index += 1
+
+    # print(break_indices)
+
+    # Create lists
+    last_breakpoint = break_indices[0]
+    broken_selection = []
+    index = 0
+    for next_breakpoint in break_indices:
+        temp_list = []
+        for counter in range(last_breakpoint, next_breakpoint):
+            temp_list.append(sequences[counter])
+        if temp_list:
+            broken_selection.append(temp_list)
+        index += 1
+    # print(len(broken_selection))
+    return broken_selection
+
