@@ -26,16 +26,16 @@ class AddCrossfade(bpy.types.Operator):
                       the selected layer and the closest one to its right."
     bl_options = {"REGISTER", "UNDO"}
 
-    crossfade_length = IntProperty(
-        name="Crossfade length",
-        description="Length of the crossfade in frames",
-        default=10,
-        min=1)
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
                      is of the length set in 'Crossfade Length'",
         default=True)
+    crossfade_length = IntProperty(
+        name="Crossfade length",
+        description="Length of the crossfade in frames",
+        default=10,
+        min=1)
 
     @classmethod
     def poll(cls, context):
@@ -63,17 +63,9 @@ class AddCrossfade(bpy.types.Operator):
             return {"CANCELLED"}
 
         if self.force_length:
-            # Setting up variables to move the second sequence
             target_frame = seq[0].frame_final_end
-            frame_offset = -1 * (seq[1].frame_final_start - seq[0].frame_final_end)
             strip_duration = seq[1].frame_final_duration
-            # Moving and trimming the second sequence
-            seq[1].frame_final_start = target_frame
-            seq[1].frame_final_end = target_frame + strip_duration
-            sequencer.select_all(action='DESELECT')
-            seq[1].select = True
-
-            sequencer.slip(offset=frame_offset)
+            seq[1].frame_start = target_frame
             seq[1].frame_final_start -= self.crossfade_length
 
         for s in seq:

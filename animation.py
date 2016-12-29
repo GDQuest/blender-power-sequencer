@@ -35,7 +35,7 @@ class FadeStrips(bpy.types.Operator):
         selection = selected_sequences if len(selected_sequences) > 0 \
             else bpy.context.scene.sequence_editor.active_strip
         sequence_count = fade_create(selection, self.fade_length, self.fade_type)
-
+        
         if sequence_count:
             self.report({"INFO"}, "Added fade animation to " + str(sequence_count) + " sequences.")
         return {"FINISHED"}
