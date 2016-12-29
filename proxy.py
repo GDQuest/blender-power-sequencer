@@ -10,6 +10,10 @@ from bpy.props import BoolProperty, IntProperty
 # TODO: extend Revolver to make proxy for PICS too
 
 
+# TODO: store and update proxies function (store/update paths to proxy folders and files)
+# TODO: clear proxies (delete all proxy files)
+# TODO: build proxies (using video/img folder)
+
 # Sets video strips as proxies
 # TODO: Only if setting enabled in preferences
 # class SetVideosProxies(bpy.types.Operator):

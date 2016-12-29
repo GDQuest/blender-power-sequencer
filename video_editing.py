@@ -18,8 +18,7 @@ from .functions.sequences import is_channel_free, find_next_sequences, select_st
 # TODO: Add custom property to store the name/data_path of the GAMMA_CROSS effect added to both strips, so we can detect it later
 # TODO: The operator should preserve strips with linked times (1 video + 1 audio)
 # FIXME: Spotted an offset issue with a metastrip that was exactly self.crossfade_length frames before the end of the active strip
-# Happens in particular if the second strip is already in place - it adds
-# 10 frames at the end
+# Happens in particular if the second strip is already in place - it adds 10 frames at the end
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
@@ -346,6 +345,40 @@ class GrabStillImage(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class ToggleHidden(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.toggle_muted'
+    bl_label = 'Toggle sequences mute'
+    bl_description = 'Mute or unmute sequences'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    use_unselected = BoolProperty(
+        name="Use unselected",
+        description="Toggle non selected sequences",
+        default=False)
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        selection = bpy.context.selected_sequences
+
+        if self.use_unselected:
+            selection = [s for s in bpy.context.sequences if s not in selection]
+
+        if not selection:
+            self.report({"WARNING"}, "No sequences to toggle muted")
+            return {'CANCELLED'}
+
+        mute = not selection[0].mute
+        for s in selection:
+            s.mute = mute
+        return {'FINISHED'}
+
+
+# TODO: Make it work
+# TODO: Access font folders
+# TODO: allow to define favorite fonts in add-on prefs
 # class AddSimpleText(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
 #     bl_idname = "gdquest_vse.add_simple_text"
