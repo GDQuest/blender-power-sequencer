@@ -10,6 +10,32 @@ from bpy.props import BoolProperty, IntProperty
 # TODO: extend Revolver to make proxy for PICS too
 
 
+# Auto change resolution
+# class Render_Resolution_Percentage_Toggle(bpy.types.Operator):
+#     """Toggle between 30, 60 and 100 values in Resolution Percentage"""
+#     bl_idname = "sequencer.resolution_percentage_toggle"
+#     bl_label = "Render - Resolution Toggle"
+#     bl_options = {'REGISTER', 'UNDO'}
+#     # Shortcut: Ctrl + Alt + R
+
+#     @classmethod
+#     def poll(cls, context):
+#         return True
+
+#     def execute(self, context):
+#         render = bpy.context.scene.render
+#         resolution = render.resolution_percentage
+
+#         if (resolution == 100):
+#             render.resolution_percentage = 30
+#         elif (resolution == 30):
+#             render.resolution_percentage = 60
+#         else:
+#             render.resolution_percentage = 100
+
+#         return {'FINISHED'}
+
+
 # TODO: store and update proxies function (store/update paths to proxy folders and files)
 # TODO: clear proxies (delete all proxy files)
 # TODO: build proxies (using video/img folder)
