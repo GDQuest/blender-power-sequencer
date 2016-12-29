@@ -54,8 +54,7 @@ def fade_create(sequences=None, fade_length=12, fade_type='both'):
         if fade_type in ['right', 'both']:
             keys.insert(frame=fade_out_frames[0], value=fade_max_value)
             keys.insert(frame=fade_out_frames[1], value=0)
-    print("Added fades to " + str(len(sequences)) + " sequences")
-    return True
+    return len(sequences)
 
 
 def fade_find_fcurve(sequence=None):
