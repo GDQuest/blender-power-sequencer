@@ -94,3 +94,35 @@ class CycleScenes(bpy.types.Operator):
                 break
         return {'FINISHED'}
 
+
+class TogglePreviewSelectedStrips(bpy.types.Operator):
+    """Sets the preview range based on selected sequences"""
+    bl_idname = "gdquest_vse.toggle_preview_selection"
+    bl_label = "Toggle preview selected strips"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        from operator import attrgetter
+        scene = bpy.context.scene
+
+        if scene.frame_start != 1:
+            preview_start = 1
+            preview_end = sorted(bpy.context.scene.sequence_editor.sequences, key=attrgetter('frame_final_end'))[-1].frame_final_end
+        else:
+            selection = bpy.context.selected_sequences
+            if not selection:
+                return {'CANCELLED'}
+            selection = sorted(selection, key=attrgetter('frame_final_start'))
+            preview_start = selection[0].frame_final_start
+            preview_end = selection[-1].frame_final_end
+
+        scene.frame_start = preview_start
+        scene.frame_end = preview_end
+
+        scene.frame_preview_start = preview_start
+        scene.frame_preview_end = preview_end
+        return {'FINISHED'}

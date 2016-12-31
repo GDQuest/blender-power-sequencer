@@ -377,6 +377,37 @@ class ToggleHidden(bpy.types.Operator):
         return {'FINISHED'}
 
 
+# TODO: make it work going up
+class ChannelOffset(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.channel_offset'
+    bl_label = 'Channel offset'
+    bl_description = 'Move selected strips up or down a channel'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    direction = EnumProperty(items=[
+        ('up', 'up', 'Move the selection 1 channel up'),
+        ('down', 'down', 'Move the selection 1 channel down')],
+        name='Direction',
+        description='Move the sequences up or down',
+        default='up')
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        selection = bpy.context.selected_sequences
+
+        # TODO: going up
+        # for index in range(len(selection)-1, -1, -1):
+        #     selection[index].channel += 1
+
+        for s in selection:
+            if (s.channel > 1):
+                s.channel -= 1
+        return {'FINISHED'}
+
+
 # TODO: Make it work
 # TODO: Access font folders
 # TODO: allow to define favorite fonts in add-on prefs
