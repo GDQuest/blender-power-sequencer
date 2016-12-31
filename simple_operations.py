@@ -1,5 +1,6 @@
 """Simple operations like save, delete, open the project directory..."""
 import bpy
+from bpy.props import EnumProperty
 
 
 class OpenProjectDirectory(bpy.types.Operator):
@@ -125,4 +126,30 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
 
         scene.frame_preview_start = preview_start
         scene.frame_preview_end = preview_end
+        return {'FINISHED'}
+
+
+class SetTimeline(bpy.types.Operator):
+    """Set the timeline start and end frame using the time cursor"""
+    bl_idname = "gdquest_vse.set_timeline"
+    bl_label = "Set timeline start and end"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    adjust = EnumProperty(items=[
+        ('start', 'start', 'start'),
+        ('end', 'end', 'end')],
+        name='Adjust',
+        description='Change the start of the end frame of the timeline',
+        default='start')
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        scene = bpy.context.scene
+        if self.adjust == 'start':
+            scene.frame_start = scene.frame_current
+        elif self.adjust == 'end':
+            scene.frame_end = scene.frame_current - 1
         return {'FINISHED'}

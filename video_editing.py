@@ -408,6 +408,35 @@ class ChannelOffset(bpy.types.Operator):
         return {'FINISHED'}
 
 
+# TODO: find a way to get the selection bounding box and place it where there is space for it.
+class SnapSelectionToCursor(bpy.types.Operator):
+    """Snap selected strips to the cursor, but as a block"""
+    bl_idname = "gdquest_vse.snap_selection_to_cursor"
+    bl_label = "Snap selection to cursor"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        from operator import attrgetter
+        selection = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))
+
+        time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
+
+        from .functions.sequences import find_empty_channel
+        empty_channel = find_empty_channel()
+
+        for s in selection:
+            channel = s.channel
+            if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
+                s.frame_start -= time_move
+            s.channel = empty_channel + channel - 1
+        return {'FINISHED'}
+
+
+
 # TODO: Make it work
 # TODO: Access font folders
 # TODO: allow to define favorite fonts in add-on prefs
