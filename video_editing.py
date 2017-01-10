@@ -163,6 +163,7 @@ class AddSpeed(bpy.types.Operator):
 
         effect_strip.select = True
         sequencer.meta_make()
+        bpy.context.selected_sequences[0].name = 'Speed ' + str(self.speed_factor) + 'x'
         return {"FINISHED"}
 
 
@@ -326,6 +327,7 @@ class GrabStillImage(bpy.types.Operator):
             scene.frame_current = start_frame + 1
 
         active.select = True
+        source_blend_type = active.blend_type
         sequencer.cut(frame=scene.frame_current, type='SOFT', side='RIGHT')
         transform.seq_slide(value=(offset, 0))
         sequencer.cut(frame=scene.frame_current +
@@ -335,6 +337,7 @@ class GrabStillImage(bpy.types.Operator):
         sequencer.meta_make()
         active = scene.sequence_editor.active_strip
         active.name = 'Still image'
+        active.blend_type = source_blend_type
         active.select_right_handle = True
         transform.seq_slide(value=(offset, 0))
 
