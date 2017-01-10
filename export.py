@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import BoolProperty
+from bpy.props import BoolProperty, EnumProperty
 
 
 def set_render_settings(resolution=None, encoding=None):
@@ -59,6 +59,16 @@ class RenderForWeb(bpy.types.Operator):
         name="Render at proxy size",
         description="Set strips to use proxies instead of full resolution clips and render",
         default=False)
+    preset = EnumProperty(items=[
+        ('youtube', 'youtube', 'Full HD mp4 with AAC audio, following recommendations from Youtube'),
+        ('twitter', 'twitter', 'HD ready mp4 with high enough bitrate for Twitter and Facebook'),
+        ('proxy', 'proxy', 'Fast rendering, uses proxies to render a low resolution video'),
+        ('none', 'none', "Don't use any preset, but name the export and render using the current settings")],
+        name='Preset',
+        description='Preset to use ',
+        default='youtube')
+    use_preset = not preset == 'none'
+
     use_folder_name = BoolProperty(
         name="Use folder name",
         description="Use the folder to name the exported video, instead of the blend file",
@@ -78,24 +88,27 @@ class RenderForWeb(bpy.types.Operator):
         resolution = RS.RESOLUTION.PROXY if self.use_proxies else RS.RESOLUTION.HD_FULL
         encoding = RS.ENCODING.MP4_PROXY if self.use_proxies else RS.ENCODING.MP4_HIGH
 
-        success = set_render_settings(self.resolution, self.encoding)
+        success = set_render_settings(resolution, encoding)
         if not success:
             self.report({'WARNING'}, "The rendering presets are not properly set. Cancelling operation")
             return {'CANCELLED'}
 
         # TODO: Replace with own proxy rendering system
-        if 'velvet_revolver' in bpy.context.user_preferences.addons.keys():
-            if self.use_proxies:
-                bpy.ops.sequencer.proxy_editing_toproxy()
-            else:
-                bpy.ops.sequencer.proxy_editing_tofullres()
+        # if self.use_preset and 'velvet_revolver' in bpy.context.user_preferences.addons.keys():
+        #     if self.use_proxies:
+        #         bpy.ops.sequencer.proxy_editing_toproxy()
+        #     else:
+        #         bpy.ops.sequencer.proxy_editing_tofullres()
 
         from os.path import splitext, dirname
         path = bpy.data.filepath
         name = dirname(path).rsplit(sep="\\", maxsplit=1)[-1] \
             if self.use_folder_name else bpy.path.basename(path)
-        name = splitext(name)[0]
-        name += '.mp4'
+
+        if self.use_preset:
+            name = "".join((splitext(name)[0], '_', self.preset, '.mp4'))
+        else:
+            name = "".join((splitext(name)[0], '.mp4'))
 
         bpy.context.scene.render.filepath = "//" + name if name else "Video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
