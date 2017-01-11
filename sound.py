@@ -26,8 +26,14 @@ class SoundToggleWaveform(bpy.types.Operator):
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
-        sequences = [s for s in selection if s.type in SequenceTypes.SOUND] \
-            if selection else bpy.context.sequences
+        if not selection:
+            selection = bpy.context.sequences
+
+        sequences = [s for s in selection if s.type in SequenceTypes.SOUND]
+
+        if not sequences:
+            self.report({"ERROR_INVALID_INPUT"}, "Select at least one sound strip")
+            return {'CANCELLED'}
 
         show_waveform = None
         if self.mode == 'auto':

@@ -2,7 +2,8 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
 from .functions.global_settings import SequenceTypes, SearchMode
-from .functions.sequences import is_channel_free, find_next_sequences, select_strip_handle
+from .functions.sequences import is_channel_free, find_next_sequences, \
+    select_strip_handle
 
 
 # ---------------- Operators -----------------------
@@ -11,15 +12,23 @@ from .functions.sequences import is_channel_free, find_next_sequences, select_st
 # FIXME: Make sure the offset preserves the starting frame of the second strip
 # TODO: make it work with pictures and transform strips
 # TODO: If source strip has a special blending mode, use that for crossfade
-# TODO: If 2 strips selected and same type familly (visual or sound), crossfade from the bottom left one to the top right one
+# TODO: If 2 strips selected and same type familly (visual or sound), crossfade
+# from the bottom left one to the top right one
 # TODO: Chain crossfades if more than 2 strips selected?
-# TODO: Add custom properties to the sequences referencing the GAMMA_CROSS strip, to easily remove it or process it with Python
-# FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between the 2 selected strips
-# TODO: If crossfade between effect strips or 2 pictures, set crossfade strip to ALPHA_OVER
-# TODO: Add custom property to store the name/data_path of the GAMMA_CROSS effect added to both strips, so we can detect it later
-# TODO: The operator should preserve strips with linked times (1 video + 1 audio)
-# FIXME: Spotted an offset issue with a metastrip that was exactly self.crossfade_length frames before the end of the active strip
-# Happens in particular if the second strip is already in place - it adds 10 frames at the end
+# TODO: Add custom properties to the sequences referencing the GAMMA_CROSS
+# strip, to easily remove it or process it with Python
+# FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between 2
+# selected strips
+# TODO: If crossfade between effect strips or 2 pictures, set crossfade strip
+# ALPHA_OVER
+# TODO: Add custom property to store the name/data_path of the GAMMA_CROSS
+# effect added to both strips, so we can detect it later
+# TODO: The operator should preserve strips with linked times (1 video + 1
+# audio)
+# FIXME: Spotted an offset issue with a metastrip that was exactly
+# self.crossfade_length frames before the end of the active strip
+# Happens in particular if the second strip is already in place - it adds 10
+# frames at the end
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
@@ -48,23 +57,24 @@ class AddCrossfade(bpy.types.Operator):
         selection = bpy.context.selected_sequences
 
         if len(selection) > 1:
-            self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to crossfade from")
+            self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
+            crossfade from")
             return {"CANCELLED"}
 
         if active.type not in SequenceTypes.VIDEO:
             if selection[0].type in SequenceTypes.VIDEO:
                 bpy.context.scene.sequence_editor.active_strip = active = selection[0]
             else:
-                self.report({"ERROR_INVALID_INPUT"}, "You need to select a video sequence to add a crossfade")
+                self.report({"ERROR_INVALID_INPUT"}, "You need to select a video \
+                sequence to add a crossfade")
                 return {"CANCELLED"}
 
         seq = [active, find_next_sequences(SearchMode.NEXT)]
-        # Force crossfade_length
         if not seq[0] and seq[1]:
             return {"CANCELLED"}
 
         if self.force_length:
-            # Setting up variables to move the second sequence
+            # Variables to move the second sequence
             target_frame = seq[0].frame_final_end
             frame_offset = -1 * (seq[1].frame_final_start - seq[0].frame_final_end)
             strip_duration = seq[1].frame_final_duration
@@ -84,9 +94,12 @@ class AddCrossfade(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: if single strip selected that has a crossfade, remove it, store the source strips, run speed operator and add crossfade again
-# TODO: if there are multiple selected blocks of strips that are not connected in time, speed up each block separately
-# TODO: ? Tag the final meta strip with a custom property to know that the footage was sped up, so it can be modified later
+# TODO: if single strip selected that has a crossfade, remove it, store the
+# source strips, run speed operator and add crossfade again
+# TODO: if there are multiple selected blocks of strips that are not connected
+# in time, speed up each block separately
+# TODO: ? Tag the final meta strip with a custom property to know that the
+# footage was sped up, so it can be modified later
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_speed"
     bl_label = "Speed up Sequence"
