@@ -412,15 +412,20 @@ class ChannelOffset(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        from operator import attrgetter
         selection = bpy.context.selected_sequences
+        if not selection:
+            return {'CANCELLED'}
 
-        # TODO: going up
-        # for index in range(len(selection)-1, -1, -1):
-        #     selection[index].channel += 1
+        selection = sorted(selection, key=attrgetter('channel', 'frame_final_start'))
 
-        for s in selection:
-            if (s.channel > 1):
-                s.channel -= 1
+        if self.direction == 'up':
+            for s in reversed(selection):
+                s.channel += 1
+        elif self.direction == 'down':
+            for s in selection:
+                if (s.channel > 1):
+                    s.channel -= 1
         return {'FINISHED'}
 
 

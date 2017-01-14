@@ -58,6 +58,22 @@ class RENDER_SETTINGS():
         MP4_PROXY = ('H264', 'MPEG4', 'H264', 18, 1500, 0, 0, 224 * 8,
                      2048, 10080000, 'AAC', 192)
 
+# TODO: Create presets that can be accessed using the Enum parameter in the
+# export operator as PRESETS[self.target][self.RESOLUTION] ?
+# PRESETS = {
+#     'youtube': {
+
+#     },
+#     'twitter': {
+
+#     },
+#     'facebook': {
+
+#     },
+#     'proxies': {
+
+#     }
+# }
 
 class SearchMode():
     NEXT = 1
