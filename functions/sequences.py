@@ -179,3 +179,43 @@ def slice_selection(sequences):
     # print(len(broken_selection))
     return broken_selection
 
+
+def get_frame_range(sequences):
+    """Returns a tuple containing the starting frame and the
+    end frame of the passed sequences, as displayed in the VSE"""
+    if not sequences:
+        return False
+
+    from operator import attrgetter
+    sequences = sorted(sequences, key=attrgetter('frame_final_start'))
+    start = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
+    end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+    return start, end
+
+
+def set_preview_range(start, end):
+    """Sets the preview range and timeline render range"""
+    if not start and end:
+        raise ValueError('Missing start or end parameter')
+
+    scene = bpy.context.scene
+    scene.frame_start = start
+    scene.frame_end = end
+    scene.frame_preview_start = start
+    scene.frame_preview_end = end
+    return True
+
+
+def reset_preview_range():
+    """Sets the preview and timeline render start and end frames to
+    1 and the end of the last strip"""
+    sequences = bpy.context.scene.sequence_editor.sequences
+    if not sequences:
+        return None
+    frame_start = 1
+
+    from operator import attrgetter
+    frame_end = max(bpy.context.scene.sequence_editor.sequences,
+                    key=attrgetter('frame_final_end')).frame_final_end
+    set_preview_range(frame_start, frame_end)
+    return True

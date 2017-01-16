@@ -107,25 +107,16 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        from operator import attrgetter
-        scene = bpy.context.scene
+        from .functions.sequences import get_frame_range, set_preview_range, reset_preview_range
 
-        if scene.frame_start != 1:
-            preview_start = 1
-            preview_end = sorted(bpy.context.scene.sequence_editor.sequences, key=attrgetter('frame_final_end'))[-1].frame_final_end
-        else:
+        if bpy.context.scene.frame_start == 1:
             selection = bpy.context.selected_sequences
             if not selection:
                 return {'CANCELLED'}
-            selection = sorted(selection, key=attrgetter('frame_final_start'))
-            preview_start = selection[0].frame_final_start
-            preview_end = selection[-1].frame_final_end
-
-        scene.frame_start = preview_start
-        scene.frame_end = preview_end
-
-        scene.frame_preview_start = preview_start
-        scene.frame_preview_end = preview_end
+            frame_start, frame_end = get_frame_range(selection)
+            set_preview_range(frame_start, frame_end)
+        else:
+            reset_preview_range()
         return {'FINISHED'}
 
 

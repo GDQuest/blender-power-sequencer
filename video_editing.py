@@ -393,7 +393,6 @@ class ToggleHidden(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# TODO: make it work going up
 class ChannelOffset(bpy.types.Operator):
     bl_idname = 'gdquest_vse.channel_offset'
     bl_label = 'Channel offset'

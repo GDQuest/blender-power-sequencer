@@ -54,23 +54,23 @@ class DeleteClosestMarker(bpy.types.Operator):
             return {"CANCELLED"}
 
         frame = bpy.context.scene.frame_current
-
         for m in markers:
             if m.frame == frame:
                 markers.remove(m)
                 return {'FINISHED'}
 
         previous_marker, next_marker = find_neighbor_markers(frame)
-        marker = None
+
+        marker = next_marker if next_marker else previous_marker
         if next_marker and previous_marker:
-            marker = next_marker if abs(frame-next_marker.frame) <= abs(frame-previous_marker.frame) else previous_marker
-        else:
-            marker = next_marker if next_marker else previous_marker
+            if abs(frame-next_marker.frame) <= abs(frame-previous_marker.frame):
+                marker = next_marker
+            else:
+                marker = previous_marker
         markers.remove(marker)
         return {'FINISHED'}
 
 
-# TODO: Finish preview
 class SetPreviewBetweenMarkers(bpy.types.Operator):
     bl_idname = 'gdquest_vse.set_preview_between_markers'
     bl_label = 'Set preview between closest markers'
@@ -86,27 +86,28 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
             self.report({"ERROR_INVALID_INPUT"}, "There are no markers. Operation cancelled.")
             return {"CANCELLED"}
 
-        frame = None
-        if self.reference == 'mouse':
-            frame = context.region.view2d.region_to_view(
-                x=event.mouse_region_x,
-                y=event.mouse_region_y)[0]
-        else:
-            frame = bpy.context.scene.frame_current
-
+        frame = bpy.context.scene.frame_current
         previous_marker, next_marker = find_neighbor_markers(frame)
 
         if not (previous_marker and next_marker):
             self.report({"ERROR_INVALID_INPUT"}, "There are no markers. Operation cancelled.")
             return {"CANCELLED"}
 
-        # TODO: If only one marker, set preview from start to marker or from marker to end of last strip
+        frame_start = previous_marker.frame if previous_marker else 0
+        if next_marker:
+            frame_end = next_marker.frame
+        else:
+            from operator import attrgetter
+            frame_end = max(bpy.context.scene.sequence_editor.sequences,
+                              key=attrgetter('frame_final_end')).frame_final_end
 
+        from .functions.sequences import set_preview_range
+        set_preview_range(frame_start, frame_end)
         return {'FINISHED'}
 
 
 def find_neighbor_markers(frame=None):
-    """Returns a tuple containing the closest market to the left and to the right of the frame"""
+    """Returns a tuple containing the closest marker to the left and to the right of the frame"""
     markers = bpy.context.scene.timeline_markers
 
     if not (frame and markers):
