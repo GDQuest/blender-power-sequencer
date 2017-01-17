@@ -37,11 +37,12 @@ def set_render_settings(resolution=None, encoding=None):
     return True
 
 
-# TODO: define resolution and framerate for the full video in one operator and then, 
-# in render for web, render for Youtube/twitter/facebook etc. 
+# TODO: define resolution and framerate for the full video in one operator and then,
+# in render for web, render for Youtube/twitter/facebook etc.
 # based off that resolution
 # That's a way to support people who make different types of videos / 30fps, etc.
 # TODO: find way to set the right encoding using the preset enumProperty - dict?
+# TODO: Remove proxy size
 class RenderForWeb(bpy.types.Operator):
     bl_idname = "gdquest_vse.render_video"
     bl_label = "Render the video for the web"
@@ -115,3 +116,29 @@ class RenderForWeb(bpy.types.Operator):
         bpy.context.scene.render.filepath = "//" + name if name else "Video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
         return {"FINISHED"}
+
+
+# TODO: Write operator
+class CopyStripsToNewScene(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.copy_strips_to_new_scene'
+    bl_label = 'Copy strips to new scene'
+    bl_description = 'Copy the selected strips to a new scene, \
+                      to render a preview or trailer for your video'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        self.report({"WARNING"}, "This operator isn't functional yet, operation cancelled")
+        return {'CANCELLED'}
+        # store cursor position
+        # Set cursor to start of selection
+        # Copy selection
+        # Move cursor back to initial state
+        # Create new scene
+        # Move cursor to start
+        # Paste strips
+        # Set preview range
+        return {'FINISHED'}

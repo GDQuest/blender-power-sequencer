@@ -56,6 +56,9 @@ class AddCrossfade(bpy.types.Operator):
         active = bpy.context.scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
 
+        if not selection:
+            return {"CANCELLED"}
+
         if len(selection) > 1:
             self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
             crossfade from")
