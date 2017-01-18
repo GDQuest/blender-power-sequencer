@@ -459,6 +459,22 @@ class SnapSelectionToCursor(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BorderSelect(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.border_select'
+    bl_label = 'Border select'
+    bl_description = 'Wrapper around Blender\'s border select, deselects handles'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        for s in bpy.context.selected_sequences:
+            s.select_right_handle = False
+            s.select_left_handle = False
+        return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=False)
+
 
 # TODO: Make it work
 # TODO: Access font folders

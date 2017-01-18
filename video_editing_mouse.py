@@ -7,10 +7,10 @@ from .functions.sequences import mouse_select_sequences
 # import blf
 
 
-# TODO: idea - handler to optionnally ripple edit automatically? And/or auto remove gaps on delete?
-# Shortcut: Ctrl Click
-# TODO: Option to move the time cursor back before the start of sel if trim
-# TODO: allow the user to set the selection mode in the preferences
+# TODO: in cursor mode, if trim, if there's a strip that's smaller than
+# the part that's been cut, delete it
+# Look at selected strips closest side and cut frame
+# if any strip on other channels between those frames and smaller, delete it
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -18,7 +18,7 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'), 
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
                ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
                ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
