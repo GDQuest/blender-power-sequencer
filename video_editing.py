@@ -248,7 +248,6 @@ class ConcatenateStrips(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# DONE: add property to change the max length of selected strips
 class SelectShortStrips(bpy.types.Operator):
     bl_idname = "gdquest_vse.select_short_strips"
     bl_label = "Select short strips"
@@ -304,16 +303,16 @@ class SmartSnap(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: Ripple strips on the first transform
 class GrabStillImage(bpy.types.Operator):
-    """Grabs a still image from the active video strip, to quickly achieve pause effects"""
+    """Converts image under the cursor to a still image, to create 
+    a pause effect in the video, using the active sequence"""
     bl_idname = "gdquest_vse.grab_still_image"
     bl_label = "Grab still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
     strip_duration = IntProperty(
-        name="Strip duration",
-        description="Duration of the still image strip in frames",
+        name="Strip length",
+        description="Length of the new strip in frames",
         default=106)
 
     @classmethod
@@ -334,11 +333,13 @@ class GrabStillImage(bpy.types.Operator):
                         "You must select a video or meta strip. You selected a strip of type"
                         + str(active.type) + " instead.")
             return {"CANCELLED"}
+
         if not active.frame_final_start <= start_frame < active.frame_final_end:
             self.report({"ERROR_INVALID_INPUT"},
                         "Your time cursor must be on the frame you want \
                         to convert to a still image.")
             return {"CANCELLED"}
+
         if start_frame == active.frame_final_start:
             scene.frame_current = start_frame + 1
 
@@ -474,76 +475,3 @@ class BorderSelect(bpy.types.Operator):
             s.select_right_handle = False
             s.select_left_handle = False
         return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=False)
-
-
-# TODO: Make it work
-# TODO: Access font folders
-# TODO: allow to define favorite fonts in add-on prefs
-# class AddSimpleText(bpy.types.Operator):
-#     """Adds a text strip and sets it up to quickly add an animated note on the video"""
-#     bl_idname = "gdquest_vse.add_simple_text"
-#     bl_label = "Add a text strip and set it up quickly"
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     strip_duration = IntProperty(
-#         name="Duration",
-#         description="Length of the text strip in frames"
-#         default=96
-#     )
-#     text = StringProperty(
-#         name="Text",
-#         description="The text to display on screen"
-#         default="Text"
-#     )
-#     align_x = EnumProperty(
-#         items= [('left', 'left', 'Align to the left edge of the screen'),
-#                 ('middle', 'middle', 'Align to the middle of the screen'),
-#                 ('right', 'right', 'Align to the right edge of the screen')],
-#         name="Horizontal align",
-#         description="",
-#         default='right'
-#     )
-#     align_y = EnumProperty(
-#         items= [('top', 'top', 'Align to the top edge of the screen'),
-#                 ('middle', 'middle', 'Align to the middle of the screen'),
-#                 ('bottom', 'bottom', 'Align to the bottom edge of the screen')],
-#         name="Vertical align",
-#         description="",
-#         default='right'
-#     )
-#     animate = BoolProperty(
-#         name="Animate opacity",
-#         description="",
-#         default=True
-#     )
-
-#     @classmethod
-#     def poll(cls, context):
-#         return True
-
-#     def execute(self, context):
-#         sequencer = bpy.ops.sequencer
-#         current_frame = bpy.context.scene.frame_current
-
-#         sequencer.effect_strip_add(
-# type='TEXT', frame_end=current_frame + self.strip_duration,
-# replace_sel=True)
-
-#         text_strip = bpy.context.selected_sequences[0]
-
-#         init_text(text_strip, self.text, self.align_x, self.align_y, self.animate)
-
-#         def init_text(sequence, text, align_x, align_y, animate):
-#             sequence.name, sequence.text = text
-
-#             sequence.location = (0.0, 0.0)
-
-#             # FONT
-#             # ADD TRANSFORM
-#             # ADD FADE
-#             if animate:
-#                 pass
-
-#             return True
-
-#         return {"FINISHED"}

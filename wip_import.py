@@ -8,6 +8,10 @@ from .functions.animation import add_transform_effect
 from .functions.sequences import find_empty_channel
 
 
+# TODO: Import files from file browser? First finish auto reimport
+# Should support video, img and audio + mult selected
+
+
 # TODO: Refactor, walk directories and collect filepaths, then send to function
 #       to create strips
 # TODO: By default, do not reimport existing strips, import only the new ones

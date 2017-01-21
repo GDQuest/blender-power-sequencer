@@ -34,6 +34,33 @@ class OpenProjectDirectory(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class OpenPicturesFile(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.open_pictures_file'
+    bl_label = 'Open pictures file'
+    bl_description = 'Open a psd or kra file stored in the local img folder'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        import os
+        folder_path = bpy.path.abspath("//img")
+        for file in os.listdir(folder_path):
+            if file.lower().endswith(('.psd', '.kra')):
+                import sys
+                import subprocess
+                file_path = folder_path + "/" + file
+                if sys.platform.startswith('darwin'):
+                    subprocess.call(('open', file_path))
+                elif os.name == 'nt':
+                    os.startfile(file_path)
+                elif os.name == 'posix':
+                    subprocess.call(('xdg-open', file_path))
+        return {'FINISHED'}
+
+
 class DeleteDirect(bpy.types.Operator):
     """Deletes without prompting for confirmation"""
     bl_idname = "gdquest_vse.delete_direct"
