@@ -1,4 +1,5 @@
 from enum import Enum
+import bpy
 
 
 class ProjectSettings():
@@ -74,6 +75,7 @@ class RENDER_SETTINGS():
 
 #     }
 # }
+
 
 class SearchMode():
     NEXT = 1

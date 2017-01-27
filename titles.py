@@ -20,12 +20,22 @@ class SyncTitles(bpy.types.Operator):
     def execute(self, context):
         from re import compile as re_compile
 
+        markers = bpy.context.scene.timeline_markers
+        selection = bpy.context.selected_sequences
+
+        if not markers and selection:
+            if not markers:
+                self.report({"INFO"}, "No markers, operation cancelled.")
+            else:
+                self.report({"INFO"}, "No sequences selected, operation cancelled.")
+            return {"CANCELLED"}
+
         re_title = re_compile(r'^[0-9]-*')
 
         title_markers = []
         for marker in bpy.context.scene.timeline_markers:
             if re_title.match(marker.name):
-                title_markers.append(int(marker.name[0]), marker.frame)
+                title_markers.append((int(marker.name[0]), marker.frame))
 
         for s in bpy.context.selected_sequences:
             if re_title.match(s.name):
