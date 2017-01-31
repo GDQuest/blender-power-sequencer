@@ -3,50 +3,6 @@ using timeline markers, and either Image strips or Text strips"""
 import bpy
 
 
-# TODO: operator to synchronize pictures to markers
-# Use the CreateText operator to add text strips
-class SyncTitles(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.sync_titles'
-    bl_label = 'Synchronize titles'
-    bl_description = 'Snap the selected image or text strips to the \
-                      corresponding title marker. The marker and strip names \
-                      have to start with 1-, 2-, 3-...'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        from re import compile as re_compile
-
-        markers = bpy.context.scene.timeline_markers
-        selection = bpy.context.selected_sequences
-
-        if not markers and selection:
-            if not markers:
-                self.report({"INFO"}, "No markers, operation cancelled.")
-            else:
-                self.report({"INFO"}, "No sequences selected, operation cancelled.")
-            return {"CANCELLED"}
-
-        re_title = re_compile(r'^[0-9]-*')
-
-        title_markers = []
-        for marker in bpy.context.scene.timeline_markers:
-            if re_title.match(marker.name):
-                title_markers.append((int(marker.name[0]), marker.frame))
-
-        for s in bpy.context.selected_sequences:
-            if re_title.match(s.name):
-                title_id = int(s.name[0])
-                for marker in title_markers:
-                    if marker[0] == title_id:
-                        s.frame_start = marker[1]
-                        break
-        return {'FINISHED'}
-
-
 # TODO: Make it work
 # TODO: Access font folders
 # TODO: allow to define favorite fonts in add-on prefs
