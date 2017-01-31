@@ -47,39 +47,10 @@ class SyncTitles(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# class AddTitleMarker(bpy.types.Operator):
-#     bl_idname = 'gdquest_vse.add_title_marker'
-#     bl_label = 'Add title marker'
-#     bl_description = 'Add a marker that starts with a number and a dash, \
-#                       to use with the Synchronize title operator.'
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     @classmethod
-#     def poll(cls, context):
-#         return True
-
-#     def execute(self, context):
-#         return {'FINISHED'}
-
-
-# class CreateTitles(bpy.types.Operator):
-#     bl_idname = 'gdquest_vse.create_titles'
-#     bl_label = 'Create titles with Text strips'
-#     bl_description = 'Generates title cards using text strips'
-#     bl_options = {'REGISTER', 'UNDO'}
-
-#     @classmethod
-#     def poll(cls, context):
-#         return True
-
-#     def execute(self, context):
-#         return {'FINISHED'}
-
-
 # TODO: Make it work
 # TODO: Access font folders
 # TODO: allow to define favorite fonts in add-on prefs
-# class AddSimpleText(bpy.types.Operator):
+# class AddSubtitle(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
 #     bl_idname = "gdquest_vse.add_simple_text"
 #     bl_label = "Add a text strip and set it up quickly"
