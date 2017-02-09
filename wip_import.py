@@ -83,17 +83,15 @@ class ImportLocalFootage2(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        def import_check():
-            if not bpy.data.is_saved:
-                return {"CANCELLED"}
+        if not bpy.data.is_saved:
+            self.report({"ERROR_INVALID_INPUT"}, "You need to save your project first. Import cancelled.")
+            return {"CANCELLED"}
 
-            sequencer = bpy.ops.sequencer
-            context = bpy.context
-            path = bpy.data.filepath
+        sequencer = bpy.ops.sequencer
+        context = bpy.context
+        path = bpy.data.filepath
 
-            bpy.ops.screen.animation_cancel(restore_frame=True)
-
-        import_check()
+        bpy.ops.screen.animation_cancel(restore_frame=True)
 
         wm = bpy.context.window_manager
         SEQUENCER_AREA = {'region': wm.windows[0].screen.areas[2].regions[0],
@@ -102,6 +100,7 @@ class ImportLocalFootage2(bpy.types.Operator):
                         'window': wm.windows[0],
                         'screen': bpy.data.screens['Video Editing'],
                         'area': bpy.data.screens['Video Editing'].areas[2]}
+
         # Empty channel
         channel_for_audio = 1 if self.keep_audio else 0
         empty_channel = find_empty_channel(mode='ABOVE')
@@ -110,11 +109,19 @@ class ImportLocalFootage2(bpy.types.Operator):
         working_directory = get_working_directory(path)
         folders = {}
 
-        for d in os.listdir(path=working_directory):
-            if d in dir(ProjectSettings):
-                folders[d] = working_directory + "\\" + d
+        folders_to_find = ProjectSettings.FOLDER_NAMES.AUDIO, ProjectSettings.FOLDER_NAMES.IMG, ProjectSettings.FOLDER_NAMES.VIDEO
 
-        img_files = files_to_dict(find_files(folders['img'], Extensions.IMG, recursive=True))
+        for folder in os.listdir(path=working_directory):
+            if folder in folders_to_find:
+                folders[folder] = working_directory + "\\" + folder
+
+        img_folder = folders[ProjectSettings.FOLDER_NAMES.IMG]
+        img_files = find_files(img_folder, Extensions.IMG, recursive=True)
+        img_dict = files_to_dict(img_files, img_folder)
+        print(img_files)
+        for d in img_dict:
+            print(d)
+        # print(img_files)
         # To add files, need a list of dictionaries like
         # {'name': 'path'} where path is relative to filepath
         # audio_files = find_files(folders['audio'], Extensions.AUDIO)
@@ -123,11 +130,18 @@ class ImportLocalFootage2(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: Split into 2 functions
-# TODO: Ignore "_proxy" folders after coding proxy addon
+def get_working_directory(path=None):
+    if not path:
+        return None
+
+    project_name = bpy.path.basename(path)
+    directory = path[:len(path) - (len(project_name) + 1)]
+    return directory
+
+
+# TODO: Ignore the blender proxy folders
 def find_files(directory, file_extensions, recursive=False, ignore_folders=('_proxy')):
-    """Walks through a folder and returns files matching the extensions.
-    Then, converts the files to a list of dictionaries to import in Blender"""
+    """Walks through a folder and returns a list of filepaths that match the extensions."""
     if not directory and file_extensions:
         return None
 
@@ -138,7 +152,6 @@ def find_files(directory, file_extensions, recursive=False, ignore_folders=('_pr
 
     # TODO: Folder containing img files = img sequence
     for ext in file_extensions:
-        # Works for pictures too
         source_pattern = directory + "\\"
         pattern = source_pattern + ext
         files.extend(glob(pattern))
@@ -147,34 +160,30 @@ def find_files(directory, file_extensions, recursive=False, ignore_folders=('_pr
         pattern = source_pattern + "**\\" + ext
         files.extend(glob(pattern))
 
-    # If img folder, if subfolders contain pics, add either content if assets folder else add folders as img seq
-    # TODO: Finish without img seq support
-    # For imgs, 1 call to add_strip = 1 img strip
-    # if the dict contains multiple files, you get an animated img sequence
-    # For individual img strips, call ops with one {'name': filename} for
-    # each img file found
     if basename(directory) == ProjectSettings.FOLDER_NAMES.IMG:
-        from os import listdir
-        from os.path import isdir
-
-        psd_names = (f for f in glob(directory + "\\*.psd"))
+        psd_names = [f for f in glob(directory + "\\*.psd")]
         for i, name in enumerate(psd_names):
             psd_names[i] = name[len(directory):-4]
 
-        psd_folders = (f for f in listdir(directory) if f in psd_names)
+        psd_folders = (f for f in os.listdir(directory) if f in psd_names)
         for f in psd_folders:
             for ext in file_extensions:
                 files.extend(glob(directory + "\\" + f + "\\" + ext))
     return files
 
 
-def files_to_dict(files):
-    """Converts a list of files to Blender's dictionary format for import"""
-    if not files:
+# TODO: find correct filepaths
+def files_to_dict(files, folder_path):
+    """Converts a list of files to Blender's dictionary format for import
+       Returns a list of dictionaries with the {'name': filename} format
+       Args:
+        - files: a list or a tuple of files
+        - folder_path: a string of the path to the files' containing folder"""
+    if not files and folder_path:
         return None
 
-    dictionary = {}
+    dictionary = []
     for f in files:
-        dict_form = {'name': f[len(directory)+1:]}
-        dictionary.append(dictionary)
+        dict_form = {'name': f[len(folder_path)+1:]}
+        dictionary.append(dict_form)
     return dictionary
