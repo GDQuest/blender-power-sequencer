@@ -41,6 +41,12 @@ class Extensions():
     AUDIO = ("*.wav", "*.mp3", "*.ogg")
     VIDEO = ("*.mp4", "*.avi", "*.mts")
 
+    DICT = {
+        "IMG": ("*.png", "*.jpg", "*.jpeg"),
+        "AUDIO": ("*.wav", "*.mp3", "*.ogg"),
+        "VIDEO": ("*.mp4", "*.avi", "*.mts")
+    }
+
 
 # TODO: Replace RenderDim and Encoding with that
 class RENDER_SETTINGS():

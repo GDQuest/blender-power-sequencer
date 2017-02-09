@@ -88,3 +88,29 @@ def get_files_from_folder(path, folder_name, file_type):
                     folder)[1] + "/" + file})
 
     return files, subfolders
+
+
+def create_text_file(name):
+    """Create a new text file, name it and return it
+        Args:
+        -name, the name of the text file, a string"""
+    if not name and isinstance(name, str):
+        raise TypeError('The name of the text file has to be a string')
+
+    bpy.ops.text.new()
+    import re
+    re_text = re.compile(r'^Text.[0-9]{3}$')
+
+    text_name = ''
+    text_index, max_index = 0, 0
+    for text in bpy.data.texts:
+        if re_text.match(text.name):
+            text_index = int(text.name[-3:])
+            if text_index > max_index:
+                max_index = text_index
+                text_name = text.name
+    if not text_name:
+        text_name = 'Text'
+
+    bpy.data.texts[text_name].name = name
+    return bpy.data.texts[name]
