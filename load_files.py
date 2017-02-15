@@ -16,7 +16,7 @@ class ImportLocalFootage(bpy.types.Operator):
     bl_description = "Import video and audio from the project folder to VSE strips"
     bl_options = {'REGISTER', 'UNDO'}
 
-    always_import = BoolProperty(
+    import_all = BoolProperty(
         name="Always Reimport",
         description="If true, always import all local files to new strips. \
                     If False, only import new files (check if footage has \
@@ -26,7 +26,7 @@ class ImportLocalFootage(bpy.types.Operator):
         name="Keep audio from video files",
         description=
         "If False, the audio that comes with video files will not be imported",
-        default=False)
+        default=True)
 
     img_length = IntProperty(
         name="Image strip length",
@@ -136,7 +136,7 @@ class ImportLocalFootage(bpy.types.Operator):
                                           files=files_dict,
                                           frame_start=1,
                                           channel=empty_channel,
-                                          sound=True)
+                                          sound=self.keep_audio)
             elif name == "AUDIO":
                 sequencer.sound_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",

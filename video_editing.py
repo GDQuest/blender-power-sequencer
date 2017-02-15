@@ -97,12 +97,8 @@ class AddCrossfade(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: if single strip selected that has a crossfade, remove it, store the
-# source strips, run speed operator and add crossfade again
 # TODO: if there are multiple selected blocks of strips that are not connected
 # in time, speed up each block separately
-# TODO: ? Tag the final meta strip with a custom property to know that the
-# footage was sped up, so it can be modified later
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_speed"
     bl_label = "Speed up Sequence"
@@ -122,8 +118,8 @@ class AddSpeed(bpy.types.Operator):
     def execute(self, context):
         sequencer = bpy.ops.sequencer
         scene = bpy.context.scene
-        active = scene.sequence_editor.active_strip
 
+        active = scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
 
         if not selection:
@@ -170,6 +166,7 @@ class AddSpeed(bpy.types.Operator):
         active.select_right_handle = True
         active.select = True
         scene.sequence_editor.active_strip = active
+        source_name = active.name
 
         from math import ceil
         size = ceil(active.frame_final_duration /
@@ -179,9 +176,8 @@ class AddSpeed(bpy.types.Operator):
 
         effect_strip.select = True
         sequencer.meta_make()
-        bpy.context.selected_sequences[0].name = 'Speed ' + str(self.speed_factor) + 'x'
+        bpy.context.selected_sequences[0].name = source_name + " " + str(self.speed_factor) + 'x'
         return {"FINISHED"}
-
 
 # Shortcut: Shift + C
 # TODO: If only one selected strip per channel, concatenate all channels
@@ -304,7 +300,7 @@ class SmartSnap(bpy.types.Operator):
 
 
 class GrabStillImage(bpy.types.Operator):
-    """Converts image under the cursor to a still image, to create 
+    """Converts image under the cursor to a still image, to create
     a pause effect in the video, using the active sequence"""
     bl_idname = "gdquest_vse.grab_still_image"
     bl_label = "Grab still image from active strip"
