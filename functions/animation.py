@@ -3,13 +3,14 @@ import bpy
 from .global_settings import SequenceTypes
 
 
-def fade_create(sequences=None, fade_length=12, fade_type='both'):
-    """Takes a list of sequences, and adds a fade to the left,
+# TODO: Detect existing fades and don't delete every time
+def fade_create(sequence=None, fade_length=12, fade_type='both', max_opacity=1.0):
+    """Takes single sequence, and adds a fade to the left,
        right or to both sides of the VSE strips.
        fade_length: length of the fade in frames
        fade_type: 'left', 'right' or 'both' """
 
-    if not sequences:
+    if not sequence:
         return None
 
     scene = bpy.context.scene
@@ -23,38 +24,34 @@ def fade_create(sequences=None, fade_length=12, fade_type='both'):
     fcurves = scene.animation_data.action.fcurves
 
     # TODO: Detect existing fades and don't delete every time
-    fade_clear(sequences)
+    fade_clear(sequence)
 
-    for s in sequences:
-        s_start = s.frame_final_start
-        s_end = s.frame_final_end
+    s = sequence
+    s_start = s.frame_final_start
+    s_end = s.frame_final_end
 
-        fade_in_frames = (s_start, s_start + fade_length)
-        fade_out_frames = (s_end - fade_length, s_end)
+    fade_in_frames = (s_start, s_start + fade_length)
+    fade_out_frames = (s_end - fade_length, s_end)
 
-        # TODO: Currently, the fades are always cleared, so fade_find_fcurve
-        # will always return None, but it does return fade_type, which we need.
-        fade_fcurve, fade_curve_type = fade_find_fcurve(s)
-        if fade_fcurve is None:
-            fade_fcurve = fcurves.new(data_path=s.path_from_id(fade_curve_type))
+    # TODO: Currently, the fades are always cleared, so fade_find_fcurve
+    # will always return None, but it does return fade_type, which we need.
+    fade_fcurve, fade_curve_type = fade_find_fcurve(s)
+    if fade_fcurve is None:
+        fade_fcurve = fcurves.new(data_path=s.path_from_id(fade_curve_type))
 
-        min_length = fade_length * 2 if fade_type == 'both' else fade_length
-        if not s.frame_final_duration > min_length:
-            print(s.name + ' is too short for the fade to be applied.')
-            continue
+    min_length = fade_length * 2 if fade_type == 'both' else fade_length
+    if not s.frame_final_duration > min_length:
+        print(s.name + ' is too short for the fade to be applied.')
+        return False
 
-        # TODO: give the option to use the fade_curve's highest value
-        # or strip value
-        fade_max_value = 1
-        keys = fade_fcurve.keyframe_points
-        # ADDING KEYFRAMES
-        if fade_type in ['left', 'both']:
-            keys.insert(frame=fade_in_frames[0], value=0)
-            keys.insert(frame=fade_in_frames[1], value=fade_max_value)
-        if fade_type in ['right', 'both']:
-            keys.insert(frame=fade_out_frames[0], value=fade_max_value)
-            keys.insert(frame=fade_out_frames[1], value=0)
-    return len(sequences)
+    keys = fade_fcurve.keyframe_points
+    if fade_type in ['left', 'both']:
+        keys.insert(frame=fade_in_frames[0], value=0)
+        keys.insert(frame=fade_in_frames[1], value=max_opacity)
+    if fade_type in ['right', 'both']:
+        keys.insert(frame=fade_out_frames[0], value=max_opacity)
+        keys.insert(frame=fade_out_frames[1], value=0)
+    return sequence.name
 
 
 def fade_find_fcurve(sequence=None):
@@ -78,18 +75,17 @@ def fade_find_fcurve(sequence=None):
     return fade_fcurve, fade_type
 
 
-def fade_clear(sequences=None):
+def fade_clear(sequence=None):
     """Deletes all keyframes in the blend_alpha
-    or volume fcurves of the provided sequences"""
-    if not sequences:
+    or volume fcurve of the provided sequence"""
+    if not sequence:
         return None
 
     fcurves = bpy.context.scene.animation_data.action.fcurves
 
-    for s in sequences:
-        fade_fcurve = fade_find_fcurve(s)[0]
-        if fade_fcurve:
-            fcurves.remove(fade_fcurve)
+    fade_fcurve = fade_find_fcurve(sequence)[0]
+    if fade_fcurve:
+        fcurves.remove(fade_fcurve)
     return True
 
 

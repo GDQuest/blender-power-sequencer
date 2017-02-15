@@ -93,10 +93,10 @@ class AddTitleMarker(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class AddNoteMarker(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.add_note_marker'
-    bl_label = 'Add note marker'
-    bl_description = 'Add a note marker to quickly sync image'
+class AddNumberedMarker(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.add_numbered_marker'
+    bl_label = 'Add numbered marker'
+    bl_description = 'Add a numbered marker to quickly sync image'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

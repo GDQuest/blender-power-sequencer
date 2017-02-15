@@ -4,7 +4,6 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 
 
-# TODO: Smart filtering of the selection: apply fades to parent effects?
 class FadeStrips(bpy.types.Operator):
     bl_idname = "gdquest_vse.fade_strips"
     bl_label = "Fade strips"
@@ -29,15 +28,17 @@ class FadeStrips(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        from .functions.animation import fade_create
+        selection = bpy.context.selected_sequences
+        if not selection:
+            return {"CANCELLED"}
 
-        selected_sequences = bpy.context.selected_sequences
-        selection = selected_sequences if len(selected_sequences) > 0 \
-            else bpy.context.scene.sequence_editor.active_strip
-        sequence_count = fade_create(selection, self.fade_length, self.fade_type)
-        
-        if sequence_count:
-            self.report({"INFO"}, "Added fade animation to " + str(sequence_count) + " sequences.")
+        from .functions.animation import fade_create
+        sequence_count = 0
+        for s in selection:
+            fade_create(s, self.fade_length, self.fade_type, max_opacity=s.blend_alpha)
+            sequence_count += 1
+
+        self.report({"INFO"}, "Added fade animation to " + str(sequence_count) + " sequences.")
         return {"FINISHED"}
 
 
