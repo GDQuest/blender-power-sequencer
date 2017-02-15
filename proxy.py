@@ -59,7 +59,7 @@ class SetVideosProxies(bpy.types.Operator):
                                 proxy_75 =  False,
                                 proxy_100 = False,
                                 override =  False)
-        sequencer.rebuild_proxy()
+        sequencer.rebuild_proxy({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
 
 

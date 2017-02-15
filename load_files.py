@@ -20,17 +20,18 @@ class ImportLocalFootage(bpy.types.Operator):
         name="Always Reimport",
         description="If true, always import all local files to new strips. \
                     If False, only import new files (check if footage has \
-                    already been imported to the VSE)."
-                                                       ,
+                    already been imported to the VSE).",
         default=False)
     keep_audio = BoolProperty(
         name="Keep audio from video files",
-        description="If False, the audio that comes with video files will not be imported",
+        description=
+        "If False, the audio that comes with video files will not be imported",
         default=False)
 
     img_length = IntProperty(
         name="Image strip length",
-        description="Controls the duration of the imported image strips length",
+        description=
+        "Controls the duration of the imported image strips length",
         default=96,
         min=1)
     img_padding = IntProperty(
@@ -56,7 +57,9 @@ class ImportLocalFootage(bpy.types.Operator):
 
     def execute(self, context):
         if not bpy.data.is_saved:
-            self.report({"ERROR_INVALID_INPUT"}, "You need to save your project first. Import cancelled.")
+            self.report(
+                {"ERROR_INVALID_INPUT"
+                 }, "You need to save your project first. Import cancelled.")
             return {"CANCELLED"}
 
         sequencer = bpy.ops.sequencer
@@ -67,11 +70,11 @@ class ImportLocalFootage(bpy.types.Operator):
 
         wm = bpy.context.window_manager
         SEQUENCER_AREA = {'region': wm.windows[0].screen.areas[2].regions[0],
-                        'blend_data': bpy.context.blend_data,
-                        'scene': bpy.context.scene,
-                        'window': wm.windows[0],
-                        'screen': bpy.data.screens['Video Editing'],
-                        'area': bpy.data.screens['Video Editing'].areas[2]}
+                          'blend_data': bpy.context.blend_data,
+                          'scene': bpy.context.scene,
+                          'window': wm.windows[0],
+                          'screen': bpy.data.screens['Video Editing'],
+                          'area': bpy.data.screens['Video Editing'].areas[2]}
 
         # Empty channel
         channel_for_audio = 1 if self.keep_audio else 0
@@ -90,10 +93,13 @@ class ImportLocalFootage(bpy.types.Operator):
 
         for name in file_types:
             walk_folders = True if name == "IMG" else False
-            files[name] = find_files(folders[name], Extensions.DICT[name], recursive=walk_folders)
-
-        # Write the list of imported files for each folder to a text file
-        # Check if text exists. If not, create the files
+            files[name] = find_files(folders[name],
+                                     Extensions.DICT[name],
+                                     recursive=walk_folders)
+        # for name in files:
+        #     print(name + ":" + str(files[name]))
+# Write the list of imported files for each folder to a text file
+# Check if text exists. If not, create the files
         TEXT_FILE_PREFIX = 'IMPORT_'
         texts = bpy.data.texts
         import_files = {}
@@ -107,10 +113,15 @@ class ImportLocalFootage(bpy.types.Operator):
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
-        # Write new imported paths to the text files and import new strips
+# Write new imported paths to the text files and import new strips
         for name in file_types:
-            text_file_content = [line.body for line in bpy.data.texts[TEXT_FILE_PREFIX + name].lines]
-            new_paths = [path for path in files[name] if path not in text_file_content]
+            text_file_content = [
+                line.body
+                for line in bpy.data.texts[TEXT_FILE_PREFIX + name].lines
+            ]
+            new_paths = [path
+                         for path in files[name]
+                         if path not in text_file_content]
             for line in new_paths:
                 bpy.data.texts[TEXT_FILE_PREFIX + name].write(line + "\n")
 
@@ -131,8 +142,7 @@ class ImportLocalFootage(bpy.types.Operator):
                                           filepath=folder + "\\",
                                           files=files_dict,
                                           frame_start=1,
-                                          channel=empty_channel + 2,
-                                          sound=True)
+                                          channel=empty_channel + 2)
             elif name == "IMG":
                 img_frame = 1
                 for img in files_dict:
@@ -162,7 +172,10 @@ def get_working_directory(path=None):
 
 
 # TODO: Ignore the blender proxy folders
-def find_files(directory, file_extensions, recursive=False, ignore_folders=('_proxy')):
+def find_files(directory,
+               file_extensions,
+               recursive=False,
+               ignore_folders=('_proxy')):
     """Walks through a folder and returns a list of filepaths that match the extensions."""
     if not directory and file_extensions:
         return None
@@ -205,12 +218,18 @@ def files_to_dict(files, folder_path):
 
     dictionary = []
     for f in files:
-        dict_form = {'name': f[len(folder_path)+1:]}
+        dict_form = {'name': f[len(folder_path) + 1:]}
         dictionary.append(dict_form)
     return dictionary
 
 
-def add_strip_from_file(filetype, directory, files, start, end, channel, keep_audio=False):
+def add_strip_from_file(filetype,
+                        directory,
+                        files,
+                        start,
+                        end,
+                        channel,
+                        keep_audio=False):
     """Add a file or a list of files as a strip to the VSE"""
     sequencer = bpy.ops.sequencer
     wm = bpy.context.window_manager
@@ -222,14 +241,24 @@ def add_strip_from_file(filetype, directory, files, start, end, channel, keep_au
                       'area': bpy.data.screens['Video Editing'].areas[2]}
 
     if filetype == FileTypes.img:
-        sequencer.image_strip_add(sequencer_area, directory=directory, files=files,
-                                  frame_start=start, frame_end=end, channel=channel)
+        sequencer.image_strip_add(sequencer_area,
+                                  directory=directory,
+                                  files=files,
+                                  frame_start=start,
+                                  frame_end=end,
+                                  channel=channel)
     elif filetype == FileTypes.video:
-        sequencer.movie_strip_add(sequencer_area, filepath=directory,
-                                  files=files, frame_start=start, channel=channel, sound=keep_audio)
+        sequencer.movie_strip_add(sequencer_area,
+                                  filepath=directory,
+                                  files=files,
+                                  frame_start=start,
+                                  channel=channel,
+                                  sound=keep_audio)
     elif filetype == FileTypes.audio:
-        sequencer.sound_strip_add(
-            sequencer_area, filepath=directory, frame_start=start, channel=channel)
+        sequencer.sound_strip_add(sequencer_area,
+                                  filepath=directory,
+                                  frame_start=start,
+                                  channel=channel)
 
     return "SUCCESS"
 
@@ -260,10 +289,8 @@ def add_transform_effect(sequences=None):
         active.blend_type = 'ALPHA_OVER'
         active.select = False
 
-    print("Successfully processed " + str(len(sequences)) +
-          " image sequences")
+    print("Successfully processed " + str(len(sequences)) + " image sequences")
     return True
-
 
 # def calc_transform_effect_scale(sequence):
 #     """Takes a transform effect and returns the scale it should use
