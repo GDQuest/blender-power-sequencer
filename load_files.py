@@ -8,8 +8,11 @@ from .functions.animation import add_transform_effect
 from .functions.sequences import find_empty_channel
 
 
+# TODO: Fix img imported from subfolder -
 # TODO: auto process img strips - add transform that scales it down to its original size
 # and sets blend mode to alpha_over
+# TODO: img crop and offset to make anim easier
+# TODO: Import at cursor pos
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
     bl_label = "Import local footage"
@@ -20,7 +23,8 @@ class ImportLocalFootage(bpy.types.Operator):
         name="Always Reimport",
         description="If true, always import all local files to new strips. \
                     If False, only import new files (check if footage has \
-                    already been imported to the VSE).",
+                    already been imported to the VSE)."
+                                                       ,
         default=False)
     keep_audio = BoolProperty(
         name="Keep audio from video files",
@@ -58,13 +62,14 @@ class ImportLocalFootage(bpy.types.Operator):
     def execute(self, context):
         if not bpy.data.is_saved:
             self.report(
-                {"ERROR_INVALID_INPUT"
-                 }, "You need to save your project first. Import cancelled.")
+                {"ERROR_INVALID_INPUT"},
+                "You need to save your project first. Import cancelled.")
             return {"CANCELLED"}
 
         sequencer = bpy.ops.sequencer
         context = bpy.context
         path = bpy.data.filepath
+        frame_current = bpy.context.scene.frame_current
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
 
@@ -93,13 +98,12 @@ class ImportLocalFootage(bpy.types.Operator):
 
         for name in file_types:
             walk_folders = True if name == "IMG" else False
+            if name not in folders.keys():
+                continue
             files[name] = find_files(folders[name],
                                      Extensions.DICT[name],
                                      recursive=walk_folders)
-        # for name in files:
-        #     print(name + ":" + str(files[name]))
-# Write the list of imported files for each folder to a text file
-# Check if text exists. If not, create the files
+
         TEXT_FILE_PREFIX = 'IMPORT_'
         texts = bpy.data.texts
         import_files = {}
@@ -115,6 +119,9 @@ class ImportLocalFootage(bpy.types.Operator):
 
 # Write new imported paths to the text files and import new strips
         for name in file_types:
+            if name not in folders.keys():
+                continue
+
             text_file_content = [
                 line.body
                 for line in bpy.data.texts[TEXT_FILE_PREFIX + name].lines
@@ -129,32 +136,37 @@ class ImportLocalFootage(bpy.types.Operator):
                 continue
 
             folder = folders[name]
+            # TODO: SPLIT FOLDER DOWN TO SUBFOLDER LEVELS
             files_dict = files_to_dict(new_paths, folder)
             if name == "VIDEO":
                 sequencer.movie_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
-                                          frame_start=1,
+                                          frame_start=frame_current,
                                           channel=empty_channel,
                                           sound=self.keep_audio)
             elif name == "AUDIO":
+                print(files_dict)
                 sequencer.sound_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
-                                          frame_start=1,
+                                          frame_start=frame_current,
                                           channel=empty_channel + 2)
             elif name == "IMG":
-                img_frame = 1
+                img_frame = frame_current
                 for img in files_dict:
+                    path = folder + "\\" + img['subfolder']
+                    file = [{'name': img['name']}]
+
                     sequencer.image_strip_add(
                         SEQUENCER_AREA,
-                        directory=folder,
-                        files=[img],
+                        directory=path,
+                        files=file,
                         frame_start=img_frame,
                         frame_end=img_frame + self.img_length,
                         channel=empty_channel + 3)
-                    img_frame += self.img_length + self.img_padding
 
+                    img_frame += self.img_length + self.img_padding
                     img_strips = bpy.context.selected_sequences
                     # TODO: img crop and offset to make anim easier
                     # set_img_strip_offset(img_strips)
@@ -209,7 +221,8 @@ def find_files(directory,
 
 def files_to_dict(files, folder_path):
     """Converts a list of files to Blender's dictionary format for import
-       Returns a list of dictionaries with the {'name': filename} format
+       Returns a list of dictionaries with the {'name': filename, 'subfolder': subfolder} format
+       If the provided files are placed at the root of the import folders, subfolder will be an empty string
        Args:
         - files: a list or a tuple of files
         - folder_path: a string of the path to the files' containing folder"""
@@ -218,7 +231,9 @@ def files_to_dict(files, folder_path):
 
     dictionary = []
     for f in files:
-        dict_form = {'name': f[len(folder_path) + 1:]}
+        filepath_tail = f[len(folder_path) + 1:]
+        head, tail = os.path.split(filepath_tail)
+        dict_form = {'name': tail, 'subfolder': head}
         dictionary.append(dict_form)
     return dictionary
 
