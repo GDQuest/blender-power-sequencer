@@ -70,6 +70,7 @@ class ImportLocalFootage(bpy.types.Operator):
         context = bpy.context
         path = bpy.data.filepath
         frame_current = bpy.context.scene.frame_current
+        empty_channel = find_empty_channel(mode='ABOVE')
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
 
@@ -81,10 +82,6 @@ class ImportLocalFootage(bpy.types.Operator):
                           'screen': bpy.data.screens['Video Editing'],
                           'area': bpy.data.screens['Video Editing'].areas[2]}
 
-        # Empty channel
-        channel_for_audio = 1 if self.keep_audio else 0
-        empty_channel = find_empty_channel(mode='ABOVE')
-        created_img_strips = []
 
         directory = get_working_directory(path)
         folders, files, files_dict = {}, {}, {}
@@ -117,7 +114,8 @@ class ImportLocalFootage(bpy.types.Operator):
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
-# Write new imported paths to the text files and import new strips
+        # Write new imported paths to the text files and import new strips
+        channel_offset = 0
         for name in file_types:
             if name not in folders.keys():
                 continue
@@ -135,15 +133,17 @@ class ImportLocalFootage(bpy.types.Operator):
             if not new_paths:
                 continue
 
+            import_channel = empty_channel + channel_offset
             folder = folders[name]
             # TODO: SPLIT FOLDER DOWN TO SUBFOLDER LEVELS
             files_dict = files_to_dict(new_paths, folder)
             if name == "VIDEO":
+                import_channel += 1 if self.keep_audio else 0
                 sequencer.movie_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
                                           frame_start=frame_current,
-                                          channel=empty_channel,
+                                          channel=import_channel,
                                           sound=self.keep_audio)
             elif name == "AUDIO":
                 print(files_dict)
@@ -151,7 +151,7 @@ class ImportLocalFootage(bpy.types.Operator):
                                           filepath=folder + "\\",
                                           files=files_dict,
                                           frame_start=frame_current,
-                                          channel=empty_channel + 2)
+                                          channel=import_channel)
             elif name == "IMG":
                 img_frame = frame_current
                 for img in files_dict:
@@ -164,13 +164,14 @@ class ImportLocalFootage(bpy.types.Operator):
                         files=file,
                         frame_start=img_frame,
                         frame_end=img_frame + self.img_length,
-                        channel=empty_channel + 3)
+                        channel=import_channel)
 
                     img_frame += self.img_length + self.img_padding
                     img_strips = bpy.context.selected_sequences
                     # TODO: img crop and offset to make anim easier
                     # set_img_strip_offset(img_strips)
                     add_transform_effect(img_strips)
+            channel_offset += 1
         return {"FINISHED"}
 
 

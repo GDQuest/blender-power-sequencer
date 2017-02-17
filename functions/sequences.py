@@ -15,7 +15,6 @@ def find_empty_channel(mode='ABOVE'):
 
     empty_channel = None
     channels = [s.channel for s in sequences]
-    # remove duplicates and sort channels
     channels = sorted(list(set(channels)))
 
     for i in range(channels[-1]):
