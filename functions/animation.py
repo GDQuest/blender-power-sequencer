@@ -2,7 +2,8 @@
 import bpy
 from .global_settings import SequenceTypes
 
-
+# FIXME: Fade in + out not working
+# FIXME: using current opacity value for max doesn't work - need to scan fcurve instead
 # TODO: Detect existing fades and don't delete every time
 def fade_create(sequence=None, fade_length=12, fade_type='both', max_opacity=1.0):
     """Takes single sequence, and adds a fade to the left,
