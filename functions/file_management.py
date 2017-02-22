@@ -10,31 +10,29 @@ def is_proxy(filename):
 
 
 def is_type(filename=None, file_type=None):
-    """Checks if a file is of a certain type that can be loaded by Blender (image, audio, video...)
+    """
+    Checks if a file is of a certain type that can be loaded by Blender (image, audio, video...)
     Input: filename (including the file extensions), and the file_type to check (pass an entry from the Extensions class)
-    Returns True if the file extension is in the file type.
+    Returns True if the file extension is in the file type, else false
 
     Example uses:
     is_type("folder\\subfolder\\footage.mp4", Extensions.VIDEO) returns True
-    is_type("video.mp4", Extensions.AUDIO) returns False """
-
+    is_type("video.mp4", Extensions.AUDIO) returns False
+    """
     file_extension = filename[filename.rfind(".") + 1:].upper()
-    # print(filename + " / " + file_extension)
-    # print(file_type.value)
-
-    if file_extension in file_type:
-        return True
-    else:
-        return False
+    response = True if file_extension in file_type else False
+    return response
 
 
-def get_working_directory(path=None):
-    if not path:
-        return False
-
-    project_name = bpy.path.basename(path)
-    directory = path[:len(path) - (len(project_name) + 1)]
-    return directory
+def get_working_directory():
+    """
+    Takes the path to the current .blend file and
+    returns the project's root directory (where the .blend file is saved)
+    """
+    full_path = bpy.data.filepath
+    project_name = bpy.path.basename(full_path)
+    working_directory = path[:len(full_path) - (len(project_name) + 1)]
+    return working_directory
 
 
 def add_strip_from_file(filetype, directory, files, start, end, channel, keep_audio=False):

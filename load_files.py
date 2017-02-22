@@ -68,7 +68,6 @@ class ImportLocalFootage(bpy.types.Operator):
 
         sequencer = bpy.ops.sequencer
         context = bpy.context
-        path = bpy.data.filepath
         frame_current = bpy.context.scene.frame_current
         empty_channel = find_empty_channel(mode='ABOVE')
 
@@ -82,8 +81,8 @@ class ImportLocalFootage(bpy.types.Operator):
                           'screen': bpy.data.screens['Video Editing'],
                           'area': bpy.data.screens['Video Editing'].areas[2]}
 
-
-        directory = get_working_directory(path)
+        from .load_files import get_working_directory
+        directory = get_working_directory()
         folders, files, files_dict = {}, {}, {}
 
         file_types = "AUDIO", "IMG", "VIDEO"
@@ -173,15 +172,6 @@ class ImportLocalFootage(bpy.types.Operator):
                     add_transform_effect(img_strips)
             channel_offset += 1
         return {"FINISHED"}
-
-
-def get_working_directory(path=None):
-    if not path:
-        return None
-
-    project_name = bpy.path.basename(path)
-    directory = path[:len(path) - (len(project_name) + 1)]
-    return directory
 
 
 # TODO: Ignore the blender proxy folders

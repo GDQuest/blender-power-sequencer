@@ -18,8 +18,7 @@ class OpenProjectDirectory(bpy.types.Operator):
         from platform import system
 
         from .load_files import get_working_directory
-
-        path = get_working_directory(path=bpy.data.filepath)
+        path = get_working_directory()
 
         if not path:
             self.report({'WARNING'}, "You have to save your project first.")
