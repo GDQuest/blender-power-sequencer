@@ -97,6 +97,7 @@ class AddCrossfade(bpy.types.Operator):
         return {"FINISHED"}
 
 
+# TODO: Option to speed up individual sequences
 # TODO: if there are multiple selected blocks of strips that are not connected
 # in time, speed up each block separately
 class AddSpeed(bpy.types.Operator):

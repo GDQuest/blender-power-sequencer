@@ -31,7 +31,7 @@ def get_working_directory():
     """
     full_path = bpy.data.filepath
     project_name = bpy.path.basename(full_path)
-    working_directory = path[:len(full_path) - (len(project_name) + 1)]
+    working_directory = full_path[:len(full_path) - (len(project_name) + 1)]
     return working_directory
 
 
