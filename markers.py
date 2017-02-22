@@ -12,7 +12,7 @@ NOTE_REGEX = r'^' + NOTE_PREFIX + ID_REGEX
 
 
 class SyncTitles(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.sync_titles'
+    bl_idname = 'gdquest_vse.synchronize_titles'
     bl_label = 'Synchronize titles'
     bl_description = 'Snap the selected image or text strips to the \
                       corresponding title marker. The marker and strip names \

@@ -45,7 +45,7 @@ def set_render_settings(resolution=None, encoding=None):
 # TODO: Remove proxy size
 class RenderForWeb(bpy.types.Operator):
     bl_idname = "gdquest_vse.render_video"
-    bl_label = "Render the video for the web"
+    bl_label = "Render video for the web"
     bl_description = "Pick a rendering preset and let Blender name and export \
         the video for you. Replaces strips with proxies if necessary."
     bl_options = {"REGISTER"}

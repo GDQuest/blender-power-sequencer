@@ -14,7 +14,7 @@ from .functions.sequences import mouse_select_sequences
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
-    bl_label = "Cut strip with mouse"
+    bl_label = "Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(

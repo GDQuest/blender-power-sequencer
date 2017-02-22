@@ -34,8 +34,8 @@ class OpenProjectDirectory(bpy.types.Operator):
 
 
 class OpenPicturesFile(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.open_pictures_file'
-    bl_label = 'Open pictures file'
+    bl_idname = 'gdquest_vse.open_local_psd'
+    bl_label = 'Open local psd'
     bl_description = 'Open a psd or kra file stored in the local img folder'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -125,7 +125,7 @@ class CycleScenes(bpy.types.Operator):
 class TogglePreviewSelectedStrips(bpy.types.Operator):
     """Sets the preview range based on selected sequences"""
     bl_idname = "gdquest_vse.toggle_preview_selection"
-    bl_label = "Toggle preview selected strips"
+    bl_label = "Toggle preview selection"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -156,7 +156,7 @@ class SetTimeline(bpy.types.Operator):
         ('start', 'start', 'start'),
         ('end', 'end', 'end')],
         name='Adjust',
-        description='Change the start of the end frame of the timeline',
+        description='Change the start or the end frame of the timeline',
         default='start')
 
     @classmethod

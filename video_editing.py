@@ -100,7 +100,7 @@ class AddCrossfade(bpy.types.Operator):
 # TODO: if there are multiple selected blocks of strips that are not connected
 # in time, speed up each block separately
 class AddSpeed(bpy.types.Operator):
-    bl_idname = "gdquest_vse.add_speed"
+    bl_idname = "gdquest_vse.speed_up_sequence"
     bl_label = "Speed up Sequence"
     bl_description = "Adds a speed effect over your clip, sets its speed and size, and wraps it into a meta strip set to over drop for easier editing"
     bl_options = {"REGISTER", "UNDO"}
@@ -270,7 +270,7 @@ class SelectShortStrips(bpy.types.Operator):
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
     bl_idname = "gdquest_vse.smart_snap"
-    bl_label = "Trim or extend strip to cursor"
+    bl_label = "Smart snap strip handles"
     bl_options = {'REGISTER', 'UNDO'}
 
     side = EnumProperty(
@@ -363,8 +363,8 @@ class GrabStillImage(bpy.types.Operator):
 
 
 class ToggleHidden(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.toggle_muted'
-    bl_label = 'Toggle sequences mute'
+    bl_idname = 'gdquest_vse.toggle_sequences_muted'
+    bl_label = 'Toggle sequences muted'
     bl_description = 'Mute or unmute sequences'
     bl_options = {'REGISTER', 'UNDO'}
 

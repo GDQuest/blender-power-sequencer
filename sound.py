@@ -49,8 +49,8 @@ class SoundToggleWaveform(bpy.types.Operator):
 
 
 class SoundSetVolume(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.sound_set_volume'
-    bl_label = 'Change Sound strips volume'
+    bl_idname = 'gdquest_vse.sound_set_strip_volume'
+    bl_label = 'Sound: set strip volume'
     bl_description = 'Change the volume of all selected Sound strips (use F6)'
     bl_options = {'REGISTER', 'UNDO'}
 
