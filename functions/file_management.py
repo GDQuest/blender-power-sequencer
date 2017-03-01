@@ -16,8 +16,8 @@ def is_type(filename=None, file_type=None):
     Returns True if the file extension is in the file type, else false
 
     Example uses:
-    is_type("folder\\subfolder\\footage.mp4", Extensions.VIDEO) returns True
-    is_type("video.mp4", Extensions.AUDIO) returns False
+    is_type("folder\\subfolder\\footage.mp4", Extensions.DICT["VIDEO"]) returns True
+    is_type("video.mp4", Extensions.DICT["AUDIO"]) returns False
     """
     file_extension = filename[filename.rfind(".") + 1:].upper()
     response = True if file_extension in file_type else False
@@ -35,30 +35,6 @@ def get_working_directory():
     return working_directory
 
 
-def add_strip_from_file(filetype, directory, files, start, end, channel, keep_audio=False):
-    """Add a file or a list of files as a strip to the VSE"""
-    sequencer = bpy.ops.sequencer
-    wm = bpy.context.window_manager
-    sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0],
-                      'blend_data': bpy.context.blend_data,
-                      'scene': bpy.context.scene,
-                      'window': wm.windows[0],
-                      'screen': bpy.data.screens['Video Editing'],
-                      'area': bpy.data.screens['Video Editing'].areas[2]}
-
-    if filetype == Extensions.IMG:
-        sequencer.image_strip_add(sequencer_area, directory=directory, files=files,
-                                  frame_start=start, frame_end=end, channel=channel)
-    elif filetype == Extensions.VIDEO:
-        sequencer.movie_strip_add(sequencer_area, filepath=directory,
-                                  files=files, frame_start=start, channel=channel, sound=keep_audio)
-    elif filetype == Extensions.AUDIO:
-        sequencer.sound_strip_add(
-            sequencer_area, filepath=directory, frame_start=start, channel=channel)
-
-    return "SUCCESS"
-
-
 def get_files_from_folder(path, folder_name, file_type):
     """Returns a dictionary of files to add as strips to the VSE"""
     if not path and folder_name and file_type:
@@ -74,7 +50,7 @@ def get_files_from_folder(path, folder_name, file_type):
     for file in folder_content:
         if is_type(file, file_type) and not is_proxy(file):
             files.append({'name': file})
-        elif file_type in [Extensions.VIDEO, Extensions.IMG]:
+        elif file_type in [Extensions.DICT["VIDEO"], Extensions.DICT["IMG"]]:
             subfolder = os.path.join(path, file)
             if os.path.isdir(subfolder):
                 subfolders.append(subfolder)

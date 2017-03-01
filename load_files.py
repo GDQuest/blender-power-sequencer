@@ -23,8 +23,7 @@ class ImportLocalFootage(bpy.types.Operator):
         name="Always Reimport",
         description="If true, always import all local files to new strips. \
                     If False, only import new files (check if footage has \
-                    already been imported to the VSE)."
-                                                       ,
+                    already been imported to the VSE).",
         default=False)
     keep_audio = BoolProperty(
         name="Keep audio from video files",
@@ -113,7 +112,7 @@ class ImportLocalFootage(bpy.types.Operator):
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
-        # Write new imported paths to the text files and import new strips
+# Write new imported paths to the text files and import new strips
         channel_offset = 0
         for name in file_types:
             if name not in folders.keys():
@@ -145,7 +144,6 @@ class ImportLocalFootage(bpy.types.Operator):
                                           channel=import_channel,
                                           sound=self.keep_audio)
             elif name == "AUDIO":
-                print(files_dict)
                 sequencer.sound_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
@@ -179,7 +177,12 @@ def find_files(directory,
                file_extensions,
                recursive=False,
                ignore_folders=('_proxy')):
-    """Walks through a folder and returns a list of filepaths that match the extensions."""
+    """
+    Walks through a folder and returns a list of filepaths that match the extensions.
+    Args:
+        - file_extensions is a tuple of extensions with the form "*.ext". Use the Extensions helper class in .functions.global_settings. It gives default extensions to check the files against.
+    """
+    print(file_extensions)
     if not directory and file_extensions:
         return None
 
@@ -227,46 +230,6 @@ def files_to_dict(files, folder_path):
         dict_form = {'name': tail, 'subfolder': head}
         dictionary.append(dict_form)
     return dictionary
-
-
-def add_strip_from_file(filetype,
-                        directory,
-                        files,
-                        start,
-                        end,
-                        channel,
-                        keep_audio=False):
-    """Add a file or a list of files as a strip to the VSE"""
-    sequencer = bpy.ops.sequencer
-    wm = bpy.context.window_manager
-    sequencer_area = {'region': wm.windows[0].screen.areas[2].regions[0],
-                      'blend_data': bpy.context.blend_data,
-                      'scene': bpy.context.scene,
-                      'window': wm.windows[0],
-                      'screen': bpy.data.screens['Video Editing'],
-                      'area': bpy.data.screens['Video Editing'].areas[2]}
-
-    if filetype == FileTypes.img:
-        sequencer.image_strip_add(sequencer_area,
-                                  directory=directory,
-                                  files=files,
-                                  frame_start=start,
-                                  frame_end=end,
-                                  channel=channel)
-    elif filetype == FileTypes.video:
-        sequencer.movie_strip_add(sequencer_area,
-                                  filepath=directory,
-                                  files=files,
-                                  frame_start=start,
-                                  channel=channel,
-                                  sound=keep_audio)
-    elif filetype == FileTypes.audio:
-        sequencer.sound_strip_add(sequencer_area,
-                                  filepath=directory,
-                                  frame_start=start,
-                                  channel=channel)
-
-    return "SUCCESS"
 
 
 # FIXME: Currently not getting image width and height (set to 0)

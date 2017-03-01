@@ -28,41 +28,54 @@ bl_info = {
     "warning": "This is a Work In Progress",
     "wiki_url": "https://github.com/NathanLovato/gdquest-vse",
     "support": "COMMUNITY",
-    "category": "VSE" }
-
+    "category": "VSE"
+}
 
 import bpy
 import os
 from math import ceil
 from operator import attrgetter
 from enum import Enum
+from .addon_preferences import GDquestVSESetting
+from .handlers import *
 
 # load and reload submodules
 ##################################
-
 from .functions import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 # register
 ##################################
-
 import traceback
 
 
 def register():
     try:
+        bpy.utils.register_class(GDquestVSESetting)
         bpy.utils.register_module(__name__)
     except:
         traceback.print_exc()
 
-    print("Registered {} with {} modules".format(bl_info["name"],
-          len(modules)))
+    # handlers = bpy.app.handlers.frame_change_post
+    # for handler in handlers:
+    #     if (" playback_speed " in str(handler)):
+    #         handlers.remove(handler)
+    # handlers.append(playback_speed)
+
+    print("Registered {} with {} modules".format(bl_info["name"], len(
+        modules)))
 
 
 def unregister():
     try:
         bpy.utils.unregister_module(__name__)
+        bpy.utils.unregister_class(GDquestVSESetting)
     except:
         traceback.print_exc()
+
+    # handlers = bpy.app.handlers.frame_change_post
+    # for handler in handlers:
+    #     if (" playback_speed " in str(handler)):
+    #         handlers.remove(handler)
 
     print("Unregistered {}".format(bl_info["name"]))
