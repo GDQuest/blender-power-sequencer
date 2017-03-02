@@ -1,7 +1,7 @@
 """Sequence selection and editing related functions"""
 import bpy
 from .global_settings import SequenceTypes, SearchMode
-
+from operator import attrgetter
 
 def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
@@ -150,7 +150,6 @@ def slice_selection(sequences):
         return None
 
     # order the sequences by starting frame.
-    from operator import attrgetter
     sequences = sorted(sequences, key=attrgetter('frame_final_start'))
 
     last_sequence = sequences[0]
@@ -185,17 +184,16 @@ def get_frame_range(sequences):
     if not sequences:
         return False
 
-    from operator import attrgetter
-    sequences = sorted(sequences, key=attrgetter('frame_final_start'))
     start = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
     end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+
     return start, end
 
 
 def set_preview_range(start, end):
     """Sets the preview range and timeline render range"""
-    if not start and end:
-        raise ValueError('Missing start or end parameter')
+    if not (start and end) and start != 0:
+        raise AttributeError('Missing start or end parameter')
 
     scene = bpy.context.scene
     scene.frame_start = start
@@ -213,7 +211,6 @@ def reset_preview_range():
         return None
     frame_start = 1
 
-    from operator import attrgetter
     frame_end = max(bpy.context.scene.sequence_editor.sequences,
                     key=attrgetter('frame_final_end')).frame_final_end
     set_preview_range(frame_start, frame_end)
