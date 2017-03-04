@@ -75,8 +75,7 @@ class RenderForWeb(bpy.types.Operator):
     use_folder_name = BoolProperty(
         name="Use folder name",
         description="Use the folder to name the exported video, instead of the blend file",
-        default=True)
-
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -96,20 +95,13 @@ class RenderForWeb(bpy.types.Operator):
             self.report({'WARNING'}, "The rendering presets are not properly set. Cancelling operation")
             return {'CANCELLED'}
 
-        # TODO: Replace with own proxy rendering system
-        # if self.use_preset and 'velvet_revolver' in bpy.context.user_preferences.addons.keys():
-        #     if self.use_proxies:
-        #         bpy.ops.sequencer.proxy_editing_toproxy()
-        #     else:
-        #         bpy.ops.sequencer.proxy_editing_tofullres()
-
         from os.path import splitext, dirname
         path = bpy.data.filepath
         name = dirname(path).rsplit(sep="\\", maxsplit=1)[-1] \
             if self.use_folder_name else bpy.path.basename(path)
 
         if self.use_preset:
-            name = "".join((splitext(name)[0], '_', self.preset, '.mp4'))
+            name = "".join((splitext(name)[0], ' ', self.preset, '.mp4'))
         else:
             name = "".join((splitext(name)[0], '.mp4'))
 
