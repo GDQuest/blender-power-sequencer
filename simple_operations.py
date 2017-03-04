@@ -1,7 +1,7 @@
 """Simple operations like save, delete, open the project directory..."""
 import bpy
 from bpy.props import EnumProperty
-from .functions.sequences import get_frame_range, set_preview_range, reset_preview_range
+from .functions.sequences import get_frame_range, set_preview_range
 
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
@@ -134,14 +134,14 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
 
     def execute(self, context):
         if bpy.context.scene.frame_start == 1:
-            selection = bpy.context.selected_sequences 
+            selection = bpy.context.selected_sequences
             if not selection:
                 return {'CANCELLED'}
-
-            frame_start, frame_end = get_frame_range(selection)
-            set_preview_range(frame_start, frame_end)
+            frame_start, frame_end = get_frame_range(sequences=bpy.context.selected_sequences, get_from_start=False)
         else:
-            reset_preview_range()
+            frame_start, frame_end = get_frame_range(get_from_start=True)
+
+        set_preview_range(frame_start, frame_end)
         return {'FINISHED'}
 
 

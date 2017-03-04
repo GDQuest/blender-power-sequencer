@@ -3,6 +3,7 @@ import bpy
 from .global_settings import SequenceTypes, SearchMode
 from operator import attrgetter
 
+
 def find_empty_channel(mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
     Takes the optional argument mode: 'ABOVE' or 'ANY'
@@ -31,7 +32,8 @@ def find_empty_channel(mode='ABOVE'):
 def is_channel_free(target_channel, start_frame, end_frame):
     """Checks if the selected channel is empty or not. Optionally verifies that
        there is space in the channel in a certain timeframe"""
-    sequences = [s for s in bpy.context.sequences if s.channel == target_channel]
+    sequences = [s for s in bpy.context.sequences
+                 if s.channel == target_channel]
 
     for s in sequences:
         if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
@@ -67,21 +69,23 @@ def find_next_sequences(mode=SearchMode.NEXT,
                 pass
             else:
                 nexts.append(seq)
-                if mode is SearchMode.CHANNEL and \
-                   seq.channel == active.channel:
+                if mode is SearchMode.CHANNEL and seq.channel == active.channel:
                     same_channel.append(seq)
 
-    # Store the sequences to return
+# Store the sequences to return
     next_sequences = None
     if mode is SearchMode.CHANNEL:
         return same_channel
     elif len(nexts) > 0:
         return min(
             nexts,
-            key=lambda next: (next.frame_final_start - active.frame_final_start))
+            key=
+            lambda next: (next.frame_final_start - active.frame_final_start))
     elif len(nexts_far) > 0:
-        next_sequences = min(nexts_far, key=lambda next: (
-            next.frame_final_start - active.frame_final_start))
+        next_sequences = min(
+            nexts_far,
+            key=
+            lambda next: (next.frame_final_start - active.frame_final_start))
 
     return next_sequences
 
@@ -113,7 +117,10 @@ def select_strip_handle(sequences, side=None, frame=None):
     return True
 
 
-def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked=True):
+def mouse_select_sequences(frame=None,
+                           channel=None,
+                           mode='mouse',
+                           select_linked=True):
     """Selects sequences based on the mouse position or using the time cursor"""
 
     selection = []
@@ -133,9 +140,10 @@ def mouse_select_sequences(frame=None, channel=None, mode='mouse', select_linked
         # Select linked time sequences
         if select_linked and mode in ('mouse', 'smart'):
             for seq in sequences:
-                if seq.channel != selection[0].channel \
-                   and seq.frame_final_start == selection[0].frame_final_start \
-                   and seq.frame_final_end == selection[0].frame_final_end:
+                if seq.channel != selection[
+                        0].channel and seq.frame_final_start == selection[
+                            0].frame_final_start and seq.frame_final_end == selection[
+                                0].frame_final_end:
                     selection.append(seq)
     # In smart mode, if we don't get any selection, we select everything
     elif mode == 'smart':
@@ -149,7 +157,7 @@ def slice_selection(sequences):
     if not sequences:
         return None
 
-    # order the sequences by starting frame.
+# order the sequences by starting frame.
     sequences = sorted(sequences, key=attrgetter('frame_final_start'))
 
     last_sequence = sequences[0]
@@ -161,9 +169,9 @@ def slice_selection(sequences):
         last_sequence = s
         index += 1
 
-    # print(break_indices)
+# print(break_indices)
 
-    # Create lists
+# Create lists
     last_breakpoint = break_indices[0]
     broken_selection = []
     index = 0
@@ -178,14 +186,24 @@ def slice_selection(sequences):
     return broken_selection
 
 
-def get_frame_range(sequences):
-    """Returns a tuple containing the starting frame and the
-    end frame of the passed sequences, as displayed in the VSE"""
+def get_frame_range(sequences=None, get_from_start=False):
+    """
+    Returns a tuple with the minimum and maximum frames of the list of passed sequences
+    If no sequences are passed, returns the timeline's start and end frames
+    Args:
+        - sequences, the sequences to use
+        - get_from_start, the returned start frame is set to 1 if this boolean is True
+    """
     if not sequences:
-        return False
+        if bpy.context.sequences:
+            sequences = bpy.context.sequences
+        else:
+            scene = bpy.context.scene
+            return scene.frame_start, scene.frame_end
 
-    start = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
-    end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+    start = 1 if get_from_start else min(
+        sequences, key=attrgetter('frame_final_start')).frame_final_start
+    end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end - 1
 
     return start, end
 
@@ -196,22 +214,8 @@ def set_preview_range(start, end):
         raise AttributeError('Missing start or end parameter')
 
     scene = bpy.context.scene
+
     scene.frame_start = start
     scene.frame_end = end
     scene.frame_preview_start = start
     scene.frame_preview_end = end
-    return True
-
-
-def reset_preview_range():
-    """Sets the preview and timeline render start and end frames to
-    1 and the end of the last strip"""
-    sequences = bpy.context.scene.sequence_editor.sequences
-    if not sequences:
-        return None
-    frame_start = 1
-
-    frame_end = max(bpy.context.scene.sequence_editor.sequences,
-                    key=attrgetter('frame_final_end')).frame_final_end
-    set_preview_range(frame_start, frame_end)
-    return True

@@ -116,7 +116,7 @@ class ImportLocalFootage(bpy.types.Operator):
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
-# Write new imported paths to the text files and import new strips
+        # Write new imported paths to the text files and import new strips
         channel_offset = 0
         for name in file_types:
             if name not in folders.keys():
