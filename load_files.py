@@ -42,7 +42,6 @@ class ImportLocalFootage(bpy.types.Operator):
         description="Padding added between imported image strips in frames",
         default=24,
         min=1)
-
     # PSD related features
     # import_psd = BoolProperty(
     #     name="Import PSD as image",
@@ -115,6 +114,7 @@ class ImportLocalFootage(bpy.types.Operator):
 
         # Write new imported paths to the text files and import new strips
         channel_offset = 0
+        created_sequences = []
         for name in file_types:
             if name not in folders.keys():
                 continue
@@ -136,7 +136,6 @@ class ImportLocalFootage(bpy.types.Operator):
             folder = folders[name]
             files_dict = files_to_dict(new_paths, folder)
 
-            created_sequences = []
             if name == "VIDEO":
                 import_channel += 1 if self.keep_audio else 0
                 sequencer.movie_strip_add(SEQUENCER_AREA,
@@ -174,7 +173,7 @@ class ImportLocalFootage(bpy.types.Operator):
                     # set_img_strip_offset(img_strips)
                     add_transform_effect(img_strips)
             channel_offset += 1
-
+        
         for s in created_sequences:
             s.select = True
         return {"FINISHED"}
