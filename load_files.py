@@ -72,13 +72,17 @@ class ImportLocalFootage(bpy.types.Operator):
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
 
+        override = bpy.context.copy()
         wm = bpy.context.window_manager
-        SEQUENCER_AREA = {'region': wm.windows[0].screen.areas[2].regions[0],
-                          'blend_data': bpy.context.blend_data,
-                          'scene': bpy.context.scene,
-                          'window': wm.windows[0],
-                          'screen': bpy.data.screens['Video Editing'],
-                          'area': bpy.data.screens['Video Editing'].areas[2]}
+        bpy.context.window_manager.windows[0].screen.areas[2].regions[0]
+
+        for window in bpy.context.window_manager.windows:
+            screen = window.screen
+            for area in screen.areas:
+                if area.type == 'SEQUENCE_EDITOR':
+                    SEQUENCER_AREA = {'window': window,
+                                      'screen': screen,
+                                      'area': area}
 
         from .load_files import get_working_directory
         directory = get_working_directory()
