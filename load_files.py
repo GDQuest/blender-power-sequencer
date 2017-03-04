@@ -72,17 +72,14 @@ class ImportLocalFootage(bpy.types.Operator):
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
 
-        override = bpy.context.copy()
-        wm = bpy.context.window_manager
-        bpy.context.window_manager.windows[0].screen.areas[2].regions[0]
-
         for window in bpy.context.window_manager.windows:
             screen = window.screen
             for area in screen.areas:
                 if area.type == 'SEQUENCE_EDITOR':
                     SEQUENCER_AREA = {'window': window,
                                       'screen': screen,
-                                      'area': area}
+                                      'area': area,
+                                      'scene': bpy.context.scene}
 
         from .load_files import get_working_directory
         directory = get_working_directory()
@@ -137,8 +134,9 @@ class ImportLocalFootage(bpy.types.Operator):
 
             import_channel = empty_channel + channel_offset
             folder = folders[name]
-            # TODO: SPLIT FOLDER DOWN TO SUBFOLDER LEVELS
             files_dict = files_to_dict(new_paths, folder)
+
+            created_sequences = []
             if name == "VIDEO":
                 import_channel += 1 if self.keep_audio else 0
                 sequencer.movie_strip_add(SEQUENCER_AREA,
@@ -147,12 +145,14 @@ class ImportLocalFootage(bpy.types.Operator):
                                           frame_start=frame_current,
                                           channel=import_channel,
                                           sound=self.keep_audio)
+                created_sequences.extend(bpy.context.selected_sequences)
             elif name == "AUDIO":
                 sequencer.sound_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
                                           frame_start=frame_current,
                                           channel=import_channel)
+                created_sequences.extend(bpy.context.selected_sequences)
             elif name == "IMG":
                 img_frame = frame_current
                 for img in files_dict:
@@ -166,6 +166,7 @@ class ImportLocalFootage(bpy.types.Operator):
                         frame_start=img_frame,
                         frame_end=img_frame + self.img_length,
                         channel=import_channel)
+                    created_sequences.extend(bpy.context.selected_sequences)
 
                     img_frame += self.img_length + self.img_padding
                     img_strips = bpy.context.selected_sequences
@@ -173,6 +174,9 @@ class ImportLocalFootage(bpy.types.Operator):
                     # set_img_strip_offset(img_strips)
                     add_transform_effect(img_strips)
             channel_offset += 1
+
+        for s in created_sequences:
+            s.select = True
         return {"FINISHED"}
 
 

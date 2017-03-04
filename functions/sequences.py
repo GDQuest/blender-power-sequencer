@@ -47,7 +47,7 @@ def find_next_sequences(mode=SearchMode.NEXT,
                         pick_sound=False):
     """Returns a sequence or a list of sequences following the active one"""
     if not sequences:
-        sequences = bpy.context.scene.sequence_editor.sequences
+        sequences = bpy.context.sequences
         if not sequences:
             return None
 

@@ -74,6 +74,7 @@ class AddCrossfade(bpy.types.Operator):
 
         seq = [active, find_next_sequences(SearchMode.NEXT)]
         if not seq[0] and seq[1]:
+            self.report({"ERROR_INVALID_INPUT"}, "No sequence to crossfade to")
             return {"CANCELLED"}
 
         if self.force_length:
