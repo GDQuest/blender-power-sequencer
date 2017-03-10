@@ -8,7 +8,7 @@ from .global_settings import SequenceTypes
 def fade_create(sequence=None,
                 fade_length=12,
                 fade_type='both',
-                max_opacity=1.0):
+                max_value=1.0):
     """
     Takes a single sequence, and adds a fade to the left,
     right or to both sides of the VSE strips.
@@ -19,7 +19,8 @@ def fade_create(sequence=None,
     """
     if not sequence:
         return None
-
+    
+    print("in function", max_value)
     create_animation_data()
     fcurves = bpy.context.scene.animation_data.action.fcurves
 
@@ -41,9 +42,9 @@ def fade_create(sequence=None,
     keys = fade_fcurve.keyframe_points
     if fade_type in ['left', 'both']:
         keys.insert(frame=frame_start, value=0)
-        keys.insert(frame=frame_start + fade_length, value=max_opacity)
+        keys.insert(frame=frame_start + fade_length, value=max_value)
     if fade_type in ['right', 'both']:
-        keys.insert(frame=frame_end - fade_length, value=max_opacity)
+        keys.insert(frame=frame_end - fade_length, value=max_value)
         keys.insert(frame=frame_end, value=0)
     return s.name
 

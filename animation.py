@@ -33,12 +33,12 @@ class FadeStrips(bpy.types.Operator):
             return {"CANCELLED"}
 
         from .functions.animation import fade_create
-        sequence_count = 0
+        from .functions.sequences import SequenceTypes
         for s in selection:
-            fade_create(s, self.fade_length, self.fade_type, max_opacity=s.blend_alpha)
-            sequence_count += 1
+            max_value = s.volume if s.type in SequenceTypes.SOUND else s.blend_alpha 
+            fade_create(sequence=s, fade_length=self.fade_length, fade_type=self.fade_type, max_value=max_value)
 
-        self.report({"INFO"}, "Added fade animation to " + str(sequence_count) + " sequences.")
+        self.report({"INFO"}, "Added fade animation to " + str(len(selection)) + " sequences.")
         return {"FINISHED"}
 
 
