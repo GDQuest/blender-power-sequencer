@@ -3,7 +3,7 @@
    and offers more flexibility than the built-in proxies
    for simple video projects (online videos, tutorials, vlogs...)."""
 import bpy
-from bpy.props import BoolProperty, IntProperty
+from bpy.props import BoolProperty, IntProperty, StringProperty
 
 # Auto change resolution
 # class Render_Resolution_Percentage_Toggle(bpy.types.Operator):
@@ -30,19 +30,30 @@ from bpy.props import BoolProperty, IntProperty
 
 #         return {'FINISHED'}
 
-
 # TODO: store and update proxies function (store/update paths to proxy folders and files)
 # TODO: clear proxies (delete all proxy files)
 # Prompt for confirmation
 
+
 # Sets video strips as proxies
-# TODO: Only if setting enabled in preferences
+# TODO: Add settings in addon prefs
+# TODO: Make use of SettingsProxies PropertyGroup
+# TODO: Add optional support for image sequences
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "gdquest_vse.set_video_proxies"
-    bl_label = "Set Videos as Proxies"
-    bl_description = "Set all video strips as proxies and rebuild"
+    bl_label = "Set ALL Videos as Proxies"
+    bl_description = "Set all video strips in the current scene as proxies and rebuild"
     bl_options = {"REGISTER"}
 
+
+    use_custom_folder = BoolProperty(
+        name="Custom proxy folder",
+        description="Use a custom folder to store proxies",
+        default=True)
+    custom_folder_path = StringProperty(
+        name="Custom proxy folder path",
+        description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
+        default=r"D:\Program Files\Blender proxies")
     @classmethod
     def poll(cls, context):
         return True
@@ -54,36 +65,41 @@ class SetVideosProxies(bpy.types.Operator):
             if s.type == 'MOVIE':
                 s.select = True
 
-        sequencer.enable_proxies(proxy_25 = True,
-                                proxy_50 =  False,
-                                proxy_75 =  False,
-                                proxy_100 = False,
-                                override =  False)
+        if self.use_custom_folder:
+            for s in bpy.context.selected_sequences:
+                s.proxy.use_proxy_custom_directory = True
+                s.proxy.directory = self.custom_folder_path
+
+        sequencer.enable_proxies(proxy_25=True,
+                                 proxy_50=False,
+                                 proxy_75=False,
+                                 proxy_100=False,
+                                 override=False)
         sequencer.rebuild_proxy({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
 
 
+# TODO: Add way to change us
 class SettingsProxies(bpy.types.PropertyGroup):
     proxy_on_import = BoolProperty(
-    name = "Set and build videos strips as proxies when importing local footage",
-    default = True)
-    proxy_25 = BoolProperty(
-    name = "Proxy at 25%",
-    default = True)
-    proxy_50 = BoolProperty(
-    name = "Proxy at 50%",
-    default = False)
-    proxy_75 = BoolProperty(
-    name = "Proxy at 75%",
-    default = False)
-    proxy_100 = BoolProperty(
-    name = "Proxy at 100%",
-    default = False)
+        name="Auto create proxy",
+        description="Set and build videos strips as proxies on import for all strips",
+        default=True)
+    use_custom_folder = BoolProperty(
+        name="Custom proxy folder",
+        description="Use a custom folder to store proxies",
+        default=True)
+    custom_folder_path = StringProperty(
+        name="Custom proxy folder path",
+        description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
+        default=r"D:\Program Files\Blender proxies")
+    proxy_25 = BoolProperty(name="Proxy at 25%", default=True)
+    proxy_50 = BoolProperty(name="Proxy at 50%", default=False)
+    proxy_75 = BoolProperty(name="Proxy at 75%", default=False)
+    proxy_100 = BoolProperty(name="Proxy at 100%", default=False)
     proxy_quality = IntProperty(
-    name = "Proxy JPG quality",
-    default = 90,
-    min = 1,
-    max = 100)
+        name="Proxy JPG quality",
+        default=90, min=1, max=100)
 
 
 # Panel for proxy options management
