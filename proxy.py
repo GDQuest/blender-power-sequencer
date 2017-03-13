@@ -39,6 +39,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty
 # TODO: Add settings in addon prefs
 # TODO: Make use of SettingsProxies PropertyGroup
 # TODO: Add optional support for image sequences
+# TODO: If custom dir, store proxies in subfolder
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "gdquest_vse.set_video_proxies"
     bl_label = "Set ALL Videos as Proxies"
@@ -60,7 +61,7 @@ class SetVideosProxies(bpy.types.Operator):
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-
+        sequencer.select_all(action='DESELECT')
         for s in bpy.context.scene.sequence_editor.sequences_all:
             if s.type == 'MOVIE':
                 s.select = True
@@ -68,18 +69,17 @@ class SetVideosProxies(bpy.types.Operator):
         if not bpy.context.selected_sequences:
             self.report({"ERROR_INVALID_INPUT"}, "No sequences selected")
 
-        if self.use_custom_folder:
-            for s in bpy.context.selected_sequences:
-                if s is None:
-                    continue
-                s.proxy.use_proxy_custom_directory = True
-                s.proxy.directory = self.custom_folder_path
 
         sequencer.enable_proxies(proxy_25=True,
                                  proxy_50=False,
                                  proxy_75=False,
                                  proxy_100=False,
                                  override=False)
+        if self.use_custom_folder:
+            for s in bpy.context.selected_sequences:
+                s.proxy.use_proxy_custom_directory = True
+                s.proxy.directory = self.custom_folder_path
+
         sequencer.rebuild_proxy({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
 
