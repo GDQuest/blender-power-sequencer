@@ -45,7 +45,6 @@ class SetVideosProxies(bpy.types.Operator):
     bl_description = "Set all video strips in the current scene as proxies and rebuild"
     bl_options = {"REGISTER"}
 
-
     use_custom_folder = BoolProperty(
         name="Custom proxy folder",
         description="Use a custom folder to store proxies",
@@ -54,6 +53,7 @@ class SetVideosProxies(bpy.types.Operator):
         name="Custom proxy folder path",
         description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
         default=r"D:\Program Files\Blender proxies")
+
     @classmethod
     def poll(cls, context):
         return True
@@ -61,12 +61,17 @@ class SetVideosProxies(bpy.types.Operator):
     def execute(self, context):
         sequencer = bpy.ops.sequencer
 
-        for s in bpy.context.sequences:
+        for s in bpy.context.scene.sequence_editor.sequences_all:
             if s.type == 'MOVIE':
                 s.select = True
 
+        if not bpy.context.selected_sequences:
+            self.report({"ERROR_INVALID_INPUT"}, "No sequences selected")
+
         if self.use_custom_folder:
             for s in bpy.context.selected_sequences:
+                if s is None:
+                    continue
                 s.proxy.use_proxy_custom_directory = True
                 s.proxy.directory = self.custom_folder_path
 
