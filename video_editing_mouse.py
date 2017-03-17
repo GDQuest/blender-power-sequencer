@@ -4,6 +4,7 @@ from math import floor
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .functions.sequences import mouse_select_sequences
+
 # import blf
 
 
@@ -18,34 +19,39 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
-               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
-               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'
+                ), ('cursor', 'Time cursor',
+                    'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart',
+                'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
-        description="Cut only the strip under the mouse or all strips under the time cursor",
+        description=
+        "Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
-    cut_mode = EnumProperty(
-        items=[('cut', 'Cut', 'Cut the strips'),
-               ('trim', 'Trim', 'Trim the selection')],
-        name='Cut mode',
-        description='Cut or trim the selection',
-        default='cut')
+    cut_mode = EnumProperty(items=[('cut', 'Cut', 'Cut the strips'), (
+        'trim', 'Trim', 'Trim the selection')],
+                            name='Cut mode',
+                            description='Cut or trim the selection',
+                            default='cut')
     remove_gaps = BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=False)
     auto_move_cursor = BoolProperty(
         name="Auto move cursor",
-        description="When trimming the sequence, auto move the cursor if playback is active",
+        description=
+        "When trimming the sequence, auto move the cursor if playback is active",
         default=True)
     cursor_offset = IntProperty(
         name="Cursor trim offset",
-        description="On trim, during playback, offset the cursor to better see if the cut works",
+        description=
+        "On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
         min=0)
     select_linked = BoolProperty(
         name="Use linked time",
-        description="In mouse or smart mode, always cut linked strips if this is checked",
+        description=
+        "In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
     use_selection = BoolProperty(
         name="Use selection",
@@ -84,7 +90,8 @@ class MouseCut(bpy.types.Operator):
                 sequencer.select_all(action='SELECT')
         else:
             # Smart can behave as mouse mode if the user clicks on a strip
-            sequences_to_select = mouse_select_sequences(frame, channel, select_mode, self.select_linked)
+            sequences_to_select = mouse_select_sequences(
+                frame, channel, select_mode, self.select_linked)
             if not sequences_to_select:
                 if select_mode == 'mouse':
                     return {"CANCELLED"}
@@ -110,7 +117,8 @@ class MouseCut(bpy.types.Operator):
                 # Move time cursor back
                 if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
                     from operator import attrgetter
-                    first_seq = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]
+                    first_seq = sorted(bpy.context.selected_sequences,
+                                       key=attrgetter('frame_final_start'))[0]
                     frame = first_seq.frame_final_start - self.cursor_offset \
                         if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
                         else frame
@@ -122,6 +130,7 @@ class MouseCut(bpy.types.Operator):
 
 # FIXME: Currently using seq_slide to move the sequences but creates bugs
 #        Check how builtin modal operators work instead
+# TODO: Store starting frame of the strips and revert to it on CANCELLED
 class EditCrossfade(bpy.types.Operator):
     """Selects handles to edit crossfade and gives a preview of the fade point."""
     bl_idname = "gdquest_vse.edit_crossfade"
@@ -132,7 +141,7 @@ class EditCrossfade(bpy.types.Operator):
         name="Preview the crossfade",
         description=
         "Gives a preview of the crossfade sides, but can affect performances",
-        default=True)
+        default=False)
 
     def __init__(self):
         self.time_cursor_init_frame = bpy.context.scene.frame_current
@@ -167,6 +176,7 @@ class EditCrossfade(bpy.types.Operator):
 
             if self.seq_1.frame_final_duration + offset - self.crossfade_duration > 1 and \
                self.seq_2.frame_final_duration - offset - self.crossfade_duration > 1:
+                # TODO: Replace with moving the actual strip handles
                 bpy.ops.transform.seq_slide(
                     value=(self.frame - self.last_frame, 0))
             self.update_time_cursor()
@@ -177,6 +187,7 @@ class EditCrossfade(bpy.types.Operator):
             if event.type == 'LEFTMOUSE':
                 return {"FINISHED"}
             elif event.type in {'RIGHTMOUSE', 'ESC'}:
+                # TODO: Revert back to original position
                 return {'CANCELLED'}
 
         # Preview frame and backdrop toggle

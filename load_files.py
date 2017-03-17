@@ -4,7 +4,6 @@ from bpy.props import BoolProperty, IntProperty
 
 from .functions.global_settings import ProjectSettings, Extensions
 from .functions.file_management import *
-from .functions.animation import add_transform_effect
 from .functions.sequences import find_empty_channel
 
 
@@ -112,7 +111,7 @@ class ImportLocalFootage(bpy.types.Operator):
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
-        # Write new imported paths to the text files and import new strips
+# Write new imported paths to the text files and import new strips
         channel_offset = 0
         created_sequences = []
         for name in file_types:
@@ -166,14 +165,9 @@ class ImportLocalFootage(bpy.types.Operator):
                         frame_end=img_frame + self.img_length,
                         channel=import_channel)
                     created_sequences.extend(bpy.context.selected_sequences)
-
                     img_frame += self.img_length + self.img_padding
-                    img_strips = bpy.context.selected_sequences
-                    # TODO: img crop and offset to make anim easier
-                    # set_img_strip_offset(img_strips)
-                    add_transform_effect(img_strips)
             channel_offset += 1
-        
+
         for s in created_sequences:
             s.select = True
         return {"FINISHED"}
@@ -237,76 +231,3 @@ def files_to_dict(files, folder_path):
         dict_form = {'name': tail, 'subfolder': head}
         dictionary.append(dict_form)
     return dictionary
-
-
-# FIXME: Currently not getting image width and height (set to 0)
-def add_transform_effect(sequences=None):
-    """Takes a list of image strips and adds a transform effect to them.
-       Ensures that the pivot will be centered on the image"""
-    sequencer = bpy.ops.sequencer
-    sequence_editor = bpy.context.scene.sequence_editor
-    render = bpy.context.scene.render
-
-    sequences = [s for s in sequences if s.type in ('IMAGE', 'MOVIE')]
-
-    if not sequences:
-        return None
-
-    sequencer.select_all(action='DESELECT')
-
-    for s in sequences:
-        s.mute = True
-
-        sequence_editor.active_strip = s
-        sequencer.effect_strip_add(type='TRANSFORM')
-
-        active = sequence_editor.active_strip
-        active.name = "TRANSFORM-%s" % s.name
-        active.blend_type = 'ALPHA_OVER'
-        active.select = False
-
-    print("Successfully processed " + str(len(sequences)) + " image sequences")
-    return True
-
-# def calc_transform_effect_scale(sequence):
-#     """Takes a transform effect and returns the scale it should use
-#        to preserve the scale of its cropped input"""
-#     # if not (sequence or sequence.type == 'TRANSFORM'):
-#     #     raise AttributeError
-
-#     s = sequence.input_1
-
-#     crop_x, crop_y = s.elements[0].orig_width - (s.crop.min_x + s.crop.max_x),
-#                      s.elements[0].orig_height - (s.crop.min_y + s.crop.max_y)
-#     ratio_x, ratio_y = crop_x / render.resolution_x,
-#                        crop_y / render.resolution_y
-#     if ratio_x > 1 or ratio_y > 1:
-#         ratio_x /= ratio_y
-#         ratio_y /= ratio_x
-#     return ratio_x, ratio_y
-#     active.scale_start_x, active.scale_start_y = ratio_x ratio_y
-
-
-# TODO: make it work
-def set_img_strip_offset(sequences):
-    """Takes a list of img sequences and changes their parameters"""
-    if not sequences:
-        raise AttributeError('No sequences passed to the function')
-
-    for s in sequences:
-        if s.use_translation and (s.offset_x != 0 or s.offset_y != 0):
-            continue
-
-        image_width = s.elements[0].orig_width
-        image_height = s.elements[0].orig_height
-
-        if image_width == 0 or image_height == 0:
-            continue
-
-        res_x, res_y = render.resolution_x, render.resolution_y
-
-        if image_width < res_x or image_height < res_y:
-            s.use_translation = True
-            s.transform.offset_x = (res_x - image_width) / 2
-            s.transform.offset_y = (res_y - image_height) / 2
-    return True
