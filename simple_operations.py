@@ -3,6 +3,7 @@ import bpy
 from bpy.props import EnumProperty
 from .functions.sequences import get_frame_range, set_preview_range
 
+
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
     bl_label = 'Open project directory'
@@ -133,12 +134,15 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        if bpy.context.scene.frame_start == 1:
-            selection = bpy.context.selected_sequences
-            if not selection:
-                return {'CANCELLED'}
-            frame_start, frame_end = get_frame_range(sequences=bpy.context.selected_sequences, get_from_start=False)
-        else:
+        scene = bpy.context.scene
+        selection = bpy.context.selected_sequences
+        if not selection:
+            return {'CANCELLED'}
+        frame_start, frame_end = get_frame_range(
+            sequences=bpy.context.selected_sequences,
+            get_from_start=False)
+
+        if scene.frame_start == frame_start and scene.frame_end == frame_end:
             frame_start, frame_end = get_frame_range(get_from_start=True)
 
         set_preview_range(frame_start, frame_end)
@@ -151,9 +155,10 @@ class SetTimeline(bpy.types.Operator):
     bl_label = "Set timeline start and end"
     bl_options = {'REGISTER', 'UNDO'}
 
-    adjust = EnumProperty(items=[
-        ('start', 'start', 'start'),
-        ('end', 'end', 'end')],
+    adjust = EnumProperty(
+        items=[
+            ('start', 'start', 'start'), ('end', 'end', 'end')
+        ],
         name='Adjust',
         description='Change the start or the end frame of the timeline',
         default='start')
