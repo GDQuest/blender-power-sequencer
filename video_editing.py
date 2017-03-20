@@ -11,7 +11,7 @@ from .functions.sequences import is_channel_free, find_next_sequences, \
 # TODO: Rewrite cleanly
 # FIXME: Make sure the offset preserves the starting frame of the second strip
 # TODO: make it work with pictures and transform strips
-# TODO: If source strip has a special blending mode, use that for crossfade
+# TODO: If source strip has a special blending mode, use that for crossfade?
 # TODO: If 2 strips selected and same type familly (visual or sound), crossfade
 # from the bottom left one to the top right one
 # TODO: Chain crossfades if more than 2 strips selected?

@@ -46,7 +46,7 @@ class AddTransformEffect(bpy.types.Operator):
     """
     Filters the selection down to image and movie strips.
     Centers images on the screen using the center_img() function.
-    Adds a transform effect and sets it to ALPHA_OVER 
+    Adds a transform effect and sets it to ALPHA_OVER
     for each strip in the selection.
     """
     bl_idname = 'gdquest_vse.add_transform_effect'
@@ -69,6 +69,7 @@ class AddTransformEffect(bpy.types.Operator):
             self.report({"ERROR_INVALID_INPUT"}, "No sequences movie or image strips selected")
             return {'CANCELLED'}
 
+        transform_strips = []
         sequencer.select_all(action='DESELECT')
         for s in selection:
             s.mute = True
@@ -81,9 +82,10 @@ class AddTransformEffect(bpy.types.Operator):
             active = sequence_editor.active_strip
             active.name = "TRANSFORM-%s" % s.name
             active.blend_type = 'ALPHA_OVER'
+            transform_strips.append(active)
             active.select = False
 
-        for s in selection:
+        for s in transform_strips:
             s.select = True
         self.report({"INFO"}, "Successfully processed " + str(len(selection)) + " image sequences")
         return {'FINISHED'}
