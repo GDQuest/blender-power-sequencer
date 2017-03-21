@@ -67,7 +67,7 @@ class SetVideosProxies(bpy.types.Operator):
                 s.select = True
 
         if not bpy.context.selected_sequences:
-            self.report({"ERROR_INVALID_INPUT"}, "No sequences selected")
+            self.report({"ERROR_INVALID_INPUT"}, "No movie sequences found")
 
 
         sequencer.enable_proxies(proxy_25=True,
