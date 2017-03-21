@@ -110,6 +110,7 @@ class AddSpeed(bpy.types.Operator):
     bl_label = "Speed up Sequence"
     bl_description = "Adds a speed effect to your clip, sets its speed and \
         size, wraps it into a meta strip set to over drop for easier editing"
+
     bl_options = {"REGISTER", "UNDO"}
 
     speed_factor = IntProperty(
@@ -127,73 +128,62 @@ class AddSpeed(bpy.types.Operator):
         scene = bpy.context.scene
 
         active = scene.sequence_editor.active_strip
-        selection = bpy.context.selected_sequences
+        selection = [s
+                     for s in bpy.context.selected_sequences
+                     if s.type in SequenceTypes.VIDEO]
 
         if not selection:
-            self.report({"ERROR_INVALID_INPUT"},
-                        "No sequences selected. Operation cancelled")
+            self.report({
+                "ERROR_INVALID_INPUT"
+            }, "No Movie sequence or Metastrips selected. Operation cancelled")
             return {"CANCELLED"}
 
-        if active.type not in SequenceTypes.VIDEO:
-            count = 0
-            for s in selection:
-                if s.type in SequenceTypes.VIDEO:
-                    scene.sequence_editor.active_strip = active = s
-                    break
-                else:
-                    count += 1
-            if count == len(selection):
-                self.report({
-                    "ERROR_INVALID_INPUT"
-                }, "No video or meta strip selected. Operation cancelled")
-                return {"CANCELLED"}
+        # Slice the selection
+        selection_blocks = slice_selection(selection)
+        for block in selection_blocks:
+            sequencer.select_all(action='DESELECT')
+            # If block contains multiple strips, convert to metastrip
+            if len(block) == 1:
+                active = scene.sequence_editor.active_strip = block[0]
+            else:
+                for s in block:
+                    s.select = True
+                # bpy.ops.sequencer.select_grouped(type='EFFECT_LINK')
+                bpy.ops.sequencer.meta_make()
+                active = scene.sequence_editor.active_strip
 
-        # TODO: refactor to make it work without active sequence
-        # selection_blocks = slice_selection(selection)
+            # Add speed effect
+            sequencer.effect_strip_add(type='SPEED')
+            effect_strip = bpy.context.scene.sequence_editor.active_strip
+            effect_strip.use_default_fade = False
+            effect_strip.speed_factor = self.speed_factor
 
-        # for sel in selection_blocks:
-        #     sequencer.select_all(action='DESELECT')
-        #     for s in sel:
-        #         s.select = True
+            sequencer.select_all(action='DESELECT')
+            active.select_right_handle = True
+            active.select = True
+            scene.sequence_editor.active_strip = active
+            source_name = active.name
 
-        if len(selection) == 1 and active.name != selection[0].name:
-            active = scene.sequence_editor.active_strip = selection[0]
-            # sequencer.refresh_all()
-        elif len(selection) > 1:
-            sequencer.select_grouped(type='EFFECT_LINK')
-            for s in selection:
-                s.select = True
+            from math import ceil
+            size = ceil(active.frame_final_duration /
+                        effect_strip.speed_factor)
+            endFrame = active.frame_final_start + size
+            sequencer.snap(frame=endFrame)
+
+            effect_strip.select = True
             sequencer.meta_make()
-            active = scene.sequence_editor.active_strip
-
-        sequencer.effect_strip_add(type='SPEED')
-        effect_strip = bpy.context.scene.sequence_editor.active_strip
-        effect_strip.use_default_fade = False
-        effect_strip.speed_factor = self.speed_factor
-
-        sequencer.select_all(action='DESELECT')
-        active.select_right_handle = True
-        active.select = True
-        scene.sequence_editor.active_strip = active
-        source_name = active.name
-
-        from math import ceil
-        size = ceil(active.frame_final_duration / effect_strip.speed_factor)
-        endFrame = active.frame_final_start + size
-        sequencer.snap(frame=endFrame)
-
-        effect_strip.select = True
-        sequencer.meta_make()
-        bpy.context.selected_sequences[0].name = source_name + " " + str(
-            self.speed_factor) + 'x'
+            bpy.context.selected_sequences[0].name = source_name + " " + str(
+                self.speed_factor) + 'x'
+        self.report({"INFO"}, "Successfully processed " + str(len(selection_blocks))
+                    + " selection blocks")
         return {"FINISHED"}
 
 
-# Shortcut: Shift + C
-# TODO: If only one selected strip per channel, concatenate all channels
-# individually
 class ConcatenateStrips(bpy.types.Operator):
-    """Concatenates selected strips or a channel based on the active strip"""
+    """
+    Concatenates selected strips or a channel based on the active strip
+    Recommended shortcut: Shift C
+    """
     bl_idname = "gdquest_vse.concatenate_strips"
     bl_label = "Concatenate strips"
     bl_options = {'REGISTER', 'UNDO'}
@@ -230,18 +220,6 @@ class ConcatenateStrips(bpy.types.Operator):
         channels = set(channels)
         channels = list(channels)
 
-        # TODO: If the number of channels the sequences are spread over is equal
-        # to the number of selected sequences, then there's only 1 selected
-        # sequence per channel
-        # So then we select all next sequences in each channel
-        # Gotta refactor the find_next_sequences so we have to pass it
-        # a channel if mode == SearchMode.CHANNEL
-        # if num_channels == len(sequences):
-        #     for c in channels:
-        #         for s in find_next_sequences(mode=SearchMode.CHANNEL,
-        #                                                    sequences=None,
-        #                                                    pick_sound=True,
-        #                                                    pick_image=True)
         for channel in channels:
             concat_start = 0
             concat_sequences = []
@@ -263,6 +241,7 @@ class SelectShortStrips(bpy.types.Operator):
     bl_label = "Select short strips"
     bl_description = "Filters the current selection down to the strips that are \
         less than the 'Max strip length' frames long."
+
     bl_options = {'REGISTER', 'UNDO'}
 
     max_strip_length = IntProperty(

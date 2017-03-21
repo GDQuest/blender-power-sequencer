@@ -33,7 +33,9 @@ def find_empty_channel(mode='ABOVE'):
 def find_next_sequences(mode=SearchMode.NEXT,
                         sequences=None,
                         pick_sound=False):
-    """Returns a sequence or a list of sequences following the active one"""
+    """
+    Returns a sequence or a list of sequences following the active one
+    """
     if not sequences:
         sequences = bpy.context.sequences
         if not sequences:
@@ -46,7 +48,6 @@ def find_next_sequences(mode=SearchMode.NEXT,
 
     # Find all selected sequences to the right of the active sequence
     for seq in sequences:
-
         if (seq.frame_final_start >= active.frame_final_end) or (
                 seq.frame_final_start > active.frame_final_start) & (
                     seq.frame_final_start < active.frame_final_end) & (
@@ -79,7 +80,9 @@ def find_next_sequences(mode=SearchMode.NEXT,
 
 
 def select_strip_handle(sequences, side=None, frame=None):
-    """Select the left or right handles of the strips based on the frame number"""
+    """
+    Select the left or right handles of the strips based on the frame number
+    """
     if not side and sequences and frame:
         return False
 
@@ -90,9 +93,7 @@ def select_strip_handle(sequences, side=None, frame=None):
         seq.select_right_handle = False
 
         handle_side = ''
-
         start, end = seq.frame_final_start, seq.frame_final_end
-
         if side == 'AUTO' and start <= frame <= end:
             handle_side = 'LEFT' if abs(
                 frame - start) < seq.frame_final_duration / 2 else 'RIGHT'
@@ -109,11 +110,12 @@ def mouse_select_sequences(frame=None,
                            channel=None,
                            mode='mouse',
                            select_linked=True):
-    """Selects sequences based on the mouse position or using the time cursor"""
+    """
+    Selects sequences based on the mouse position or using the time cursor
+    """
 
     selection = []
     sequences = bpy.context.sequences
-
     if not sequences:
         return []
 
@@ -188,11 +190,13 @@ def slice_selection(sequences):
 
 def get_frame_range(sequences=None, get_from_start=False):
     """
-    Returns a tuple with the minimum and maximum frames of the list of passed sequences
+    Returns a tuple with the minimum and maximum frames of the 
+    list of passed sequences.
     If no sequences are passed, returns the timeline's start and end frames
     Args:
         - sequences, the sequences to use
-        - get_from_start, the returned start frame is set to 1 if this boolean is True
+        - get_from_start, the returned start frame is set to 1 if 
+        this boolean is True
     """
     if not sequences:
         if bpy.context.sequences:
