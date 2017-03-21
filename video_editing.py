@@ -2,7 +2,7 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
 from .functions.global_settings import SequenceTypes, SearchMode
-from .functions.sequences import is_channel_free, find_next_sequences, \
+from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection
 
 

@@ -29,18 +29,6 @@ def find_empty_channel(mode='ABOVE'):
     return empty_channel
 
 
-def is_channel_free(target_channel, start_frame, end_frame):
-    """Checks if the selected channel is empty or not. Optionally verifies that
-       there is space in the channel in a certain timeframe"""
-    sequences = [s for s in bpy.context.sequences
-                 if s.channel == target_channel]
-
-    for s in sequences:
-        if start_frame <= s.frame_final_start <= end_frame or start_frame <= s.frame_final_end <= end_frame:
-            return False
-    return True
-
-
 # TODO: refactor code - clean up / get the user to pass sequences to work on?
 def find_next_sequences(mode=SearchMode.NEXT,
                         sequences=None,
