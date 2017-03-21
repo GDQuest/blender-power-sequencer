@@ -19,7 +19,7 @@ def fade_create(sequence=None,
     """
     if not sequence:
         return None
-    
+
     print("in function", max_value)
     create_animation_data()
     fcurves = bpy.context.scene.animation_data.action.fcurves
@@ -137,7 +137,8 @@ def center_img(sequence):
     Returns false if it couldn't complete, otherwise True.
     """
     # DOESN'T TAKE IN ACCOUNT IMAGE CROP
-    if sequence.use_translation and (s.offset_x != 0 or s.offset_y != 0):
+    if sequence.use_translation and (sequence.offset_x != 0 or
+                                     sequence.offset_y != 0):
         return False
 
     image_width = sequence.elements[0].orig_width
