@@ -154,7 +154,7 @@ def slice_selection(sequences):
     if not sequences:
         return None
 
-    # Find when 2 sequences are not connected in time
+# Find when 2 sequences are not connected in time
     sequences = sorted(sequences, key=attrgetter('frame_final_start'))
 
     last_sequence = sequences[0]
@@ -166,18 +166,18 @@ def slice_selection(sequences):
         last_sequence = s
         index += 1
 
-    # Create lists
+# Create lists
     break_ids.append(len(sequences))
-    cuts_count = len(break_ids)-1
+    cuts_count = len(break_ids) - 1
     broken_selection = []
     index = 0
     while index < cuts_count:
         temp_list = []
-        index_range = range(break_ids[index], break_ids[index+1]-1)
+        index_range = range(break_ids[index], break_ids[index + 1] - 1)
         if len(index_range) == 0:
             temp_list.append(sequences[break_ids[index]])
         else:
-            for counter in range(break_ids[index], break_ids[index+1]):
+            for counter in range(break_ids[index], break_ids[index + 1]):
                 temp_list.append(sequences[counter])
         # print("SPLIT LIST: ")
         # print(str(temp_list))
@@ -190,12 +190,12 @@ def slice_selection(sequences):
 
 def get_frame_range(sequences=None, get_from_start=False):
     """
-    Returns a tuple with the minimum and maximum frames of the 
+    Returns a tuple with the minimum and maximum frames of the
     list of passed sequences.
     If no sequences are passed, returns the timeline's start and end frames
     Args:
         - sequences, the sequences to use
-        - get_from_start, the returned start frame is set to 1 if 
+        - get_from_start, the returned start frame is set to 1 if
         this boolean is True
     """
     if not sequences:
@@ -223,3 +223,29 @@ def set_preview_range(start, end):
     scene.frame_end = end
     scene.frame_preview_start = start
     scene.frame_preview_end = end
+
+
+def find_effect_strips(sequence):
+    """
+    Takes a single strip and finds effect strips that use it as input
+    Returns the effect strip(s) found as a list, ordered by starting frame
+    Returns None if no effect was found
+    """
+    if sequence.type not in SequenceTypes.VIDEO and \
+       sequence.type not in SequenceTypes.IMAGE:
+        return None
+
+    effect_sequences = (s
+                        for s in bpy.context.sequences
+                        if s.type in SequenceTypes.EFFECT)
+    found_effect_strips = []
+    for s in effect_sequences:
+        if s.input_1.name == sequence.name:
+            found_effect_strips.append(s)
+        if s.input_count == 2:
+            if s.input_2.name == sequence.name:
+                found_effect_strips.append(s)
+
+    found_effect_strips = sorted(found_effect_strips,
+                                 key=attrgetter('frame_final_start'))
+    return found_effect_strips

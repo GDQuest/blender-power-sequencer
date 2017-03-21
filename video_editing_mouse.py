@@ -3,8 +3,8 @@ from math import floor
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
-from .functions.sequences import mouse_select_sequences
-
+from .functions.sequences import mouse_select_sequences, find_effect_strips
+from operator import attrgetter
 # import blf
 
 
@@ -116,7 +116,6 @@ class MouseCut(bpy.types.Operator):
 
                 # Move time cursor back
                 if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                    from operator import attrgetter
                     first_seq = sorted(bpy.context.selected_sequences,
                                        key=attrgetter('frame_final_start'))[0]
                     frame = first_seq.frame_final_start - self.cursor_offset \
@@ -132,7 +131,9 @@ class MouseCut(bpy.types.Operator):
 #        Check how builtin modal operators work instead
 # TODO: Store starting frame of the strips and revert to it on CANCELLED
 class EditCrossfade(bpy.types.Operator):
-    """Selects handles to edit crossfade and gives a preview of the fade point."""
+    """
+    Selects handles to edit crossfade and gives a preview of the fade point.
+    """
     bl_idname = "gdquest_vse.edit_crossfade"
     bl_label = "Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
@@ -156,7 +157,9 @@ class EditCrossfade(bpy.types.Operator):
         print("End")
 
     def update_time_cursor(self):
-        """Updates the position of the time cursor when the preview is active"""
+        """
+        Updates the position of the time cursor when the preview is active
+        """
         if not self.show_preview:
             return False
 
@@ -214,11 +217,14 @@ class EditCrossfade(bpy.types.Operator):
         active = bpy.context.scene.sequence_editor.active_strip
 
         if active.type != "GAMMA_CROSS":
-            self.report({
-                'WARNING'
-            }, "The active strip has to be a gamma cross for this tool to work. \
-                        Operation cancelled.")
-            return {"CANCELLED"}
+            effect = find_effect_strips(active)
+            if effect is None:
+                self.report({
+                    'WARNING'
+                }, "The active strip has to be a gamma cross for this tool to work. \
+                            Operation cancelled.")
+                return {"CANCELLED"}
+            active = bpy.context.scene.sequence_editor.active_strip = effect[0]
 
         self.seq_1, self.seq_2 = active.input_1, active.input_2
         self.crossfade_duration = active.frame_final_duration
