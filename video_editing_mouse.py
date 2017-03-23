@@ -12,7 +12,6 @@ from operator import attrgetter
 # the part that's been cut, delete it
 # Look at selected strips closest side and cut frame
 # if any strip on other channels between those frames and smaller, delete it
-# TODO: Refactor mode selection
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -76,11 +75,13 @@ class MouseCut(bpy.types.Operator):
         # Strip selection
         sequencer.select_all(action='DESELECT')
         to_select = find_strips_mouse(frame, channel, self.select_linked)
-        if to_select and select_mode == 'mouse':
-            for s in to_select:
-                s.select = True
-        else:
-            return {"CANCELLED"}
+
+        if select_mode in ('mouse', 'smart'):
+            if to_select:
+                for s in to_select:
+                    s.select = True
+            elif select_mode == 'mouse':
+                return {"CANCELLED"}
 
         if select_mode == 'cursor' or (not to_select and select_mode == 'smart'):
             for s in bpy.context.sequences:
@@ -93,24 +94,27 @@ class MouseCut(bpy.types.Operator):
                           type='SOFT',
                           side='BOTH')
         elif self.cut_mode == 'trim':
-            bpy.ops.gdquest_vse.smart_snap(side='auto')
+            start, end = get_frame_range(bpy.context.selected_sequences)
 
             # Find strips to delete
-            # /!\ START AND END DEPENDS ON TRIM SIDE
-            # start, end = get_frame_range(bpy.context.selected_sequences)
-            # print(start)
-            # print(end)
-            # strips_to_remove = []
-            # for s in bpy.context.sequences:
-            #     if start <= s.frame_final_start <= end and start <= s.frame_final_end <= end:
-            #         strips_to_remove.append(s)
-            # print(strips_to_remove)
+            to_delete = []
+            delete_start, delete_end = 0, 0
+            if abs(frame - start) <= abs(start - end) / 2:
+                delete_start = start
+                delete_end = frame
+            else:
+                delete_start = frame
+                delete_end = end
+            for s in bpy.context.sequences:
+                if delete_start <= s.frame_final_start <= delete_end and delete_start <= s.frame_final_end <= delete_end:
+                    to_delete.append(s)
 
-            # Remove short strips
-            # sequencer.select_all(action='DESELECT')
-            # for s in strips_to_remove:
-            #     s.select = True
-            # sequencer.delete()
+            # Trim and delete strips
+            bpy.ops.gdquest_vse.smart_snap(side='auto')
+            sequencer.select_all(action='DESELECT')
+            for s in to_delete:
+                s.select = True
+            sequencer.delete()
 
             if self.remove_gaps:
                 anim.change_frame(frame=frame - 1)
