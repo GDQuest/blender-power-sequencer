@@ -3,7 +3,7 @@ from math import floor
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
-from .functions.sequences import mouse_select_sequences, find_effect_strips, get_frame_range
+from .functions.sequences import find_strips_mouse, find_effect_strips, get_frame_range
 from operator import attrgetter
 # import blf
 
@@ -54,10 +54,6 @@ class MouseCut(bpy.types.Operator):
         description=
         "In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
-    use_selection = BoolProperty(
-        name="Use selection",
-        description="In smart mode, use the active selection",
-        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -78,35 +74,17 @@ class MouseCut(bpy.types.Operator):
         select_mode = self.select_mode
 
         # Strip selection
-        if select_mode == 'cursor':
-            # FIXME: Duplication
+        sequencer.select_all(action='DESELECT')
+        to_select = find_strips_mouse(frame, channel, self.select_linked)
+        if to_select and select_mode == 'mouse':
+            for s in to_select:
+                s.select = True
+        else:
+            return {"CANCELLED"}
+
+        if select_mode == 'cursor' or (not to_select and select_mode == 'smart'):
             for s in bpy.context.sequences:
                 if s.frame_final_start <= frame <= s.frame_final_end:
-                    s.select = True
-        if select_mode == 'smart' and selection and self.use_selection:
-            use_selection = False
-
-            for seq in selection:
-                if seq.frame_final_start <= frame <= seq.frame_final_end:
-                    use_selection = True
-
-            if not use_selection:
-                sequencer.select_all(action='SELECT')
-        else:
-            # Smart can behave as mouse mode if the user clicks on a strip
-            sequences_to_select = mouse_select_sequences(
-                frame, channel, select_mode, self.select_linked)
-            if not sequences_to_select:
-                if select_mode == 'mouse':
-                    return {"CANCELLED"}
-                elif select_mode == 'smart':
-                    # FIXME: Duplication
-                    for s in bpy.context.sequences:
-                        if s.frame_final_start <= frame <= s.frame_final_end:
-                            s.select = True
-            else:
-                sequencer.select_all(action='DESELECT')
-                for s in sequences_to_select:
                     s.select = True
 
         # Cut and trim
@@ -114,7 +92,7 @@ class MouseCut(bpy.types.Operator):
             sequencer.cut(frame=bpy.context.scene.frame_current,
                           type='SOFT',
                           side='BOTH')
-        else:
+        elif self.cut_mode == 'trim':
             bpy.ops.gdquest_vse.smart_snap(side='auto')
 
             # Find strips to delete
@@ -138,14 +116,14 @@ class MouseCut(bpy.types.Operator):
                 anim.change_frame(frame=frame - 1)
                 sequencer.gap_remove()
 
-                # Move time cursor back
-                if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                    first_seq = sorted(bpy.context.selected_sequences,
-                                       key=attrgetter('frame_final_start'))[0]
-                    frame = first_seq.frame_final_start - self.cursor_offset \
-                        if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
-                        else frame
-                    anim.change_frame(frame=frame)
+            # Move time cursor back
+            if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
+                first_seq = sorted(bpy.context.selected_sequences,
+                                   key=attrgetter('frame_final_start'))[0]
+                frame = first_seq.frame_final_start - self.cursor_offset \
+                    if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
+                    else frame
+                anim.change_frame(frame=frame)
 
         sequencer.select_all(action='DESELECT')
         return {"FINISHED"}
@@ -235,7 +213,8 @@ class EditCrossfade(bpy.types.Operator):
             self.report({
                 'WARNING'
             }, "You need to be in the Video Sequence Editor to use this tool. \
-                        Operation cancelled.")
+                        Operation cancelled."
+                                             )
             return {'CANCELLED'}
 
         active = bpy.context.scene.sequence_editor.active_strip
@@ -246,7 +225,8 @@ class EditCrossfade(bpy.types.Operator):
                 self.report({
                     'WARNING'
                 }, "The active strip has to be a gamma cross for this tool to work. \
-                            Operation cancelled.")
+                            Operation cancelled."
+                                                 )
                 return {"CANCELLED"}
             active = bpy.context.scene.sequence_editor.active_strip = effect[0]
 
