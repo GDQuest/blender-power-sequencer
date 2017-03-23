@@ -3,7 +3,7 @@ from math import floor
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
-from .functions.sequences import mouse_select_sequences, find_effect_strips
+from .functions.sequences import mouse_select_sequences, find_effect_strips, get_frame_range
 from operator import attrgetter
 # import blf
 
@@ -12,6 +12,7 @@ from operator import attrgetter
 # the part that's been cut, delete it
 # Look at selected strips closest side and cut frame
 # if any strip on other channels between those frames and smaller, delete it
+# TODO: Refactor mode selection
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -78,8 +79,11 @@ class MouseCut(bpy.types.Operator):
 
         # Strip selection
         if select_mode == 'cursor':
-            sequencer.select_all(action='SELECT')
-        elif select_mode == 'smart' and selection and self.use_selection:
+            # FIXME: Duplication
+            for s in bpy.context.sequences:
+                if s.frame_final_start <= frame <= s.frame_final_end:
+                    s.select = True
+        if select_mode == 'smart' and selection and self.use_selection:
             use_selection = False
 
             for seq in selection:
@@ -96,11 +100,14 @@ class MouseCut(bpy.types.Operator):
                 if select_mode == 'mouse':
                     return {"CANCELLED"}
                 elif select_mode == 'smart':
-                    sequencer.select_all(action='SELECT')
+                    # FIXME: Duplication
+                    for s in bpy.context.sequences:
+                        if s.frame_final_start <= frame <= s.frame_final_end:
+                            s.select = True
             else:
                 sequencer.select_all(action='DESELECT')
-                for seq in sequences_to_select:
-                    seq.select = True
+                for s in sequences_to_select:
+                    s.select = True
 
         # Cut and trim
         if self.cut_mode == 'cut':
@@ -109,6 +116,23 @@ class MouseCut(bpy.types.Operator):
                           side='BOTH')
         else:
             bpy.ops.gdquest_vse.smart_snap(side='auto')
+
+            # Find strips to delete
+            # /!\ START AND END DEPENDS ON TRIM SIDE
+            # start, end = get_frame_range(bpy.context.selected_sequences)
+            # print(start)
+            # print(end)
+            # strips_to_remove = []
+            # for s in bpy.context.sequences:
+            #     if start <= s.frame_final_start <= end and start <= s.frame_final_end <= end:
+            #         strips_to_remove.append(s)
+            # print(strips_to_remove)
+
+            # Remove short strips
+            # sequencer.select_all(action='DESELECT')
+            # for s in strips_to_remove:
+            #     s.select = True
+            # sequencer.delete()
 
             if self.remove_gaps:
                 anim.change_frame(frame=frame - 1)

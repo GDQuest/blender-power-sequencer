@@ -45,7 +45,8 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'",
+                     is of the length set in 'Crossfade Length'"
+                                                                ,
         default=True)
 
     @classmethod
@@ -62,7 +63,8 @@ class AddCrossfade(bpy.types.Operator):
 
         if len(selection) > 1:
             self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
-            crossfade from")
+            crossfade from"
+                           )
             return {"CANCELLED"}
 
         if active.type not in SequenceTypes.VIDEO:
@@ -72,7 +74,8 @@ class AddCrossfade(bpy.types.Operator):
             else:
                 self.report({"ERROR_INVALID_INPUT"},
                             "You need to select a video \
-                sequence to add a crossfade")
+                sequence to add a crossfade"
+                                            )
                 return {"CANCELLED"}
 
         seq = [active, find_next_sequences(SearchMode.NEXT)]
@@ -102,9 +105,10 @@ class AddCrossfade(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: Option to speed up individual selected sequences?
-# TODO: if there are multiple selected blocks of strips that are not connected
-# in time, speed up each block separately
+# FIXME: bug if selecting effect strips
+# TODO: If single strip, use the full source so you can slide it?
+# TODO: if speed already applied, update speed?
+# Means need function to unspeed and redo?
 class AddSpeed(bpy.types.Operator):
     bl_idname = "gdquest_vse.speed_up_sequence"
     bl_label = "Speed up Sequence"
@@ -118,6 +122,10 @@ class AddSpeed(bpy.types.Operator):
         description="How many times the footage gets sped up",
         default=2,
         min=0)
+    individual_sequences = BoolProperty(
+        name="Affect individual strips",
+        description="Speed up every VIDEO strip individually",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -126,32 +134,41 @@ class AddSpeed(bpy.types.Operator):
     def execute(self, context):
         sequencer = bpy.ops.sequencer
         scene = bpy.context.scene
-
         active = scene.sequence_editor.active_strip
-        selection = [s
-                     for s in bpy.context.selected_sequences
-                     if s.type in SequenceTypes.VIDEO]
 
-        if not selection:
+        selection = bpy.context.selected_sequences
+        video_sequences = [s for s in selection
+                           if s.type in SequenceTypes.VIDEO]
+
+        if not video_sequences:
             self.report({
                 "ERROR_INVALID_INPUT"
             }, "No Movie sequence or Metastrips selected. Operation cancelled")
             return {"CANCELLED"}
 
         # Slice the selection
-        selection_blocks = slice_selection(selection)
+        selection_blocks = []
+        if self.individual_sequences:
+            selection_blocks = [[s] for s in video_sequences]
+        else:
+            selection_blocks = slice_selection(selection)
+
         for block in selection_blocks:
+            start, end = 0, 0
             sequencer.select_all(action='DESELECT')
-            # If block contains multiple strips, convert to metastrip
             if len(block) == 1:
                 active = scene.sequence_editor.active_strip = block[0]
+                # TODO: Use the full source clip
+                # start = active.frame_final_start / self.speed_factor
+                # end = start + active.frame_final_duration / self.speed_factor
+                # active.frame_offset_start, active.frame_offset_end = 0, 0
             else:
                 for s in block:
                     s.select = True
+                # SELECT GROUPED ONLY AFFECTS ACTIVE STRIP
                 # bpy.ops.sequencer.select_grouped(type='EFFECT_LINK')
-                bpy.ops.sequencer.meta_make()
+                sequencer.meta_make()
                 active = scene.sequence_editor.active_strip
-
             # Add speed effect
             sequencer.effect_strip_add(type='SPEED')
             effect_strip = bpy.context.scene.sequence_editor.active_strip
@@ -322,14 +339,16 @@ class GrabStillImage(bpy.types.Operator):
             self.report({
                 "ERROR_INVALID_INPUT"
             }, "You must select a video or meta strip. \
-                You selected a strip of type" + str(active.type) + " instead.")
+                You selected a strip of type"
+                                              + str(active.type) + " instead.")
             return {"CANCELLED"}
 
         if not active.frame_final_start <= start_frame < \
            active.frame_final_end:
             self.report({"ERROR_INVALID_INPUT"},
                         "Your time cursor must be on the frame you want \
-                        to convert to a still image.")
+                        to convert to a still image."
+                                                     )
             return {"CANCELLED"}
 
         if start_frame == active.frame_final_start:
