@@ -3,7 +3,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
-    select_strip_handle, slice_selection, get_frame_range \
+    select_strip_handle, slice_selection, get_frame_range, \
     find_linked, is_in_range
 
 
