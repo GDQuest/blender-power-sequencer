@@ -241,24 +241,21 @@ def find_linked(sequences):
     selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
 
     linked_sequences = []
-    # Filter down to effects that have at least one of seq as input
+    # Filter down to effects that have at least one of seq as input and
     # Append input sequences that aren't in the source list to linked_sequences
     for e in effects:
         for s in sequences:
-            if e.input_count == 2:
+            try:
+                if e.input_2 == s:
+                    linked_sequences.append(e)
+                    if e.input_1 not in sequences:
+                        linked_sequences.append(e.input_1)
+            finally:
                 if e.input_1 == s:
                     linked_sequences.append(e)
                     if e.input_2 not in sequences:
                         linked_sequences.append(e.input_2)
-                        continue
-                elif e.input_2 == s:
-                    linked_sequences.append(e)
-                    if e.input_1 not in sequences:
-                        linked_sequences.append(e.input_1)
-                        continue
-            elif e.input_count == 1 and e.input_1 == s:
-                linked_sequences.append(e)
-                continue
+
     # Find inputs of selected effects that are not selected
     for e in selected_effects:
         if e.input_1 not in sequences:
