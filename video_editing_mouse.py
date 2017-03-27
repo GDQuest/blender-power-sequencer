@@ -8,10 +8,6 @@ from operator import attrgetter
 # import blf
 
 
-# TODO: in cursor mode, if trim, if there's a strip that's smaller than
-# the part that's been cut, delete it
-# Look at selected strips closest side and cut frame
-# if any strip on other channels between those frames and smaller, delete it
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"

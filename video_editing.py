@@ -3,7 +3,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
-    select_strip_handle, slice_selection
+    select_strip_handle, slice_selection, get_frame_range
 
 
 # ---------------- Operators -----------------------
@@ -194,6 +194,76 @@ class AddSpeed(bpy.types.Operator):
         self.report({"INFO"}, "Successfully processed " + str(len(selection_blocks))
                     + " selection blocks")
         return {"FINISHED"}
+
+
+class TestSelectEffect(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.test_select_effect'
+    bl_label = 'Test select effect'
+    bl_description = 'description'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        to_select = select_linked(bpy.context.selected_sequences)
+        print(len(to_select))
+        for s in to_select:
+            s.select = True
+        return {'FINISHED'}
+
+
+def select_linked(sequences):
+    """
+    Takes a list of sequences and returns a list of all the sequences
+    and effects that are linked to the sequences
+
+    Args:
+    - sequences: a list of sequences
+    Returns a list of all the linked sequences excluding the input sequences
+    """
+    start, end = get_frame_range(sequences)
+    sequences_in_range = [s
+                          for s in bpy.context.sequences
+                          if is_in_range(s, start, end)]
+    effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
+
+    linked_sequences = []
+    # Filter down to effects that have at least one of seq as input
+    # Append input sequences that aren't in the source list to linked_sequences
+    for e in effects:
+        for s in sequences:
+            if e.input_count == 2:
+                if e.input_1 == s:
+                    linked_sequences.append(e)
+                    if e.input_2 not in sequences:
+                        linked_sequences.append(e.input_2)
+                        continue
+                elif e.input_2 == s:
+                    linked_sequences.append(e)
+                    if e.input_1 not in sequences:
+                        linked_sequences.append(e.input_1)
+                        continue
+            elif e.input_count == 1 and e.input_1 == s:
+                linked_sequences.append(e)
+                continue
+
+    return linked_sequences
+
+
+def is_in_range(sequence, start, end):
+    """
+    Checks if a single sequence is in a given frame range
+
+    Args:
+    - sequence: the sequence to check for
+    - start, end: the start and end frames
+    Returns True if the sequence is within the range, False otherwise
+    """
+    s_start = sequence.frame_final_start
+    s_end = sequence.frame_final_end
+    return start <= s_start <= end and start <= s_end <= end
 
 
 class ConcatenateStrips(bpy.types.Operator):
