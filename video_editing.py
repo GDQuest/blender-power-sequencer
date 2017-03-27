@@ -3,7 +3,8 @@ from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
-    select_strip_handle, slice_selection, get_frame_range
+    select_strip_handle, slice_selection, get_frame_range \
+    find_linked, is_in_range
 
 
 # ---------------- Operators -----------------------
@@ -45,8 +46,7 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'"
-                                                                ,
+                     is of the length set in 'Crossfade Length'",
         default=True)
 
     @classmethod
@@ -63,8 +63,7 @@ class AddCrossfade(bpy.types.Operator):
 
         if len(selection) > 1:
             self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
-            crossfade from"
-                           )
+            crossfade from")
             return {"CANCELLED"}
 
         if active.type not in SequenceTypes.VIDEO:
@@ -74,8 +73,7 @@ class AddCrossfade(bpy.types.Operator):
             else:
                 self.report({"ERROR_INVALID_INPUT"},
                             "You need to select a video \
-                sequence to add a crossfade"
-                                            )
+                sequence to add a crossfade")
                 return {"CANCELLED"}
 
         seq = [active, find_next_sequences(SearchMode.NEXT)]
@@ -203,8 +201,8 @@ class AddSpeed(bpy.types.Operator):
             sequencer.meta_make()
             bpy.context.selected_sequences[0].name = source_name + " " + str(
                 self.speed_factor) + 'x'
-        self.report({"INFO"}, "Successfully processed " + str(len(selection_blocks))
-                    + " selection blocks")
+        self.report({"INFO"}, "Successfully processed " +
+                    str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}
 
 
@@ -222,63 +220,6 @@ class SelectLinkedEffect(bpy.types.Operator):
         for s in find_linked(bpy.context.selected_sequences):
             s.select = True
         return {'FINISHED'}
-
-
-def find_linked(sequences):
-    """
-    Takes a list of sequences and returns a list of all the sequences
-    and effects that are linked to the sequences
-
-    Args:
-    - sequences: a list of sequences
-    Returns a list of all the linked sequences excluding the input sequences
-    """
-    start, end = get_frame_range(sequences)
-    sequences_in_range = [s
-                          for s in bpy.context.sequences
-                          if is_in_range(s, start, end)]
-    effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
-    selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
-
-    linked_sequences = []
-    # Filter down to effects that have at least one of seq as input and
-    # Append input sequences that aren't in the source list to linked_sequences
-    for e in effects:
-        for s in sequences:
-            try:
-                if e.input_2 == s:
-                    linked_sequences.append(e)
-                    if e.input_1 not in sequences:
-                        linked_sequences.append(e.input_1)
-            finally:
-                if e.input_1 == s:
-                    linked_sequences.append(e)
-                    if e.input_2 not in sequences:
-                        linked_sequences.append(e.input_2)
-
-    # Find inputs of selected effects that are not selected
-    for e in selected_effects:
-        if e.input_1 not in sequences:
-            linked_sequences.append(e.input_1)
-        if e.input_count == 2:
-            if e.input_2 not in sequences:
-                linked_sequences.append(e.input_2)
-
-    return linked_sequences
-
-
-def is_in_range(sequence, start, end):
-    """
-    Checks if a single sequence's start or end is in the range
-
-    Args:
-    - sequence: the sequence to check for
-    - start, end: the start and end frames
-    Returns True if the sequence is within the range, False otherwise
-    """
-    s_start = sequence.frame_final_start
-    s_end = sequence.frame_final_end
-    return start <= s_start <= end or start <= s_end <= end
 
 
 class ConcatenateStrips(bpy.types.Operator):
@@ -424,16 +365,14 @@ class GrabStillImage(bpy.types.Operator):
             self.report({
                 "ERROR_INVALID_INPUT"
             }, "You must select a video or meta strip. \
-                You selected a strip of type"
-                                              + str(active.type) + " instead.")
+                You selected a strip of type" + str(active.type) + " instead.")
             return {"CANCELLED"}
 
         if not active.frame_final_start <= start_frame < \
            active.frame_final_end:
             self.report({"ERROR_INVALID_INPUT"},
                         "Your time cursor must be on the frame you want \
-                        to convert to a still image."
-                                                     )
+                        to convert to a still image.")
             return {"CANCELLED"}
 
         if start_frame == active.frame_final_start:
@@ -556,7 +495,8 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
         for s in selection:
             channel = s.channel
-            if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
+            if s.type in SequenceTypes.VIDEO or s.type in
+            SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
                 s.frame_start -= time_move
             s.channel = empty_channel + channel - 1
         return {'FINISHED'}
@@ -565,7 +505,8 @@ class SnapSelectionToCursor(bpy.types.Operator):
 class BorderSelect(bpy.types.Operator):
     bl_idname = 'gdquest_vse.border_select'
     bl_label = 'Border select'
-    bl_description = 'Wrapper around Blender\'s border select, deselects handles'
+    bl_description = 'Wrapper around Blender\'s border select, \
+    deselects handles'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

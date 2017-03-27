@@ -248,3 +248,60 @@ def find_effect_strips(sequence):
     found_effect_strips = sorted(found_effect_strips,
                                  key=attrgetter('frame_final_start'))
     return found_effect_strips
+
+
+def find_linked(sequences):
+    """
+    Takes a list of sequences and returns a list of all the sequences
+    and effects that are linked to the sequences
+
+    Args:
+    - sequences: a list of sequences
+    Returns a list of all the linked sequences excluding the input sequences
+    """
+    start, end = get_frame_range(sequences)
+    sequences_in_range = [s
+                          for s in bpy.context.sequences
+                          if is_in_range(s, start, end)]
+    effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
+    selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
+
+    linked_sequences = []
+    # Filter down to effects that have at least one of seq as input and
+    # Append input sequences that aren't in the source list to linked_sequences
+    for e in effects:
+        for s in sequences:
+            try:
+                if e.input_2 == s:
+                    linked_sequences.append(e)
+                    if e.input_1 not in sequences:
+                        linked_sequences.append(e.input_1)
+            finally:
+                if e.input_1 == s:
+                    linked_sequences.append(e)
+                    if e.input_2 not in sequences:
+                        linked_sequences.append(e.input_2)
+
+    # Find inputs of selected effects that are not selected
+    for e in selected_effects:
+        if e.input_1 not in sequences:
+            linked_sequences.append(e.input_1)
+        if e.input_count == 2:
+            if e.input_2 not in sequences:
+                linked_sequences.append(e.input_2)
+
+    return linked_sequences
+
+
+def is_in_range(sequence, start, end):
+    """
+    Checks if a single sequence's start or end is in the range
+
+    Args:
+    - sequence: the sequence to check for
+    - start, end: the start and end frames
+    Returns True if the sequence is within the range, False otherwise
+    """
+    s_start = sequence.frame_final_start
+    s_end = sequence.frame_final_end
+    return start <= s_start <= end or start <= s_end <= end
