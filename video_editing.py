@@ -136,7 +136,11 @@ class AddSpeed(bpy.types.Operator):
         scene = bpy.context.scene
         active = scene.sequence_editor.active_strip
 
+        # Select linked sequences
+        for s in find_linked(bpy.context.selected_sequences):
+            s.select = True
         selection = bpy.context.selected_sequences
+
         video_sequences = [s for s in selection
                            if s.type in SequenceTypes.VIDEO]
 
@@ -149,6 +153,14 @@ class AddSpeed(bpy.types.Operator):
         # Slice the selection
         selection_blocks = []
         if self.individual_sequences:
+            for s in selection:
+                if s.type in SequenceTypes.EFFECT:
+                    self.report({
+                        "ERROR_INVALID_INPUT"
+                    }, "Can't speed up individual sequences if effect strips \
+                    are selected. Please only select VIDEO or META strips. \
+                    Operation cancelled")
+                    return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
             selection_blocks = slice_selection(selection)
@@ -196,10 +208,10 @@ class AddSpeed(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class TestSelectEffect(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.test_select_effect'
-    bl_label = 'Test select effect'
-    bl_description = 'description'
+class SelectLinkedEffect(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.find_linked_effect'
+    bl_label = 'Select linked effect'
+    bl_description = 'Select all strips that are linked by an effect strip'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -207,14 +219,12 @@ class TestSelectEffect(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        to_select = select_linked(bpy.context.selected_sequences)
-        print(len(to_select))
-        for s in to_select:
+        for s in find_linked(bpy.context.selected_sequences):
             s.select = True
         return {'FINISHED'}
 
 
-def select_linked(sequences):
+def find_linked(sequences):
     """
     Takes a list of sequences and returns a list of all the sequences
     and effects that are linked to the sequences
@@ -228,6 +238,7 @@ def select_linked(sequences):
                           for s in bpy.context.sequences
                           if is_in_range(s, start, end)]
     effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
+    selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
 
     linked_sequences = []
     # Filter down to effects that have at least one of seq as input
@@ -248,13 +259,20 @@ def select_linked(sequences):
             elif e.input_count == 1 and e.input_1 == s:
                 linked_sequences.append(e)
                 continue
+    # Find inputs of selected effects that are not selected
+    for e in selected_effects:
+        if e.input_1 not in sequences:
+            linked_sequences.append(e.input_1)
+        if e.input_count == 2:
+            if e.input_2 not in sequences:
+                linked_sequences.append(e.input_2)
 
     return linked_sequences
 
 
 def is_in_range(sequence, start, end):
     """
-    Checks if a single sequence is in a given frame range
+    Checks if a single sequence's start or end is in the range
 
     Args:
     - sequence: the sequence to check for
@@ -263,7 +281,7 @@ def is_in_range(sequence, start, end):
     """
     s_start = sequence.frame_final_start
     s_end = sequence.frame_final_end
-    return start <= s_start <= end and start <= s_end <= end
+    return start <= s_start <= end or start <= s_end <= end
 
 
 class ConcatenateStrips(bpy.types.Operator):
