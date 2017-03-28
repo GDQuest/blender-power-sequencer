@@ -129,92 +129,18 @@ class MouseCut(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# FIXME: Currently using seq_slide to move the sequences but creates bugs
-#        Check how builtin modal operators work instead
-# TODO: Store starting frame of the strips and revert to it on CANCELLED
 class EditCrossfade(bpy.types.Operator):
     """
-    Selects handles to edit crossfade and gives a preview of the fade point.
+    Selects handles to edit crossfade
     """
     bl_idname = "gdquest_vse.edit_crossfade"
     bl_label = "Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 
-    show_preview = BoolProperty(
-        name="Preview the crossfade",
-        description=
-        "Gives a preview of the crossfade sides, but can affect performances",
-        default=False)
-
-    def __init__(self):
-        self.time_cursor_init_frame = bpy.context.scene.frame_current
-        self.last_frame, self.frame = 0, 0
-        self.seq_1, self.seq_2 = None, None
-        self.crossfade_duration = None
-        self.preview_ratio = 0.5
-        self.show_backdrop_init = bpy.context.space_data.show_backdrop
-        print("Start")
-
-    def __del__(self):
-        print("End")
-
-    def update_time_cursor(self):
-        """
-        Updates the position of the time cursor when the preview is active
-        """
-        if not self.show_preview:
-            return False
-
-        active = bpy.context.scene.sequence_editor.active_strip
-        cursor_pos = active.frame_final_start + \
-            floor(active.frame_final_duration * self.preview_ratio)
-        bpy.context.scene.frame_set(cursor_pos)
-        return True
-
-    def modal(self, context, event):
-        if event.type == 'MOUSEMOVE':
-            self.last_frame = self.frame
-            self.frame = context.region.view2d.region_to_view(
-                x=event.mouse_region_x,
-                y=event.mouse_region_y)[0]
-            offset = self.frame - self.last_frame
-
-            if self.seq_1.frame_final_duration + offset - self.crossfade_duration > 1 and \
-               self.seq_2.frame_final_duration - offset - self.crossfade_duration > 1:
-                # TODO: Replace with moving the actual strip handles
-                bpy.ops.transform.seq_slide(
-                    value=(self.frame - self.last_frame, 0))
-            self.update_time_cursor()
-        elif event.type in {'LEFTMOUSE', 'RIGHTMOUSE', 'ESC'}:
-            if self.show_preview:
-                context.scene.frame_set(self.time_cursor_init_frame)
-                bpy.context.space_data.show_backdrop = self.show_backdrop_init
-            if event.type == 'LEFTMOUSE':
-                return {"FINISHED"}
-            elif event.type in {'RIGHTMOUSE', 'ESC'}:
-                # TODO: Revert back to original position
-                return {'CANCELLED'}
-
-        # Preview frame and backdrop toggle
-        if event.value == 'PRESS':
-            if event.type in {'LEFT_ARROW', 'A'}:
-                self.preview_ratio = max(self.preview_ratio - 0.5, 0)
-                self.update_time_cursor()
-            elif event.type in {'RIGHT_ARROW', 'D'}:
-                self.preview_ratio = min(self.preview_ratio + 0.5, 1)
-                self.update_time_cursor()
-            elif event.type == 'P':
-                self.show_preview = True if not self.show_preview else False
-                bpy.context.space_data.show_backdrop = self.show_preview
-        return {'RUNNING_MODAL'}
-
-    def invoke(self, context, event):
+    def execute(self, context):
         if not context.area.type == 'SEQUENCE_EDITOR':
-            self.report({
-                'WARNING'
-            }, "You need to be in the Video Sequence Editor to use this tool. \
-                        Operation cancelled."
-                                             )
+            self.report({'WARNING'}, "You need to be in the Video Sequence Editor to use this tool. \
+                        Operation cancelled.")
             return {'CANCELLED'}
 
         active = bpy.context.scene.sequence_editor.active_strip
@@ -222,16 +148,11 @@ class EditCrossfade(bpy.types.Operator):
         if active.type != "GAMMA_CROSS":
             effect = find_effect_strips(active)
             if effect is None:
-                self.report({
-                    'WARNING'
-                }, "The active strip has to be a gamma cross for this tool to work. \
-                            Operation cancelled."
-                                                 )
+                self.report({'WARNING'},
+                            "The active strip has to be a gamma cross for this tool to work. \
+                            Operation cancelled.")
                 return {"CANCELLED"}
             active = bpy.context.scene.sequence_editor.active_strip = effect[0]
-
-        self.seq_1, self.seq_2 = active.input_1, active.input_2
-        self.crossfade_duration = active.frame_final_duration
 
         bpy.ops.sequencer.select_all(action='DESELECT')
         active.select = True
@@ -240,11 +161,5 @@ class EditCrossfade(bpy.types.Operator):
         active.input_1.select = True
         active.input_2.select = True
 
-        self.frame = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)[0]
-
-        if self.show_preview:
-            bpy.context.space_data.show_backdrop = True
-        context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
+        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
+        return {'FINISHED'}

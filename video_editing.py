@@ -471,7 +471,7 @@ class ChannelOffset(bpy.types.Operator):
 
 
 # TODO: find a way to get the selection bounding box and place it
-# where there is space for it.
+# where there is space for it?
 class SnapSelectionToCursor(bpy.types.Operator):
     """Snap selected strips to the cursor, but as a block"""
     bl_idname = "gdquest_vse.snap_selection_to_cursor"
