@@ -1,7 +1,8 @@
 """Simple operations like save, delete, open the project directory..."""
 import bpy
 from bpy.props import EnumProperty
-from .functions.sequences import get_frame_range, set_preview_range
+from .functions.sequences import get_frame_range, set_preview_range, \
+    slice_selection
 
 
 class OpenProjectDirectory(bpy.types.Operator):
@@ -173,4 +174,40 @@ class SetTimeline(bpy.types.Operator):
             scene.frame_start = scene.frame_current
         elif self.adjust == 'end':
             scene.frame_end = scene.frame_current - 1
+        return {'FINISHED'}
+
+
+# FIXME: Got to find each gap created manually and remove these one by one
+# In case we're deleting multiple blocks
+class RippleDelete(bpy.types.Operator):
+    bl_idname = 'gdquest_vse.ripple_delete'
+    bl_label = 'Ripple delete'
+    bl_description = 'Delete the selected sequences and remove gap'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        scene = bpy.context.scene
+        sequencer = bpy.ops.sequencer
+        selection = bpy.context.selected_sequences
+        selection_length = len(selection)
+        cursor_start = scene.frame_current
+
+        selection_blocks = slice_selection(selection)
+        for block in selection_blocks:
+            sequencer.select_all(action='DESELECT')
+            for s in block:
+                s.select = True
+            selection_start, _ = get_frame_range(block)
+            scene.frame_current = selection_start + 1
+            sequencer.delete()
+            sequencer.gap_remove(all=False)
+
+        scene.frame_current = cursor_start
+        report_message = 'Deleted ' + str(selection_length) + ' sequence'
+        report_message += 's' if selection_length > 1 else ''
+        self.report({'INFO'}, report_message)
         return {'FINISHED'}

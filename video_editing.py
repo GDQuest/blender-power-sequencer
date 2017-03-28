@@ -493,12 +493,9 @@ class SnapSelectionToCursor(bpy.types.Operator):
         from .functions.sequences import find_empty_channel
         empty_channel = find_empty_channel()
 
-        # channels = [s.channel for s in selection]
-        # lowest_channel = min(channels)
         for s in selection:
             if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
                 s.frame_start -= time_move
-            # s.channel = em pty_channel + s.channel - lowest_channel
         return {'FINISHED'}
 
 
