@@ -515,3 +515,38 @@ class BorderSelect(bpy.types.Operator):
             s.select_right_handle = False
             s.select_left_handle = False
         return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=False)
+
+
+class GrabSequenceHandles(bpy.types.Operator):
+    """
+    Operator that extends the sequence based on the mouse position.
+    If the cursor is to the right of the sequence's middle,
+    it moves the right handle.
+    If it's on the left side, it moves the left handle.
+    """
+    bl_idname = 'gdquest_vse.grab_sequence_handle'
+    bl_label = 'Grab sequence handles'
+    bl_description = 'Grabs the sequence\'s handle based on the mouse position'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def invoke(self, context, event):
+        frame, _ = context.region.view2d.region_to_view(
+            x=event.mouse_region_x,
+            y=event.mouse_region_y)
+
+        active = bpy.context.scene.sequence_editor.active_strip
+        middle = active.frame_final_start + active.frame_final_duration / 2
+
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        if frame >= middle:
+            active.select_right_handle = True
+        else:
+            active.select_left_handle = True
+        active.select = True
+
+        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
+        return {'FINISHED'}
