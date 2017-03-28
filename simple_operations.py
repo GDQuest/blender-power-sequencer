@@ -177,12 +177,10 @@ class SetTimeline(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# FIXME: Got to find each gap created manually and remove these one by one
-# In case we're deleting multiple blocks
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'gdquest_vse.ripple_delete'
     bl_label = 'Ripple delete'
-    bl_description = 'Delete the selected sequences and remove gap'
+    bl_description = 'Delete the selected sequences and remove gaps'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -195,6 +193,10 @@ class RippleDelete(bpy.types.Operator):
         selection = bpy.context.selected_sequences
         selection_length = len(selection)
         cursor_start = scene.frame_current
+
+        audio_scrub = bpy.context.scene.use_audio_scrub
+        if audio_scrub:
+            bpy.context.scene.use_audio_scrub = False
 
         selection_blocks = slice_selection(selection)
         for block in selection_blocks:
@@ -210,4 +212,6 @@ class RippleDelete(bpy.types.Operator):
         report_message = 'Deleted ' + str(selection_length) + ' sequence'
         report_message += 's' if selection_length > 1 else ''
         self.report({'INFO'}, report_message)
+        if audio_scrub:
+            bpy.context.scene.use_audio_scrub = audio_scrub
         return {'FINISHED'}
