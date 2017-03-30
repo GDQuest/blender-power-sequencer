@@ -214,15 +214,20 @@ class RippleDelete(bpy.types.Operator):
             for s in bpy.context.selected_sequences:
                 if s not in selection:
                     surrounding_strips.append(s)
-
-        for block in selection_blocks:
             sequencer.select_all(action='DESELECT')
-            for s in block:
+            for s in selection_blocks[0]:
                 s.select = True
-            selection_start, _ = get_frame_range(block)
-            scene.frame_current = selection_start + 1
             sequencer.delete()
-            sequencer.gap_remove(all=False)
+        else:
+            for block in selection_blocks:
+                sequencer.select_all(action='DESELECT')
+                for s in block:
+                    s.select = True
+                selection_start, _ = get_frame_range(block)
+                sequencer.delete()
+
+                scene.frame_current = selection_start + 1
+                sequencer.gap_remove(all=False)
 
         # If single block, concatenate (useful for audio)
         if is_single_block:

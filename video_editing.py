@@ -11,20 +11,20 @@ from .functions.sequences import find_next_sequences, \
 # --------------------------------------------------
 # TODO: Rewrite cleanly
 # FIXME: Make sure the offset preserves the starting frame of the second strip
-# TODO: make it work with pictures and transform strips
-# TODO: If source strip has a special blending mode, use that for crossfade?
-# TODO: If 2 strips selected and same type familly (visual or sound), crossfade
+# IDEA: make it work with pictures and transform strips
+# IDEA: If source strip has a special blending mode, use that for crossfade?
+# IDEA: If 2 strips selected and same type familly (visual or sound), crossfade
 # from the bottom left one to the top right one
-# TODO: Chain crossfades if more than 2 strips selected?
-# TODO: Add custom properties to the sequences referencing the GAMMA_CROSS
+# IDEA: Auto Chain crossfades if more than 2 strips selected?
+# IDEA: Add custom properties to the sequences referencing the GAMMA_CROSS
 # strip, to easily remove it or process it with Python
 # FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between 2
 # selected strips
-# TODO: If crossfade between effect strips or 2 pictures, set crossfade strip
+# IDEA: If crossfade between effect strips or 2 pictures, set crossfade strip
 # ALPHA_OVER
-# TODO: Add custom property to store the name/data_path of the GAMMA_CROSS
+# IDEA: Add custom property to store the name/data_path of the GAMMA_CROSS
 # effect added to both strips, so we can detect it later
-# TODO: The operator should preserve strips with linked times (1 video + 1
+# IDEA: The operator should preserve strips with linked times (1 video + 1
 # audio)
 # FIXME: Spotted an offset issue with a metastrip that was exactly
 # self.crossfade_length frames before the end of the active strip
@@ -98,6 +98,7 @@ class AddCrossfade(bpy.types.Operator):
 
         for s in seq:
             s.select = True
+
         bpy.context.scene.sequence_editor.active_strip = seq[1]
         sequencer.effect_strip_add(type='GAMMA_CROSS')
         return {"FINISHED"}
