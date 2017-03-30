@@ -38,11 +38,10 @@ from bpy.props import BoolProperty, IntProperty, StringProperty
 # Sets video strips as proxies
 # TODO: Add settings in addon prefs
 # TODO: Make use of SettingsProxies PropertyGroup
-# TODO: Add optional support for image sequences
-# TODO: If custom dir, store proxies in subfolder
+# TODO: If custom dir, store proxies in a subfolder
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "gdquest_vse.set_video_proxies"
-    bl_label = "Set ALL Videos as Proxies"
+    bl_label = "Set selected strips as Proxies"
     bl_description = "Set all video strips in the current scene as proxies and rebuild"
     bl_options = {"REGISTER"}
 
@@ -61,14 +60,15 @@ class SetVideosProxies(bpy.types.Operator):
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-        sequencer.select_all(action='DESELECT')
-        for s in bpy.context.scene.sequence_editor.sequences_all:
-            if s.type == 'MOVIE':
-                s.select = True
 
+        selection = bpy.context.selected_sequences
         if not bpy.context.selected_sequences:
             self.report({"ERROR_INVALID_INPUT"}, "No movie sequences found")
+            return {'CANCELLED'}
 
+        for s in selection:
+            if s.type not in ('MOVIE', 'IMAGE'):
+                s.select = False
 
         sequencer.enable_proxies(proxy_25=True,
                                  proxy_50=False,
