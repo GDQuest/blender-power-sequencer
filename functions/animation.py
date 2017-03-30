@@ -137,8 +137,8 @@ def center_img(sequence):
     Returns false if it couldn't complete, otherwise True.
     """
     # DOESN'T TAKE IN ACCOUNT IMAGE CROP
-    if sequence.use_translation and (sequence.offset_x != 0 or
-                                     sequence.offset_y != 0):
+    if sequence.use_translation and (sequence.transform.offset_x != 0 or
+                                     sequence.transform.offset_y != 0):
         return False
 
     image_width = sequence.elements[0].orig_width

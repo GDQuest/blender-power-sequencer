@@ -177,6 +177,7 @@ class SetTimeline(bpy.types.Operator):
         return {'FINISHED'}
 
 
+# TODO: If deleting in a single channel, concatenate based on connected sequences?
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'gdquest_vse.ripple_delete'
     bl_label = 'Ripple delete'
@@ -191,14 +192,29 @@ class RippleDelete(bpy.types.Operator):
         scene = bpy.context.scene
         sequencer = bpy.ops.sequencer
         selection = bpy.context.selected_sequences
+
+        if not selection:
+            return {'CANCELLED'}
+
         selection_length = len(selection)
         cursor_start = scene.frame_current
+        channels = set((s.channel for s in selection))
 
         audio_scrub = bpy.context.scene.use_audio_scrub
         if audio_scrub:
             bpy.context.scene.use_audio_scrub = False
 
+        # If only 1 block of strips, we store linked strips
         selection_blocks = slice_selection(selection)
+
+        surrounding_strips = []
+        is_single_block = len(selection_blocks) == 1 and len(channels) == 1
+        if is_single_block:
+            bpy.ops.sequencer.select_linked()
+            for s in bpy.context.selected_sequences:
+                if s not in selection:
+                    surrounding_strips.append(s)
+
         for block in selection_blocks:
             sequencer.select_all(action='DESELECT')
             for s in block:
@@ -207,6 +223,12 @@ class RippleDelete(bpy.types.Operator):
             scene.frame_current = selection_start + 1
             sequencer.delete()
             sequencer.gap_remove(all=False)
+
+        # If single block, concatenate (useful for audio)
+        if is_single_block:
+            for s in surrounding_strips:
+                s.select = True
+            bpy.ops.gdquest_vse.concatenate_strips()
 
         scene.frame_current = cursor_start
         report_message = 'Deleted ' + str(selection_length) + ' sequence'

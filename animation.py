@@ -49,6 +49,7 @@ class FadeStrips(bpy.types.Operator):
         return {"FINISHED"}
 
 
+# TODO: If already transform effect on all sel strips, toggle select img and transform?
 class AddTransformEffect(bpy.types.Operator):
     """
     Filters the selection down to image and movie strips.
@@ -96,12 +97,15 @@ class AddTransformEffect(bpy.types.Operator):
 
         for s in transform_strips:
             s.select = True
+        for s in selection:
+            s.select = True
+        sequence_editor.active_strip = transform_strips[0]
         self.report({"INFO"}, "Successfully processed " + str(len(selection)) +
                     " image sequences")
         return {'FINISHED'}
 
 
-# TODO: Find which animation data to store and how to store it
+# TODO: Find which animation data to store and how to store it?
 class AddAnimationFromLibrary(bpy.types.Operator):
     bl_idname = "gdquest_vse.animation_library"
     bl_label = "Animation library"
