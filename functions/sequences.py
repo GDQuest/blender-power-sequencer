@@ -207,7 +207,7 @@ def get_frame_range(sequences=None, get_from_start=False):
 
     start = 1 if get_from_start else min(
         sequences, key=attrgetter('frame_final_start')).frame_final_start
-    end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end - 1
+    end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
 
     return start, end
 

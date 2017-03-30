@@ -92,6 +92,8 @@ class MouseCut(bpy.types.Operator):
         elif self.cut_mode == 'trim':
             start, end = get_frame_range(bpy.context.selected_sequences)
 
+            print(end)
+
             # Find strips to delete
             to_delete = []
             delete_start, delete_end = 0, 0
