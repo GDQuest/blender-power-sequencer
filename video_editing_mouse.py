@@ -7,7 +7,8 @@ from .functions.sequences import find_strips_mouse, find_effect_strips, get_fram
 from operator import attrgetter
 # import blf
 
-
+# FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
+# If trimming the start of the first sequence, there's no sequence selected.
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
@@ -118,7 +119,7 @@ class MouseCut(bpy.types.Operator):
 
             # Move time cursor back
             if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                first_seq = sorted(bpy.context.selected_sequences,
+                sorted_sequences = sorted(bpy.context.selected_sequences,
                                    key=attrgetter('frame_final_start'))[0]
                 frame = first_seq.frame_final_start - self.cursor_offset \
                     if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \

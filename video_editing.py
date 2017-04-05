@@ -597,9 +597,9 @@ class PreviewLastCut(bpy.types.Operator):
                 last_distance = distance_to_cut
                 preview_center = cut
 
-        if preview_center > 0:
-            start = preview_center - self.frame_range / 2
-            end = preview_center + self.frame_range / 2
+        start = preview_center - self.frame_range / 2
+        end = preview_center + self.frame_range / 2
+        if preview_center > 1 and start > 1:
             if scene.frame_preview_start == start and scene.frame_preview_end == end:
                 start, end = get_frame_range(sequences)
             set_preview_range(start, end)
