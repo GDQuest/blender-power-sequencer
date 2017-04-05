@@ -4,7 +4,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
-    find_linked, is_in_range
+    find_linked, is_in_range, set_preview_range
 
 
 # ---------------- Operators -----------------------
@@ -46,7 +46,8 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'",
+                     is of the length set in 'Crossfade Length'"
+                                                                ,
         default=True)
 
     @classmethod
@@ -63,7 +64,8 @@ class AddCrossfade(bpy.types.Operator):
 
         if len(selection) > 1:
             self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
-            crossfade from")
+            crossfade from"
+                           )
             return {"CANCELLED"}
 
         if active.type not in SequenceTypes.VIDEO:
@@ -73,7 +75,8 @@ class AddCrossfade(bpy.types.Operator):
             else:
                 self.report({"ERROR_INVALID_INPUT"},
                             "You need to select a video \
-                sequence to add a crossfade")
+                sequence to add a crossfade"
+                                            )
                 return {"CANCELLED"}
 
         seq = [active, find_next_sequences(SearchMode.NEXT)]
@@ -158,7 +161,8 @@ class AddSpeed(bpy.types.Operator):
                         "ERROR_INVALID_INPUT"
                     }, "Can't speed up individual sequences if effect strips \
                     are selected. Please only select VIDEO or META strips. \
-                    Operation cancelled")
+                    Operation cancelled"
+                                        )
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
@@ -366,14 +370,16 @@ class GrabStillImage(bpy.types.Operator):
             self.report({
                 "ERROR_INVALID_INPUT"
             }, "You must select a video or meta strip. \
-                You selected a strip of type" + str(active.type) + " instead.")
+                You selected a strip of type"
+                                              + str(active.type) + " instead.")
             return {"CANCELLED"}
 
         if not active.frame_final_start <= start_frame < \
            active.frame_final_end:
             self.report({"ERROR_INVALID_INPUT"},
                         "Your time cursor must be on the frame you want \
-                        to convert to a still image.")
+                        to convert to a still image."
+                                                     )
             return {"CANCELLED"}
 
         if start_frame == active.frame_final_start:
@@ -550,4 +556,51 @@ class GrabSequenceHandles(bpy.types.Operator):
         active.select = True
 
         bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
+        return {'FINISHED'}
+
+
+class PreviewLastCut(bpy.types.Operator):
+    """
+    Finds the closest cut to the time cursor and
+    sets the preview to a small range around that frame.
+    If the preview matches the range, resets to the full timeline
+    """
+    bl_idname = 'gdquest_vse.preview_last_cut'
+    bl_label = 'Preview last cut'
+    bl_description = 'Toggle preview around the last cut, based on time cursor'
+    bl_options = {'REGISTER', 'UNDO'}
+
+    frame_range = IntProperty(name="Preview range",
+                              description="Total duration of the preview",
+                              default=24,
+                              min=1)
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        scene = bpy.context.scene
+        frame_current = scene.frame_current
+        sequences = bpy.context.sequences
+
+        if len(sequences) <= 1:
+            return {'CANCELLED'}
+
+        # Find cut closest to time cursor
+        last_distance = 100000
+        preview_center = 0
+        for s in sequences:
+            cut = s.frame_final_start
+            distance_to_cut = abs(cut - frame_current)
+            if distance_to_cut < last_distance:
+                last_distance = distance_to_cut
+                preview_center = cut
+
+        if preview_center > 0:
+            start = preview_center - self.frame_range / 2
+            end = preview_center + self.frame_range / 2
+            if scene.frame_preview_start == start and scene.frame_preview_end == end:
+                start, end = get_frame_range(sequences)
+            set_preview_range(start, end)
         return {'FINISHED'}
