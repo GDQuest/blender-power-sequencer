@@ -10,6 +10,9 @@ from .functions.sequences import find_next_sequences, \
 # ---------------- Operators -----------------------
 # --------------------------------------------------
 # TODO: Rewrite cleanly
+# FIXME: Doesn't work well if there are 3-4-5 channels used. The operator will
+# pick strips up to 2 channels below the active one
+# TODO: Make it work with 2+ selected strips
 # FIXME: Make sure the offset preserves the starting frame of the second strip
 # IDEA: make it work with pictures and transform strips
 # IDEA: If source strip has a special blending mode, use that for crossfade?
@@ -26,10 +29,6 @@ from .functions.sequences import find_next_sequences, \
 # effect added to both strips, so we can detect it later
 # IDEA: The operator should preserve strips with linked times (1 video + 1
 # audio)
-# FIXME: Spotted an offset issue with a metastrip that was exactly
-# self.crossfade_length frames before the end of the active strip
-# Happens in particular if the second strip is already in place - it adds 10
-# frames at the end
 class AddCrossfade(bpy.types.Operator):
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
