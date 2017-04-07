@@ -496,8 +496,8 @@ class SnapSelectionToCursor(bpy.types.Operator):
         time_move = selection[
             0].frame_final_start - bpy.context.scene.frame_current
 
-        from .functions.sequences import find_empty_channel
-        empty_channel = find_empty_channel()
+        from .functions.sequences import get_empty_channel
+        empty_channel = get_empty_channel()
 
         for s in selection:
             if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:

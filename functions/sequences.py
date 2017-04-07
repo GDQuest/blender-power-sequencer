@@ -4,23 +4,23 @@ from .global_settings import SequenceTypes, SearchMode
 from operator import attrgetter
 
 
-def find_empty_channel(mode='ABOVE'):
+def get_empty_channel(sequences, mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
     Takes the optional argument mode: 'ABOVE' or 'ANY'
     'ABOVE' finds the first empty channel above all of the other strips
-    'ANY' finds the first empty channel, even if there are strips above it"""
+    'ANY' finds the first empty channel, even if there are strips above it
+    """
     sequences = bpy.context.sequences
-
     if not sequences:
         return 1
 
-    empty_channel = None
     channels = [s.channel for s in sequences]
     channels = sorted(list(set(channels)))
+    empty_channel = None
 
-    for i in range(channels[-1]):
-        if i not in channels:
-            if mode == 'ANY':
+    if mode == 'ANY':
+        for i in range(channels[-1]):
+            if i not in channels:
                 empty_channel = i
                 break
     if not empty_channel:
@@ -29,11 +29,18 @@ def find_empty_channel(mode='ABOVE'):
     return empty_channel
 
 
+def find_next_sequences_temp(sequences, mode='NEXT', pick_sound=False):
+    """
+    Takes a list of sequences and returns all the sequences after it in the current context
+    """
+    return None
+
 # TODO: refactor code - clean up / get the user to pass sequences to work on?
 def find_next_sequences(mode=SearchMode.NEXT,
                         sequences=None,
                         pick_sound=False):
     """
+    Takes a list of sequences and returns all the sequences after it in the current context
     Returns a sequence or a list of sequences following the active one
     """
     if not sequences:
