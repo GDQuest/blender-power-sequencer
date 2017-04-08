@@ -5,33 +5,25 @@ from operator import attrgetter
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
-    find_linked, is_in_range, set_preview_range, find_next_sequences_temp, \
-    filter_sequences_by_type
+    find_linked, is_in_range, set_preview_range, filter_sequences_by_type
 
 
 # ---------------- Operators -----------------------
 # --------------------------------------------------
-# TODO: Rewrite cleanly
-# FIXME: Doesn't work well if there are 3-4-5 channels used. The operator will
-# pick strips up to 2 channels below the active one
 # TODO: Make it work with 2+ selected strips
-# FIXME: Make sure the offset preserves the starting frame of the second strip
-# IDEA: make it work with pictures and transform strips
-# IDEA: If source strip has a special blending mode, use that for crossfade?
-# IDEA: If 2 strips selected and same type familly (visual or sound), crossfade
-# from the bottom left one to the top right one
-# IDEA: Auto Chain crossfades if more than 2 strips selected?
-# IDEA: Add custom properties to the sequences referencing the GAMMA_CROSS
-# strip, to easily remove it or process it with Python
-# FIXME: Only add new crossfade if there's no existing GAMMA_CROSS between 2
-# selected strips
+# TODO: make it work with pictures and transform strips
+# TODO: If source strip has a special blending mode, use that for crossfade?
+# TODO: make sure there's no effect on the strip?
 # IDEA: If crossfade between effect strips or 2 pictures, set crossfade strip
 # ALPHA_OVER
 # IDEA: Add custom property to store the name/data_path of the GAMMA_CROSS
-# effect added to both strips, so we can detect it later
-# IDEA: The operator should preserve strips with linked times (1 video + 1
-# audio)
+# effect added to both strips, so we can detect it later. Why?
 class AddCrossfade(bpy.types.Operator):
+    """
+    Based on the active strip, finds the closest next sequence of a similar type,
+    moves it so it overlaps the active strip, and adds a gamma_cross effect between them.
+    Works with MOVIE, IMAGE and META strips
+    """
     bl_idname = "gdquest_vse.add_crossfade"
     bl_label = "Add Crossfade"
     bl_description = "Adds a Gamma Cross fade layer effect between \
@@ -47,9 +39,7 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'"
-                                                                ,
-        default=True)
+                     is of the length set in 'Crossfade Length'", default=True)
 
     @classmethod
     def poll(cls, context):
@@ -57,53 +47,36 @@ class AddCrossfade(bpy.types.Operator):
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-        active = bpy.context.scene.sequence_editor.active_strip
         selection = bpy.context.selected_sequences
 
+        if not len(selection) == 1:
+            self.report({"ERROR_INVALID_INPUT"}, "Select a single strip to \
+            crossfade from")
+            return {"CANCELLED"}
+
+        active = bpy.context.scene.sequence_editor.active_strip
+        selection = filter_sequences_by_type(selection, SequenceTypes.VIDEO,
+                                             SequenceTypes.IMAGE)
         if not selection:
+            self.report({"ERROR_INVALID_INPUT"},
+                        "Please select a movie, meta or image strip")
             return {"CANCELLED"}
+        if selection[0] != active:
+            bpy.context.scene.sequence_editor.active_strip = \
+                active = selection[0]
 
-        if len(selection) > 1:
-            self.report({"ERROR_INVALID_INPUT"}, "Only select one strip to \
-            crossfade from"
-                           )
+        next_sequences = find_next_sequences_temp(selection)
+        if not next_sequences:
             return {"CANCELLED"}
-
-        if active.type not in SequenceTypes.VIDEO:
-            if selection[0].type in SequenceTypes.VIDEO:
-                bpy.context.scene.sequence_editor.active_strip = \
-                    active = selection[0]
-            else:
-                self.report({"ERROR_INVALID_INPUT"},
-                            "You need to select a video \
-                sequence to add a crossfade"
-                                            )
-                return {"CANCELLED"}
-
-        seq = [active, find_next_sequences(SearchMode.NEXT)]
-        if not seq[0] and seq[1]:
-            self.report({"ERROR_INVALID_INPUT"}, "No sequence to crossfade to")
-            return {"CANCELLED"}
+        neighbor = min(next_sequences, key=attrgetter('channel', 'frame_final_start'))
 
         if self.force_length:
-            # Variables to move the second sequence
-            target_frame = seq[0].frame_final_end
-            frame_offset = -1 * (
-                seq[1].frame_final_start - seq[0].frame_final_end)
-            strip_duration = seq[1].frame_final_duration
-            # Moving and trimming the second sequence
-            seq[1].frame_final_start = target_frame
-            seq[1].frame_final_end = target_frame + strip_duration
-            sequencer.select_all(action='DESELECT')
-            seq[1].select = True
-
-            sequencer.slip(offset=frame_offset)
-            seq[1].frame_final_start -= self.crossfade_length
-
-        for s in seq:
-            s.select = True
-
-        bpy.context.scene.sequence_editor.active_strip = seq[1]
+            frame_offset = neighbor.frame_final_start - active.frame_final_end
+            neighbor.frame_start -= frame_offset
+            neighbor.frame_final_start -= self.crossfade_length
+        active.select = True
+        neighbor.select = True
+        bpy.context.scene.sequence_editor.active_strip = neighbor
         sequencer.effect_strip_add(type='GAMMA_CROSS')
         return {"FINISHED"}
 
