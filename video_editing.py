@@ -1,10 +1,12 @@
 import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
+from operator import attrgetter
 
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
-    find_linked, is_in_range, set_preview_range
+    find_linked, is_in_range, set_preview_range, find_next_sequences_temp, \
+    filter_sequences_by_type
 
 
 # ---------------- Operators -----------------------
@@ -228,8 +230,8 @@ class SelectLinkedEffect(bpy.types.Operator):
 
 class ConcatenateStrips(bpy.types.Operator):
     """
-    Concatenates selected strips or a channel based on the active strip
-    Recommended shortcut: Shift C
+    Concatenates selected strips (removes space between them)
+    If a single strip is selected, finds all the strips after it in the channel
     """
     bl_idname = "gdquest_vse.concatenate_strips"
     bl_label = "Concatenate strips"
@@ -240,39 +242,30 @@ class ConcatenateStrips(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        sequences = []
-        channels = []
-        context = bpy.context
+        sequences = bpy.context.selected_sequences
 
-        if len(context.selected_sequences) == 1:
-            sequences_in_channel = find_next_sequences(mode=SearchMode.CHANNEL,
-                                                       sequences=None,
-                                                       pick_sound=True)
-            for s in sequences_in_channel:
-                s.select = True
-            context.scene.sequence_editor.active_strip.select = True
-
-        for s in context.selected_sequences:
-            if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.SOUND:
+        # If only 1 sequence selected, find next sequences in channel
+        if len(sequences) == 1:
+            in_channel = [s
+                          for s in find_next_sequences_temp(sequences)
+                          if s.channel == sequences[0].channel]
+            for s in in_channel:
                 sequences.append(s)
-                channels.append(s.channel)
+        sequences = filter_sequences_by_type(sequences, SequenceTypes.VIDEO,
+                                             SequenceTypes.IMAGE,
+                                             SequenceTypes.SOUND)
 
-        if not len(sequences) >= 1:
+        if len(sequences) <= 1:
+            self.report({"INFO"}, "No strips to concatenate.")
             return {'CANCELLED'}
 
-        from operator import attrgetter
-        # sort sequences by channel and frame start
+        channels = list(set([s.channel for s in sequences]))
         sequences = sorted(sequences,
                            key=attrgetter('channel', 'frame_final_start'))
-        channels = set(channels)
-        channels = list(channels)
-
+        # Concatenate the channels
         for channel in channels:
             concat_start = 0
-            concat_sequences = []
-            for s in sequences:
-                if s.channel == channel:
-                    concat_sequences.append(s)
+            concat_sequences = [s for s in sequences if s.channel == channel]
             concat_start = concat_sequences[0].frame_final_end
             concat_sequences.pop(0)
 
@@ -458,7 +451,6 @@ class ChannelOffset(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        from operator import attrgetter
         selection = bpy.context.selected_sequences
         if not selection:
             return {'CANCELLED'}
@@ -489,7 +481,6 @@ class SnapSelectionToCursor(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        from operator import attrgetter
         selection = sorted(bpy.context.selected_sequences,
                            key=attrgetter('frame_final_start'))
 

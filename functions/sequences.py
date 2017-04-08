@@ -29,18 +29,50 @@ def get_empty_channel(sequences, mode='ABOVE'):
     return empty_channel
 
 
-def find_next_sequences_temp(sequences, mode='NEXT', pick_sound=False):
+def find_next_sequences_temp(sequences):
     """
-    Takes a list of sequences and returns all the sequences after it in the current context
+    Finds the strips following the sequences passed to the function
+    Args:
+    - Sequences, the sequences to check
+    Returns all the strips after the sequence in the current context
     """
-    return None
+    if not sequences:
+        raise AttributeError('Missing sequences parameter')
+
+    last_seq_start = max(sequences, key=attrgetter('frame_final_start')).frame_final_start
+
+    next_sequences = []
+    for s in bpy.context.sequences:
+        if s.frame_final_start > last_seq_start:
+            next_sequences.append(s)
+    return next_sequences
+
+
+def filter_sequences_by_type(sequences, *args):
+    """
+    Takes a list of sequences and returns a list of sequences with types
+    that correspond to the types passed in args.
+    Use the SequenceTypes class for the args
+
+    Args:
+    - sequences: a list of sequences
+    - args: any list of sequence types. i.e. SequenceTypes.VIDEO
+    """
+    types_list = []
+    for arg in args:
+        if not isinstance(arg, list):
+            raise TypeError('An argument is not a list')
+    for arg in args:
+        types_list.extend(arg)
+
+    return [s for s in sequences if s.type in types_list]
+
 
 # TODO: refactor code - clean up / get the user to pass sequences to work on?
 def find_next_sequences(mode=SearchMode.NEXT,
                         sequences=None,
                         pick_sound=False):
     """
-    Takes a list of sequences and returns all the sequences after it in the current context
     Returns a sequence or a list of sequences following the active one
     """
     if not sequences:
@@ -115,7 +147,7 @@ def select_strip_handle(sequences, side=None, frame=None):
 
 def find_strips_mouse(frame=None, channel=None, select_linked=True):
     """
-    Finds a list of sequences to select based on the mouse position 
+    Finds a list of sequences to select based on the mouse position
     or using the time cursor.
 
     Args:
@@ -123,7 +155,7 @@ def find_strips_mouse(frame=None, channel=None, select_linked=True):
     - channel: the channel the mouse is hovering (only used in mouse mode)
     - select_linked: include the sequences linked in time if True
 
-    Returns the sequence(s) under the mouse cursor (can be multiple sequences 
+    Returns the sequence(s) under the mouse cursor (can be multiple sequences
     if select_linked)
     Returns an empty list if nothing was found
     """
