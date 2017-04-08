@@ -29,7 +29,7 @@ def get_empty_channel(sequences, mode='ABOVE'):
     return empty_channel
 
 
-def find_next_sequences_temp(sequences):
+def find_next_sequences(sequences):
     """
     Finds the strips following the sequences passed to the function
     Args:
@@ -66,56 +66,6 @@ def filter_sequences_by_type(sequences, *args):
         types_list.extend(arg)
 
     return [s for s in sequences if s.type in types_list]
-
-
-# TODO: refactor code - clean up / get the user to pass sequences to work on?
-def find_next_sequences(mode=SearchMode.NEXT,
-                        sequences=None,
-                        pick_sound=False):
-    """
-    Returns a sequence or a list of sequences following the active one
-    """
-    if not sequences:
-        sequences = bpy.context.sequences
-        if not sequences:
-            return None
-
-    active = bpy.context.scene.sequence_editor.active_strip
-    nexts = []
-    nexts_far = []
-    same_channel = []
-
-    # Find all selected sequences to the right of the active sequence
-    for seq in sequences:
-        if (seq.frame_final_start >= active.frame_final_end) or (
-                seq.frame_final_start > active.frame_final_start) & (
-                    seq.frame_final_start < active.frame_final_end) & (
-                        seq.frame_final_end > active.frame_final_end):
-            if abs(seq.channel - active.channel) > 2:
-                nexts_far.append(seq)
-            elif seq.type in SequenceTypes.SOUND and not pick_sound:
-                pass
-            else:
-                nexts.append(seq)
-                if mode is SearchMode.CHANNEL and seq.channel == active.channel:
-                    same_channel.append(seq)
-
-# Store the sequences to return
-    next_sequences = None
-    if mode is SearchMode.CHANNEL:
-        return same_channel
-    elif len(nexts) > 0:
-        return min(
-            nexts,
-            key=
-            lambda next: (next.frame_final_start - active.frame_final_start))
-    elif len(nexts_far) > 0:
-        next_sequences = min(
-            nexts_far,
-            key=
-            lambda next: (next.frame_final_start - active.frame_final_start))
-
-    return next_sequences
 
 
 def select_strip_handle(sequences, side=None, frame=None):
