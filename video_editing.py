@@ -40,7 +40,8 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'", default=True)
+                     is of the length set in 'Crossfade Length'"
+                                                                , default=True)
 
     @classmethod
     def poll(cls, context):
@@ -73,16 +74,23 @@ class AddCrossfade(bpy.types.Operator):
             next_sequences, SequenceTypes.VIDEO, SequenceTypes.IMAGE)
         if not next_sequences:
             return {"CANCELLED"}
+        threshold = active.channel - 1
         higher_sequences = [s
                             for s in next_sequences
-                            if s.channel >= active.channel]
-        if higher_sequences:
+                            if s.channel >= threshold]
+        priority_neighbors = [s
+                              for s in higher_sequences
+                              if s.frame_final_start >= active.frame_final_end]
+        if priority_neighbors:
+            neighbor = min(priority_neighbors,
+                           key=attrgetter('channel', 'frame_final_start'))
+        elif higher_sequences:
             neighbor = min(higher_sequences,
                            key=attrgetter('channel', 'frame_final_start'))
         else:
             lower_sequences = [s
                                for s in next_sequences
-                               if s.channel < active.channel]
+                               if s.channel < threshold]
             neighbor = min(lower_sequences,
                            key=attrgetter('channel', 'frame_final_start'))
 
