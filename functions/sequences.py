@@ -4,7 +4,7 @@ from .global_settings import SequenceTypes, SearchMode
 from operator import attrgetter
 
 
-def get_empty_channel(sequences, mode='ABOVE'):
+def get_empty_channel(sequences=None, mode='ABOVE'):
     """Finds and returns the first empty channel in the VSE
     Takes the optional argument mode: 'ABOVE' or 'ANY'
     'ABOVE' finds the first empty channel above all of the other strips

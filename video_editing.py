@@ -20,8 +20,9 @@ from .functions.sequences import find_next_sequences, \
 # effect added to both strips, so we can detect it later. Why?
 class AddCrossfade(bpy.types.Operator):
     """
-    Based on the active strip, finds the closest next sequence of a similar type,
-    moves it so it overlaps the active strip, and adds a gamma_cross effect between them.
+    Based on the active strip, finds the closest next sequence
+    of a similar type, moves it so it overlaps the active strip,
+    and adds a gamma_cross effect between them.
     Works with MOVIE, IMAGE and META strips
     """
     bl_idname = "gdquest_vse.add_crossfade"
@@ -51,7 +52,8 @@ class AddCrossfade(bpy.types.Operator):
 
         if not len(selection) == 1:
             self.report({"ERROR_INVALID_INPUT"}, "Select a single strip to \
-            crossfade from")
+            crossfade from"
+                           )
             return {"CANCELLED"}
 
         active = bpy.context.scene.sequence_editor.active_strip
@@ -65,10 +67,24 @@ class AddCrossfade(bpy.types.Operator):
             bpy.context.scene.sequence_editor.active_strip = \
                 active = selection[0]
 
-        next_sequences = find_next_sequences_temp(selection)
+        # Find the best strip after active in timeline to crossfade to
+        next_sequences = find_next_sequences(selection)
+        next_sequences = filter_sequences_by_type(
+            next_sequences, SequenceTypes.VIDEO, SequenceTypes.IMAGE)
         if not next_sequences:
             return {"CANCELLED"}
-        neighbor = min(next_sequences, key=attrgetter('channel', 'frame_final_start'))
+        higher_sequences = [s
+                            for s in next_sequences
+                            if s.channel >= active.channel]
+        if higher_sequences:
+            neighbor = min(higher_sequences,
+                           key=attrgetter('channel', 'frame_final_start'))
+        else:
+            lower_sequences = [s
+                               for s in next_sequences
+                               if s.channel < active.channel]
+            neighbor = min(lower_sequences,
+                           key=attrgetter('channel', 'frame_final_start'))
 
         if self.force_length:
             frame_offset = neighbor.frame_final_start - active.frame_final_end
@@ -220,7 +236,7 @@ class ConcatenateStrips(bpy.types.Operator):
         # If only 1 sequence selected, find next sequences in channel
         if len(sequences) == 1:
             in_channel = [s
-                          for s in find_next_sequences_temp(sequences)
+                          for s in find_next_sequences(sequences)
                           if s.channel == sequences[0].channel]
             for s in in_channel:
                 sequences.append(s)
