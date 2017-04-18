@@ -1,6 +1,6 @@
 import bpy
 from bpy.props import BoolProperty, EnumProperty
-
+from .functions.global_settings import RENDER_SETTINGS as RS
 
 def set_render_settings(resolution=None, encoding=None):
     """Sets the render dimensions and encoding settings based on presets
@@ -86,7 +86,8 @@ class RenderForWeb(bpy.types.Operator):
             self.report({'WARNING'}, "Save your file first")
             return {'CANCELLED'}
 
-        from .functions.global_settings import RENDER_SETTINGS as RS
+        prefs = context.user_preferences.addons[__name__].preferences
+
         resolution = RS.RESOLUTION.PROXY if self.use_proxies else RS.RESOLUTION.HD_FULL
         encoding = RS.ENCODING.MP4_PROXY if self.use_proxies else RS.ENCODING.MP4_HIGH
 

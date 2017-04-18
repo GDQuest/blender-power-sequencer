@@ -6,7 +6,7 @@ from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty
 
 
 # TODO: Add button and function to register keymaps
-class GDquestVSESetting(bpy.types.PropertyGroup):
+class GeneralProperties(bpy.types.PropertyGroup):
     playback_speed = EnumProperty(items=[
         ('1', 'normal', 'Normal playback speed'),
         ('1.5', 'fast', '1.5 times normal playback speed'),
@@ -16,21 +16,13 @@ class GDquestVSESetting(bpy.types.PropertyGroup):
         default='1')
 
 
-class GDquestVSEPreferences(bpy.types.AddonPreferences):
+class ProxyPreferences(bpy.types.AddonPreferences):
     bl_idname = "gdquest_vse"
+
     video_export_path = StringProperty(
         name="Video render folder",
         description="Relative folder to save videos rendered with the add-on",
         default="")
-
-    def draw(self, context):
-        layout = self.layout
-        layout.prop(self, "video_export_path")
-
-
-class ProxyPreferences(bpy.types.AddonPreferences):
-    bl_idname = __name__
-
     auto_render_proxies = BoolProperty(
         name="Create proxies automatically",
         description="Automatically build proxies for video sequences on import",
@@ -53,6 +45,7 @@ class ProxyPreferences(bpy.types.AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+        layout.prop(self, "video_export_path")
         layout.prop(self, "auto_render_proxies")
         layout.prop(self, "use_custom_folder")
         layout.prop(self, "custom_folder_path")

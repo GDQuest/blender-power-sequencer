@@ -5,31 +5,6 @@
 import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty
 
-# Auto change resolution
-# class Render_Resolution_Percentage_Toggle(bpy.types.Operator):
-#     """Toggle between 30, 60 and 100 values in Resolution Percentage"""
-#     bl_idname = "sequencer.resolution_percentage_toggle"
-#     bl_label = "Render - Resolution Toggle"
-#     bl_options = {'REGISTER', 'UNDO'}
-#     # Shortcut: Ctrl + Alt + R
-
-#     @classmethod
-#     def poll(cls, context):
-#         return True
-
-#     def execute(self, context):
-#         render = bpy.context.scene.render
-#         resolution = render.resolution_percentage
-
-#         if (resolution == 100):
-#             render.resolution_percentage = 30
-#         elif (resolution == 30):
-#             render.resolution_percentage = 60
-#         else:
-#             render.resolution_percentage = 100
-
-#         return {'FINISHED'}
-
 # TODO: store and update proxies function (store/update paths to proxy folders and files)
 # TODO: clear proxies (delete all proxy files)
 # Prompt for confirmation
@@ -66,19 +41,21 @@ class SetVideosProxies(bpy.types.Operator):
             self.report({"ERROR_INVALID_INPUT"}, "No movie sequences found")
             return {'CANCELLED'}
 
+        prefs = context.user_preferences.addons["gdquest_vse"].preferences
+
         for s in selection:
             if s.type not in ('MOVIE', 'IMAGE'):
                 s.select = False
 
-        sequencer.enable_proxies(proxy_25=True,
-                                 proxy_50=False,
-                                 proxy_75=False,
-                                 proxy_100=False,
+        sequencer.enable_proxies(proxy_25=prefs.proxy_25,
+                                 proxy_50=prefs.proxy_50,
+                                 proxy_75=prefs.proxy_75,
+                                 proxy_100=prefs.proxy_100,
                                  override=False)
-        if self.use_custom_folder:
+        if prefs.use_custom_folder and prefs.custom_folder_path:
             for s in bpy.context.selected_sequences:
                 s.proxy.use_proxy_custom_directory = True
-                s.proxy.directory = self.custom_folder_path
+                s.proxy.directory = prefs.custom_folder_path
 
         sequencer.rebuild_proxy({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}

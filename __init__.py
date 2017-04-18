@@ -50,7 +50,6 @@ import traceback
 
 def register():
     try:
-        # bpy.utils.register_class(GDquestVSESetting)
         bpy.utils.register_module(__name__)
     except:
         traceback.print_exc()
@@ -68,7 +67,6 @@ def register():
 def unregister():
     try:
         bpy.utils.unregister_module(__name__)
-        # bpy.utils.unregister_class(GDquestVSESetting)
     except:
         traceback.print_exc()
 
