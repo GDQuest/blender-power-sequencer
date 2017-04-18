@@ -177,7 +177,6 @@ class SetTimeline(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# TODO: If deleting in a single channel, concatenate based on connected sequences?
 # TODO: To do a proper ripple, gotta move the sequences "manually" i.e. when you delete the
 # first sequence on the leftmost side of the sequencer
 class RippleDelete(bpy.types.Operator):

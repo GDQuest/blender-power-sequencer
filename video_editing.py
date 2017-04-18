@@ -80,10 +80,11 @@ class AddCrossfade(bpy.types.Operator):
                             if s.channel >= threshold]
         priority_neighbors = [s
                               for s in higher_sequences
-                              if s.frame_final_start >= active.frame_final_end]
+                              if s.frame_final_start >= active.frame_final_end
+                              and s.channel - active.channel in (-1, 0, 1)]
         if priority_neighbors:
             neighbor = min(priority_neighbors,
-                           key=attrgetter('channel', 'frame_final_start'))
+                           key=attrgetter('frame_final_start', 'channel'))
         elif higher_sequences:
             neighbor = min(higher_sequences,
                            key=attrgetter('channel', 'frame_final_start'))

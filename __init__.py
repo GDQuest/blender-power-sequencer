@@ -36,7 +36,6 @@ import os
 from math import ceil
 from operator import attrgetter
 from enum import Enum
-from .addon_preferences import GDquestVSESetting
 from .handlers import *
 
 # load and reload submodules
@@ -51,7 +50,7 @@ import traceback
 
 def register():
     try:
-        bpy.utils.register_class(GDquestVSESetting)
+        # bpy.utils.register_class(GDquestVSESetting)
         bpy.utils.register_module(__name__)
     except:
         traceback.print_exc()
@@ -69,7 +68,7 @@ def register():
 def unregister():
     try:
         bpy.utils.unregister_module(__name__)
-        bpy.utils.unregister_class(GDquestVSESetting)
+        # bpy.utils.unregister_class(GDquestVSESetting)
     except:
         traceback.print_exc()
 

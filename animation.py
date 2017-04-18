@@ -39,6 +39,8 @@ class FadeStrips(bpy.types.Operator):
         for s in selection:
             max_value = s.volume if s.type in SequenceTypes.SOUND \
                         else s.blend_alpha
+            if not max_value:
+                max_value = 1.0
             fade_create(sequence=s,
                         fade_length=self.fade_length,
                         fade_type=self.fade_type,
