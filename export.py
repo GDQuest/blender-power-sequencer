@@ -70,7 +70,7 @@ class RenderForWeb(bpy.types.Operator):
         name='Preset',
         description='Preset to use ',
         default='youtube')
-    use_preset = not preset == 'none'
+    use_preset = preset != 'none'
 
     use_folder_name = BoolProperty(
         name="Use folder name",
@@ -86,7 +86,7 @@ class RenderForWeb(bpy.types.Operator):
             self.report({'WARNING'}, "Save your file first")
             return {'CANCELLED'}
 
-        prefs = context.user_preferences.addons[__name__].preferences
+        prefs = context.user_preferences.addons["gdquest_vse"].preferences
 
         resolution = RS.RESOLUTION.PROXY if self.use_proxies else RS.RESOLUTION.HD_FULL
         encoding = RS.ENCODING.MP4_PROXY if self.use_proxies else RS.ENCODING.MP4_HIGH
@@ -101,10 +101,10 @@ class RenderForWeb(bpy.types.Operator):
         name = dirname(path).rsplit(sep="\\", maxsplit=1)[-1] \
             if self.use_folder_name else bpy.path.basename(path)
 
-        if self.use_preset:
-            name = "".join((splitext(name)[0], ' ', self.preset, '.mp4'))
-        else:
-            name = "".join((splitext(name)[0], '.mp4'))
+        # if self.use_preset:
+        #     name = "".join((splitext(name)[0], ' ', self.preset, '.mp4'))
+        # else:
+        name = "".join((splitext(name)[0], '.mp4'))
 
         bpy.context.scene.render.filepath = "//" + name if name else "Video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)

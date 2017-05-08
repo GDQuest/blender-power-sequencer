@@ -115,7 +115,7 @@ class ImportLocalFootage(bpy.types.Operator):
 
         # Write new imported paths to the text files and import new strips
         channel_offset = 0
-        created_sequences = []
+        new_sequences, new_video_sequences = [], []
         for name in file_types:
             if name not in folders.keys():
                 continue
@@ -146,14 +146,16 @@ class ImportLocalFootage(bpy.types.Operator):
                                           frame_start=frame_current,
                                           channel=import_channel,
                                           sound=self.keep_audio)
-                created_sequences.extend(bpy.context.selected_sequences)
+                new_sequences.extend(bpy.context.selected_sequences)
+                # Blender places audio tracks on top, we want them under video
+                new_video_sequences.extend(bpy.context.selected_sequences)
             elif name == "AUDIO":
                 sequencer.sound_strip_add(SEQUENCER_AREA,
                                           filepath=folder + "\\",
                                           files=files_dict,
                                           frame_start=frame_current,
                                           channel=import_channel)
-                created_sequences.extend(bpy.context.selected_sequences)
+                new_sequences.extend(bpy.context.selected_sequences)
             elif name == "IMG":
                 img_frame = frame_current
                 for img in files_dict:
@@ -167,15 +169,31 @@ class ImportLocalFootage(bpy.types.Operator):
                         frame_start=img_frame,
                         frame_end=img_frame + self.img_length,
                         channel=import_channel)
-                    created_sequences.extend(bpy.context.selected_sequences)
+                    new_sequences.extend(bpy.context.selected_sequences)
                     # Can't add transform effect there because
                     # Image size of strip isn't initialized by Blender
                     # Will fire up ZeroDivisionError
                     # add_transform_effect(bpy.context.selected_sequences)
                     img_frame += self.img_length + self.img_padding
             channel_offset += 1
+        
+        # Swap channels for audio and video tracks
+        if new_video_sequences:
+            sequencer.select_all(action='DESELECT')
+            for s in new_video_sequences:
+                s.select = True
+            sequencer.meta_make()
+            sequencer.meta_toggle()
+            videos_in_meta = [s for s in bpy.context.selected_sequences if s.type == 'MOVIE']
+            for s in videos_in_meta:
+                s.channel += 2
+            for s in new_video_sequences:
+                s.channel -= 1
+            sequencer.meta_toggle()
+            sequencer.meta_separate()
 
-        for s in created_sequences:
+
+        for s in new_sequences:
             s.select = True
         return {"FINISHED"}
 

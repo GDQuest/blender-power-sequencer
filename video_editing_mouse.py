@@ -119,8 +119,12 @@ class MouseCut(bpy.types.Operator):
 
             # Move time cursor back
             if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                sorted_sequences = sorted(bpy.context.selected_sequences,
-                                   key=attrgetter('frame_final_start'))[0]
+                selection = bpy.context.selected_sequences
+                sorted_sequences = sorted(selection,
+                                   key=attrgetter('frame_final_start'))
+                if len(sorted_sequences) > 1:
+                    first_seq = sorted_sequences[0].frame_final_start
+                
                 frame = first_seq.frame_final_start - self.cursor_offset \
                     if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
                     else frame

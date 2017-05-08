@@ -2,6 +2,7 @@
    The add-on produces proxy video files using ffmpeg,
    and offers more flexibility than the built-in proxies
    for simple video projects (online videos, tutorials, vlogs...)."""
+import os
 import bpy
 from bpy.props import BoolProperty, IntProperty, StringProperty
 
@@ -55,7 +56,9 @@ class SetVideosProxies(bpy.types.Operator):
         if prefs.use_custom_folder and prefs.custom_folder_path:
             for s in bpy.context.selected_sequences:
                 s.proxy.use_proxy_custom_directory = True
-                s.proxy.directory = prefs.custom_folder_path
+                blend_filename = bpy.path.basename(bpy.data.filepath)
+                blend_filename = os.path.splitext(blend_filename)[0]
+                s.proxy.directory = os.path.join(prefs.custom_folder_path, blend_filename)
 
         sequencer.rebuild_proxy({'dict': "override"}, 'INVOKE_DEFAULT')
         return {"FINISHED"}
