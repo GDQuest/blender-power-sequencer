@@ -89,16 +89,17 @@ class SettingsProxies(bpy.types.PropertyGroup):
 
 # Panel for proxy options management
 def proxy_menu(self, context):
-    # prefs = context.user_preferences.addons[__name__].preferences
+    # prefs = context.user_preferences.addons['gdquest_vse'].preferences
     gdquest_vse_proxy = context.scene.gdquest_vse_proxy
+
     layout = self.layout
 
-    # if prefs.enable_auto_proxies:
     row = layout.row()
     row.separator()
     row = layout.row()
     row.prop(gdquest_vse_proxy, 'proxy_on_import')
 
+    # if prefs.proxy_on_import:
     row = layout.row(align=True)
     row.prop(gdquest_vse_proxy, "proxy_25", toggle=True)
     row.prop(gdquest_vse_proxy, "proxy_50", toggle=True)

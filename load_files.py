@@ -9,11 +9,6 @@ from .functions.animation import add_transform_effect
 
 
 # TODO: Fix img imported from subfolder -
-# TODO: auto process img strips - add transform that scales it down to its
-# original size
-# and sets blend mode to alpha_over
-# TODO: img crop and offset to make anim easier
-# TODO: Import at cursor pos
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "gdquest_vse.import_local_footage"
     bl_label = "Import local footage"
@@ -192,6 +187,13 @@ class ImportLocalFootage(bpy.types.Operator):
             sequencer.meta_toggle()
             sequencer.meta_separate()
 
+        # Auto proxy
+        prefs = context.user_preferences.addons["gdquest_vse"].preferences
+        if prefs.auto_render_proxies:
+            bpy.ops.gdquest_vse.set_video_proxies()
+        # Show audio waveforms
+        for s in [strip for strip in new_sequences if strip.type == 'SOUND']:
+            s.show_waveform = True
 
         for s in new_sequences:
             s.select = True
