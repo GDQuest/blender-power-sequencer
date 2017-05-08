@@ -1,9 +1,9 @@
 """Simple operations like save, delete, open the project directory..."""
 import bpy
 from bpy.props import EnumProperty
+from operator import attrgetter
 from .functions.sequences import get_frame_range, set_preview_range, \
     slice_selection
-
 
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'gdquest_vse.open_project_directory'
@@ -199,6 +199,8 @@ class RippleDelete(bpy.types.Operator):
 
         selection_length = len(selection)
         cursor_start = scene.frame_current
+        cursor_offset = 0
+
         channels = set((s.channel for s in selection))
 
         audio_scrub = bpy.context.scene.use_audio_scrub
@@ -209,8 +211,8 @@ class RippleDelete(bpy.types.Operator):
         selection_blocks = slice_selection(selection)
 
         surrounding_strips = []
-        is_single_block = len(selection_blocks) == 1 and len(channels) == 1
-        if is_single_block:
+        is_single_channel = len(selection_blocks) == 1 and len(channels) == 1
+        if is_single_channel:
             bpy.ops.sequencer.select_linked()
             for s in bpy.context.selected_sequences:
                 if s not in selection:
@@ -219,6 +221,7 @@ class RippleDelete(bpy.types.Operator):
             for s in selection_blocks[0]:
                 s.select = True
             sequencer.delete()
+
         else:
             for block in selection_blocks:
                 sequencer.select_all(action='DESELECT')
@@ -230,16 +233,27 @@ class RippleDelete(bpy.types.Operator):
                 scene.frame_current = selection_start + 1
                 sequencer.gap_remove(all=False)
 
-        # If single block, concatenate (useful for audio)
-        if is_single_block:
+            # auto move cursor back
+            if bpy.context.screen.is_animation_playing and len(selection_blocks) == 1:
+                sequences = selection_blocks[0]
+                start_frame = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
+                end_frame = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+                delete_duration = end_frame - start_frame
+                if scene.frame_current > start_frame:
+                    cursor_offset = delete_duration
+
+        # Concatenate
+        if is_single_channel:
             for s in surrounding_strips:
                 s.select = True
             bpy.ops.gdquest_vse.concatenate_strips()
 
-        scene.frame_current = cursor_start
+        scene.frame_current = cursor_start - cursor_offset
         report_message = 'Deleted ' + str(selection_length) + ' sequence'
         report_message += 's' if selection_length > 1 else ''
         self.report({'INFO'}, report_message)
         if audio_scrub:
             bpy.context.scene.use_audio_scrub = audio_scrub
+
+
         return {'FINISHED'}
