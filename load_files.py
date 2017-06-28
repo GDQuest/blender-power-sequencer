@@ -186,11 +186,11 @@ class ImportLocalFootage(bpy.types.Operator):
                 s.channel -= 1
             sequencer.meta_toggle()
             sequencer.meta_separate()
+            # Auto proxy
+            prefs = context.user_preferences.addons["gdquest_vse"].preferences
+            if prefs.auto_render_proxies:
+                bpy.ops.gdquest_vse.set_video_proxies()
 
-        # Auto proxy
-        prefs = context.user_preferences.addons["gdquest_vse"].preferences
-        if prefs.auto_render_proxies:
-            bpy.ops.gdquest_vse.set_video_proxies()
         # Show audio waveforms
         for s in [strip for strip in new_sequences if strip.type == 'SOUND']:
             s.show_waveform = True

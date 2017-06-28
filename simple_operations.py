@@ -179,6 +179,7 @@ class SetTimeline(bpy.types.Operator):
 
 # TODO: To do a proper ripple, gotta move the sequences "manually" i.e. when you delete the
 # first sequence on the leftmost side of the sequencer
+# TODO: Improve auto move cursor back
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'gdquest_vse.ripple_delete'
     bl_label = 'Ripple delete'

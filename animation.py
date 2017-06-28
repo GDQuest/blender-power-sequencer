@@ -84,7 +84,6 @@ class AddTransformEffect(bpy.types.Operator):
         transform_strips = []
         sequencer.select_all(action='DESELECT')
         for s in selection:
-            s.mute = True
             if s.type == "IMAGE":
                 center_img(s)
 
@@ -96,6 +95,7 @@ class AddTransformEffect(bpy.types.Operator):
             active.blend_type = 'ALPHA_OVER'
             transform_strips.append(active)
             active.select = False
+            s.mute = True
 
         for s in transform_strips:
             s.select = True
