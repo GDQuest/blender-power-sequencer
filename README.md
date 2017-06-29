@@ -9,3 +9,10 @@ Here are the tools I built to edit tutorials faster.
 ## Heavy Work in Progress
 
 The tools themselves work, but the add-on is not documented yet, and not ready for everyone to use. You'll have to assign the operators to shortcuts by yourself, or you could use [this keymap](https://gist.github.com/NathanLovato/84b3a8529e5757875c8e97f4d7b424f4).
+
+## Other add-ons
+
+Here are other recommended add-ons for a better editing workflow:
+
+1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area
+2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage
