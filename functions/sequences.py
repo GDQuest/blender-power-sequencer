@@ -132,7 +132,7 @@ def slice_selection(sequences):
     if not sequences:
         raise AttributeError('No sequences passed to the function')
 
-# Find when 2 sequences are not connected in time
+    # Find when 2 sequences are not connected in time
     sequences = sorted(sequences, key=attrgetter('frame_final_start'))
 
     last_sequence = sequences[0]
@@ -144,7 +144,7 @@ def slice_selection(sequences):
         last_sequence = s
         index += 1
 
-# Create lists
+    # Create lists
     break_ids.append(len(sequences))
     cuts_count = len(break_ids) - 1
     broken_selection = []

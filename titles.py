@@ -3,7 +3,7 @@ using timeline markers, and either Image strips or Text strips"""
 import bpy
 
 
-# TODO: Make it work
+# TODO: Replace with VSE scene import system (import predefined text)
 # TODO: Access font folders
 # TODO: allow to define favorite fonts in add-on prefs
 # class AddSubtitle(bpy.types.Operator):
