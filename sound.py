@@ -38,8 +38,7 @@ class SoundToggleWaveform(bpy.types.Operator):
         show_waveform = None
         if self.mode == 'auto':
             from operator import attrgetter
-            from .functions.global_settings import SequenceParams
-            show_waveform = not sorted(sequences, key=attrgetter(SequenceParams.FRAME_START))[0].show_waveform
+            show_waveform = not sorted(sequences, key=attrgetter(frame_final_start))[0].show_waveform
         else:
             show_waveform = True if self.mode == 'on' else False
 
