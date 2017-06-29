@@ -3,12 +3,6 @@ Fetching, loading and saving files to the disk."""
 import bpy
 
 
-def is_proxy(filename):
-    """Checks if the file is a proxy generated with FFMPEG"""
-    # TODO: Check the containing folder
-    return True if '_proxy.' in filename else False
-
-
 def is_type(filename=None, file_type=None):
     """
     Checks if a file is of a certain type that can be loaded by Blender (image, audio, video...)
@@ -33,35 +27,6 @@ def get_working_directory():
     project_name = bpy.path.basename(full_path)
     working_directory = full_path[:len(full_path) - (len(project_name) + 1)]
     return working_directory
-
-
-def get_files_from_folder(path, folder_name, file_type):
-    """Returns a dictionary of files to add as strips to the VSE"""
-    if not path and folder_name and file_type:
-        return []
-
-    files, subfolders = [], []
-    path += '\\' + folder_name
-    folder_content = os.listdir(path=path)
-
-    if not folder_content:
-        return []
-
-    for file in folder_content:
-        if is_type(file, file_type) and not is_proxy(file):
-            files.append({'name': file})
-        elif file_type in [Extensions.DICT["VIDEO"], Extensions.DICT["IMG"]]:
-            subfolder = os.path.join(path, file)
-            if os.path.isdir(subfolder):
-                subfolders.append(subfolder)
-
-    for folder in subfolders:
-        for file in os.listdir(path=folder):
-            if is_type(file, file_type):
-                files.append({'name': os.path.split(
-                    folder)[1] + "/" + file})
-
-    return files, subfolders
 
 
 def create_text_file(name):
