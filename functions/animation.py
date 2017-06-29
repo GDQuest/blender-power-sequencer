@@ -3,19 +3,26 @@ import bpy
 from .global_settings import SequenceTypes
 
 
+# TODO: replace with AddTransformEffect
+# TODO: merge with center_img below
 def add_transform_effect(sequences=None):
     """Takes a list of image strips and adds a transform effect to them.
        Ensures that the pivot will be centered on the image"""
     sequencer = bpy.ops.sequencer
     sequence_editor = bpy.context.scene.sequence_editor
     render = bpy.context.scene.render
+    scene = bpy.context.scene
 
     sequences = [s for s in sequences if s.type in ('IMAGE', 'MOVIE')]
     if not sequences:
         return None
     sequencer.select_all(action='DESELECT')
 
+    # You must have the time cursor on the image for its width and height to be set
+    cursor_start_frame = scene.frame_current
     for s in sequences:
+        scene.frame_current = s.frame_start
+        
         s.mute = True
 
         center_img(s)
@@ -29,7 +36,6 @@ def add_transform_effect(sequences=None):
         active.select = False
 
     print("Successfully processed " + str(len(sequences)) + " image sequences")
-    return True
 
 
 def center_img(sequence):

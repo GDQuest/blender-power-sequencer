@@ -168,7 +168,8 @@ class ImportLocalFootage(bpy.types.Operator):
                     # Can't add transform effect there because
                     # Image size of strip isn't initialized by Blender
                     # Will fire up ZeroDivisionError
-                    # add_transform_effect(bpy.context.selected_sequences)
+                    # TODO: Replace with AddTransformEffect operator
+                    add_transform_effect(bpy.context.selected_sequences)
                     img_frame += self.img_length + self.img_padding
             channel_offset += 1
         
