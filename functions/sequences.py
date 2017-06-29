@@ -4,11 +4,10 @@ from .global_settings import SequenceTypes, SearchMode
 from operator import attrgetter
 
 
-def get_empty_channel(sequences=None, mode='ABOVE'):
-    """Finds and returns the first empty channel in the VSE
-    Takes the optional argument mode: 'ABOVE' or 'ANY'
-    'ABOVE' finds the first empty channel above all of the other strips
-    'ANY' finds the first empty channel, even if there are strips above it
+def find_empty_channel():
+    """
+    Finds the first empty channel above all others in the VSE
+    and returns it
     """
     sequences = bpy.context.sequences
     if not sequences:
@@ -16,17 +15,7 @@ def get_empty_channel(sequences=None, mode='ABOVE'):
 
     channels = [s.channel for s in sequences]
     channels = sorted(list(set(channels)))
-    empty_channel = None
-
-    if mode == 'ANY':
-        for i in range(channels[-1]):
-            if i not in channels:
-                empty_channel = i
-                break
-    if not empty_channel:
-        empty_channel = channels[-1] + 1
-
-    return empty_channel
+    return channels[-1] + 1
 
 
 def find_next_sequences(sequences):

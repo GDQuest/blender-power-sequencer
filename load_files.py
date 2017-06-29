@@ -4,7 +4,7 @@ from bpy.props import BoolProperty, IntProperty
 
 from .functions.global_settings import ProjectSettings, Extensions
 from .functions.file_management import *
-from .functions.sequences import get_empty_channel
+from .functions.sequences import find_empty_channel
 from .functions.animation import add_transform_effect
 
 
@@ -65,7 +65,7 @@ class ImportLocalFootage(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         context = bpy.context
         frame_current = bpy.context.scene.frame_current
-        empty_channel = get_empty_channel(mode='ABOVE')
+        empty_channel = find_empty_channel()
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
 
