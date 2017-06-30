@@ -16,3 +16,22 @@ Here are other recommended add-ons for a better editing workflow:
 
 1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area
 2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage
+
+
+# Available tools
+
+## Mouse-based editing tools
+
+### Trim
+
+## Import and export
+
+### Import local footage
+
+Import videos, audio and pictures sitting around the .blend project file with a single keystroke! You do need to put the files in subfolders named:
+
+1. audio for the audio files (.wav, etc.)
+2. img for the pictures (.png, etc.)
+3. video for the video clips (.mp4, .mkv, etc.)
+
+The VSE tools will find all the valid files in your project subfolders and import them to the sequencer.
