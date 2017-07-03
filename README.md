@@ -35,3 +35,7 @@ Import videos, audio and pictures sitting around the .blend project file with a 
 3. video for the video clips (.mp4, .mkv, etc.)
 
 The VSE tools will find all the valid files in your project subfolders and import them to the sequencer.
+
+### Render video for the web
+
+Automatically set the project's resolution, encoding parameters, name the exported video file and render the project.
