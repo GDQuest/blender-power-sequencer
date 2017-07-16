@@ -5,7 +5,6 @@ from bpy.props import BoolProperty, IntProperty
 from .functions.global_settings import ProjectSettings, Extensions
 from .functions.file_management import *
 from .functions.sequences import find_empty_channel
-from .functions.animation import add_transform_effect
 
 
 # TODO: Fix img imported from subfolder -
@@ -165,11 +164,6 @@ class ImportLocalFootage(bpy.types.Operator):
                         frame_end=img_frame + self.img_length,
                         channel=import_channel)
                     new_sequences.extend(bpy.context.selected_sequences)
-                    # Can't add transform effect there because
-                    # Image size of strip isn't initialized by Blender
-                    # Will fire up ZeroDivisionError
-                    # TODO: Replace with AddTransformEffect operator
-                    add_transform_effect(bpy.context.selected_sequences)
                     img_frame += self.img_length + self.img_padding
             channel_offset += 1
         
