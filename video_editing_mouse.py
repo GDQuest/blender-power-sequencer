@@ -8,7 +8,8 @@ from operator import attrgetter
 # import blf
 
 # FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
-# If trimming the start of the first sequence, there's no sequence selected.
+# If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
+# FIXME: If trimming on the end of a strip, it gets deleted https://github.com/GDquest/GDquest-VSE/issues/7
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "gdquest_vse.mouse_cut"
