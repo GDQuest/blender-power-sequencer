@@ -106,7 +106,7 @@ class RenderForWeb(bpy.types.Operator):
         # else:
         name = "".join((splitext(name)[0], '.mp4'))
 
-        bpy.context.scene.render.filepath = "//" + name if name else "Video.mp4"
+        bpy.context.scene.render.filepath = "//" + name if name else "video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
         return {"FINISHED"}
 
@@ -116,7 +116,7 @@ class CopyStripsToNewScene(bpy.types.Operator):
     bl_idname = 'gdquest_vse.copy_strips_to_new_scene'
     bl_label = 'Copy strips to new scene'
     bl_description = 'Copy the selected strips to a new scene, \
-                      to render a preview or trailer for your video'
+                      e.g. to render a preview or trailer for your video'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

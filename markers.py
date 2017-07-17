@@ -2,7 +2,7 @@ import bpy
 from bpy.props import EnumProperty, BoolProperty
 from .functions.file_management import create_text_file
 
-# Regex match expression to capture an ID in a string
+# Regex to capture an ID within a string
 ID_REGEX = r'-?([0-9]+)-?'
 
 TITLE_PREFIX = r'TITLE'
@@ -139,25 +139,6 @@ class TitleMarkersToText(bpy.types.Operator):
         return {'FINISHED'}
 
 
-# def add_marker(name, title_marker):
-#     """Create a new timeline marker, name it and return it
-#     Args:
-#         - name, the name of the marker
-#         - title_marker, bool flag"""
-
-#     if not name and title_marker:
-#         raise AttributeError("Missing marker name or title_marker flag")
-#     if not isinstance(name, str):
-#         raise TypeError("You must use a string for the marker name")
-#     bpy.ops.marker.add()
-#     name_prefix = TITLE_PREFIX if title_marker else NOTE_PREFIX
-#     marker_name = create_marker_name(prefix=name_prefix,
-#                                     name=name,
-#                                     title_marker=title_marker)
-#     bpy.ops.marker.rename(marker_name)
-#     return bpy.context.scene.timeline_markers[name]
-
-
 def create_marker_name(title_marker=False, prefix="", name="", use_id=True):
     """Create and return a string with a prefix, ID, and name
     Args:
@@ -189,6 +170,7 @@ def find_markers(regex):
     markers = (m for m in markers if regex.match(m.name))
     return markers
 
+
 def string_find_id(string, regex):
     """Find a marker's ID using a regular expression
     returns the ID as int if found, otherwise returns None
@@ -207,7 +189,7 @@ def string_find_id(string, regex):
     return None
 
 
-class MarkerToCursor(bpy.types.Operator):
+class SnapMarkerToCursor(bpy.types.Operator):
     bl_idname = 'gdquest_vse.snap_marker_to_cursor'
     bl_label = 'Snap marker to cursor'
     bl_description = 'Snap the selected marker to the time cursor'
@@ -237,7 +219,7 @@ class MarkerToCursor(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class GoToMarker(bpy.types.Operator):
+class GoToNextMarker(bpy.types.Operator):
     """Moves the time cursor to the next marker"""
     bl_idname = "gdquest_vse.go_to_marker"
     bl_label = "Go to marker"
