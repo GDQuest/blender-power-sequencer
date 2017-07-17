@@ -12,7 +12,7 @@ from operator import attrgetter
 # FIXME: If trimming on the end of a strip, it gets deleted https://github.com/GDquest/GDquest-VSE/issues/7
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
-    bl_idname = "gdquest_vse.mouse_cut"
+    bl_idname = "power_sequencer.mouse_cut"
     bl_label = "Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -108,7 +108,7 @@ class MouseCut(bpy.types.Operator):
                     to_delete.append(s)
 
             # Trim and delete strips
-            bpy.ops.gdquest_vse.smart_snap(side='auto')
+            bpy.ops.power_sequencer.smart_snap(side='auto')
             sequencer.select_all(action='DESELECT')
             for s in to_delete:
                 s.select = True
@@ -139,7 +139,7 @@ class EditCrossfade(bpy.types.Operator):
     """
     Selects handles to edit crossfade
     """
-    bl_idname = "gdquest_vse.edit_crossfade"
+    bl_idname = "power_sequencer.edit_crossfade"
     bl_label = "Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 

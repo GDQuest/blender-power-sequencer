@@ -8,7 +8,7 @@ import bpy
 # TODO: allow to define favorite fonts in add-on prefs
 # class AddSubtitle(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
-#     bl_idname = "gdquest_vse.add_simple_text"
+#     bl_idname = "power_sequencer.add_simple_text"
 #     bl_label = "Add a text strip and set it up quickly"
 #     bl_options = {'REGISTER', 'UNDO'}
 

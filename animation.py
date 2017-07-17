@@ -94,7 +94,7 @@ def fade_clear(sequence=None):
 
 
 class FadeStrips(bpy.types.Operator):
-    bl_idname = "gdquest_vse.fade_strips"
+    bl_idname = "power_sequencer.fade_strips"
     bl_label = "Fade strips"
     bl_description = "Fade left, right or both sides of all selected strips \
                       in the VSE"
@@ -145,7 +145,7 @@ class AddTransformEffect(bpy.types.Operator):
     Adds a transform effect and sets it to ALPHA_OVER
     for each strip in the selection.
     """
-    bl_idname = 'gdquest_vse.add_transform_effect'
+    bl_idname = 'power_sequencer.add_transform_effect'
     bl_label = 'Add transform effect'
     bl_description = 'Add transform effect to selected image and movie strips. \
                       Auto centers images'
@@ -216,7 +216,7 @@ class AddTransformEffect(bpy.types.Operator):
 
 # TODO: Find which animation data to store and how to store it?
 # class AddAnimationFromLibrary(bpy.types.Operator):
-#     bl_idname = "gdquest_vse.animation_library"
+#     bl_idname = "power_sequencer.animation_library"
 #     bl_label = "Animation library"
 #     bl_description = "Adds animation to selected strips."
 #     bl_options = {"REGISTER", "UNDO"}

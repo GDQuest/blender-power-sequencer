@@ -9,7 +9,7 @@ from bpy.app.handlers import persistent
 @persistent
 def playback_speed(scene):
     scene = bpy.context.scene
-    playback_speed = scene.gdquest_vse.playback_speed
+    playback_speed = scene.power_sequencer.playback_speed
     if (playback_speed == "fast"):
         if scene.frame_current % 3 == 0:
             scene.frame_current += 1

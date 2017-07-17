@@ -17,7 +17,7 @@ class GeneralProperties(bpy.types.PropertyGroup):
 
 
 class ProxyPreferences(bpy.types.AddonPreferences):
-    bl_idname = "gdquest_vse"
+    bl_idname = "power_sequencer"
 
     video_export_path = StringProperty(
         name="Video render folder",

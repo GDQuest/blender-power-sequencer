@@ -25,7 +25,7 @@ class AddCrossfade(bpy.types.Operator):
     and adds a gamma_cross effect between them.
     Works with MOVIE, IMAGE and META strips
     """
-    bl_idname = "gdquest_vse.add_crossfade"
+    bl_idname = "power_sequencer.add_crossfade"
     bl_label = "Add Crossfade"
     bl_description = "Adds a Gamma Cross fade layer effect between \
                       the selected layer and the closest one to its right."
@@ -111,7 +111,7 @@ class AddCrossfade(bpy.types.Operator):
 # TODO: if speed already applied, update speed?
 # Means need function to unspeed and redo?
 class AddSpeed(bpy.types.Operator):
-    bl_idname = "gdquest_vse.speed_up_sequence"
+    bl_idname = "power_sequencer.speed_up_sequence"
     bl_label = "Speed up Sequence"
     bl_description = "Adds a speed effect to your clip, sets its speed and \
         size, wraps it into a meta strip set to over drop for easier editing"
@@ -211,7 +211,7 @@ class AddSpeed(bpy.types.Operator):
 
 
 class SelectLinkedEffect(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.find_linked_effect'
+    bl_idname = 'power_sequencer.find_linked_effect'
     bl_label = 'Select linked effect'
     bl_description = 'Select all strips that are linked by an effect strip'
     bl_options = {'REGISTER', 'UNDO'}
@@ -231,7 +231,7 @@ class ConcatenateStrips(bpy.types.Operator):
     Concatenates selected strips (removes space between them)
     If a single strip is selected, finds all the strips after it in the channel
     """
-    bl_idname = "gdquest_vse.concatenate_strips"
+    bl_idname = "power_sequencer.concatenate_strips"
     bl_label = "Concatenate strips"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -275,7 +275,7 @@ class ConcatenateStrips(bpy.types.Operator):
 
 
 class SelectShortStrips(bpy.types.Operator):
-    bl_idname = "gdquest_vse.select_short_strips"
+    bl_idname = "power_sequencer.select_short_strips"
     bl_label = "Select short strips"
     bl_description = "Filters the current selection down to the strips that are \
         less than the 'Max strip length' frames long."
@@ -301,7 +301,7 @@ class SelectShortStrips(bpy.types.Operator):
 
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
-    bl_idname = "gdquest_vse.smart_snap"
+    bl_idname = "power_sequencer.smart_snap"
     bl_label = "Smart snap strip handles"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -334,7 +334,7 @@ class SmartSnap(bpy.types.Operator):
 class GrabStillImage(bpy.types.Operator):
     """Converts image under the cursor to a still image, to create
     a pause effect in the video, using the active sequence"""
-    bl_idname = "gdquest_vse.grab_still_image"
+    bl_idname = "power_sequencer.grab_still_image"
     bl_label = "Grab still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -400,7 +400,7 @@ class GrabStillImage(bpy.types.Operator):
 
 
 class ToggleHidden(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.toggle_sequences_muted'
+    bl_idname = 'power_sequencer.toggle_sequences_muted'
     bl_label = 'Toggle sequences muted'
     bl_description = 'Mute or unmute sequences'
     bl_options = {'REGISTER', 'UNDO'}
@@ -431,7 +431,7 @@ class ToggleHidden(bpy.types.Operator):
 
 
 class ChannelOffset(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.channel_offset'
+    bl_idname = 'power_sequencer.channel_offset'
     bl_label = 'Channel offset'
     bl_description = 'Move selected strips up or down a channel'
     bl_options = {'REGISTER', 'UNDO'}
@@ -470,7 +470,7 @@ class ChannelOffset(bpy.types.Operator):
 # where there is space for it?
 class SnapSelectionToCursor(bpy.types.Operator):
     """Snap selected strips to the cursor, but as a block"""
-    bl_idname = "gdquest_vse.snap_selection_to_cursor"
+    bl_idname = "power_sequencer.snap_selection_to_cursor"
     bl_label = "Snap selection to cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -495,7 +495,7 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
 
 class BorderSelect(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.border_select'
+    bl_idname = 'power_sequencer.border_select'
     bl_label = 'Border select'
     bl_description = 'Wrapper around Blender\'s border select, \
     deselects handles'
@@ -519,7 +519,7 @@ class GrabSequenceHandles(bpy.types.Operator):
     it moves the right handle.
     If it's on the left side, it moves the left handle.
     """
-    bl_idname = 'gdquest_vse.grab_sequence_handle'
+    bl_idname = 'power_sequencer.grab_sequence_handle'
     bl_label = 'Grab sequence handles'
     bl_description = 'Grabs the sequence\'s handle based on the mouse position'
     bl_options = {'REGISTER', 'UNDO'}
@@ -553,7 +553,7 @@ class PreviewLastCut(bpy.types.Operator):
     sets the preview to a small range around that frame.
     If the preview matches the range, resets to the full timeline
     """
-    bl_idname = 'gdquest_vse.preview_last_cut'
+    bl_idname = 'power_sequencer.preview_last_cut'
     bl_label = 'Preview last cut'
     bl_description = 'Toggle preview around the last cut, based on time cursor'
     bl_options = {'REGISTER', 'UNDO'}

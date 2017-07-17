@@ -6,7 +6,7 @@ from .functions.sequences import get_frame_range, set_preview_range, \
     slice_selection
 
 class OpenProjectDirectory(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.open_project_directory'
+    bl_idname = 'power_sequencer.open_project_directory'
     bl_label = 'Open project directory'
     bl_description = 'Opens the Blender project directory in the explorer'
     bl_options = {'REGISTER', 'UNDO'}
@@ -36,7 +36,7 @@ class OpenProjectDirectory(bpy.types.Operator):
 
 
 class OpenPicturesFile(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.open_local_psd'
+    bl_idname = 'power_sequencer.open_local_psd'
     bl_label = 'Open local psd'
     bl_description = 'Open a psd or kra file stored in the local img folder'
     bl_options = {'REGISTER', 'UNDO'}
@@ -64,7 +64,7 @@ class OpenPicturesFile(bpy.types.Operator):
 
 class DeleteDirect(bpy.types.Operator):
     """Deletes without prompting for confirmation"""
-    bl_idname = "gdquest_vse.delete_direct"
+    bl_idname = "power_sequencer.delete_direct"
     bl_label = "Delete Direct"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -85,7 +85,7 @@ class DeleteDirect(bpy.types.Operator):
 
 class SaveDirect(bpy.types.Operator):
     """Saves current file without prompting for confirmation"""
-    bl_idname = "gdquest_vse.save_direct"
+    bl_idname = "power_sequencer.save_direct"
     bl_label = "Save Direct"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -104,7 +104,7 @@ class SaveDirect(bpy.types.Operator):
 
 class CycleScenes(bpy.types.Operator):
     """Cycle through scenes"""
-    bl_idname = "gdquest_vse.cycle_scenes"
+    bl_idname = "power_sequencer.cycle_scenes"
     bl_label = "Cycle scenes"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -126,7 +126,7 @@ class CycleScenes(bpy.types.Operator):
 
 class TogglePreviewSelectedStrips(bpy.types.Operator):
     """Sets the preview range based on selected sequences"""
-    bl_idname = "gdquest_vse.toggle_preview_selection"
+    bl_idname = "power_sequencer.toggle_preview_selection"
     bl_label = "Toggle preview selection"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -152,7 +152,7 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
 
 class SetTimeline(bpy.types.Operator):
     """Set the timeline start and end frame using the time cursor"""
-    bl_idname = "gdquest_vse.set_timeline"
+    bl_idname = "power_sequencer.set_timeline"
     bl_label = "Set timeline start and end"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -181,7 +181,7 @@ class SetTimeline(bpy.types.Operator):
 # first sequence on the leftmost side of the sequencer
 # TODO: Improve auto move cursor back
 class RippleDelete(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.ripple_delete'
+    bl_idname = 'power_sequencer.ripple_delete'
     bl_label = 'Ripple delete'
     bl_description = 'Delete the selected sequences and remove gaps'
     bl_options = {'REGISTER', 'UNDO'}
@@ -247,7 +247,7 @@ class RippleDelete(bpy.types.Operator):
         if is_single_channel:
             for s in surrounding_strips:
                 s.select = True
-            bpy.ops.gdquest_vse.concatenate_strips()
+            bpy.ops.power_sequencer.concatenate_strips()
 
         scene.frame_current = cursor_start - cursor_offset
         report_message = 'Deleted ' + str(selection_length) + ' sequence'

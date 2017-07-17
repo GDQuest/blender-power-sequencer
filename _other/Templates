@@ -82,8 +82,8 @@ def register_keymaps():
     addon = bpy.context.window_manager.keyconfigs.addon
     km = addon.keymaps.new(name = "3D View", space_type = "VIEW_3D")
     # insert keymap items here
-    kmi = km.keymap_items.new("gdquest_vse.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
-    kmi = km.keymap_items.new("gdquest_vse.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
+    kmi = km.keymap_items.new("power_sequencer.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
+    kmi = km.keymap_items.new("power_sequencer.mouse_cut", type = "ACTIONMOUSE", value = "CLICK", ctrl = True)
     addon_keymaps.append(km)
 
 

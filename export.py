@@ -44,7 +44,7 @@ def set_render_settings(resolution=None, encoding=None):
 # TODO: find way to set the right encoding using the preset enumProperty - dict?
 # TODO: Remove proxy size
 class RenderForWeb(bpy.types.Operator):
-    bl_idname = "gdquest_vse.render_video"
+    bl_idname = "power_sequencer.render_video"
     bl_label = "Render video for the web"
     bl_description = "Pick a rendering preset and let Blender name and export \
         the video for you. Replaces strips with proxies if necessary."
@@ -86,7 +86,7 @@ class RenderForWeb(bpy.types.Operator):
             self.report({'WARNING'}, "Save your file first")
             return {'CANCELLED'}
 
-        prefs = context.user_preferences.addons["gdquest_vse"].preferences
+        prefs = context.user_preferences.addons["power_sequencer"].preferences
 
         resolution = RS.RESOLUTION.PROXY if self.use_proxies else RS.RESOLUTION.HD_FULL
         encoding = RS.ENCODING.MP4_PROXY if self.use_proxies else RS.ENCODING.MP4_HIGH
@@ -113,7 +113,7 @@ class RenderForWeb(bpy.types.Operator):
 
 # TODO: Write operator
 class CopyStripsToNewScene(bpy.types.Operator):
-    bl_idname = 'gdquest_vse.copy_strips_to_new_scene'
+    bl_idname = 'power_sequencer.copy_strips_to_new_scene'
     bl_label = 'Copy strips to new scene'
     bl_description = 'Copy the selected strips to a new scene, \
                       e.g. to render a preview or trailer for your video'

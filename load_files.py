@@ -9,7 +9,7 @@ from .functions.sequences import find_empty_channel
 
 # TODO: Fix img imported from subfolder -
 class ImportLocalFootage(bpy.types.Operator):
-    bl_idname = "gdquest_vse.import_local_footage"
+    bl_idname = "power_sequencer.import_local_footage"
     bl_label = "Import local footage"
     bl_description = "Import video and audio from the project \
                       folder to VSE strips"
@@ -188,9 +188,9 @@ class ImportLocalFootage(bpy.types.Operator):
         sequencer.meta_separate()
 
         # Set the strips to use proxies based if set in the addon preferences
-        prefs = context.user_preferences.addons["gdquest_vse"].preferences
+        prefs = context.user_preferences.addons["power_sequencer"].preferences
         if prefs.auto_render_proxies:
-            bpy.ops.gdquest_vse.set_video_proxies()
+            bpy.ops.power_sequencer.set_video_proxies()
 
         # Show audio waveforms
         for s in [strip for strip in new_sequences if strip.type == 'SOUND']:

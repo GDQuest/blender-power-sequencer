@@ -19,11 +19,11 @@ Created by Nathan Lovato
 '''
 
 bl_info = {
-    "name": "GDquest VSE Tools",
-    "description": "A collection of tools for faster video editing",
+    "name": "Power Sequencer",
+    "description": "Tools for an efficient video editing workflow",
     "author": "Nathan Lovato",
     "version": (0, 3, 0),
-    "blender": (2, 77, 0),
+    "blender": (2, 78, 0),
     "location": "sequencer",
     "warning": "This is a Work In Progress",
     "wiki_url": "https://github.com/NathanLovato/gdquest-vse",

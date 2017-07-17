@@ -16,7 +16,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty
 # TODO: Make use of SettingsProxies PropertyGroup
 # TODO: If custom dir, store proxies in a subfolder
 class SetVideosProxies(bpy.types.Operator):
-    bl_idname = "gdquest_vse.set_video_proxies"
+    bl_idname = "power_sequencer.set_video_proxies"
     bl_label = "Set selected strips as Proxies"
     bl_description = "Set all video strips in the current scene as proxies and rebuild"
     bl_options = {"REGISTER"}
@@ -42,7 +42,7 @@ class SetVideosProxies(bpy.types.Operator):
             self.report({"ERROR_INVALID_INPUT"}, "No movie sequences found")
             return {'CANCELLED'}
 
-        prefs = context.user_preferences.addons["gdquest_vse"].preferences
+        prefs = context.user_preferences.addons["power_sequencer"].preferences
 
         for s in selection:
             if s.type not in ('MOVIE', 'IMAGE'):
@@ -89,22 +89,22 @@ class SettingsProxies(bpy.types.PropertyGroup):
 
 # Panel for proxy options management
 def proxy_menu(self, context):
-    # prefs = context.user_preferences.addons['gdquest_vse'].preferences
-    gdquest_vse_proxy = context.scene.gdquest_vse_proxy
+    # prefs = context.user_preferences.addons['power_sequencer'].preferences
+    power_sequencer_proxy = context.scene.power_sequencer_proxy
 
     layout = self.layout
 
     row = layout.row()
     row.separator()
     row = layout.row()
-    row.prop(gdquest_vse_proxy, 'proxy_on_import')
+    row.prop(power_sequencer_proxy, 'proxy_on_import')
 
     # if prefs.proxy_on_import:
     row = layout.row(align=True)
-    row.prop(gdquest_vse_proxy, "proxy_25", toggle=True)
-    row.prop(gdquest_vse_proxy, "proxy_50", toggle=True)
-    row.prop(gdquest_vse_proxy, "proxy_75", toggle=True)
-    row.prop(gdquest_vse_proxy, "proxy_100", toggle=True)
+    row.prop(power_sequencer_proxy, "proxy_25", toggle=True)
+    row.prop(power_sequencer_proxy, "proxy_50", toggle=True)
+    row.prop(power_sequencer_proxy, "proxy_75", toggle=True)
+    row.prop(power_sequencer_proxy, "proxy_100", toggle=True)
 
     row = layout.row()
-    row.prop(gdquest_vse_proxy, "proxy_quality")
+    row.prop(power_sequencer_proxy, "proxy_quality")
