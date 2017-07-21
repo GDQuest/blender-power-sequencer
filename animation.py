@@ -5,60 +5,6 @@ from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .functions.sequences import SequenceTypes
 
 
-# TODO: Detect existing fades and don't delete every time
-# TODO: Use a handler to auto move the fades with extend 
-# and the strips' handles
-def fade_create(sequence=None, fade_length=12, fade_type='both',
-                max_value=1.0):
-    """
-    Takes a single sequence, and adds a fade to the left,
-    right or to both sides of the VSE strips.
-
-    Args:
-    fade_length: length of the fade in frames
-    fade_type: 'left', 'right' or 'both'
-    """
-    if not sequence:
-        return None
-
-    # create_animation_data
-    # Creates animation data and an action if there is none in the scene
-    scene = bpy.context.scene
-
-    if scene.animation_data is None:
-        scene.animation_data_create()
-    if scene.animation_data.action is None:
-        action = bpy.data.actions.new(scene.name + "Action")
-        scene.animation_data.action = action
-
-    # Create fade
-    fcurves = bpy.context.scene.animation_data.action.fcurves
-
-    s = sequence
-    fade_clear(s)
-    frame_start, frame_end = s.frame_final_start, s.frame_final_end
-
-    fade_in_frames = (frame_start, frame_start + fade_length)
-    fade_out_frames = (frame_end - fade_length, frame_end)
-
-    fade_fcurve, fade_curve_type = fade_find_fcurve(s)
-    if fade_fcurve is None:
-        fade_fcurve = fcurves.new(data_path=s.path_from_id(fade_curve_type))
-
-    min_length = fade_length * 2 if fade_type == 'both' else fade_length
-    if not s.frame_final_duration > min_length:
-        return s.name + ' is too short for the fade to be applied.'
-
-    keys = fade_fcurve.keyframe_points
-    if fade_type in ['left', 'both']:
-        keys.insert(frame=frame_start, value=0)
-        keys.insert(frame=frame_start + fade_length, value=max_value)
-    if fade_type in ['right', 'both']:
-        keys.insert(frame=frame_end - fade_length, value=max_value)
-        keys.insert(frame=frame_end, value=0)
-    return s.name
-
-
 def fade_find_fcurve(sequence=None):
     """
     Checks if there's a fade animation on a single sequence
@@ -94,6 +40,8 @@ def fade_clear(sequence=None):
         fcurves.remove(fade_fcurve)
 
 
+# TODO: Use a handler to auto move the fades with extend 
+# and the strips' handles
 class FadeStrips(bpy.types.Operator):
     bl_idname = "power_sequencer.fade_strips"
     bl_label = "Fade strips"
@@ -119,22 +67,52 @@ class FadeStrips(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        scene = bpy.context.scene
         selection = bpy.context.selected_sequences
         if not selection:
             return {"CANCELLED"}
 
+        fade_sequence_count = 0
         for s in selection:
             max_value = s.volume if s.type in SequenceTypes.SOUND \
                         else s.blend_alpha
             if not max_value:
                 max_value = 1.0
-            fade_create(sequence=s,
-                        fade_length=self.fade_length,
-                        fade_type=self.fade_type,
-                        max_value=max_value)
 
-        self.report({"INFO"}, "Added fade animation to " + str(len(selection))
-                    + " sequences.")
+            # Create animation data and an action if there is none in the scene
+            if scene.animation_data is None:
+                scene.animation_data_create()
+            if scene.animation_data.action is None:
+                action = bpy.data.actions.new(scene.name + "Action")
+                scene.animation_data.action = action
+
+            # Create fade
+            fcurves = bpy.context.scene.animation_data.action.fcurves
+
+            fade_clear(s)
+            frame_start, frame_end = s.frame_final_start, s.frame_final_end
+
+            fade_in_frames = (frame_start, frame_start + self.fade_length)
+            fade_out_frames = (frame_end - self.fade_length, frame_end)
+
+            fade_fcurve, fade_curve_type = fade_find_fcurve(s)
+            if fade_fcurve is None:
+                fade_fcurve = fcurves.new(data_path=s.path_from_id(fade_curve_type))
+
+            min_length = self.fade_length * 2 if self.fade_type == 'both' else self.fade_length
+            if not s.frame_final_duration > min_length:
+                continue
+
+            keys = fade_fcurve.keyframe_points
+            if self.fade_type in ['left', 'both']:
+                keys.insert(frame=frame_start, value=0)
+                keys.insert(frame=frame_start + self.fade_length, value=max_value)
+            if self.fade_type in ['right', 'both']:
+                keys.insert(frame=frame_end - self.fade_length, value=max_value)
+                keys.insert(frame=frame_end, value=0)
+            fade_sequence_count += 1
+
+        self.report({"INFO"}, "Added fade animation to {!s} sequences.".format(fade_sequence_count))
         return {"FINISHED"}
 
 
