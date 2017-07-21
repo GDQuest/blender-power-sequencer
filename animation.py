@@ -2,6 +2,7 @@
    These can include fades, transforms, etc."""
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
+from .functions.sequences import SequenceTypes
 
 
 # TODO: Detect existing fades and don't delete every time
@@ -122,7 +123,6 @@ class FadeStrips(bpy.types.Operator):
         if not selection:
             return {"CANCELLED"}
 
-        from .functions.sequences import SequenceTypes
         for s in selection:
             max_value = s.volume if s.type in SequenceTypes.SOUND \
                         else s.blend_alpha
