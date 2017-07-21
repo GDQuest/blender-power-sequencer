@@ -173,9 +173,7 @@ class AddTransformEffect(bpy.types.Operator):
         image_strips = [s for s in selection if s.type == 'IMAGE']
 
         # Center image strips pivot
-        cursor_start_frame = bpy.context.scene.frame_current
         for s in image_strips:
-            scene.frame_current = s.frame_final_start
             if s.use_translation and (s.transform.offset_x != 0 or
                                       s.transform.offset_y != 0):
                 continue
@@ -183,7 +181,7 @@ class AddTransformEffect(bpy.types.Operator):
             image_width = s.elements[0].orig_width
             image_height = s.elements[0].orig_height
             if image_width == 0 or image_height == 0:
-                raise ZeroDivisionError('image_height or image_width is 0')
+                raise ValueError('image_height or image_width is 0')
 
             # image_ratio = image_width / image_height
             # render_ratio = render.resolution_x / render.resolution_y
@@ -194,7 +192,6 @@ class AddTransformEffect(bpy.types.Operator):
                 s.use_translation = True
                 s.transform.offset_x = (render.resolution_x - image_width) / 2
                 s.transform.offset_y = (render.resolution_y - image_height) / 2
-        scene.frame_current = cursor_start_frame
 
         # Add a transform effect to all selected MOVIE and IMAGE strips
         for s in selection:
