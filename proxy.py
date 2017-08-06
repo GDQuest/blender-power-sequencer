@@ -17,7 +17,7 @@ from bpy.props import BoolProperty, IntProperty, StringProperty
 # TODO: If custom dir, store proxies in a subfolder
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "power_sequencer.set_video_proxies"
-    bl_label = "Set selected strips as Proxies"
+    bl_label = "PS - Set selected strips as Proxies"
     bl_description = "Set all video strips in the current scene as proxies and rebuild"
     bl_options = {"REGISTER"}
 

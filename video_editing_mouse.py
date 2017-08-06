@@ -13,7 +13,7 @@ from operator import attrgetter
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "power_sequencer.mouse_cut"
-    bl_label = "Mouse cut strips"
+    bl_label = "PS - Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
@@ -121,9 +121,8 @@ class MouseCut(bpy.types.Operator):
             # Move time cursor back
             if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
                 selection = bpy.context.selected_sequences
-                if len selection > 1:
-                    sorted_sequences = sorted(selection,
-                                       key=attrgetter('frame_final_start'))
+                if len(selection) > 1:
+                    sorted_sequences = sorted(selection, key=attrgetter('frame_final_start'))
                     first_seq = sorted_sequences[0]
                 else:
                     first_seq = selection
@@ -142,7 +141,7 @@ class EditCrossfade(bpy.types.Operator):
     Selects handles to edit crossfade
     """
     bl_idname = "power_sequencer.edit_crossfade"
-    bl_label = "Edit crossfade"
+    bl_label = "PS - Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):

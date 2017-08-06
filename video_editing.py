@@ -7,7 +7,6 @@ from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
     find_linked, is_in_range, set_preview_range, filter_sequences_by_type
 
-
 # ---------------- Operators -----------------------
 # --------------------------------------------------
 # TODO: Make it work with 2+ selected strips
@@ -26,7 +25,7 @@ class AddCrossfade(bpy.types.Operator):
     Works with MOVIE, IMAGE and META strips
     """
     bl_idname = "power_sequencer.add_crossfade"
-    bl_label = "Add Crossfade"
+    bl_label = "PS - Add Crossfade"
     bl_description = "Adds a Gamma Cross fade layer effect between \
                       the selected layer and the closest one to its right."
 
@@ -112,7 +111,7 @@ class AddCrossfade(bpy.types.Operator):
 # Means need function to unspeed and redo?
 class AddSpeed(bpy.types.Operator):
     bl_idname = "power_sequencer.speed_up_sequence"
-    bl_label = "Speed up Sequence"
+    bl_label = "PS - Speed up Sequence"
     bl_description = "Adds a speed effect to your clip, sets its speed and \
         size, wraps it into a meta strip set to over drop for easier editing"
 
@@ -212,7 +211,7 @@ class AddSpeed(bpy.types.Operator):
 
 class SelectLinkedEffect(bpy.types.Operator):
     bl_idname = 'power_sequencer.find_linked_effect'
-    bl_label = 'Select linked effect'
+    bl_label = 'PS - Select linked effect'
     bl_description = 'Select all strips that are linked by an effect strip'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -232,7 +231,7 @@ class ConcatenateStrips(bpy.types.Operator):
     If a single strip is selected, finds all the strips after it in the channel
     """
     bl_idname = "power_sequencer.concatenate_strips"
-    bl_label = "Concatenate strips"
+    bl_label = "PS - Concatenate strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -276,7 +275,7 @@ class ConcatenateStrips(bpy.types.Operator):
 
 class SelectShortStrips(bpy.types.Operator):
     bl_idname = "power_sequencer.select_short_strips"
-    bl_label = "Select short strips"
+    bl_label = "PS - Select short strips"
     bl_description = "Filters the current selection down to the strips that are \
         less than the 'Max strip length' frames long."
 
@@ -302,7 +301,7 @@ class SelectShortStrips(bpy.types.Operator):
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
     bl_idname = "power_sequencer.smart_snap"
-    bl_label = "Smart snap strip handles"
+    bl_label = "PS - Smart snap strip handles"
     bl_options = {'REGISTER', 'UNDO'}
 
     side = EnumProperty(
@@ -335,7 +334,7 @@ class GrabStillImage(bpy.types.Operator):
     """Converts image under the cursor to a still image, to create
     a pause effect in the video, using the active sequence"""
     bl_idname = "power_sequencer.grab_still_image"
-    bl_label = "Grab still image from active strip"
+    bl_label = "PS - Grab still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
     strip_duration = IntProperty(
@@ -401,7 +400,7 @@ class GrabStillImage(bpy.types.Operator):
 
 class ToggleHidden(bpy.types.Operator):
     bl_idname = 'power_sequencer.toggle_sequences_muted'
-    bl_label = 'Toggle sequences muted'
+    bl_label = 'PS - Toggle sequences muted'
     bl_description = 'Mute or unmute sequences'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -432,7 +431,7 @@ class ToggleHidden(bpy.types.Operator):
 
 class ChannelOffset(bpy.types.Operator):
     bl_idname = 'power_sequencer.channel_offset'
-    bl_label = 'Channel offset'
+    bl_label = 'PS - Channel offset'
     bl_description = 'Move selected strips up or down a channel'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -471,7 +470,7 @@ class ChannelOffset(bpy.types.Operator):
 class SnapSelectionToCursor(bpy.types.Operator):
     """Snap selected strips to the cursor, but as a block"""
     bl_idname = "power_sequencer.snap_selection_to_cursor"
-    bl_label = "Snap selection to cursor"
+    bl_label = "PS - Snap selection to cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -496,7 +495,7 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
 class BorderSelect(bpy.types.Operator):
     bl_idname = 'power_sequencer.border_select'
-    bl_label = 'Border select'
+    bl_label = 'PS - Border select'
     bl_description = 'Wrapper around Blender\'s border select, \
     deselects handles'
     bl_options = {'REGISTER', 'UNDO'}
@@ -520,7 +519,7 @@ class GrabSequenceHandles(bpy.types.Operator):
     If it's on the left side, it moves the left handle.
     """
     bl_idname = 'power_sequencer.grab_sequence_handle'
-    bl_label = 'Grab sequence handles'
+    bl_label = 'PS - Grab sequence handles'
     bl_description = 'Grabs the sequence\'s handle based on the mouse position'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -529,19 +528,22 @@ class GrabSequenceHandles(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
+        selection = bpy.context.selected_sequences
+        if not selection:
+            return {'CANCELLED'}
+
         frame, _ = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
             y=event.mouse_region_y)
 
-        active = bpy.context.scene.sequence_editor.active_strip
-        middle = active.frame_final_start + active.frame_final_duration / 2
-
         bpy.ops.sequencer.select_all(action='DESELECT')
-        if frame >= middle:
-            active.select_right_handle = True
-        else:
-            active.select_left_handle = True
-        active.select = True
+        for s in selection:
+            middle = s.frame_final_start + s.frame_final_duration / 2
+            if frame >= middle:
+                s.select_right_handle = True
+            else:
+                s.select_left_handle = True
+            s.select = True
 
         bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
         return {'FINISHED'}
@@ -554,7 +556,7 @@ class PreviewLastCut(bpy.types.Operator):
     If the preview matches the range, resets to the full timeline
     """
     bl_idname = 'power_sequencer.preview_last_cut'
-    bl_label = 'Preview last cut'
+    bl_label = 'PS - Preview last cut'
     bl_description = 'Toggle preview around the last cut, based on time cursor'
     bl_options = {'REGISTER', 'UNDO'}
 

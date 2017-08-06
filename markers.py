@@ -13,7 +13,7 @@ NOTE_REGEX = r'^' + NOTE_PREFIX + ID_REGEX
 
 class SyncTitles(bpy.types.Operator):
     bl_idname = 'power_sequencer.synchronize_titles'
-    bl_label = 'Synchronize titles'
+    bl_label = 'PS - Synchronize titles'
     bl_description = 'Snap the selected image or text strips to the \
                       corresponding title marker. The marker and strip names \
                       have to start with TITLE-001, ...'
@@ -76,7 +76,7 @@ def match_sequences_and_markers(sequences, markers, regex):
 
 class AddTitleMarker(bpy.types.Operator):
     bl_idname = 'power_sequencer.add_title_marker'
-    bl_label = 'Add title marker'
+    bl_label = 'PS - Add title marker'
     bl_description = 'Add a title marker to quickly sync TITLE strips'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -95,7 +95,7 @@ class AddTitleMarker(bpy.types.Operator):
 
 class AddNumberedMarker(bpy.types.Operator):
     bl_idname = 'power_sequencer.add_numbered_marker'
-    bl_label = 'Add numbered marker'
+    bl_label = 'PS - Add numbered marker'
     bl_description = 'Add a numbered marker to quickly sync image'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -114,7 +114,7 @@ class AddNumberedMarker(bpy.types.Operator):
 
 class TitleMarkersToText(bpy.types.Operator):
     bl_idname = 'power_sequencer.title_markers_to_text'
-    bl_label = 'Title markers to text'
+    bl_label = 'PS - Title markers to text'
     bl_description = 'Outputs the names of the title markers to a text file'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -191,7 +191,7 @@ def string_find_id(string, regex):
 
 class SnapMarkerToCursor(bpy.types.Operator):
     bl_idname = 'power_sequencer.snap_marker_to_cursor'
-    bl_label = 'Snap marker to cursor'
+    bl_label = 'PS - Snap marker to cursor'
     bl_description = 'Snap the selected marker to the time cursor'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -222,7 +222,7 @@ class SnapMarkerToCursor(bpy.types.Operator):
 class GoToNextMarker(bpy.types.Operator):
     """Moves the time cursor to the next marker"""
     bl_idname = "power_sequencer.go_to_marker"
-    bl_label = "Go to marker"
+    bl_label = "PS - Go to marker"
     bl_options = {'REGISTER', 'UNDO'}
 
     target_marker = EnumProperty(
@@ -261,7 +261,7 @@ class GoToNextMarker(bpy.types.Operator):
 
 class DeleteClosestMarker(bpy.types.Operator):
     bl_idname = 'power_sequencer.delete_closest_marker'
-    bl_label = 'Delete closest marker'
+    bl_label = 'PS - Delete closest marker'
     bl_description = 'Delete the marker closest to the mouse'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -295,7 +295,7 @@ class DeleteClosestMarker(bpy.types.Operator):
 
 class SetPreviewBetweenMarkers(bpy.types.Operator):
     bl_idname = 'power_sequencer.set_preview_between_markers'
-    bl_label = 'Set preview between closest markers'
+    bl_label = 'PS - Set preview between closest markers'
     bl_description = "Set the timeline's preview range using the 2 markers closest to the time cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
