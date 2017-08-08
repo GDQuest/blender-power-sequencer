@@ -7,7 +7,7 @@ from .functions.sequences import get_frame_range, set_preview_range, \
 
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'power_sequencer.open_project_directory'
-    bl_label = 'PS - Open project directory'
+    bl_label = 'PS.Open project directory'
     bl_description = 'Opens the Blender project directory in the explorer'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -37,7 +37,7 @@ class OpenProjectDirectory(bpy.types.Operator):
 
 class OpenPicturesFile(bpy.types.Operator):
     bl_idname = 'power_sequencer.open_local_psd'
-    bl_label = 'PS - Open local psd'
+    bl_label = 'PS.Open local psd'
     bl_description = 'Open a psd or kra file stored in the local img folder'
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -65,7 +65,7 @@ class OpenPicturesFile(bpy.types.Operator):
 class DeleteDirect(bpy.types.Operator):
     """Deletes without prompting for confirmation"""
     bl_idname = "power_sequencer.delete_direct"
-    bl_label = "PS - Delete Direct"
+    bl_label = "PS.Delete Direct"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -86,7 +86,7 @@ class DeleteDirect(bpy.types.Operator):
 class SaveDirect(bpy.types.Operator):
     """Saves current file without prompting for confirmation"""
     bl_idname = "power_sequencer.save_direct"
-    bl_label = "PS - Save Direct"
+    bl_label = "PS.Save Direct"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -105,7 +105,7 @@ class SaveDirect(bpy.types.Operator):
 class CycleScenes(bpy.types.Operator):
     """Cycle through scenes"""
     bl_idname = "power_sequencer.cycle_scenes"
-    bl_label = "PS - Cycle scenes"
+    bl_label = "PS.Cycle scenes"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -127,7 +127,7 @@ class CycleScenes(bpy.types.Operator):
 class TogglePreviewSelectedStrips(bpy.types.Operator):
     """Sets the preview range based on selected sequences"""
     bl_idname = "power_sequencer.toggle_preview_selection"
-    bl_label = "PS - Toggle preview selection"
+    bl_label = "PS.Toggle preview selection"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -153,7 +153,7 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
 class SetTimeline(bpy.types.Operator):
     """Set the timeline start and end frame using the time cursor"""
     bl_idname = "power_sequencer.set_timeline"
-    bl_label = "PS - Set timeline start and end"
+    bl_label = "PS.Set timeline start and end"
     bl_options = {'REGISTER', 'UNDO'}
 
     adjust = EnumProperty(
@@ -182,7 +182,7 @@ class SetTimeline(bpy.types.Operator):
 # TODO: Improve auto move cursor back
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'power_sequencer.ripple_delete'
-    bl_label = 'PS - Ripple delete'
+    bl_label = 'PS.Ripple delete'
     bl_description = 'Delete the selected sequences and remove gaps'
     bl_options = {'REGISTER', 'UNDO'}
 

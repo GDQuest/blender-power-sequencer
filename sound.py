@@ -6,7 +6,7 @@ from .functions.global_settings import SequenceTypes
 
 class SoundToggleWaveform(bpy.types.Operator):
     bl_idname = 'power_sequencer.sound_toggle_waveform'
-    bl_label = 'PS - Sound toggle waveform'
+    bl_label = 'PS.Sound toggle waveform'
     bl_description = 'Toggle drawing of the waveform for selected strips \
                       or for all strips if no selection is active'
     bl_options = {'REGISTER', 'UNDO'}
@@ -49,7 +49,7 @@ class SoundToggleWaveform(bpy.types.Operator):
 
 class SoundSetVolume(bpy.types.Operator):
     bl_idname = 'power_sequencer.sound_set_strip_volume'
-    bl_label = 'PS - Sound: set strip volume'
+    bl_label = 'PS.Sound: set strip volume'
     bl_description = 'Change the volume of all selected Sound strips (use F6)'
     bl_options = {'REGISTER', 'UNDO'}
 

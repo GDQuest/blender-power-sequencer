@@ -13,7 +13,7 @@ from operator import attrgetter
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "power_sequencer.mouse_cut"
-    bl_label = "PS - Mouse cut strips"
+    bl_label = "PS.Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
@@ -141,7 +141,7 @@ class EditCrossfade(bpy.types.Operator):
     Selects handles to edit crossfade
     """
     bl_idname = "power_sequencer.edit_crossfade"
-    bl_label = "PS - Edit crossfade"
+    bl_label = "PS.Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):

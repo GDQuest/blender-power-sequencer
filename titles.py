@@ -9,7 +9,7 @@ import bpy
 # class AddSubtitle(bpy.types.Operator):
 #     """Adds a text strip and sets it up to quickly add an animated note on the video"""
 #     bl_idname = "power_sequencer.add_simple_text"
-#     bl_label = "PS - Add a text strip and set it up quickly"
+#     bl_label = "PS.Add a text strip and set it up quickly"
 #     bl_options = {'REGISTER', 'UNDO'}
 
 #     strip_duration = IntProperty(
