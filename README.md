@@ -11,7 +11,7 @@ As there are many features, keymaps aren't automatically added. Version 1 will a
 
 Here are other recommended add-ons for a better editing workflow:
 
-1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area. The addon auto-registers shortcuts, especially the <kbd>T</kbd> key, to add a Transform effect to selected sequences. For compatibility with PowerSequencer, I recommend to use my temporary fork instead. It's in the utils/ folder.
+1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area. The addon auto-registers shortcuts, especially the <kbd>T</kbd> key, to add a Transform effect to selected sequences.
 2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage.
 
 
