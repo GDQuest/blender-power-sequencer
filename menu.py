@@ -33,5 +33,3 @@ class PowerSequencerMenu(bpy.types.Menu):
         layout.operator('power_sequencer.import_local_footage', icon='SEQUENCE', text='Import local footage')
         layout.operator('power_sequencer.render_video', icon='RENDER_ANIMATION', text='Render video for the web')
 
-def register():
-    bpy.types.SEQUENCER_MT_view.append(PowerSequencerMenu.draw)
