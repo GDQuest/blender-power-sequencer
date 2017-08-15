@@ -43,8 +43,8 @@ def playback_speed_post(scene):
     # FIXME: problem is that if playback_speed > 0,
     # frame_pre is > frame_current even if the user went back in time
     # Must take in account all speed levels
-    if frame_pre < scene.frame_current:
-        frame_multipler = -1
+    # if frame_pre < scene.frame_current:
+    #   frame_multipler = -1
 
     if playback_speed == 1 and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
