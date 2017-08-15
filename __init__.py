@@ -22,7 +22,7 @@ bl_info = {
     "name": "Power Sequencer",
     "description": "Tools for an efficient video editing workflow",
     "author": "Nathan Lovato",
-    "version": (0, 3, 0),
+    "version": (0, 4, 0),
     "blender": (2, 78, 0),
     "location": "sequencer",
     "warning": "This is a Work In Progress",
@@ -36,7 +36,7 @@ import os
 from math import ceil
 from operator import attrgetter
 from enum import Enum
-from .handlers import *
+from .handlers import handlers_register, handlers_unregister, PowerSequencerProps
 
 # load and reload submodules
 ##################################
@@ -54,11 +54,9 @@ def register():
     except:
         traceback.print_exc()
 
-    # handlers = bpy.app.handlers.frame_change_post
-    # for handler in handlers:
-    #     if (" playback_speed " in str(handler)):
-    #         handlers.remove(handler)
-    # handlers.append(playback_speed)
+    # Store properties access in the scene and store initial frame
+    bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(type=PowerSequencerProps)
+    handlers_register()
 
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
@@ -70,9 +68,6 @@ def unregister():
     except:
         traceback.print_exc()
 
-    # handlers = bpy.app.handlers.frame_change_post
-    # for handler in handlers:
-    #     if (" playback_speed " in str(handler)):
-    #         handlers.remove(handler)
+    handlers_unregister()
 
     print("Unregistered {}".format(bl_info["name"]))
