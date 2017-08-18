@@ -3,16 +3,47 @@ from bpy.app.handlers import persistent
 
 
 class PowerSequencerProps(bpy.types.PropertyGroup):
-    playback_speed = bpy.props.IntProperty(
+    playback_speed = bpy.props.EnumProperty(
+        items=[('normal', 'Normal (1x)', ''),
+        ('fast', 'Fast (1.5x)', ''),
+        ('double', 'Double (2x)', ''),
+        ('faster', 'Faster (2.5x)', ''),
+        ('triple', 'Triple (3x)', '')],
         name = 'Playback speed',
-        default = 0,
-        min = 0,
-        max = 4)
+        default='double')
     frame_pre = bpy.props.IntProperty(
         name = 'Frame before frame_change',
         default = 0,
-        min = 0
-    )
+        min = 0)
+
+class ChangePlaybackSpeed(bpy.types.Operator):
+    """
+    Change the playback_speed property using an operator property.
+    Used with keymaps
+    """
+    bl_idname = "power_sequencer.change_playback_speed"
+    bl_label = "PS.Change playback speed"
+    bl_description = "Change the playback speed"
+
+    bl_options = {"REGISTER"}
+
+    speed = bpy.props.EnumProperty(
+        items=[('normal', 'Normal (1x)', ''),
+        ('fast', 'Fast (1.5x)', ''),
+        ('double', 'Double (2x)', ''),
+        ('faster', 'Faster (2.5x)', ''),
+        ('triple', 'Triple (3x)', '')],
+        name='Speed',
+        description='Change the playback speed',
+        default='double')
+
+    @classmethod
+    def poll(cls, context):
+        return True
+
+    def execute(self, context):
+        bpy.context.scene.power_sequencer.playback_speed = self.speed
+        return {"FINISHED"}
 
 
 @persistent
@@ -46,12 +77,13 @@ def playback_speed_post(scene):
     # if frame_pre < scene.frame_current:
     #   frame_multipler = -1
 
-    if playback_speed == 1 and scene.frame_current % 3 == 0:
+    if playback_speed == 'fast' and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
-    if playback_speed == 2 and scene.frame_current % 2 == 0:
+    if playback_speed == 'double' and scene.frame_current % 2 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
-    if(playback_speed > 2):
-        scene.frame_current = scene.frame_current + (playback_speed - 2) * frame_multipler
+    if playback_speed in ['faster', 'triple']:
+        step = 3 if playback_speed == 'faster' else 4
+        scene.frame_current = scene.frame_current + (step - 2) * frame_multipler
 
     print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
     scene.power_sequencer.frame_pre = scene.frame_current
@@ -60,8 +92,7 @@ def playback_speed_post(scene):
 def draw_playback_speed(self, context):
     layout = self.layout
     scene = context.scene
-    self.layout_width = 20
-    layout.prop(scene.power_sequencer, 'playback_speed', text='Speed')
+    layout.prop(scene.power_sequencer, 'playback_speed')
 
 
 def handlers_register():
