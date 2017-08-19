@@ -5,9 +5,9 @@ from bpy.app.handlers import persistent
 class PowerSequencerProps(bpy.types.PropertyGroup):
     playback_speed = bpy.props.EnumProperty(
         items=[('normal', 'Normal (1x)', ''),
-        ('fast', 'Fast (1.5x)', ''),
+        ('fast', 'Fast (1.33x)', ''),
+        ('faster', 'Faster (1.66x)', ''),
         ('double', 'Double (2x)', ''),
-        ('faster', 'Faster (2.5x)', ''),
         ('triple', 'Triple (3x)', '')],
         name = 'Playback speed',
         default='double')
@@ -29,9 +29,9 @@ class ChangePlaybackSpeed(bpy.types.Operator):
 
     speed = bpy.props.EnumProperty(
         items=[('normal', 'Normal (1x)', ''),
-        ('fast', 'Fast (1.5x)', ''),
+        ('fast', 'Fast (1.33x)', ''),
+        ('faster', 'Faster (1.66x)', ''),
         ('double', 'Double (2x)', ''),
-        ('faster', 'Faster (2.5x)', ''),
         ('triple', 'Triple (3x)', '')],
         name='Speed',
         description='Change the playback speed',
@@ -79,14 +79,17 @@ def playback_speed_post(scene):
     # Must take in account all speed levels
     # if frame_pre < scene.frame_current:
     #   frame_multipler = -1
+    # Only need to work for backwards playback
 
     if playback_speed == 'fast' and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
-    if playback_speed == 'double' and scene.frame_current % 2 == 0:
+    elif playback_speed == 'faster' and scene.frame_current % 2 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
-    if playback_speed in ['faster', 'triple']:
-        step = 3 if playback_speed == 'faster' else 4
-        scene.frame_current = scene.frame_current + (step - 2) * frame_multipler
+    elif playback_speed == 'double':
+        # 2.5x -> skip 5 frames for 2. 2 then 3 then 2 etc.
+        scene.frame_current = scene.frame_current + 1 * frame_multipler
+    elif playback_speed == 'triple':
+        scene.frame_current = scene.frame_current + 2 * frame_multipler
 
     print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
     scene.power_sequencer.frame_pre = scene.frame_current
