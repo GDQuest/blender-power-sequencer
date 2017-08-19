@@ -5,17 +5,6 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty
 
 
-# TODO: Add button and function to register keymaps
-class GeneralProperties(bpy.types.PropertyGroup):
-    playback_speed = EnumProperty(items=[
-        ('1', 'normal', 'Normal playback speed'),
-        ('1.5', 'fast', '1.5 times normal playback speed'),
-        ('2', 'very fast', '2 times normal playback speed')],
-        name='Playback speed',
-        description='',
-        default='1')
-
-
 class ProxyPreferences(bpy.types.AddonPreferences):
     bl_idname = "power_sequencer"
 
