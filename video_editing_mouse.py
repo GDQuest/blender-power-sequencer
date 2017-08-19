@@ -9,7 +9,6 @@ from operator import attrgetter
 
 # FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
 # If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
-# FIXME: If trimming on the end of a strip, it gets deleted https://github.com/GDquest/GDquest-VSE/issues/7
 class MouseCut(bpy.types.Operator):
     """Cuts the strip sitting under the mouse"""
     bl_idname = "power_sequencer.mouse_cut"
@@ -31,10 +30,6 @@ class MouseCut(bpy.types.Operator):
                             name='Cut mode',
                             description='Cut or trim the selection',
                             default='cut')
-    remove_gaps = BoolProperty(
-        name="Remove gaps",
-        description="When trimming the sequences, remove gaps automatically",
-        default=False)
     auto_move_cursor = BoolProperty(
         name="Auto move cursor",
         description=
@@ -51,6 +46,15 @@ class MouseCut(bpy.types.Operator):
         description=
         "In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
+
+    remove_gaps = BoolProperty(
+        name="Remove gaps",
+        description="When trimming the sequences, remove gaps automatically",
+        default=False)
+    cut_gaps = BoolProperty(
+        name="Cut gaps",
+        description="If you click on a gap, remove it",
+        default=True)
 
     @classmethod
     def poll(cls, context):
@@ -86,9 +90,11 @@ class MouseCut(bpy.types.Operator):
                 if s.frame_final_start <= frame <= s.frame_final_end:
                     s.select = True
 
-        # Cut and trim
         if self.cut_mode == 'cut':
-            sequencer.cut(frame=bpy.context.scene.frame_current,
+            if self.cut_gaps and len(bpy.context.selected_sequences) == 0:
+                bpy.ops.sequencer.gap_remove(all=False)
+            else:
+                sequencer.cut(frame=bpy.context.scene.frame_current,
                           type='SOFT',
                           side='BOTH')
         elif self.cut_mode == 'trim':
