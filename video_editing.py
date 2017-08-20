@@ -40,7 +40,7 @@ class AddCrossfade(bpy.types.Operator):
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
                      is of the length set in 'Crossfade Length'"
-                                                                , default=True)
+        , default=True)
 
     @classmethod
     def poll(cls, context):
@@ -500,6 +500,11 @@ class BorderSelect(bpy.types.Operator):
     deselects handles'
     bl_options = {'REGISTER', 'UNDO'}
 
+    extend = BoolProperty(
+        name="Extend the selection",
+        description="Extend the current selection if checked, otherwise clear it",
+        default=False)
+
     @classmethod
     def poll(cls, context):
         return True
@@ -508,10 +513,10 @@ class BorderSelect(bpy.types.Operator):
         for s in bpy.context.selected_sequences:
             s.select_right_handle = False
             s.select_left_handle = False
-        return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=False)
+        return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=self.extend)
 
 
-class GrabSequenceHandles(bpy.types.Operator):
+class GrabSequenceHandle(bpy.types.Operator):
     """
     Operator that extends the sequence based on the mouse position.
     If the cursor is to the right of the sequence's middle,
