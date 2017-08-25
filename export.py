@@ -7,7 +7,7 @@ def set_render_settings(resolution=None, encoding=None):
        The presets are stored in the .functions.global_settings module"""
 
     if not resolution and encoding:
-        return None
+        return False
 
     rd = bpy.context.scene.render
     ff = bpy.context.scene.render.ffmpeg
@@ -18,8 +18,8 @@ def set_render_settings(resolution=None, encoding=None):
     rd.resolution_percentage = res[2]
     rd.pixel_aspect_x = res[3]
     rd.pixel_aspect_y = res[4]
-    rd.fps = res[5]
-    rd.fps_base = res[6]
+    # rd.fps = res[5]
+    # rd.fps_base = res[6]
 
     rd.image_settings.file_format = enc[0]
 
@@ -37,6 +37,7 @@ def set_render_settings(resolution=None, encoding=None):
     return True
 
 
+# FIXME: Issue with the framerate? If you edit to a certain framerate
 # TODO: define resolution and framerate for the full video in one operator and then,
 # in render for web, render for Youtube/twitter/facebook etc.
 # based off that resolution
@@ -109,29 +110,3 @@ class RenderForWeb(bpy.types.Operator):
         bpy.context.scene.render.filepath = "//" + name if name else "video.mp4"
         bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
         return {"FINISHED"}
-
-
-# TODO: Write operator
-class CopyStripsToNewScene(bpy.types.Operator):
-    bl_idname = 'power_sequencer.copy_strips_to_new_scene'
-    bl_label = 'PS.Copy strips to new scene'
-    bl_description = 'Copy the selected strips to a new scene, \
-                      e.g. to render a preview or trailer for your video'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        self.report({"WARNING"}, "This operator isn't functional yet, operation cancelled")
-        return {'CANCELLED'}
-        # store cursor position
-        # Set cursor to start of selection
-        # Copy selection
-        # Move cursor back to initial state
-        # Create new scene
-        # Move cursor to start
-        # Paste strips
-        # Set preview range
-        return {'FINISHED'}
