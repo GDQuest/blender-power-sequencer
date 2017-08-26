@@ -142,6 +142,35 @@ class MouseCut(bpy.types.Operator):
         return {"FINISHED"}
 
 
+class MouseToggleMute(bpy.types.Operator):
+    """Toggle mute a sequence as you click on it"""
+    bl_idname = "power_sequencer.mouse_toggle_mute"
+    bl_label = "PS.Toggle Mute with Mouse"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context is not None
+
+    def invoke(self, context, event):
+        sequencer = bpy.ops.sequencer
+        frame_float, channel_float = context.region.view2d.region_to_view(
+            x=event.mouse_region_x,
+            y=event.mouse_region_y)
+        frame = floor(frame_float)
+        channel = floor(channel_float)
+
+        # Strip selection
+        sequencer.select_all(action='DESELECT')
+        to_select = find_strips_mouse(frame, channel)
+
+        if not to_select:
+            return {"CANCELLED"}
+
+        for s in to_select:
+            s.mute = not s.mute
+        return {"FINISHED"}
+
 class EditCrossfade(bpy.types.Operator):
     """
     Selects handles to edit crossfade
