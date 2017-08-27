@@ -42,7 +42,7 @@ class SetVideosProxies(bpy.types.Operator):
             self.report({"ERROR_INVALID_INPUT"}, "No movie sequences found")
             return {'CANCELLED'}
 
-        prefs = context.user_preferences.addons["power_sequencer"].preferences
+        prefs = context.user_preferences.addons[__package__].preferences
 
         for s in selection:
             if s.type not in ('MOVIE', 'IMAGE'):

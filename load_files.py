@@ -188,7 +188,7 @@ class ImportLocalFootage(bpy.types.Operator):
         sequencer.meta_separate()
 
         # Set the strips to use proxies based if set in the addon preferences
-        prefs = context.user_preferences.addons["power_sequencer"].preferences
+        prefs = context.user_preferences.addons[__package__].preferences
         if prefs.auto_render_proxies:
             bpy.ops.power_sequencer.set_video_proxies()
 

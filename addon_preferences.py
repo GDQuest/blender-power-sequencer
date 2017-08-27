@@ -6,7 +6,7 @@ from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty
 
 
 class ProxyPreferences(bpy.types.AddonPreferences):
-    bl_idname = "power_sequencer"
+    bl_idname = __package__
 
     video_export_path = StringProperty(
         name="Video render folder",

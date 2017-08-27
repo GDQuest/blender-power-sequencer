@@ -87,7 +87,7 @@ class RenderForWeb(bpy.types.Operator):
             self.report({'WARNING'}, "Save your file first")
             return {'CANCELLED'}
 
-        # prefs = context.user_preferences.addons["power_sequencer"].preferences
+        prefs = context.user_preferences.addons[__package__].preferences
 
         resolution = RS.RESOLUTION.PROXY if self.use_proxies else RS.RESOLUTION.HD_FULL
         encoding = RS.ENCODING.MP4_PROXY if self.use_proxies else RS.ENCODING.MP4_HIGH
