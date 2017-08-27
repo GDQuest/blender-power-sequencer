@@ -75,7 +75,7 @@ class ImportLocalFootage(bpy.types.Operator):
         for folder in os.listdir(path=directory):
             folder_upper = folder.upper()
             if folder_upper in file_types:
-                folders[folder_upper] = directory + "\\" + folder
+                folders[folder_upper] = os.path.join(directory, folder)
         
         for file_type in file_types:
             if file_type not in folders.keys():
@@ -137,7 +137,7 @@ class ImportLocalFootage(bpy.types.Operator):
             if name == "VIDEO":
                 import_channel += 1 if self.keep_audio else 0
                 sequencer.movie_strip_add(SEQUENCER_AREA,
-                                          filepath=folder + "\\",
+                                          filepath=folder,
                                           files=files_dict,
                                           frame_start=frame_current,
                                           channel=import_channel,
@@ -148,7 +148,7 @@ class ImportLocalFootage(bpy.types.Operator):
             elif name == "AUDIO":
                 sequencer.sound_strip_add(
                     SEQUENCER_AREA,
-                    filepath=folder + "\\",
+                    filepath=folder,
                     files=files_dict,
                     frame_start=frame_current,
                     channel=import_channel)
@@ -156,7 +156,7 @@ class ImportLocalFootage(bpy.types.Operator):
             elif name == "IMG":
                 img_frame = frame_current
                 for img in files_dict:
-                    path = folder + "\\" + img['subfolder']
+                    path = os.path.join(folder, img['subfolder'])
                     file = [{'name': img['name']}]
                     sequencer.image_strip_add(
                         SEQUENCER_AREA,
@@ -226,23 +226,23 @@ def find_files(directory,
 
     # TODO: Folder containing img files = img sequence?
     for ext in file_extensions:
-        source_pattern = directory + "\\"
+        source_pattern = directory + "/"
         pattern = source_pattern + ext
         files.extend(glob(pattern))
         if not recursive:
             continue
-        pattern = source_pattern + "**\\" + ext
+        pattern = source_pattern + "**/" + ext
         files.extend(glob(pattern))
 
     if basename(directory) == "IMG":
-        psd_names = [f for f in glob(directory + "\\*.psd")]
+        psd_names = [f for f in glob(directory + "/*.psd")]
         for i, name in enumerate(psd_names):
             psd_names[i] = name[len(directory):-4]
 
         psd_folders = (f for f in os.listdir(directory) if f in psd_names)
         for f in psd_folders:
             for ext in file_extensions:
-                files.extend(glob(directory + "\\" + f + "\\" + ext))
+                files.extend(glob(directory + "/" + f + "/" + ext))
     return files
 
 
