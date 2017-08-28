@@ -513,7 +513,8 @@ class BorderSelect(bpy.types.Operator):
         for s in bpy.context.selected_sequences:
             s.select_right_handle = False
             s.select_left_handle = False
-        return bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=self.extend)
+        bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=self.extend)
+        return {'FINISHED'}
 
 
 class GrabSequenceHandle(bpy.types.Operator):

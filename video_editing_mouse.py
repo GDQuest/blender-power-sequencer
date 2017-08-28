@@ -65,11 +65,10 @@ class MouseCut(bpy.types.Operator):
         anim = bpy.ops.anim
         selection = bpy.context.selected_sequences
 
-        frame, channel = context.region.view2d.region_to_view(
+        x, y = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
             y=event.mouse_region_y)
-        frame = floor(frame)
-        channel = floor(channel)
+        frame, channel = round(x), floor(y)
 
         anim.change_frame(frame=frame)
         select_mode = self.select_mode
@@ -132,7 +131,7 @@ class MouseCut(bpy.types.Operator):
                     first_seq = sorted_sequences[0]
                 else:
                     first_seq = selection
-                
+
                 frame = first_seq.frame_final_start - self.cursor_offset \
                     if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
                     else frame
@@ -154,11 +153,12 @@ class MouseToggleMute(bpy.types.Operator):
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
-        frame_float, channel_float = context.region.view2d.region_to_view(
+
+        # get current frame and channel the mouse hovers
+        x, y = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
             y=event.mouse_region_y)
-        frame = floor(frame_float)
-        channel = floor(channel_float)
+        frame, channel = round(x), floor(y)
 
         # Strip selection
         sequencer.select_all(action='DESELECT')
@@ -170,6 +170,7 @@ class MouseToggleMute(bpy.types.Operator):
         for s in to_select:
             s.mute = not s.mute
         return {"FINISHED"}
+
 
 class EditCrossfade(bpy.types.Operator):
     """
