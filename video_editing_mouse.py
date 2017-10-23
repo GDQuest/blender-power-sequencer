@@ -7,6 +7,29 @@ from .functions.sequences import find_strips_mouse, find_effect_strips, get_fram
 from operator import attrgetter
 # import blf
 
+
+def find_snap_candidate(frame=0):
+    """
+    Finds and returns the best frame snap candidate around the frame
+    """
+    closest_cut_frame = 1000000
+    for s in bpy.context.sequences:
+        start_to_frame = frame - s.frame_final_start
+        end_to_frame =  frame - s.frame_final_end
+        distance_to_start = abs( start_to_frame )
+        distance_to_end = abs(end_to_frame)
+        smallest_distance = min(distance_to_start, distance_to_end)
+
+        if smallest_distance == distance_to_start:
+            snap_candidate = frame - start_to_frame
+        else:
+            snap_candidate = frame - end_to_frame
+
+        if abs(frame - snap_candidate) < abs(frame - closest_cut_frame):
+            closest_cut_frame = snap_candidate
+    return closest_cut_frame
+
+
 # FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
 # If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
 class MouseCut(bpy.types.Operator):
@@ -55,6 +78,10 @@ class MouseCut(bpy.types.Operator):
         name="Cut gaps",
         description="If you click on a gap, remove it",
         default=True)
+    snap = BoolProperty(
+        name="Snap trim",
+        description="When trimming, snap to closest cuts",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -70,6 +97,11 @@ class MouseCut(bpy.types.Operator):
             y=event.mouse_region_y)
         frame, channel = round(x), floor(y)
 
+        if self.snap and self.cut_mode == 'trim':
+            old_frame = frame
+            frame = find_snap_candidate(frame)
+            print("old {!s} / new {!s}".format(old_frame, frame))
+
         anim.change_frame(frame=frame)
         select_mode = self.select_mode
 
@@ -83,7 +115,6 @@ class MouseCut(bpy.types.Operator):
                     s.select = True
             elif select_mode == 'mouse':
                 return {"CANCELLED"}
-
         if select_mode == 'cursor' or (not to_select and select_mode == 'smart'):
             for s in bpy.context.sequences:
                 if s.frame_final_start <= frame <= s.frame_final_end:
@@ -94,10 +125,11 @@ class MouseCut(bpy.types.Operator):
                 bpy.ops.sequencer.gap_remove(all=False)
             else:
                 sequencer.cut(frame=bpy.context.scene.frame_current,
-                          type='SOFT',
-                          side='BOTH')
+                              type='SOFT',
+                              side='BOTH')
         elif self.cut_mode == 'trim':
             start, end = get_frame_range(bpy.context.selected_sequences)
+
 
             # Find strips to delete
             to_delete = []
@@ -174,7 +206,7 @@ class MouseToggleMute(bpy.types.Operator):
 
 class EditCrossfade(bpy.types.Operator):
     """
-    Selects handles to edit crossfade
+    Selects handles of a crossfade strip's input and calls the grab operator
     """
     bl_idname = "power_sequencer.edit_crossfade"
     bl_label = "PS.Edit crossfade"
