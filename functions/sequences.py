@@ -28,7 +28,11 @@ def find_next_sequences(sequences):
     if not sequences:
         raise AttributeError('Missing sequences parameter')
 
-    last_seq_start = max(sequences, key=attrgetter('frame_final_start')).frame_final_start
+    last_seq_start = 0
+    if not sequences is list():
+        last_seq_start = sequences.frame_final_start
+    else:
+        last_seq_start = max(sequences, key=attrgetter('frame_final_start')).frame_final_start
 
     next_sequences = []
     for s in bpy.context.sequences:
