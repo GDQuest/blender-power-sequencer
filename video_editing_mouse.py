@@ -2,7 +2,7 @@
 from math import floor
 
 import bpy
-from bpy.props import BoolProperty, IntProperty, EnumProperty
+from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty
 from .functions.sequences import find_strips_mouse, find_effect_strips, get_frame_range
 from operator import attrgetter
 # import blf
@@ -30,10 +30,11 @@ def find_snap_candidate(frame=0):
     return closest_cut_frame
 
 
+
 # FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
 # If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
 class MouseCut(bpy.types.Operator):
-    """Cuts the strip sitting under the mouse"""
+    """Cuts, trims and remove gaps with mouse clicks"""
     bl_idname = "power_sequencer.mouse_cut"
     bl_label = "PS.Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
@@ -171,6 +172,126 @@ class MouseCut(bpy.types.Operator):
 
         sequencer.select_all(action='DESELECT')
         return {"FINISHED"}
+
+
+
+# TODO: Double check it works
+def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
+    """
+    Returns strips which start and end within a certain frame range, or that overlap a certain frame range
+    Args:
+    - start_frame, the start of the frame range
+    - end_frame, the end of the frame range
+    - sequences (optional): only work with these sequences. If it doesn't receive any, the function works with all the sequences in the current context
+    - find_overlapping (optional): find and return a list of strips that overlap the frame range
+
+    Returns a tuple of two lists:
+    [0], strips entirely in the frame range
+    [1], strips that only overlap the frame range
+    """
+    strips_in_range = []
+    strips_overlapping_range = []
+    if not sequences:
+        sequences = bpy.context.sequences
+    for s in sequences:
+        if start_frame <= s.frame_final_start <= end_frame:
+            if start_frame <= s.frame_final_end <= end_frame:
+                strips_in_range.append(s)
+            elif find_overlapping:
+                strips_overlapping_range.append(s)
+        elif start_frame <= s.frame_final_end <= end_frame:
+            if start_frame <= s.frame_final_start <= end_frame:
+                strips_in_range.append(s)
+            elif find_overlapping:
+                strips_overlapping_range.append(s)
+        if s.frame_final_start < start_frame and s.frame_final_end > end_frame:
+            strips_overlapping_range.append(s)
+    return strips_in_range, strips_overlapping_range
+
+
+
+# TODO: Fix detection, currently returns wrong frames
+def find_closest_surrounding_cuts(frame=0):
+    """
+    Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts surrounding a frame
+    Args:
+    - frame, find the closest cuts that surround this frame
+    """
+    start_cut_frame, end_cut_frame = 1000000, 1000000
+    for s in bpy.context.sequences:
+        if s.frame_final_start < frame and frame - s.frame_final_start < start_cut_frame - frame:
+            start_cut_frame = s.frame_final_start
+        if s.frame_final_end > frame and s.frame_final_end - frame < end_cut_frame - frame:
+            end_cut_frame = s.frame_final_end
+    return start_cut_frame, end_cut_frame
+
+
+class MouseCreateAndFoldGap(bpy.types.Operator):
+    """When you click on empty space, trims strips above and below the mouse cursor between the two closest cuts, leaves some margin and removes the gaps."""
+    bl_idname = "power_sequencer.mouse_create_and_fold_gap"
+    bl_label = "PS.Create and fold gap"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    margin = FloatProperty(
+        name="Trim margin",
+        description=
+        "Margin to leave on either sides of the trim in seconds",
+        default=0.2,
+        min=0)
+
+    @classmethod
+    def poll(cls, context):
+        return context is not None
+
+    def invoke(self, context, event):
+        sequencer = bpy.ops.sequencer
+
+        # Convert mouse position to frame, channel
+        x, y = context.region.view2d.region_to_view(
+            x=event.mouse_region_x,
+            y=event.mouse_region_y)
+        frame, channel = round(x), floor(y)
+
+        left_cut_frame, right_cut_frame = find_closest_surrounding_cuts(frame)
+        print(left_cut_frame)
+        print(right_cut_frame)
+        surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
+
+        margin_frame = self.margin * bpy.context.scene.render.fps
+
+        if surrounding_cut_frames_duration <= margin_frame * 2:
+            self.report({'WARNING'}, "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
+            return {'CANCELLED'}
+
+        # trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
+        trim_start, trim_end = left_cut_frame, right_cut_frame
+        strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
+
+        # Trim sequences that overlap with the range
+        for s in strips_to_trim:
+            if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
+                sequencer.select_all(action='DESELECT')
+                s.select = True
+                sequencer.cut(frame=trim_start,
+                              type='SOFT',
+                              side='RIGHT')
+                sequencer.cut(frame=trim_end,
+                              type='SOFT',
+                              side='LEFT')
+                strips_to_delete.append(bpy.context.selected_sequences[0])
+                continue
+            if s.frame_final_start < trim_end:
+                s.frame_final_start = trim_end
+            elif s.frame_final_end > trim_start:
+                s.frame_final_end = trim_start
+
+
+        # Delete all sequences that are between the cuts
+        sequencer.select_all(action='DESELECT')
+        for s in strips_to_delete:
+            s.select = True
+        sequencer.delete()
+        return {'FINISHED'}
 
 
 class MouseToggleMute(bpy.types.Operator):
