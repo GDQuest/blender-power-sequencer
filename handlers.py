@@ -91,7 +91,7 @@ def playback_speed_post(scene):
     elif playback_speed == 'triple':
         scene.frame_current = scene.frame_current + 2 * frame_multipler
 
-    print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
+    # print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
     scene.power_sequencer.frame_pre = scene.frame_current
 
 
