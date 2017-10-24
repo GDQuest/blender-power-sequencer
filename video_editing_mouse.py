@@ -175,7 +175,6 @@ class MouseCut(bpy.types.Operator):
 
 
 
-# TODO: Double check it works
 def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
     """
     Returns strips which start and end within a certain frame range, or that overlap a certain frame range
@@ -199,18 +198,14 @@ def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapp
                 strips_in_range.append(s)
             elif find_overlapping:
                 strips_overlapping_range.append(s)
-        elif start_frame <= s.frame_final_end <= end_frame:
-            if start_frame <= s.frame_final_start <= end_frame:
-                strips_in_range.append(s)
-            elif find_overlapping:
-                strips_overlapping_range.append(s)
+        elif find_overlapping and start_frame <= s.frame_final_end <= end_frame:
+            strips_overlapping_range.append(s)
         if s.frame_final_start < start_frame and s.frame_final_end > end_frame:
             strips_overlapping_range.append(s)
     return strips_in_range, strips_overlapping_range
 
 
 
-# TODO: Fix detection, currently returns wrong frames
 def find_closest_surrounding_cuts(frame=0):
     """
     Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts surrounding a frame
@@ -219,15 +214,31 @@ def find_closest_surrounding_cuts(frame=0):
     """
     start_cut_frame, end_cut_frame = 1000000, 1000000
     for s in bpy.context.sequences:
-        if s.frame_final_start < frame and frame - s.frame_final_start < start_cut_frame - frame:
+        distance_to_start = abs(frame - s.frame_final_start)
+        distance_to_end = abs(frame - s.frame_final_end)
+
+        distance_to_start_cut_frame = abs(start_cut_frame - frame)
+        distance_to_end_cut_frame = abs(end_cut_frame - frame)
+
+        if s.frame_final_start < frame and \
+           distance_to_start < distance_to_start_cut_frame:
             start_cut_frame = s.frame_final_start
-        if s.frame_final_end > frame and s.frame_final_end - frame < end_cut_frame - frame:
+        if s.frame_final_end < frame and \
+           distance_to_end < distance_to_start_cut_frame:
+            start_cut_frame = s.frame_final_end
+        if s.frame_final_end > frame and \
+           distance_to_end < distance_to_end_cut_frame:
             end_cut_frame = s.frame_final_end
+        if s.frame_final_start > frame and \
+           distance_to_start < distance_to_end_cut_frame:
+            end_cut_frame = s.frame_final_start
     return start_cut_frame, end_cut_frame
 
 
 class MouseCreateAndFoldGap(bpy.types.Operator):
-    """When you click on empty space, trims strips above and below the mouse cursor between the two closest cuts, leaves some margin and removes the gaps."""
+    """
+    When you click on empty space, trims strips above and below the mouse cursor between the two closest cuts, leaves some margin and removes the gaps.
+    """
     bl_idname = "power_sequencer.mouse_create_and_fold_gap"
     bl_label = "PS.Create and fold gap"
     bl_options = {'REGISTER', 'UNDO'}
@@ -244,6 +255,9 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
         return context is not None
 
     def invoke(self, context, event):
+        if not bpy.context.sequences:
+            return {'CANCELLED'}
+
         sequencer = bpy.ops.sequencer
 
         # Convert mouse position to frame, channel
@@ -253,8 +267,6 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
         frame, channel = round(x), floor(y)
 
         left_cut_frame, right_cut_frame = find_closest_surrounding_cuts(frame)
-        print(left_cut_frame)
-        print(right_cut_frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
         margin_frame = self.margin * bpy.context.scene.render.fps
@@ -263,12 +275,15 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
             self.report({'WARNING'}, "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
             return {'CANCELLED'}
 
-        # trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
         trim_start, trim_end = left_cut_frame, right_cut_frame
         strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
 
-        # Trim sequences that overlap with the range
+        print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
         for s in strips_to_trim:
+            print(s.name)
+
+        for s in strips_to_trim:
+            # If the strip is larger than the range to trim cut it strip in three
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
                 sequencer.select_all(action='DESELECT')
                 s.select = True
@@ -280,9 +295,10 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
                               side='LEFT')
                 strips_to_delete.append(bpy.context.selected_sequences[0])
                 continue
-            if s.frame_final_start < trim_end:
+
+            if s.frame_final_start < trim_end and s.frame_final_end > trim_end:
                 s.frame_final_start = trim_end
-            elif s.frame_final_end > trim_start:
+            elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
                 s.frame_final_end = trim_start
 
 
