@@ -237,7 +237,7 @@ def find_closest_surrounding_cuts(frame=0):
 
 class MouseCreateAndFoldGap(bpy.types.Operator):
     """
-    When you click on empty space, trims strips above and below the mouse cursor between the two closest cuts, leaves some margin and removes the gaps.
+    Trims strips above and below the mouse cursor between the two closest cuts
     """
     bl_idname = "power_sequencer.mouse_create_and_fold_gap"
     bl_label = "PS.Create and fold gap"
@@ -249,6 +249,10 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
         "Margin to leave on either sides of the trim in seconds",
         default=0.2,
         min=0)
+    remove_gaps = BoolProperty(
+        name="Remove gaps",
+        description="When trimming the sequences, remove gaps automatically",
+        default=True)
 
     @classmethod
     def poll(cls, context):
@@ -275,8 +279,8 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
             self.report({'WARNING'}, "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
             return {'CANCELLED'}
 
-        trim_start, trim_end = left_cut_frame, right_cut_frame
-        strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
+        strips_to_delete, strips_to_trim = find_strips_in_range(left_cut_frame, right_cut_frame)
+        trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
 
         print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
         for s in strips_to_trim:
@@ -307,6 +311,14 @@ class MouseCreateAndFoldGap(bpy.types.Operator):
         for s in strips_to_delete:
             s.select = True
         sequencer.delete()
+
+
+        if self.remove_gaps:
+            current_frame = bpy.context.scene.frame_current
+            frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
+            bpy.ops.anim.change_frame(frame_to_remove_gap)
+            sequencer.gap_remove()
+            bpy.ops.anim.change_frame(current_frame)
         return {'FINISHED'}
 
 
