@@ -1,5 +1,5 @@
 """Video editing tools for Blender using the mouse"""
-from math import floor
+from math import floor, sqrt
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty
@@ -234,6 +234,77 @@ def find_closest_surrounding_cuts(frame=0):
             end_cut_frame = s.frame_final_start
     return start_cut_frame, end_cut_frame
 
+
+def find_cut_and_handles_closest_to_mouse(mouse_x, mouse_y):
+    """
+    takes the mouse's coordinates in the sequencer area and returns the two strips
+    who share the cut closest to the mouse, or the strip with the closest handle.
+    Use it to find the handle(s) to select with the grab on the fly operator
+    """
+    view2d = bpy.context.region.view2d
+
+    closest_cut = (None, None)
+    distance_to_closest_cut = 1000000.0
+
+    for s in bpy.context.sequences:
+        channel_offset = s.channel + 0.5
+        start_x, start_y = view2d.view_to_region(s.frame_final_start, channel_offset)
+        end_x, end_y = view2d.view_to_region(s.frame_final_start, channel_offset)
+
+        distance_to_start = calculate_distance(start_x, start_y, mouse_x, mouse_y)
+        distance_to_end = calculate_distance(end_x, end_y, mouse_x, mouse_y)
+
+        if distance_to_start < distance_to_closest_cut:
+            closest_cut = (start_x, start_y)
+            distance_to_closest_cut = distance_to_start
+        if distance_to_end < distance_to_closest_cut:
+            closest_cut = (end_x, end_y)
+            distance_to_closest_cut = distance_to_end
+
+    closest_cut_local_coords = view2d.region_to_view(closest_cut[0], closest_cut[1])
+    frame, channel = round(closest_cut_local_coords[0]), floor(closest_cut_local_coords[1])
+    return frame, channel
+
+
+def calculate_distance(x1, y1, x2, y2):
+    return sqrt((x2 - x1)**2 + (y2 - y1)**2)
+
+
+# TODO: replace with operator to grab cut or handle on the fly
+# add a detection range to detect if the user wants to grab a cut or to grab a handle
+# X pixels/region units to start with? That's how Blender VSE seems to do it when you click on strip/handle
+# We'll think about making it zoom dependent later
+class PrintClosestCut(bpy.types.Operator):
+    """
+    """
+    bl_idname = "power_sequencer.print_closest_cut"
+    bl_label = "PS.Print closest cut"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return context is not None
+
+    def invoke(self, context, event):
+        if not bpy.context.sequences:
+            return {'CANCELLED'}
+
+        sequencer = bpy.ops.sequencer
+        view2d = bpy.context.region.view2d
+
+        frame, channel = find_cut_and_handles_closest_to_mouse(event.mouse_region_x, event.mouse_region_y)
+        print(frame, channel)
+
+        matching_sequences = []
+        for s in bpy.context.sequences:
+            if s.channel == channel:
+                if abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1:
+                    matching_sequences.append(s)
+
+        print('found {!s} matching sequences'.format(len(matching_sequences)))
+        for s in matching_sequences:
+            print(s.name)
+        return {'FINISHED'}
 
 class TrimToSurroundingCuts(bpy.types.Operator):
     """
