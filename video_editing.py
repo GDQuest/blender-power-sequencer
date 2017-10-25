@@ -269,7 +269,7 @@ class ConcatenateStrips(bpy.types.Operator):
         first_strip = None
         if len(sequences) == 1:
             first_strip = sequences[0]
-            in_channel = [s for s in find_next_sequences(first_strip) if s.channel == first_strip.channel]
+            in_channel = [s for s in find_next_sequences(sequences) if s.channel == first_strip.channel]
 
             for s in in_channel:
                 sequences.append(s)
