@@ -30,7 +30,6 @@ def find_snap_candidate(frame=0):
     return closest_cut_frame
 
 
-
 # FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
 # If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
 class MouseCut(bpy.types.Operator):
@@ -174,7 +173,6 @@ class MouseCut(bpy.types.Operator):
         return {"FINISHED"}
 
 
-
 def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
     """
     Returns strips which start and end within a certain frame range, or that overlap a certain frame range
@@ -203,7 +201,6 @@ def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapp
         if s.frame_final_start < start_frame and s.frame_final_end > end_frame:
             strips_overlapping_range.append(s)
     return strips_in_range, strips_overlapping_range
-
 
 
 def find_closest_surrounding_cuts(frame=0):
@@ -270,15 +267,13 @@ def calculate_distance(x1, y1, x2, y2):
     return sqrt((x2 - x1)**2 + (y2 - y1)**2)
 
 
-# TODO: replace with operator to grab cut or handle on the fly
-# add a detection range to detect if the user wants to grab a cut or to grab a handle
-# X pixels/region units to start with? That's how Blender VSE seems to do it when you click on strip/handle
-# We'll think about making it zoom dependent later
-class PrintClosestCut(bpy.types.Operator):
+class GrabClosestHandleOrCut(bpy.types.Operator):
     """
+    Selects and grabs the strip handle or cut closest to the mouse cursor.
+    Hover near a cut and fire this tool to slide it.
     """
-    bl_idname = "power_sequencer.print_closest_cut"
-    bl_label = "PS.Print closest cut"
+    bl_idname = "power_sequencer.grab_closest_handle_or_cut"
+    bl_label = "PS.Grab closest handle or cut"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -292,19 +287,46 @@ class PrintClosestCut(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         view2d = bpy.context.region.view2d
 
-        frame, channel = find_cut_and_handles_closest_to_mouse(event.mouse_region_x, event.mouse_region_y)
-        print(frame, channel)
+        mouse_x, mouse_y = event.mouse_region_x, event.mouse_region_y
+        frame, channel = find_cut_and_handles_closest_to_mouse(mouse_x, mouse_y)
 
         matching_sequences = []
         for s in bpy.context.sequences:
             if s.channel == channel:
                 if abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1:
                     matching_sequences.append(s)
+        matching_count = len(matching_sequences)
 
-        print('found {!s} matching sequences'.format(len(matching_sequences)))
-        for s in matching_sequences:
-            print(s.name)
+        sequencer.select_all(action='DESELECT')
+        if matching_count == 1:
+            sequence = matching_sequences[0]
+            sequence.select = True
+            if abs(sequence.frame_final_start - frame) <= 1:
+                sequence.select_left_handle = True
+            elif abs(sequence.frame_final_end - frame) <= 1:
+                sequence.select_right_handle = True
+        elif matching_count == 2:
+            cut_select_range = 40
+            sorted_sequences = sorted(matching_sequences, key=attrgetter('frame_final_start'))
+            first_sequence, second_sequence = sorted_sequences[0], sorted_sequences[1]
+
+            cut_x, _ = view2d.view_to_region(frame, channel)
+            if abs(mouse_x - cut_x) > cut_select_range:
+                if mouse_x < cut_x:
+                    first_sequence.select = True
+                    first_sequence.select_right_handle = True
+                else:
+                    second_sequence.select = True
+                    second_sequence.select_left_handle = True
+            else:
+
+                first_sequence.select = True
+                first_sequence.select_right_handle = True
+                second_sequence.select = True
+                second_sequence.select_left_handle = True
+        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
         return {'FINISHED'}
+
 
 class TrimToSurroundingCuts(bpy.types.Operator):
     """
