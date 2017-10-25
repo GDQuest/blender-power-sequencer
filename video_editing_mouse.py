@@ -235,12 +235,12 @@ def find_closest_surrounding_cuts(frame=0):
     return start_cut_frame, end_cut_frame
 
 
-class MouseCreateAndFoldGap(bpy.types.Operator):
+class TrimToSurroundingCuts(bpy.types.Operator):
     """
-    Trims strips above and below the mouse cursor between the two closest cuts
+    Find the two closest cuts, trims and deletes all strips above in the range but leaves some margin. Removes the newly formed gap.
     """
-    bl_idname = "power_sequencer.mouse_create_and_fold_gap"
-    bl_label = "PS.Create and fold gap"
+    bl_idname = "power_sequencer.trim_to_surrounding_cuts"
+    bl_label = "PS.Trim to surrounding cuts"
     bl_options = {'REGISTER', 'UNDO'}
 
     margin = FloatProperty(
