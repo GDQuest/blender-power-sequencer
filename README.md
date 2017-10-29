@@ -1,11 +1,12 @@
 # Power Sequencer: free Blender addon for content creators
+
 Blender's video sequencer has a lot of potential, but it lacks essential tools for content creators to edit fast. I produced [hundreds of tutorials](http://youtube.com/c/gdquest) since 2015, and work exclusively with Blender. Here are the tools I built to edit tutorials faster.
 
 ## In alpha state
 
 The addon works already, and I use it in production all the time. However, it's lacking documentation. To find the tools, press <kbd>Spacebar</kbd> and search for 'PS.' (_as in PowerSequencer_).
 
-As there are many features, keymaps aren't automatically added. Version 1 will allow you to add keymaps from the preferences. In the meantime, you can use [this keymap file](https://gist.github.com/NathanLovato/84b3a8529e5757875c8e97f4d7b424f4).
+As there are many features, keymaps aren't automatically added. Version 1 will allow you to add keymaps from the preferences. In the meantime, you can use [this keymap file](https://github.com/GDquest/Blender-power-sequencer/blob/master/utils/power-vse-shortcuts.py). It's in the add-on's `/utils` folder.
 
 ## Other add-ons
 
