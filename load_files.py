@@ -76,16 +76,16 @@ class ImportLocalFootage(bpy.types.Operator):
             folder_upper = folder.upper()
             if folder_upper in file_types:
                 folders[folder_upper] = os.path.join(directory, folder)
-        
+
         for file_type in file_types:
             if file_type not in folders.keys():
                 continue
             files[file_type] = find_files(folders[file_type],
                                        Extensions.DICT[file_type],
                                        recursive=file_type == "IMG")
-        
+
         # TODO: walk the project dir tree and collect all files that have a supported Extension
-        # 
+        #
         # files, files_dict = {}, {}
         # file_types = "AUDIO", "IMG", "VIDEO"
         # for file_type in file_types:
@@ -168,7 +168,7 @@ class ImportLocalFootage(bpy.types.Operator):
                     new_sequences.extend(bpy.context.selected_sequences)
                     img_frame += self.img_length + self.img_padding
             channel_offset += 1
-        
+
         # Swap channels for audio and video tracks
         if not new_video_sequences:
             return {"FINISHED"}
@@ -262,6 +262,8 @@ def files_to_dict(files, folder_path):
     for f in files:
         filepath_tail = f[len(folder_path) + 1:]
         head, tail = os.path.split(filepath_tail)
-        dict_form = {'name': tail, 'subfolder': head}
+
+        project_path, subfolder_name = os.path.split(folder_path)
+        dict_form = {'name': os.path.join(subfolder_name, tail), 'subfolder': head}
         dictionary.append(dict_form)
     return dictionary
