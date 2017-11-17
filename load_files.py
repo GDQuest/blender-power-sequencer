@@ -157,7 +157,8 @@ class ImportLocalFootage(bpy.types.Operator):
                 img_frame = frame_current
                 for img in files_dict:
                     path = os.path.join(folder, img['subfolder'])
-                    file = [{'name': img['name']}]
+                    # FIXME: temp hack so images import properly
+                    file = [{'name': img['name'].replace("img\\", "")}]
                     sequencer.image_strip_add(
                         SEQUENCER_AREA,
                         directory=path,
@@ -246,6 +247,8 @@ def find_files(directory,
     return files
 
 
+# TODO: issue with img vs other strip types: img have separate filepath and filename slots
+# but video/audio only have direct filepath e.g. audio/file.wav
 def files_to_dict(files, folder_path):
     """Converts a list of files to Blender's dictionary format for import
        Returns a list of dictionaries with the
