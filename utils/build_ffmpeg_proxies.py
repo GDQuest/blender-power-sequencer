@@ -73,9 +73,10 @@ for dirpath, dirnames, filenames in os.walk(project_folder):
             if not os.path.isdir(video_proxy_subdir):
                 os.makedirs(video_proxy_subdir)
 
-            new_command = FFMPEG_VIDEO_COMMAND
+            new_command = [arg for arg in FFMPEG_VIDEO_COMMAND]
             new_command[2] = file_path
             new_command[-1] = os.path.join(video_proxy_subdir, 'proxy_25.avi')
+            print(new_command)
             ffmpeg_commands.append(new_command)
 
         elif extension in IMG_EXT:
@@ -85,17 +86,15 @@ for dirpath, dirnames, filenames in os.walk(project_folder):
                     os.makedirs(img_proxy_folder)
                 img_proxy_folders.append(img_proxy_folder)
                 found_image = True
-            new_command = FFMPEG_IMAGE_COMMAND
+            new_command = [arg for arg in FFMPEG_IMAGE_COMMAND]
             new_command[2] = file_path
             new_command[-1] = os.path.join(img_proxy_folder, f)
-            # Keep the original img extension so ffmpeg retains transparency on PNG, append _proxy.jpg suffix in a second pass
+            print(new_command)
             ffmpeg_commands.append(new_command)
 
-# print(ffmpeg_commands)
-# print(img_proxy_folders)
-
 for command in ffmpeg_commands:
-    subprocess.Popen(command)
+    process = subprocess.Popen(command)
+    process.wait()
 
 for folder in img_proxy_folders:
     # print(folder)
