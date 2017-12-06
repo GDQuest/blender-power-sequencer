@@ -53,3 +53,6 @@ The function will find all the valid audio, image and video files in your projec
 Automatically set the project's resolution, encoding parameters, name the exported video file and render the project. By default, it exports a full HD mp4 file optimized for Youtube next to the .blend file, named after the project's directory.
 
 E.g. if your blend file is in "my-video/project.blend", it will export the video as "my-video.mp4".
+
+## Credits
+- [davcri](https://github.com/davcri)
