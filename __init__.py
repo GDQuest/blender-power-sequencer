@@ -26,7 +26,7 @@ bl_info = {
     "blender": (2, 78, 0),
     "location": "sequencer",
     "warning": "This is a Work In Progress",
-    "wiki_url": "https://github.com/NathanLovato/gdquest-vse",
+    "wiki_url": "https://github.com/GDquest/Blender-power-sequencer",
     "support": "COMMUNITY",
     "category": "VSE"
 }
