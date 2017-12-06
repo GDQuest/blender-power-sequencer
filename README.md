@@ -16,6 +16,18 @@ Here are other recommended add-ons for a better editing workflow:
 2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage.
 
 
+# Installation
+
+1. Download the
+[Blender power sequencer zip](https://github.com/GDquest/Blender-power-sequencer/archive/master.zip)
+2. Open Blender
+3. Press <kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>U</kbd> to open _Blender User Preferences_
+4. Click on the `Add-ons` tab
+5. Click the `Install Add-on from File...` button
+6. Select the zip file downloaded in step 1
+7. Activate the VSE: Power Sequencer by clicking on the checkbox
+8. [Optional] Click the `Save User Settings` button to make changes persistent
+
 # Features
 
 ## Mouse-based editing tools
