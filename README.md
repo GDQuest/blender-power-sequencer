@@ -8,6 +8,21 @@ The addon works already, and I use it in production all the time. However, it's 
 
 As there are many features, keymaps aren't automatically added. Version 1 will allow you to add keymaps from the preferences. In the meantime, you can use [this keymap file](https://github.com/GDquest/Blender-power-sequencer/blob/master/utils/power-vse-shortcuts.py). It's in the add-on's `/utils` folder.
 
+## Docs and tutorials
+
+The docs are currently on the [ GitHub Wiki ](https://github.com/GDquest/Blender-power-sequencer/wiki).
+
+We also have a growing list of [ Free video tutorials ](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI).
+
+## Give us a hand!
+
+We're already working together with Davide Cristi (https://github.com/davcri) to help more people create videos with Blender. This add-on is a living, open project, and we'd be glad to welcome new contributors! We need people to:
+
+- Code new features
+- Improve existing features
+- Help solidify the code
+- Write mini-tutorials on the [ docs repository ](https://github.com/GDquest/Blender-power-sequencer-docs/)
+
 ## Other add-ons
 
 Here are other recommended add-ons for a better editing workflow:
