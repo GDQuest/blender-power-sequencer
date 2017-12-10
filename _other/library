@@ -1,4 +1,0 @@
-Library system idea
-Allows you to import content from a folder that's shared between files (absolute path), and to fix this absolute path in your project files if need be (imported stuff from the library should be tagged with custom property)
-Also allows to import strips with anim data
-Should also allow to save strips and/or anim data in a library file (animated mask, etc. i.e. animated intro)

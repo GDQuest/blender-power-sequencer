@@ -156,9 +156,10 @@ class MouseCut(bpy.types.Operator):
                 sequencer.gap_remove()
 
             # Move time cursor back
+            # FIXME: Problem with find_strips_in_range? sorted_sequences is empty be
             if self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                selection = bpy.context.selected_sequences
-                sorted_sequences = sorted(selection, key=attrgetter('frame_final_start'))
+                sequences_in_range = find_strips_in_range(start, end)
+                sorted_sequences = sorted(sequences_in_range, key=attrgetter('frame_final_start'))
                 first_seq = sorted_sequences[0]
 
                 frame = first_seq.frame_final_start - self.cursor_offset \

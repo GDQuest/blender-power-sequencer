@@ -16,7 +16,7 @@ We also have a growing list of [ Free video tutorials ](https://www.youtube.com/
 
 ## Give us a hand!
 
-We're already working together with Davide Cristi (https://github.com/davcri) to help more people create videos with Blender. This add-on is a living, open project, and we'd be glad to welcome new contributors! We need people to:
+We're already working together with [ Davide Cristi ](https://github.com/davcri) to help more people create videos with Blender. This add-on is a living, open project, and we'd be glad to welcome new contributors! We need people to:
 
 - Code new features
 - Improve existing features
@@ -30,6 +30,18 @@ Here are other recommended add-ons for a better editing workflow:
 1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area. The addon auto-registers shortcuts, especially the <kbd>T</kbd> key, to add a Transform effect to selected sequences.
 2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage.
 
+
+# Installation
+
+1. Download the
+[Blender power sequencer zip](https://github.com/GDquest/Blender-power-sequencer/archive/master.zip)
+2. Open Blender
+3. Press <kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>U</kbd> to open _Blender User Preferences_
+4. Click on the `Add-ons` tab
+5. Click the `Install Add-on from File...` button
+6. Select the zip file downloaded in step 1
+7. Activate the VSE: Power Sequencer by clicking on the checkbox
+8. [Optional] Click the `Save User Settings` button to make changes persistent
 
 # Features
 
@@ -56,3 +68,6 @@ The function will find all the valid audio, image and video files in your projec
 Automatically set the project's resolution, encoding parameters, name the exported video file and render the project. By default, it exports a full HD mp4 file optimized for Youtube next to the .blend file, named after the project's directory.
 
 E.g. if your blend file is in "my-video/project.blend", it will export the video as "my-video.mp4".
+
+## Credits
+- [davcri](https://github.com/davcri)
