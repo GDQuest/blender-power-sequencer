@@ -136,16 +136,19 @@ class ImportLocalFootage(bpy.types.Operator):
 
             if name == "VIDEO":
                 import_channel += 1 if self.keep_audio else 0
-                sequencer.movie_strip_add(SEQUENCER_AREA,
-                                          filepath=folder,
-                                          files=files_dict,
-                                          frame_start=frame_current,
-                                          channel=import_channel,
-                                          sound=self.keep_audio)
-                new_sequences.extend(bpy.context.selected_sequences)
-                # Blender places audio tracks on top, we want them under video
-                new_video_sequences.extend(bpy.context.selected_sequences)
-            elif name == "AUDIO":
+                project_root, _ = os.path.split(folder)
+                import_frame = frame_current
+                for d in files_dict:
+                    sequencer.movie_strip_add(SEQUENCER_AREA,
+                                            filepath=os.path.join(folder, d['name']),
+                                            frame_start=import_frame,
+                                            channel=import_channel,
+                                            sound=self.keep_audio)
+                    new_sequences.extend(bpy.context.selected_sequences)
+                    new_video_sequences.extend(bpy.context.selected_sequences)
+
+                    import_frame = bpy.context.selected_sequences[0].frame_final_end
+            if name == "AUDIO":
                 sequencer.sound_strip_add(
                     SEQUENCER_AREA,
                     filepath=folder,
@@ -267,6 +270,6 @@ def files_to_dict(files, folder_path):
         head, tail = os.path.split(filepath_tail)
 
         project_path, subfolder_name = os.path.split(folder_path)
-        dict_form = {'name': os.path.join(subfolder_name, tail), 'subfolder': head}
+        dict_form = {'name': tail, 'subfolder': head}
         dictionary.append(dict_form)
     return dictionary
