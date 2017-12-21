@@ -43,41 +43,6 @@ class Extensions():
     }
 
 
-# TODO: Replace RenderDim and Encoding with that
-class RENDER_SETTINGS():
-    """A list of tuples representing X, Y, resolution percentage, pixel ratio X, Y, FPS and FPS base parameters to use for rendering"""
-
-    class RESOLUTION():
-        HD_FULL = (1920, 1080, 100, 1, 1, 24, 1)
-        HD_READY = (1280, 720, 100, 1, 1, 24, 1)
-        PROXY = (640, 368, 100, 1, 1, 24, 1)
-
-    class ENCODING():
-        MP4_HIGH = ('H264', 'MPEG4', 'H264', 18, 9000, 0, 0, 224 * 8, 2048,
-                    10080000, 'AAC', 192)
-        MP4_MEDIUM = ('H264', 'MPEG4', 'H264', 18, 6000, 0, 0, 224 * 8, 2048,
-                      10080000, 'AAC', 192)
-        MP4_PROXY = ('H264', 'MPEG4', 'H264', 18, 1500, 0, 0, 224 * 8, 2048,
-                     10080000, 'AAC', 192)
-
-# TODO: Create presets that can be accessed using the Enum parameter in the
-# export operator as PRESETS[self.target][self.RESOLUTION] ?
-# PRESETS = {
-#     'youtube': {
-
-#     },
-#     'twitter': {
-
-#     },
-#     'facebook': {
-
-#     },
-#     'proxies': {
-
-#     }
-# }
-
-
 class SearchMode():
     NEXT = 1
     CHANNEL = 2
