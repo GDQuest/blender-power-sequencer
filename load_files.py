@@ -58,71 +58,54 @@ class ImportLocalFootage(bpy.types.Operator):
 
         # Store reference to the Sequencer area to import files to
         for window in bpy.context.window_manager.windows:
-            screen = window.screen
-            for area in screen.areas:
-                if area.type == 'SEQUENCE_EDITOR':
-                    SEQUENCER_AREA = {'window': window,
-                                      'screen': screen,
-                                      'area': area,
-                                      'scene': bpy.context.scene}
-
+            for area in window.screen.areas:
+                if not area.type == 'SEQUENCE_EDITOR':
+                    continue
+                SEQUENCER_AREA = {'window': window, 'screen': window.screen, 'area': area, 'scene': bpy.context.scene}
 
         # Find folders for audio, img and video strips
-        directory = get_working_directory()
-        folders, files, files_dict = {}, {}, {}
-        file_types = "AUDIO", "IMG", "VIDEO"
+        FILE_TYPES = ("AUDIO", "IMG", "VIDEO")
+        project_directory = get_working_directory()
 
-        for folder in os.listdir(path=directory):
-            folder_upper = folder.upper()
-            if folder_upper in file_types:
-                folders[folder_upper] = os.path.join(directory, folder)
+        def find_folders_to_import(parent_directory):
+            folders = {}
+            for folder in os.listdir(path=parent_directory):
+                folder_upper = folder.upper()
+                if folder_upper in FILE_TYPES:
+                    folders[folder_upper] = os.path.join(parent_directory, folder)
+            return folders
 
-        for file_type in file_types:
+
+        folders = find_folders_to_import(project_directory)
+        files = {}
+        for file_type in FILE_TYPES:
             if file_type not in folders.keys():
                 continue
             files[file_type] = find_files(folders[file_type],
                                        Extensions.DICT[file_type],
                                        recursive=file_type == "IMG")
 
-        # TODO: walk the project dir tree and collect all files that have a supported Extension
-        #
-        # files, files_dict = {}, {}
-        # file_types = "AUDIO", "IMG", "VIDEO"
-        # for file_type in file_types:
-        #     files[file_type] = find_files_temp(get_working_directory(),
-        #                                   Extensions.DICT[file_type])
-        # filepaths = []
-        # for dirpath, dirname, filenames in os.walk(directory, topdown=True):
-        # for filename in filenames:
-        #     files.append(os.path.join(dirparth, filename)
-
         # Find or create new text files to keep track of imported material
         TEXT_FILE_PREFIX = 'IMPORT_'
-        texts = bpy.data.texts
         import_files = {}
-        for file_type in file_types:
-            if texts.get(TEXT_FILE_PREFIX + file_type):
-                import_files[file_type] = texts[TEXT_FILE_PREFIX + file_type]
+        for file_type in FILE_TYPES:
+            if bpy.data.texts.get(TEXT_FILE_PREFIX + file_type):
+                import_files[file_type] = bpy.data.texts[TEXT_FILE_PREFIX + file_type]
 
         if not import_files:
-            for name in file_types:
+            for name in FILE_TYPES:
                 import_files[name] = create_text_file(TEXT_FILE_PREFIX + name)
             assert len(import_files) == 3
 
         # Write new imported paths to the text files and import new strips
         channel_offset = 0
         new_sequences, new_video_sequences = [], []
-        for name in file_types:
+        for name in FILE_TYPES:
             if name not in folders.keys():
                 continue
 
-            text_file_content = [
-                line.body
-                for line in bpy.data.texts[TEXT_FILE_PREFIX + name].lines
-            ]
-            new_paths = [path
-                         for path in files[name]
-                         if path not in text_file_content]
+            text_file_content = [line.body for line in bpy.data.texts[TEXT_FILE_PREFIX + name].lines]
+            new_paths = [path for path in files[name] if path not in text_file_content]
             for line in new_paths:
                 bpy.data.texts[TEXT_FILE_PREFIX + name].write(line + "\n")
 
@@ -132,13 +115,13 @@ class ImportLocalFootage(bpy.types.Operator):
             # Import new strips if new files were found
             import_channel = empty_channel + channel_offset
             folder = folders[name]
-            files_dict = files_to_dict(new_paths, folder)
+            import_dict = files_to_dict(new_paths, folder)
 
             if name == "VIDEO":
                 import_channel += 1 if self.keep_audio else 0
                 project_root, _ = os.path.split(folder)
                 import_frame = frame_current
-                for d in files_dict:
+                for d in import_dict:
                     sequencer.movie_strip_add(SEQUENCER_AREA,
                                             filepath=os.path.join(folder, d['name']),
                                             frame_start=import_frame,
@@ -152,13 +135,13 @@ class ImportLocalFootage(bpy.types.Operator):
                 sequencer.sound_strip_add(
                     SEQUENCER_AREA,
                     filepath=folder,
-                    files=files_dict,
+                    files=import_dict,
                     frame_start=frame_current,
                     channel=import_channel)
                 new_sequences.extend(bpy.context.selected_sequences)
             elif name == "IMG":
                 img_frame = frame_current
-                for img in files_dict:
+                for img in import_dict:
                     path = os.path.join(folder, img['subfolder'])
                     # FIXME: temp hack so images import properly
                     file = [{'name': img['name'].replace("img\\", "")}]
@@ -173,11 +156,10 @@ class ImportLocalFootage(bpy.types.Operator):
                     img_frame += self.img_length + self.img_padding
             channel_offset += 1
 
-        # Swap channels for audio and video tracks
         if not new_video_sequences:
             return {"FINISHED"}
 
-        # Reorder the sequences so all MOVIE strips are on top
+        # Swap channels for audio and video tracks
         sequencer.select_all(action='DESELECT')
         for s in new_video_sequences:
             s.select = True
@@ -192,9 +174,9 @@ class ImportLocalFootage(bpy.types.Operator):
         sequencer.meta_separate()
 
         # Set the strips to use proxies based if set in the addon preferences
-        prefs = context.user_preferences.addons[__package__].preferences
-        if prefs.auto_render_proxies:
-            bpy.ops.power_sequencer.set_video_proxies()
+        # prefs = context.user_preferences.addons[__package__].preferences
+        # if prefs.auto_render_proxies:
+        #     bpy.ops.power_sequencer.set_video_proxies()
 
         # Show audio waveforms
         for s in [strip for strip in new_sequences if strip.type == 'SOUND']:
@@ -229,6 +211,7 @@ def find_files(directory,
     from os.path import basename
 
     # TODO: Folder containing img files = img sequence?
+    # Or rather: if files' heads end with 001, 002, 003...
     for ext in file_extensions:
         source_pattern = directory + "/"
         pattern = source_pattern + ext
