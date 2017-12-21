@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2016 Nathan Lovato
+Copyright (C) 2016-2017 Nathan Lovato
 nathan@gdquest.com
 
 Created by Nathan Lovato
@@ -22,10 +22,10 @@ bl_info = {
     "name": "Power Sequencer",
     "description": "Tools for an efficient video editing workflow",
     "author": "Nathan Lovato",
-    "version": (0, 4, 0),
-    "blender": (2, 78, 0),
+    "version": (0, 5, 0),
+    "blender": (2, 79, 0),
     "location": "sequencer",
-    "warning": "This is a Work In Progress",
+    "warning": "Docs and new features in progress",
     "wiki_url": "https://github.com/GDquest/Blender-power-sequencer",
     "support": "COMMUNITY",
     "category": "VSE"
