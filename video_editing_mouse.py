@@ -354,6 +354,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             return {'CANCELLED'}
 
         sequencer = bpy.ops.sequencer
+        time_cursor_start_frame = bpy.context.scene.frame_current
 
         # Convert mouse position to frame, channel
         x, y = context.region.view2d.region_to_view(
@@ -364,7 +365,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         left_cut_frame, right_cut_frame = find_closest_surrounding_cuts(frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
-        margin_frame = self.margin * bpy.context.scene.render.fps
+        margin_frame = round(self.margin * bpy.context.scene.render.fps)
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
             self.report({'WARNING'}, "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
@@ -373,12 +374,12 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         strips_to_delete, strips_to_trim = find_strips_in_range(left_cut_frame, right_cut_frame)
         trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
 
-        print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
-        for s in strips_to_trim:
-            print(s.name)
+        # print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
+        # for s in strips_to_trim:
+        #     print(s.name)
 
         for s in strips_to_trim:
-            # If the strip is larger than the range to trim cut it strip in three
+            # If the strip is larger than the range to trim cut it in three
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
                 sequencer.select_all(action='DESELECT')
                 s.select = True
@@ -405,11 +406,11 @@ class TrimToSurroundingCuts(bpy.types.Operator):
 
 
         if self.remove_gaps:
-            current_frame = bpy.context.scene.frame_current
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
-            bpy.ops.anim.change_frame(frame_to_remove_gap)
+            # bpy.ops.anim.change_frame(frame_to_remove_gap)
+            bpy.context.scene.frame_current = frame_to_remove_gap
             sequencer.gap_remove()
-            bpy.ops.anim.change_frame(current_frame)
+            bpy.context.scene.frame_current = trim_start
         return {'FINISHED'}
 
 
