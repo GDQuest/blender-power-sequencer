@@ -161,6 +161,9 @@ class CycleScenes(bpy.types.Operator):
         screen = bpy.context.screen
 
         scene_count = len(scenes)
+
+        if bpy.context.screen.is_animation_playing:
+            bpy.ops.screen.animation_cancel(restore_frame=False)
         for index in range(scene_count):
             if bpy.context.scene == scenes[index]:
                 bpy.context.screen.scene = scenes[(index + 1) % scene_count]
