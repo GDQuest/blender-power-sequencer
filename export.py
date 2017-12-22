@@ -42,6 +42,12 @@ class RenderForTheWeb(bpy.types.Operator):
         script_file = os.path.realpath(__file__)
         addon_directory = os.path.dirname(script_file)
 
+        # audio
+        if bpy.context.scene.render.ffmpeg.audio_codec == 'NONE':
+            bpy.context.scene.render.ffmpeg.audio_codec = 'AAC'
+            bpy.context.scene.render.ffmpeg.audio_bitrate = 192
+
+        # video
         if self.preset == 'youtube':
             bpy.ops.script.python_file_run(filepath=os.path.join(addon_directory, 'render_presets', 'youtube_1080.py'))
         elif self.preset == 'twitter':
