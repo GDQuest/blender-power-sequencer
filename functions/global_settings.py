@@ -38,7 +38,7 @@ class Extensions():
     DICT = {
         "IMG": ("*.png", "*.jpg", "*.jpeg"),
         "AUDIO": ("*.wav", "*.mp3", "*.ogg"),
-        "VIDEO": ("*.mp4", "*.avi", "*.mts", "*.flv"),
+        "VIDEO": ("*.mp4", "*.avi", "*.mts", "*.flv", "*.mkv", "*.mov"),
         "PSD": ("*.psd")
     }
 
