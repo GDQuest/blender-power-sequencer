@@ -129,8 +129,21 @@ class ImportLocalFootage(bpy.types.Operator):
                                             sound=self.keep_audio)
                     new_sequences.extend(bpy.context.selected_sequences)
                     new_video_sequences.extend(bpy.context.selected_sequences)
-
                     import_frame = bpy.context.selected_sequences[0].frame_final_end
+
+                    audio_strip = None
+                    video_strip = None
+                    for s in bpy.context.selected_sequences:
+                        if s.type == 'SOUND':
+                            audio_strip = s
+                        elif s.type == 'MOVIE':
+                            video_strip = s
+
+                    if not audio_strip:
+                        continue
+                    if abs(audio_strip.frame_final_end - video_strip.frame_final_end) == 1:
+                        audio_strip.frame_final_end = video_strip.frame_final_end
+
             if name == "AUDIO":
                 sequencer.sound_strip_add(
                     SEQUENCER_AREA,
