@@ -5,7 +5,8 @@ from operator import attrgetter
 from .functions.global_settings import SequenceTypes, SearchMode
 from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
-    find_linked, is_in_range, set_preview_range, filter_sequences_by_type
+    find_linked, is_in_range, set_preview_range, filter_sequences_by_type, \
+    find_empty_channel
 
 # ---------------- Operators -----------------------
 # --------------------------------------------------
@@ -502,13 +503,10 @@ class SnapSelectionToCursor(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        selection = sorted(bpy.context.selected_sequences,
-                           key=attrgetter('frame_final_start'))
+        selection = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))
+        time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
+        selection = reversed(selection)
 
-        time_move = selection[
-            0].frame_final_start - bpy.context.scene.frame_current
-
-        from .functions.sequences import find_empty_channel
         empty_channel = find_empty_channel()
 
         for s in selection:
