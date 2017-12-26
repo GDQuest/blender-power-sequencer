@@ -1,6 +1,5 @@
 import bpy
 from bpy.props import EnumProperty, BoolProperty
-from .functions.file_management import create_text_file
 
 # Regex to capture an ID within a string
 ID_REGEX = r'-?([0-9]+)-?'
@@ -109,33 +108,6 @@ class AddNumberedMarker(bpy.types.Operator):
                                          name="",
                                          title_marker=False)
         bpy.ops.marker.rename(name=marker_name)
-        return {'FINISHED'}
-
-
-class TitleMarkersToText(bpy.types.Operator):
-    bl_idname = 'power_sequencer.title_markers_to_text'
-    bl_label = 'PS.Title markers to text'
-    bl_description = 'Outputs the names of the title markers to a text file'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        files = bpy.data.texts
-        FILE_NAME = 'TITLES_VSE'
-
-        if FILE_NAME in files:
-            text_file = files[FILE_NAME]
-        else:
-            text_file = create_text_file(FILE_NAME)
-
-        text_file.clear()
-
-        markers = find_markers(TITLE_REGEX)
-        for m in markers:
-            text_file.write(m.name + '\n')
         return {'FINISHED'}
 
 
