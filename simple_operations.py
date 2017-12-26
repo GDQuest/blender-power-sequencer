@@ -2,6 +2,9 @@
 import bpy
 from bpy.props import EnumProperty, BoolProperty
 from operator import attrgetter
+import os
+from subprocess import Popen
+from platform import system
 from .functions.sequences import get_frame_range, set_preview_range, \
     slice_selection
 
@@ -16,14 +19,10 @@ class OpenProjectDirectory(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        from subprocess import Popen
-        from platform import system
-
-        from .load_files import get_working_directory
-        path = get_working_directory()
+        path = os.path.split(bpy.data.filepath)[0]
 
         if not path:
-            self.report({'WARNING'}, "You have to save your project first.")
+            self.report({'INFO'}, "You have to save your project first.")
             return {'CANCELLED'}
 
         if system() == "Windows":
