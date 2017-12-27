@@ -70,26 +70,25 @@ class ImportLocalFootage(bpy.types.Operator):
 
         imported_sequences, imported_video_sequences = [], []
         import_channel = find_empty_channel()
-        for key in files_to_import.keys():
-            if key == 'video':
-                imported = self.import_videos(project_directory, files_to_import['video'], import_channel)
-                imported_video_sequences.extend(imported)
-                imported_sequences.extend(imported)
-                # Go up 1 more channel if imported video files feature an audio channel
-                if len(imported_video_sequences) > len(files_to_import['video']):
-                    import_channel += 1
-            elif key == 'audio':
-                imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
-                imported_sequences.extend(imported)
-            elif key == 'img':
-                imported = self.import_img(project_directory, files_to_import['img'], import_channel)
-                imported_sequences.extend(imported)
-            import_channel += 1
+        imported_videos_have_audio = False
+        if 'audio' in files_to_import.keys():
+            imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
+            imported_sequences.extend(imported)
+        if 'video' in files_to_import.keys():
+            imported = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
+            imported_sequences.extend(imported)
+            imported_video_sequences.extend(imported)
+            if len(imported_video_sequences) > len(files_to_import['video']):
+                imported_videos_have_audio = True
+        if 'img' in files_to_import.keys():
+            img_import_channel = import_channel + 2 + int(imported_videos_have_audio)
+            imported = self.import_img(project_directory, files_to_import['img'], img_import_channel)
+            imported_sequences.extend(imported)
 
         bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(local_footage_files))
         self.report({'INFO'}, 'Imported {!s} strips from newly found files.'.format(len(imported_sequences)))
 
-        if imported_video_sequences and len(imported_video_sequences) > len(files_to_import['video']):
+        if imported_videos_have_audio:
             sequencer.select_all(action='DESELECT')
             for s in imported_video_sequences:
                 s.select = True
