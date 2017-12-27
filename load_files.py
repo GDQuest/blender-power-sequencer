@@ -1,5 +1,6 @@
 import os
 import bpy
+import json
 from bpy.props import BoolProperty, IntProperty
 from glob import glob
 from os.path import basename
@@ -51,7 +52,6 @@ class ImportLocalFootage(bpy.types.Operator):
             return {'CANCELLED'}
         sequencer = bpy.ops.sequencer
         context = bpy.context
-        frame_current = bpy.context.scene.frame_current
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
         self.SEQUENCER_AREA = self.get_sequencer_area()
@@ -59,100 +59,57 @@ class ImportLocalFootage(bpy.types.Operator):
         project_directory = os.path.split(bpy.data.filepath)[0]
         folders_to_import = [f for f in os.listdir(project_directory) if f in ('audio', 'img', 'video')]
         local_footage_files = self.find_local_footage_files(project_directory, folders_to_import, Extensions.DICT)
-
-        print('Project dir: {!s},\nFolders found: {!s},\nLocal files: {!s}'.format(project_directory, folders_to_import, local_footage_files))
+        # print('Project dir: {!s},\nFolders found: {!s},\nLocal files: {!s}'.format(project_directory, folders_to_import, local_footage_files))
 
         files_to_import = self.find_new_files_to_import(local_footage_files)
         if not files_to_import:
             self.report({'INFO'}, 'No new files to import found')
             return {'FINISHED'}
-        print('Files to import: {!s}'.format(files_to_import))
-
-        return {'FINISHED'}
-
-        # channel_offset = 0
-        # new_sequences, new_video_sequences = [], []
-        # for f in files_to_import.keys():
-        #     import_channel = find_empty_channel() + channel_offset
-        #     if name == "VIDEO":
-        #         video_import_channel = import_channel + 1 if self.keep_audio else import_channel
-        #         project_root, _ = os.path.split(f)
-        #         import_frame = frame_current
-        #         for d in import_dict:
-        #             sequencer.movie_strip_add(SEQUENCER_AREA,
-        #                                       filepath=os.path.join(f, d['name']),
-        #                                       frame_start=import_frame,
-        #                                       channel=video_import_channel,
-        #                                       sound=self.keep_audio)
-        #             new_sequences.extend(bpy.context.selected_sequences)
-        #             new_video_sequences.extend(bpy.context.selected_sequences)
-        #             import_frame = bpy.context.selected_sequences[0].frame_final_end
-
-        #             # FIX audio strip with 1 extra frame
-        #             audio_strip = None
-        #             video_strip = None
-        #             for s in bpy.context.selected_sequences:
-        #                 if s.type == 'SOUND':
-        #                     audio_strip = s
-        #                 elif s.type == 'MOVIE':
-        #                     video_strip = s
-
-        #             if not audio_strip:
-        #                 continue
-        #             if abs(audio_strip.frame_final_end - video_strip.frame_final_end) == 1:
-        #                 audio_strip.frame_final_end = video_strip.frame_final_end
-
-        #     if name == "AUDIO":
-        #         sequencer.sound_strip_add(
-        #             SEQUENCER_AREA,
-        #             filepath=f,
-        #             files=import_dict,
-        #             frame_start=frame_current,
-        #             channel=import_channel)
-        #         new_sequences.extend(bpy.context.selected_sequences)
-        #     elif name == "IMG":
-        #         img_frame = frame_current
-        #         for img in import_dict:
-        #             path = os.path.join(f, img['subfolder'])
-        #             # FIXME: temp hack so images import properly
-        #             file = [{'name': img['name'].replace("img\\", "")}]
-        #             sequencer.image_strip_add(
-        #                 SEQUENCER_AREA,
-        #                 directory=path,
-        #                 files=file,
-        #                 frame_start=img_frame,
-        #                 frame_end=img_frame + self.img_length,
-        #                 channel=import_channel)
-        #             new_sequences.extend(bpy.context.selected_sequences)
-        #             img_frame += self.img_length + self.img_padding
-        #     channel_offset += 1
+        # print('Files to import: {!s}'.format(files_to_import))
 
 
-        # bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(imported_files))
+        imported_sequences, imported_video_sequences = [], []
+        import_channel = find_empty_channel()
+        for key in files_to_import.keys():
+            if key == 'video':
+                imported = self.import_videos(project_directory, files_to_import['video'], import_channel)
+                imported_video_sequences.extend(imported)
+                imported_sequences.extend(imported)
+                # Go up 1 more channel if imported video files feature an audio channel
+                if len(imported_video_sequences) > len(files_to_import['video']):
+                    import_channel += 1
+            elif key == 'audio':
+                imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
+                imported_sequences.extend(imported)
+            elif key == 'img':
+                imported = self.import_img(project_directory, files_to_import['img'], import_channel)
+                imported_sequences.extend(imported)
+            import_channel += 1
 
-        # if not new_video_sequences:
-        #     return {"FINISHED"}
-        # # Swap channels for audio and video tracks
-        # sequencer.select_all(action='DESELECT')
-        # for s in new_video_sequences:
-        #     s.select = True
-        # sequencer.meta_make()
-        # sequencer.meta_toggle()
-        # videos_in_meta = [s for s in bpy.context.selected_sequences if s.type == 'MOVIE']
-        # for s in videos_in_meta:
-        #     s.channel += 2
-        # for s in new_video_sequences:
-        #     s.channel -= 1
-        # sequencer.meta_toggle()
-        # sequencer.meta_separate()
+        bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(local_footage_files))
+        self.report({'INFO'}, 'Imported {!s} strips from newly found files.'.format(len(imported_sequences)))
 
-        # # Show audio waveforms
-        # for s in [strip for strip in new_sequences if strip.type == 'SOUND']:
-        #     s.show_waveform = True
+        if imported_video_sequences and len(imported_video_sequences) > len(files_to_import['video']):
+            sequencer.select_all(action='DESELECT')
+            for s in imported_video_sequences:
+                s.select = True
+            sequencer.meta_make()
+            sequencer.meta_toggle()
 
-        # for s in new_sequences:
-        #     s.select = True
-        # return {"FINISHED"}
+            videos_in_meta = [s for s in bpy.context.selected_sequences if s.type == 'MOVIE']
+            for s in videos_in_meta:
+                s.channel += 2
+            for s in imported_video_sequences:
+                s.channel -= 1
+            sequencer.meta_toggle()
+            sequencer.meta_separate()
+
+        for s in [s for s in imported_sequences if s.type == 'SOUND']:
+            s.show_waveform = True
+
+        for s in imported_sequences:
+            s.select = True
+        return {"FINISHED"}
 
 
     def get_sequencer_area(self):
@@ -239,3 +196,75 @@ class ImportLocalFootage(bpy.types.Operator):
             files_to_import[key] = [p for p in files_dict[key] if p not in set(imported_files[key])]
             imported_files[key].extend(files_to_import[key])
         return files_to_import
+
+
+    def import_videos(self, project_directory, videos_to_import, import_channel):
+        """
+        Imports a list of files using movie_strip_add
+        """
+        video_import_channel = import_channel + 1 if self.keep_audio else import_channel
+        import_frame = bpy.context.scene.frame_current
+        imported_sequences = []
+        for f in videos_to_import:
+            video_file_path = os.path.join(project_directory, f)
+            bpy.ops.sequencer.movie_strip_add(
+                self.SEQUENCER_AREA,
+                filepath=video_file_path,
+                frame_start=import_frame,
+                channel=video_import_channel,
+                sound=self.keep_audio)
+            imported_sequences.extend(bpy.context.selected_sequences)
+            import_frame = bpy.context.selected_sequences[0].frame_final_end
+
+            # FIX audio strip with 1 extra frame
+            audio_strip = None
+            video_strip = None
+            for s in bpy.context.selected_sequences:
+                if s.type == 'SOUND':
+                    audio_strip = s
+                elif s.type == 'MOVIE':
+                    video_strip = s
+
+            if not audio_strip:
+                continue
+            if abs(audio_strip.frame_final_end - video_strip.frame_final_end) == 1:
+                audio_strip.frame_final_end = video_strip.frame_final_end
+        return imported_sequences
+
+
+    def import_audio(self, project_directory, audio_files, import_channel):
+        """
+        Imports audio files as sound strips from absolute file paths
+        Returns the list of newly imported audio files
+        """
+        import_frame = bpy.context.scene.frame_current
+        new_sequences = []
+        for f in audio_files:
+            audio_abs_path = os.path.join(project_directory, f)
+            bpy.ops.sequencer.sound_strip_add(
+                self.SEQUENCER_AREA,
+                filepath=audio_abs_path,
+                frame_start=import_frame,
+                channel=import_channel)
+            new_sequences.extend(bpy.context.selected_sequences)
+            import_frame = bpy.context.selected_sequences[0].frame_final_end
+        return new_sequences
+
+
+    def import_img(self, project_directory, img_files, import_channel):
+        import_frame = bpy.context.scene.frame_current
+        new_sequences = []
+        for f in img_files:
+            head, tail = os.path.split(f)
+            img_directory = os.path.join(project_directory, head)
+            img_file_dict = [{'name': tail}]
+            bpy.ops.sequencer.image_strip_add(
+                self.SEQUENCER_AREA,
+                directory=img_directory,
+                files=img_file_dict,
+                frame_start=import_frame,
+                frame_end=import_frame + self.img_length,
+                channel=import_channel)
+            import_frame += self.img_length + self.img_padding
+            new_sequences.extend(bpy.context.selected_sequences)
+        return new_sequences
