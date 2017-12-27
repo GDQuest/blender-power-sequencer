@@ -1,18 +1,39 @@
-# Power Sequencer: free Blender addon for content creators
+<h1 align="center">
+  Blender Power Sequencer</br>
+  <small>The Free add-on for content creators</small>
+</h1>
 
-Blender's video sequencer has a lot of potential, but it lacks essential tools for content creators to edit fast. I produced [hundreds of tutorials](http://youtube.com/c/gdquest) since 2015, and work exclusively with Blender. Here are the tools I built to edit tutorials faster.
+<p align='center'>
+  <img src="https://raw.githubusercontent.com/GDquest/Blender-power-sequencer/master/img/banner-960w.jpg" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
+</p>
 
-## In alpha state
+Blender's video sequencer has a lot of potential, but it lacks essential tools for content creators to edit videos efficiently.
 
-The addon works already, and I use it in production all the time. However, it's lacking documentation. To find the tools, press <kbd>Spacebar</kbd> and search for 'PS.' (_as in PowerSequencer_).
+I made [hundreds of tutorials](http://youtube.com/c/gdquest) over the years. After working with popular yet unstable professional programs like Vegas and Resolve, I now **work exclusively with Blender**. It does have some limitations, but it's the most stable and versatile tool you'll find out there.
 
-As there are many features, keymaps aren't automatically added. Version 1 will allow you to add keymaps from the preferences. In the meantime, you can use [this keymap file](https://github.com/GDquest/Blender-power-sequencer/blob/master/utils/power-vse-shortcuts.py). It's in the add-on's `/utils` folder.
+I built these tools to edit tutorials as fast as possible. They're getting better month after month, and they're yours for Free.
 
-## Docs and tutorials
+## Features
 
-The docs are currently on the [ GitHub Wiki ](https://github.com/GDquest/Blender-power-sequencer/wiki).
+<p align='center'>
+  <img src="https://i.imgur.com/ZWu6TzT.gif" alt="Power Sequencer in action. Showing import, mouse-based tools and export" />
+</p>
 
-We also have a growing list of [ Free video tutorials ](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI).
+1. **Instant import**: finds and imports all new videos, images and sound files in your project folder
+1. Render HD videos for Youtube, Twitter and Facebook in one keyboard shortcuts: Power Sequencer sets all the rendering parameters for you
+1. **Cut, trim and edit faster than ever** in Blender with smart mouse-based tools
+1. Instant fades and crossfades
+1. Build **better proxies** with FFmpeg, using a Python script in the `utils/` folder
+1. And much more
+
+*To find all available tools, press <kbd>Spacebar</kbd> and search for 'PS.' (as in PowerSequencer).*
+
+## 1.0 alpha
+
+
+To install the add-on, head to the [latest releases](https://github.com/GDquest/Blender-power-sequencer/releases) and follow the instructions there.
+
+It is fairly stable already as I use it every single day for [ GDquest ](http://youtube.com/c/gdquest). But as there are still features in progress for 1.0, it's currently out in 'alpha'. It also ships with a separate keymap file so the many custom shortcuts won't override your existing custom mappings.
 
 ## Give us a hand!
 
@@ -23,6 +44,15 @@ We're already working together with [ Davide Cristi ](https://github.com/davcri)
 - Help solidify the code
 - Write mini-tutorials on the [ docs repository ](https://github.com/GDquest/Blender-power-sequencer-docs/)
 
+There's a convenient list of [Good first issues](https://github.com/GDquest/Blender-power-sequencer/labels/good%20first%20issue) to help you get started. I'm also available to help you navigate the code or if you have questions about the project.
+
+## Learn video editing with Power Sequencer and Blender
+
+The docs are in progress. Until the dedicated website is ready, you can find them on the [ power-sequencer-docs repository ](https://github.com/GDquest/Blender-power-sequencer-docs/). There's also a growing list of [ Free video tutorials ](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI) on Youtube (*14 videos at the time of writing*).
+
+These are not classical docs: on top of Power Sequencer's features, we're looking to help you improve your understanding of Blender's video editing tools too!
+
+
 ## Other add-ons
 
 Here are other recommended add-ons for a better editing workflow:
@@ -30,44 +60,7 @@ Here are other recommended add-ons for a better editing workflow:
 1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area. The addon auto-registers shortcuts, especially the <kbd>T</kbd> key, to add a Transform effect to selected sequences.
 2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage.
 
-
-# Installation
-
-1. Download the
-[Blender power sequencer zip](https://github.com/GDquest/Blender-power-sequencer/archive/master.zip)
-2. Open Blender
-3. Press <kbd>CTRL</kbd>+<kbd>ALT</kbd>+<kbd>U</kbd> to open _Blender User Preferences_
-4. Click on the `Add-ons` tab
-5. Click the `Install Add-on from File...` button
-6. Select the zip file downloaded in step 1
-7. Activate the VSE: Power Sequencer by clicking on the checkbox
-8. [Optional] Click the `Save User Settings` button to make changes persistent
-
-# Features
-
-## Mouse-based editing tools
-
-### Cut and Trim
-
-Cut or trim strips sitting right under the mouse cursor, under the time cursor, or both with the "smart mode", active by default.
-
-## Import and export
-
-### Import local footage
-
-Import videos, audio and pictures sitting around the .blend project file with a single keystroke! For now, you must put the files in subfolders named:
-
-1. audio for the audio files (.wav, etc.)
-2. img for the pictures (.png, etc.)
-3. video for the video clips (.mp4, .mkv, etc.)
-
-The function will find all the valid audio, image and video files in your project's subfolders and import them to the sequencer. The next version will allow you to [use any folder structure](https://github.com/GDquest/GDquest-VSE/issues/2) you'd like.
-
-### Render video for the web
-
-Automatically set the project's resolution, encoding parameters, name the exported video file and render the project. By default, it exports a full HD mp4 file optimized for Youtube next to the .blend file, named after the project's directory.
-
-E.g. if your blend file is in "my-video/project.blend", it will export the video as "my-video.mp4".
-
 ## Credits
+
 - [davcri](https://github.com/davcri)
+- [ Nathan Lovato ](https://twitter.com/NathanGDquest)
