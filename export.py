@@ -65,6 +65,10 @@ class RenderForTheWeb(bpy.types.Operator):
             exported_file_name = bpy.context.scene.name
 
         bpy.context.scene.render.filepath = "//" + exported_file_name + '.mp4'
+
         if self.auto_render:
             bpy.ops.render.render({'dict': "override"}, 'INVOKE_DEFAULT', animation=True)
+            self.report({'INFO'}, 'Rendering {!s} with the {!s} preset'.format(exported_file_name, self.preset))
+        else:
+            self.report({'INFO'}, 'Render settings set to the {!s} preset'.format(self.preset))
         return {"FINISHED"}
