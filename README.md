@@ -11,7 +11,7 @@ Blender's video sequencer has a lot of potential, but it lacks essential tools f
 
 I made [hundreds of tutorials](http://youtube.com/c/gdquest) over the years. After working with popular yet unstable professional programs like Vegas and Resolve, I now **work exclusively with Blender**. It does have some limitations, but it's the most stable and versatile tool you'll find out there.
 
-I built these tools to edit tutorials as fast as possible. They're getting better month after month, and they're yours for Free.
+I built Power Sequencer to help us edit videos as fast as possible. The add-on is getting better month after month, and it's yours for Free.
 
 ## Features
 
