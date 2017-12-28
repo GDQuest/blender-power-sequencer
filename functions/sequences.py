@@ -100,12 +100,11 @@ def find_strips_mouse(frame=None, channel=None, select_linked=True):
     """
     sequences = bpy.context.sequences
     selection = []
-    if not sequences:
-        raise AttributeError('Missing sequences parameter')
 
     for s in sequences:
-        channel_check = True if s.channel == channel else False
-        if channel_check and s.frame_final_start <= frame <= s.frame_final_end:
+        if not s.channel == channel:
+            continue
+        if s.frame_final_start <= frame <= s.frame_final_end:
             selection.append(s)
             break
 
