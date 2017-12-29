@@ -63,7 +63,7 @@ class ImportLocalFootage(bpy.types.Operator):
 
         files_to_import = self.find_new_files_to_import(local_footage_files)
         if not files_to_import:
-            self.report({'INFO'}, 'No new files to import found')
+            self.report({'INFO'}, "No new files to import found")
             return {'FINISHED'}
         # print('Files to import: {!s}'.format(files_to_import))
 
@@ -71,11 +71,14 @@ class ImportLocalFootage(bpy.types.Operator):
         imported_sequences, imported_video_sequences = [], []
         import_channel = find_empty_channel()
         imported_videos_have_audio = False
+
+        warnings = []
+        start_fps, start_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
         if 'audio' in files_to_import.keys():
             imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
             imported_sequences.extend(imported)
         if 'video' in files_to_import.keys():
-            imported = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
+            imported, warnings = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
             imported_sequences.extend(imported)
             imported_video_sequences.extend(imported)
             if len(imported_video_sequences) > len(files_to_import['video']):
@@ -86,7 +89,17 @@ class ImportLocalFootage(bpy.types.Operator):
             imported_sequences.extend(imported)
 
         bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(local_footage_files))
-        self.report({'INFO'}, 'Imported {!s} strips from newly found files.'.format(len(imported_sequences)))
+
+        if warnings:
+            for file_name in warnings:
+                print("{}'s framerate is different from the project.".format(file_name))
+            print("Blender doesn't support editing with multiple different framerates in the same scene.",
+                  "You should check the source files' framerate with ffprobe and transcode them with ffmpeg.")
+        new_fps, new_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
+        if new_fps != start_fps or new_fps_base != start_fps_base:
+            start_framerate = round(start_fps / start_fps_base, 2)
+            new_framerate = round(new_fps / new_fps_base, 2)
+            print("The project's framerate changed from {} to {}".format(start_framerate, new_framerate))
 
         if imported_videos_have_audio:
             sequencer.select_all(action='DESELECT')
@@ -108,7 +121,9 @@ class ImportLocalFootage(bpy.types.Operator):
 
         for s in imported_sequences:
             s.select = True
-        return {"FINISHED"}
+
+        self.report({'INFO'}, "Imported {!s} strips from newly found files.".format(len(imported_sequences)))
+        return {'FINISHED'}
 
 
     def get_sequencer_area(self):
@@ -200,18 +215,27 @@ class ImportLocalFootage(bpy.types.Operator):
     def import_videos(self, project_directory, videos_to_import, import_channel):
         """
         Imports a list of files using movie_strip_add
+        Checks if the scene's framerate changes after importing the strips
+        and if the video and audio strips' lengths are different,
+        in which case it means the framerate is different from the Blender project
+
+        Returns the list of imported sequences and
+        an optional warning message if strips don't follow the project's fps
         """
         video_import_channel = import_channel + 1 if self.keep_audio else import_channel
         import_frame = bpy.context.scene.frame_current
-        imported_sequences = []
-        for f in videos_to_import:
+
+        imported_sequences, warnings  = [], []
+        for index, f in enumerate(videos_to_import):
+            is_first_import = index == 0
             video_file_path = os.path.join(project_directory, f)
             bpy.ops.sequencer.movie_strip_add(
                 self.SEQUENCER_AREA,
                 filepath=video_file_path,
                 frame_start=import_frame,
                 channel=video_import_channel,
-                sound=self.keep_audio)
+                sound=self.keep_audio,
+                use_framerate=is_first_import)
             imported_sequences.extend(bpy.context.selected_sequences)
             import_frame = bpy.context.selected_sequences[0].frame_final_end
 
@@ -226,9 +250,14 @@ class ImportLocalFootage(bpy.types.Operator):
 
             if not audio_strip:
                 continue
-            if abs(audio_strip.frame_final_end - video_strip.frame_final_end) == 1:
+            strips_duration_difference = abs(audio_strip.frame_final_end - video_strip.frame_final_end)
+            if strips_duration_difference == 1:
                 audio_strip.frame_final_end = video_strip.frame_final_end
-        return imported_sequences
+            # TODO: defer warnings to the end of the operator's code
+            # Return a tuple of video, audio strip so you can compare them later
+            elif strips_duration_difference > 1:
+                warnings.append(bpy.path.basename(video_strip.filepath))
+        return imported_sequences, warnings
 
 
     def import_audio(self, project_directory, audio_files, import_channel):
