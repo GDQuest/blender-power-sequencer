@@ -40,6 +40,10 @@ class ImportLocalFootage(bpy.types.Operator):
         default=24,
         min=1)
 
+    start_fps, start_fps_base = None, None
+    new_fps, new_fps_base = None, None
+    warnings = []
+
     @classmethod
     def poll(cls, context):
         return True
@@ -72,13 +76,13 @@ class ImportLocalFootage(bpy.types.Operator):
         import_channel = find_empty_channel()
         imported_videos_have_audio = False
 
-        warnings = []
-        start_fps, start_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
+        self.warnings = []
+        self.start_fps, self.start_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
         if 'audio' in files_to_import.keys():
             imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
             imported_sequences.extend(imported)
         if 'video' in files_to_import.keys():
-            imported, warnings = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
+            imported, self.warnings = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
             imported_sequences.extend(imported)
             imported_video_sequences.extend(imported)
             if len(imported_video_sequences) > len(files_to_import['video']):
@@ -90,16 +94,7 @@ class ImportLocalFootage(bpy.types.Operator):
 
         bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(local_footage_files))
 
-        if warnings:
-            for file_name in warnings:
-                print("{}'s framerate is different from the project.".format(file_name))
-            print("Blender doesn't support editing with multiple different framerates in the same scene.",
-                  "You should check the source files' framerate with ffprobe and transcode them with ffmpeg.")
-        new_fps, new_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
-        if new_fps != start_fps or new_fps_base != start_fps_base:
-            start_framerate = round(start_fps / start_fps_base, 2)
-            new_framerate = round(new_fps / new_fps_base, 2)
-            print("The project's framerate changed from {} to {}".format(start_framerate, new_framerate))
+        self.new_fps, self.new_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
 
         if imported_videos_have_audio:
             sequencer.select_all(action='DESELECT')
@@ -122,8 +117,39 @@ class ImportLocalFootage(bpy.types.Operator):
         for s in imported_sequences:
             s.select = True
 
-        self.report({'INFO'}, "Imported {!s} strips from newly found files.".format(len(imported_sequences)))
+        if self.warnings or (start_framerate and new_framerate):
+            context.window_manager.invoke_popup(self)
+        else:
+            self.report({'INFO'}, "Imported {!s} strips from newly found files.".format(len(imported_sequences)))
         return {'FINISHED'}
+
+
+    def draw(self, context):
+        start_framerate, new_framerate = 0, 0
+        if self.new_fps != self.start_fps or self.new_fps_base != self.start_fps_base:
+            start_framerate = round(self.start_fps / self.start_fps_base, 2)
+            new_framerate = round(self.new_fps / self.new_fps_base, 2)
+
+        self.layout.label("Import warnings", icon='ERROR')
+
+        if start_framerate and new_framerate:
+            self.layout.label("The project's framerate changed")
+            self.layout.label("from {} to {}".format(start_framerate, new_framerate))
+            self.layout.separator()
+
+        if self.warnings:
+            box = self.layout.box()
+            box.label("These files' framerate differs")
+            box.label("from the project's framerate:")
+            for file_name in self.warnings:
+                box.label(file_name, icon='FILE_MOVIE')
+
+            self.layout.separator()
+
+            self.layout.label("Blender doesn't support files with")
+            self.layout.label("different framerates in the same scene.")
+            self.layout.label("Check the source files' framerate")
+            self.layout.label("and transcode them with ffmpeg.")
 
 
     def get_sequencer_area(self):
