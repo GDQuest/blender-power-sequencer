@@ -48,12 +48,20 @@ class MouseCut(bpy.types.Operator):
         description=
         "Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
-    cut_mode = EnumProperty(
-        items=[('cut', 'Cut', 'Cut the strips'),
-               ('trim', 'Trim', 'Trim the selection')],
-        name='Cut mode',
-        description='Cut or trim the selection',
-        default='cut')
+    select_linked = BoolProperty(
+        name="Use linked time",
+        description=
+        "In mouse or smart mode, always cut linked strips if this is checked",
+        default=False)
+    remove_gaps = BoolProperty(
+        name="Remove gaps",
+        description="When trimming the sequences, remove gaps automatically",
+        default=False)
+    cut_gaps = BoolProperty(
+        name="Cut gaps",
+        description="If you click on a gap, remove it",
+        default=True)
+
     auto_move_cursor = BoolProperty(
         name="Auto move cursor",
         description=
@@ -65,35 +73,19 @@ class MouseCut(bpy.types.Operator):
         "On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
         min=0)
-    select_linked = BoolProperty(
-        name="Use linked time",
-        description=
-        "In mouse or smart mode, always cut linked strips if this is checked",
-        default=False)
-
-    remove_gaps = BoolProperty(
-        name="Remove gaps",
-        description="When trimming the sequences, remove gaps automatically",
-        default=False)
-    cut_gaps = BoolProperty(
-        name="Cut gaps",
-        description="If you click on a gap, remove it",
-        default=True)
-    snap = BoolProperty(
-        name="Snap trim",
-        description="When trimming, snap to closest cuts",
-        default=False)
 
     start_frame, start_channel = 0, 0
     end_frame, end_channel = 0, 0
-    select_mouse = ''
-    action_mouse = ''
+    select_mouse, action_mouse = '', ''
+    cut_mode = ''
 
     @classmethod
     def poll(cls, context):
         return context.sequences is not None
 
     def invoke(self, context, event):
+        # TODO: to detect tablets, check if there's pressure?
+        # On tablets you need some distance frame in which it works in legacy cut/trim mode
         x, y = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
             y=event.mouse_region_y)
@@ -111,79 +103,22 @@ class MouseCut(bpy.types.Operator):
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
+
     def modal(self, context, event):
-        # TODO: to detect tablets, check if there's pressure?
-        # On tablets you need some distance frame in which it works in legacy cut/trim mode
         if event.type in {'LEFTMOUSE', 'RIGHTMOUSE'}:
             print('type: {!s}, value: {!s}'.format(event.type, event.value))
         if event.type in {'ESC'}:
             return {'CANCELLED'}
-        # TODO: Shift toggles time_cursor selection mode
         elif event.type == self.action_mouse and event.value == 'RELEASE':
-            print('start: {}, end: {}'.format(self.start_frame, self.end_frame))
+            self.select_mode = 'cursor' if event.shift else 'smart'
             if self.start_frame == self.end_frame:
                 to_select = self.find_strips_to_select(self.start_frame, self.start_channel)
-                if not to_select and self.cut_mode != 'cut':
-                    return {'CANCELLED'}
-
                 bpy.ops.sequencer.select_all(action='DESELECT')
                 for s in to_select:
                     s.select = True
-
-                if self.cut_mode == 'cut':
-                    print('yoho')
-                    self.cut_strips_or_gap()
-                elif self.cut_mode == 'trim':
-                    selection_start_frame, selection_end_frame = get_frame_range(to_select)
-                    to_delete = self.find_strips_to_delete(self.start_frame, selection_start_frame, selection_end_frame)
-                    self.trim_and_delete_strips(to_delete)
-                if self.remove_gaps:
-                    bpy.context.scene.frame_current = self.start_frame - 1
-                    bpy.ops.sequencer.gap_remove()
-
-                # TODO: Move to trim operator
-                # Snap to closest cut
-                # if self.snap and self.cut_mode == 'trim':
-                #     self.start_frame = find_snap_candidate(self.start_frame)
-                #     print("old {!s} / new {!s}".format(old_frame, frame))
-
-                # TODO: Move to trim operator
-                # self.move_time_cursor_back(self.auto_move_cursor)
-                # def move_time_cursor_back(self):
-                #     if not self.auto_move_cursor and bpy.context.screen.is_animation_playing:
-                #         return
-                #     sequences_in_range = find_strips_in_range(start, end)
-                #     sorted_sequences = sorted(sequences_in_range, key=attrgetter('frame_final_start'))
-                #     first_seq = sorted_sequences[0]
-                #     frame = first_seq.frame_final_start - self.cursor_offset \
-                #         if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
-                #         else frame
-                #     bpy.context.scene.frame_current = self.start_frame
-                bpy.ops.sequencer.select_all(action='DESELECT')
+                self.cut_strips_or_gap()
             else:
-                # TODO: replace with a generic trim operator e..g power_sequencer.trim_strips(start, end)
-                # This way it'll work in the modal op and non-modal too
-                # TODO: Add support for smart mode (trim one strip at a time)
-                trim_start = self.start_frame if self.start_frame <= self.end_frame else self.end_frame
-                trim_end = self.end_frame if self.end_frame >= self.start_frame else self.start_frame
-                strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
-                for s in strips_to_trim:
-                    if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
-                        bpy.ops.sequencer.select_all(action='DESELECT')
-                        s.select = True
-                        bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
-                        bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
-                        strips_to_delete.append(bpy.context.selected_sequences[0])
-                        continue
-                    elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
-                        s.frame_final_start = trim_end
-                    elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
-                        s.frame_final_end = trim_start
-
-                bpy.ops.sequencer.select_all(action='DESELECT')
-                for s in strips_to_delete:
-                    s.select = True
-                bpy.ops.sequencer.delete()
+                bpy.ops.power_sequencer.mouse_trim(start_frame=self.start_frame, end_frame=self.end_frame, select_mode='cursor')
             return {'FINISHED'}
         elif event.type == 'MOUSEMOVE':
             x, y = context.region.view2d.region_to_view(
@@ -193,6 +128,7 @@ class MouseCut(bpy.types.Operator):
             bpy.context.scene.frame_current = self.end_frame
             return {'PASS_THROUGH'}
         return {'RUNNING_MODAL'}
+
 
     def find_strips_to_select(self, start_frame, start_channel):
         """
@@ -251,6 +187,118 @@ class MouseCut(bpy.types.Operator):
         for s in to_delete:
             s.select = True
         bpy.ops.sequencer.delete()
+
+
+
+class MouseTrim(bpy.types.Operator):
+    """
+    Trims a frame range or a selection from a start to an end frame.
+    If there's no precise time range, auto trims based on the closest cut
+
+    Args:
+    - start_frame and end_frame (int) define the frame range to trim
+    """
+    bl_idname = "power_sequencer.mouse_trim"
+    bl_label = "PS.Mouse trim strips"
+    bl_options = {'REGISTER', 'UNDO'}
+
+
+    select_mode = EnumProperty(
+        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
+               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
+        name="Selection mode",
+        description= "Auto-select the strip you click on or that the time cursor overlaps",
+        default='smart')
+    select_linked = BoolProperty(
+        name="Use linked time",
+        description= "If auto-select, cut linked strips if checked",
+        default=False)
+    start_frame, end_frame = IntProperty(), IntProperty()
+    to_select = []
+
+    @classmethod
+    def poll(cls, context):
+        return context.sequences is not None
+
+    def execute(self, context):
+        print('start: {}, end: {}'.format(self.start_frame, self.end_frame))
+
+        trim_start = self.start_frame if self.start_frame <= self.end_frame else self.end_frame
+        trim_end = self.end_frame if self.end_frame >= self.start_frame else self.start_frame
+        strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
+        for s in strips_to_trim:
+            if self.select_mode in ('smart', 'mouse') and s not in self.to_select:
+                continue
+            if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
+                bpy.ops.sequencer.select_all(action='DESELECT')
+                s.select = True
+                bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
+                bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
+                strips_to_delete.append(bpy.context.selected_sequences[0])
+                continue
+            elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
+                s.frame_final_start = trim_end
+            elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
+                s.frame_final_end = trim_start
+
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        for s in strips_to_delete:
+            s.select = True
+        bpy.ops.sequencer.delete()
+
+        # bpy.context.scene.frame_current = self.start_frame
+        # TODO: remove gaps
+        # if self.remove_gaps:
+        #     bpy.context.scene.frame_current = self.start_frame - 1
+        #     bpy.ops.sequencer.gap_remove()
+        return {'FINISHED'}
+
+
+    def invoke(self, context, event):
+        # TODO: Move to trim operator
+        # Snap to closest cut
+        # if self.snap and self.cut_mode == 'trim':
+        #     self.start_frame = find_snap_candidate(self.start_frame)
+        #     print("old {!s} / new {!s}".format(old_frame, frame))
+
+        # TODO: Move to trim operator
+        # self.move_time_cursor_back(self.auto_move_cursor)
+        # def move_time_cursor_back(self):
+        #     if not self.auto_move_cursor and bpy.context.screen.is_animation_playing:
+        #         return
+        #     sequences_in_range = find_strips_in_range(start, end)
+        #     sorted_sequences = sorted(sequences_in_range, key=attrgetter('frame_final_start'))
+        #     first_seq = sorted_sequences[0]
+        #     frame = first_seq.frame_final_start - self.cursor_offset \
+        #         if abs(frame - first_seq.frame_final_start) < first_seq.frame_final_duration / 2 \
+        #         else frame
+        #     bpy.context.scene.frame_current = self.start_frame
+        if not self.start_frame or self.end_frame:
+            bpy.ops.sequencer.select_all(action='DESELECT')
+
+            x, y = context.region.view2d.region_to_view(
+                x=event.mouse_region_x,
+                y=event.mouse_region_y)
+            frame, channel = round(x), floor(y)
+            self.to_select = find_strips_mouse(frame, channel, self.select_linked)
+
+            if self.select_mode in ('mouse', 'smart'):
+                if self.to_select:
+                    for s in self.to_select:
+                        s.select = True
+                elif self.select_mode == 'mouse':
+                    return {"CANCELLED"}
+            if self.select_mode == 'cursor' or (not self.to_select and self.select_mode == 'smart'):
+                for s in bpy.context.sequences:
+                    if s.frame_final_start <= frame <= s.frame_final_end:
+                        s.select = True
+
+            selection_start, selection_end = get_frame_range(bpy.context.selected_sequences)
+            self.start_frame = frame
+            self.end_frame = selection_end if abs(self.start_frame - selection_end) <= abs(self.start_frame - selection_start) else selection_start
+        self.execute(context)
+        return {'FINISHED'}
 
 
 
