@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import EnumProperty, BoolProperty
 
-# Regex to capture an ID within a string
+# TODO: Move these global constants into classes
 ID_REGEX = r'-?([0-9]+)-?'
 
 TITLE_PREFIX = r'TITLE'
@@ -10,6 +10,8 @@ TITLE_REGEX = r'^' + TITLE_PREFIX + ID_REGEX
 NOTE_REGEX = r'^' + NOTE_PREFIX + ID_REGEX
 
 
+# TODO: rewrite to sync strips to corresponding identifiers instead
+# See https://github.com/GDquest/Blender-power-sequencer/issues/55
 class SyncTitles(bpy.types.Operator):
     bl_idname = 'power_sequencer.synchronize_titles'
     bl_label = 'PS.Synchronize titles'
@@ -71,44 +73,6 @@ def match_sequences_and_markers(sequences, markers, regex):
                 return_list.append((s, m))
                 break
     return return_list
-
-
-class AddTitleMarker(bpy.types.Operator):
-    bl_idname = 'power_sequencer.add_title_marker'
-    bl_label = 'PS.Add title marker'
-    bl_description = 'Add a title marker to quickly sync TITLE strips'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        bpy.ops.marker.add()
-        marker_name = create_marker_name(prefix=TITLE_PREFIX,
-                                         name="",
-                                         title_marker=True)
-        bpy.ops.marker.rename(name=marker_name)
-        return {'FINISHED'}
-
-
-class AddNumberedMarker(bpy.types.Operator):
-    bl_idname = 'power_sequencer.add_numbered_marker'
-    bl_label = 'PS.Add numbered marker'
-    bl_description = 'Add a numbered marker to quickly sync image'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        bpy.ops.marker.add()
-        marker_name = create_marker_name(prefix=NOTE_PREFIX,
-                                         name="",
-                                         title_marker=False)
-        bpy.ops.marker.rename(name=marker_name)
-        return {'FINISHED'}
 
 
 def create_marker_name(title_marker=False, prefix="", name="", use_id=True):
