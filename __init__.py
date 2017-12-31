@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2016-2017 Nathan Lovato
+Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi
 nathan@gdquest.com
 
 Created by Nathan Lovato
@@ -20,13 +20,13 @@ Created by Nathan Lovato
 
 bl_info = {
     "name": "Power Sequencer",
-    "description": "Tools for an efficient video editing workflow",
+    "description": "Video editing tools for content creators",
     "author": "Nathan Lovato",
-    "version": (0, 5, 0),
+    "version": (0, 9, 0),
     "blender": (2, 79, 0),
     "location": "sequencer",
-    "warning": "Docs and new features in progress",
-    "wiki_url": "https://github.com/GDquest/Blender-power-sequencer",
+    "warning": "Beta release, may contain bugs",
+    "wiki_url": "https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI",
     "support": "COMMUNITY",
     "category": "VSE"
 }
@@ -69,5 +69,4 @@ def unregister():
         traceback.print_exc()
 
     handlers_unregister()
-
     print("Unregistered {}".format(bl_info["name"]))
