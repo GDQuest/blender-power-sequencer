@@ -8,8 +8,6 @@ from .functions.sequences import find_next_sequences, \
     find_linked, is_in_range, set_preview_range, filter_sequences_by_type, \
     find_empty_channel
 
-# ---------------- Operators -----------------------
-# --------------------------------------------------
 # TODO: Make it work with 2+ selected strips
 # TODO: make it work with pictures and transform strips
 # TODO: If source strip has a special blending mode, use that for crossfade?
@@ -516,7 +514,7 @@ class BorderSelect(bpy.types.Operator):
 
 class GrabSequenceHandle(bpy.types.Operator):
     """
-    Operator that extends the sequence based on the mouse position.
+    Extends the sequence based on the mouse position.
     If the cursor is to the right of the sequence's middle,
     it moves the right handle.
     If it's on the left side, it moves the left handle.
