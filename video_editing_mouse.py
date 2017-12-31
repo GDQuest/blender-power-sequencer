@@ -3,9 +3,41 @@ from math import floor, sqrt
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty, StringProperty
-from .functions.sequences import find_strips_mouse, find_effect_strips, get_frame_range
+from .functions.sequences import find_effect_strips, get_frame_range
 from operator import attrgetter
 # import blf
+
+
+def find_strips_mouse(frame=None, channel=None, select_linked=True):
+    """
+    Finds a list of sequences to select based on the mouse position
+    or using the time cursor.
+
+    Args:
+    - frame: the frame the mouse or cursor is on
+    - channel: the channel the mouse is hovering
+    - select_linked: include the sequences linked in time if True
+
+    Returns the sequence(s) under the mouse cursor as a list
+    Returns an empty list if nothing found
+    """
+    sequences = bpy.context.sequences
+    selection = []
+
+    for s in sequences:
+        if not s.channel == channel:
+            continue
+        if s.frame_final_start <= frame <= s.frame_final_end:
+            selection.append(s)
+            break
+
+    if select_linked and len(selection) > 0:
+        for s in sequences:
+            if s.channel == selection[0].channel:
+                continue
+            if s.frame_final_start == selection[0].frame_final_start and s.frame_final_end == selection[0].frame_final_end:
+                selection.append(s)
+    return selection
 
 
 def find_snap_candidate(frame=0):
@@ -203,6 +235,7 @@ class MouseTrim(bpy.types.Operator):
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
+
     start_frame, end_frame = IntProperty(), IntProperty()
     to_select = []
 
@@ -213,11 +246,12 @@ class MouseTrim(bpy.types.Operator):
     def execute(self, context):
         # print('start: {}, end: {}'.format(self.start_frame, self.end_frame))
 
-        trim_start = self.start_frame if self.start_frame <= self.end_frame else self.end_frame
-        trim_end = self.end_frame if self.end_frame >= self.start_frame else self.start_frame
+        trim_start = min(self.start_frame, self.end_frame)
+        trim_end = max(self.start_frame, self.end_frame)
+
         strips_to_delete, strips_to_trim = find_strips_in_range(trim_start, trim_end)
         for s in strips_to_trim:
-            if self.select_mode in ('smart', 'mouse') and s not in self.to_select:
+            if self.select_mode == 'mouse' and s not in self.to_select:
                 continue
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
                 bpy.ops.sequencer.select_all(action='DESELECT')
@@ -232,6 +266,9 @@ class MouseTrim(bpy.types.Operator):
                 s.frame_final_end = trim_start
 
         bpy.ops.sequencer.select_all(action='DESELECT')
+        if not self.select_mode == 'cursor':
+            return {'FINISHED'}
+
         for s in strips_to_delete:
             s.select = True
         bpy.ops.sequencer.delete()
@@ -249,28 +286,39 @@ class MouseTrim(bpy.types.Operator):
         #     print("old {!s} / new {!s}".format(old_frame, frame))
 
         if not self.start_frame or self.end_frame:
-            bpy.ops.sequencer.select_all(action='DESELECT')
-
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x,
                 y=event.mouse_region_y)
             frame, channel = round(x), floor(y)
-            self.to_select = find_strips_mouse(frame, channel, self.select_linked)
 
-            if self.select_mode in ('mouse', 'smart'):
-                if self.to_select:
-                    for s in self.to_select:
-                        s.select = True
-                elif self.select_mode == 'mouse':
-                    return {"CANCELLED"}
-            if self.select_mode == 'cursor' or (not self.to_select and self.select_mode == 'smart'):
+            mouse_clicked_strip = find_strips_mouse(frame, channel, self.select_linked)
+            if self.select_mode == 'smart' and mouse_clicked_strip:
+                self.select_mode = 'mouse'
+            else:
+                self.select_mode = 'cursor'
+
+            to_select = []
+            if self.select_mode == 'mouse':
+                if mouse_clicked_strip == []:
+                    return {'CANCELLED'}
+                to_select.extend(mouse_clicked_strip)
+            if self.select_mode == 'cursor':
                 for s in bpy.context.sequences:
                     if s.frame_final_start <= frame <= s.frame_final_end:
-                        s.select = True
+                        to_select.append(s)
 
-            selection_start, selection_end = get_frame_range(bpy.context.selected_sequences)
+            # TODO: detect intermediate cuts inside the selection?
+            # Currently only getting the full range of the selection, but e.g. if 3/4 stacked strips
+            # it doesn't trim from/to the closest cut.
+            # use find_closest_surrounding_cuts ?
+            selection_start, selection_end = get_frame_range(to_select)
             self.start_frame = frame
-            self.end_frame = selection_end if abs(self.start_frame - selection_end) <= abs(self.start_frame - selection_start) else selection_start
+            self.end_frame = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
+            bpy.context.scene.frame_current = frame
+            # print('selection start {} / end {}'.format(selection_start, selection_end))
+            # print('trim start {} / end {}'.format(self.start_frame, self.end_frame))
+
+        self.to_select = to_select
         self.execute(context)
         return {'FINISHED'}
 
