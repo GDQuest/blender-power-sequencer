@@ -298,31 +298,6 @@ class ConcatenateStrips(bpy.types.Operator):
         return {"FINISHED"}
 
 
-class SelectShortStrips(bpy.types.Operator):
-    bl_idname = "power_sequencer.select_short_strips"
-    bl_label = "PS.Select short strips"
-    bl_description = "Filters the current selection down to the strips that are \
-        less than the 'Max strip length' frames long."
-
-    bl_options = {'REGISTER', 'UNDO'}
-
-    max_strip_length = IntProperty(
-        name="Max strip length",
-        description="Length of the selected strips in frames",
-        default=8,
-        min=1)
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        for s in bpy.context.selected_sequences:
-            if s.frame_final_duration > self.max_strip_length:
-                s.select = False
-        return {"FINISHED"}
-
-
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
     bl_idname = "power_sequencer.smart_snap"
