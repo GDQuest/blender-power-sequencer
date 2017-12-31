@@ -307,16 +307,10 @@ class MouseTrim(bpy.types.Operator):
                     if s.frame_final_start <= frame <= s.frame_final_end:
                         to_select.append(s)
 
-            # TODO: detect intermediate cuts inside the selection?
-            # Currently only getting the full range of the selection, but e.g. if 3/4 stacked strips
-            # it doesn't trim from/to the closest cut.
-            # use find_closest_surrounding_cuts ?
             selection_start, selection_end = get_frame_range(to_select)
             self.start_frame = frame
             self.end_frame = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
             bpy.context.scene.frame_current = frame
-            # print('selection start {} / end {}'.format(selection_start, selection_end))
-            # print('trim start {} / end {}'.format(self.start_frame, self.end_frame))
 
         self.to_select = to_select
         self.execute(context)
