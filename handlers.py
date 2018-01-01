@@ -1,5 +1,6 @@
 import bpy
 from bpy.app.handlers import persistent
+from . import addon_updater_ops
 
 
 class PowerSequencerProps(bpy.types.PropertyGroup):
@@ -101,9 +102,20 @@ def draw_playback_speed(self, context):
     layout.prop(scene.power_sequencer, 'playback_speed')
 
 
+def draw_check_for_update(self, context):
+    # Call to check for update in background
+    # note: built-in checks ensure it runs at most once
+    # and will run in the background thread, not blocking
+    # or hanging blender
+    # Internally also checks to see if auto-check enabled
+    # and if the time interval has passed
+    addon_updater_ops.check_for_update_background()
+
+
 def handlers_register():
     # MENUS
     bpy.types.SEQUENCER_HT_header.append(draw_playback_speed)
+    bpy.types.SEQUENCER_HT_header.append(draw_check_for_update)
 
     # HANDLERS
     load_post = bpy.app.handlers.load_post
@@ -123,6 +135,7 @@ def handlers_register():
 def handlers_unregister():
     # MENUS
     bpy.types.SEQUENCER_HT_header.remove(draw_playback_speed)
+    bpy.types.SEQUENCER_HT_header.remove(draw_check_for_update)
 
     # HANDLERS
     load_post = bpy.app.handlers.load_post
