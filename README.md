@@ -28,12 +28,11 @@ I built Power Sequencer to help us edit videos as fast as possible. The add-on i
 
 *To find all available tools, press <kbd>Spacebar</kbd> and search for 'PS.' (as in PowerSequencer).*
 
-## 1.0 alpha
-
+## Download the beta release
 
 To install the add-on, head to the [latest releases](https://github.com/GDquest/Blender-power-sequencer/releases) and follow the instructions there.
 
-It is fairly stable already as I use it every single day for [ GDquest ](http://youtube.com/c/gdquest). But as there are still features in progress for 1.0, it's currently out in 'alpha'. It also ships with a separate keymap file so the many custom shortcuts won't override your existing custom mappings.
+It is stable already as I use it every single day for [ GDquest ](http://youtube.com/c/gdquest). It ships with a separate keymap file so the many custom shortcuts won't override your existing custom mappings.
 
 ## Give us a hand!
 
@@ -52,6 +51,250 @@ The docs are in progress. Until the dedicated website is ready, you can find the
 
 These are not classical docs: on top of Power Sequencer's features, we're looking to help you improve your understanding of Blender's video editing tools too!
 
+**Docs Contents**
+
+- [Import local footage](#import-local-footage)
+- [Cut and Trim with the Mouse](#cut-and-trim-with-the-mouse)
+    - [Cut strips](#cut-strips)
+    - [Trim strips](#trim-strips)
+    - [Toggle Mute strips](#toggle-mute-strips)
+- [Crossfades](#crossfades)
+- [Fade-in and fade-out](#fade-in-and-fade-out)
+- [Render videos for the web](#render-videos-for-the-web)
+
+
+## Import local footage ##
+
+Imports all images, videos and audios from folders named respectively: `img`, `video` and `audio`.
+
+![Import Local Footage](https://imgur.com/9cZEAny.gif)
+
+1. Create folders named `img`, `video` and `audio` inside your Blender project folder (where your *.blend* file is)
+2. Put your source images, videos and audio files in the corresponding folders
+3. In Blender, press <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd> (shortcut for `PS.Import local footage` operator)
+
+*You must save your Blender project before you use this feature.*
+
+## Cut and Trim with the Mouse ##
+
+You can cut and trim strips with mouse clicks using the add-on.
+
+The cut and trim tool has two main modes:
+
+1. The **smart** mode is the default. If you click on a strip, it will only cut this strip. If you click on a gap between two blocks of strips, it will remove the gap. And if you click above the strips, it will cut every strip in the sequencer on that frame.
+2. The **time cursor** mode always cuts or trims all strips under the time cursor or on a given frame.
+
+### Cut strips ###
+
+#### Cut a single strip at a time ####
+
+![Mouse cut a single strip by clicking on it](https://imgur.com/wTF5U3k.gif)
+
+1. Place the mouse cursor over the strip to cut
+2. Press <kbd>Ctrl</kbd><kbd>Action Mouse</kbd>
+
+*By default <kbd>Action Mouse</kbd> is <kbd>Left Click</kbd> and <kbd>Select Mouse</kbd> corresponds to <kbd>Right Click</kbd>*
+
+#### Cut all strips under the time cursor ####
+
+![Mouse cut with the time cursor](https://imgur.com/NThKrQg.gif)
+
+1. Place the mouse cursor on the sequencer, without hovering any strips
+2. Press <kbd>Ctrl</kbd><kbd>Action Mouse</kbd>
+
+To always cut in **time cursor** mode, press <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Action Mouse</kbd> instead.
+
+You can also use this operator to cut gaps between strips. Hover a gap and press <kbd>Ctrl</kbd><kbd>Action Mouse</kbd> to remove it.
+
+### Trim strips ###
+
+#### Trim a single strip at a time ####
+
+![Mouse trim](https://imgur.com/kfo7DhW.gif)
+
+1. Place the mouse cursor over the strip that you want to cut
+2. Press <kbd>Ctrl</kbd><kbd>Select Mouse</kbd>
+
+#### Trim all strips ####
+
+![Mouse trim with the time cursor and auto remove gaps](https://imgur.com/q3LIH4v.gif)
+
+1. Place the mouse cursor on the sequencer, without hovering on any strips
+2. Press <kbd>Ctrl</kbd><kbd>Select Mouse</kbd>
+
+To always trim in **time cursor** mode, press <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>Action Mouse</kbd> instead.
+
+---
+
+Keyobard shortcuts are the quickest way to activate these operations, but they also can be accessed by the [operator search pop-up menu](https://docs.blender.org/manual/en/dev/interface/controls/templates/operator_search.html).
+
+### Trim to the closest cuts and cut the gap ###
+
+Auto-trim a strip to the closest surrounding cuts, leave some margin and remove the newly formed gap.
+
+> Placeholder for the video demo
+
+1. Press <kbd>Shift</kbd><kbd>Alt</kbd><kbd>Action Mouse</kbd> where you want to cut on the sequencer. You don't need to click on a strip in particular.
+
+*Use this tool when you've edited some audio out and you're left with extra footage you want to remove. It finds the closest cuts around the time cursor, cuts and trims the strips it overlaps up to the surrounding cuts and it leaves a few frames on either side.*
+
+### Toggle Mute strips ###
+
+Press <kbd>Alt</kbd><kbd>Action Mouse</kbd> on a strip to toggle it muted with the mouse.
+
+This leaves the strip in the channel so when you trim audio or footage around it, the muted strip will block the rest of the edits.
+
+It's useful when you're editing audio separately from the video which is common with tutorials and other screencasts.
+
+*It also works during playback and leaves the time cursor running.*
+
+
+### Techniques ###
+
+You can resize mute strips to add space between 2 other strips. Grab the mute sequence's handle, and keep the alt key down to ripple the edit.
+
+Want to shorten it instead? Mouse trim it with Ctrl Right Click, and let Power Sequencer remove the gap.
+
+#### Add a muted sound strip to leave some space in your edits ####
+
+Select and drag the left handle of the sequence to the right of a cut to extend it while you keep the <kbd>Alt</kbd> key down. This will ripple the edit, or push the sequence to the right.
+
+<kbd>Ctrl</kbd><kbd>Action Mouse</kbd> to cut the extra audio or footage, and <kbd>Alt</kbd><kbd>Action Mouse</kbd> the new small sound sequence. You now have a block that will leave some time between the 2 sequences, even when you remove all gaps!
+
+#### Quickly cut and mute bad sounds with the mouse ####
+
+It's common to have pops, or little coughs in the audio. Often the speaker is so fast you don't want to trim them. Instead, you'd rather keep the strip around as a spacer but you may want to mute them.
+
+1. <kbd>Ctrl</kbd><kbd>Action Mouse</kbd> before and after the incriminated sound on the waveform to cut a new strip.
+2. <kbd>Alt</kbd><kbd>Action Mouse</kbd> on the new sound strip to mute it.
+
+## Crossfades ##
+
+Crossfades or dissolves are smooth transitions from one video or image strip to another. To achieve a crossfade in Blender you add a cross or gamma cross effect strip that stacks on top of two video or image strips.
+
+### Add a crossfade ###
+
+![Add crossfade](https://i.imgur.com/5iHA6fv.gif)
+
+1. Select one strip to fade from
+1. Press <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `PS.Add Crossfade` operator*)
+
+*Power Sequencer finds the closest strip to fade to for you. It looks from strips that start after the active selected strip end frame. If the strip already overlaps with your selection Power Sequencer will ignore it and move to the next one in the editor. It will also first look for strips in the same channel or neighboring channels.*
+
+### Slide a crossfade ###
+
+![Edit crossfade](https://imgur.com/rQJi1PH.gif)
+
+1. Select the Gamma Cross effect strip
+1. Press <kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `PS.Edit crossfade` operator*)
+
+*This tool finds and selects the handles of the effect's input strips. Then it fires the grab mode. It's a shortcut to move a gamma cross effect faster.*
+
+## Fade-in and fade-out ##
+
+Fade-in and fade-out are gradual opacity transitions.
+
+### Add fade-in and fade-out ###
+
+![Fade in and out](https://imgur.com/VMLv0dW.gif)
+
+1. Select one or more strips
+2. Press <kbd>f</kbd>
+
+### Add fade-in ###
+
+![Fade in only](https://imgur.com/faz3jdV.gif)
+
+1. Select one or more strips
+2. Press <kbd>Ctrl</kbd><kbd>f</kbd> (*shortcut for operator: `PS.Fade strips`*)
+
+### Add fade-out ###
+
+![Fade out only](https://imgur.com/D97KrFe.gif)
+
+1. Select one or more strips
+2. Press <kbd>Alt</kbd><kbd>f</kbd>
+
+### General fade tips ###
+
+When you apply a fade, its transition function will appear in the [Blender graph editor](https://docs.blender.org/manual/en/dev/editors/graph_editor/introduction.html). You can edit individual key frames to adjust the fade as you like.
+
+Try to add fades at the very end of your video editing process otherwise you can encounter caveats that can create slowdowns; if you want to know more, see the documentation video ["Power Sequencer: Fade in, fade out"](https://youtu.be/7v2WLP-gqJQ?t=2m16s).
+
+#### Add a fade with operator ####
+
+By default `PS.Fade strips` will use the *Fade-in*, but you can also use other types with these steps:
+
+1. Select one or more strips
+2. Use the `PS.Fade strips operator` (<kbd>Ctrl</kbd><kbd>f</kbd>)
+3. Press <kbd>F6</kbd> to access operator properties
+4. Change `Fade Type`
+
+### Techniques ###
+
+#### Dim a strip ####
+
+1. Add a color strip above on che channel above the strip you want to dim
+    1. Press <kbd>Shift</kbd><kbd>a</kbd>
+    2. Select *Effect Strip -> Color*
+2. Select the color strip
+3. Set blend to alpha over
+4. Adjust the length of the color strip
+5. Adjust the opacity (this value is used as the max opacity of the strip, so pick a value < 1.0)
+6. Press <kbd>f</kbd>
+
+
+## Render videos for the web ##
+
+Renders a video using the preset options specified in the preferences.
+
+### Render the video ###
+
+![Render for the web](https://imgur.com/gqLl4Qh.gif)
+
+1. Place the mouse cursor over the *Video Sequencer Editor*
+2. Press <kbd>Alt</kbd><kbd>F12</kbd> (shortcut for `PS.Render video for the web` operator)
+
+Blender uses only one CPU core for the rendering. This means that
+it's possible to do other things during the rendering: you can also open another Blender
+instance and start editing a new video, withouth major slowdowns.
+
+### Change rendering preferences ###
+
+1. Press <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>U</kbd> to access *User Preferences*
+2. Select the *Input tab*
+3. Search for `PS.Render video for the web`
+4. Click the arrow to expand details of the keymap
+
+You will see something like:
+
+![Rendering videos preferences](img/rendering-videos-preferences-highlight.png)
+
+#### Preset ####
+
+The preset contains rendering options such as resolution, container, and codecs.
+
+At the moment there are only two presets available.
+
+| Preset      | Resolution | Container | Video codec | Audio codec |
+| -           | -          | -         | -           | -           |
+| **youtube** | 1080p      | mp4       | h264        | AAC         |
+| **twitter** | 720p       | mp4       | h264        | AAC         |
+
+
+#### Filename ####
+
+Filename of the rendered video. It can be one of:
+- **Blender file**: the name of the main *.blend* file
+- **Current scene**: the name of the current [Blender scene](https://docs.blender.org/manual/en/dev/data_system/scenes/introduction.html)
+- **Folder**: the name of the folder containing the main *.blend* file
+
+#### Auto render ####
+
+If checked (it's the default setting), the `PS.Render video for the web` operator will automatically start the rendering.
+
+If unchecked, it will only update rendering settings, but it will not start rendering: to start the render,
+you will need to click on the *Animation* button in the *Properties Editor*.
 
 ## Other add-ons
 
