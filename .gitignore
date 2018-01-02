@@ -1,5 +1,6 @@
 __pycache__
 */__pycache__
-.vscode/
-keymap/
-_references
+/.vscode
+/keymap
+/_references
+/power-sequencer_updater
