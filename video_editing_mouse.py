@@ -169,11 +169,13 @@ class MouseCut(bpy.types.Operator):
                     s.select = True
                 self.cut_strips_or_gap()
             else:
-                bpy.ops.power_sequencer.mouse_trim(start_frame=self.start_frame, end_frame=self.end_frame, select_mode='cursor')
+                bpy.ops.power_sequencer.mouse_trim(
+                    start_frame=self.start_frame,
+                    end_frame=self.end_frame,
+                    select_mode='cursor',
+                    restore_playback=self.is_animation_playing
+                )
                 bpy.context.scene.frame_current = self.start_frame
-                # FIXME: Find way to restore anim playback in case of trim: defer to mouse_trim?
-                # if self.is_animation_playing:
-                #     bpy.ops.screen.animation_play()
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
@@ -245,6 +247,7 @@ class MouseTrim(bpy.types.Operator):
 
     start_frame, end_frame = IntProperty(), IntProperty()
     to_select = []
+    restore_playback = BoolProperty()
 
     @classmethod
     def poll(cls, context):
@@ -273,26 +276,23 @@ class MouseTrim(bpy.types.Operator):
                 s.frame_final_end = trim_start
 
         bpy.ops.sequencer.select_all(action='DESELECT')
-        if not self.select_mode == 'cursor':
-            return {'FINISHED'}
-
-        for s in strips_to_delete:
-            s.select = True
-        bpy.ops.sequencer.delete()
-
-        if self.remove_gaps:
-            bpy.context.scene.frame_current = self.end_frame - 1
-            bpy.ops.sequencer.gap_remove()
+        if self.select_mode == 'cursor':
+            for s in strips_to_delete:
+                s.select = True
+            bpy.ops.sequencer.delete()
+            if self.remove_gaps:
+                bpy.context.scene.frame_current = self.end_frame - 1
+                bpy.ops.sequencer.gap_remove()
 
         bpy.context.scene.frame_current = trim_start
+        if self.restore_playback:
+            bpy.ops.screen.animation_play()
         return {'FINISHED'}
 
 
     def invoke(self, context, event):
-        # Snap to closest cut
         # if self.snap_to_closest_cut:
         #     self.start_frame = find_snap_candidate(self.start_frame)
-        #     print("old {!s} / new {!s}".format(old_frame, frame))
 
         to_select = []
         if not self.start_frame or self.end_frame:
