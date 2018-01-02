@@ -62,8 +62,6 @@ def find_snap_candidate(frame=0):
     return closest_cut_frame
 
 
-# FIXME: 122, "sorted_sequences = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))[0]"
-# If trimming the start of the first sequence, there's no sequence selected. https://github.com/GDquest/GDquest-VSE/issues/1
 class MouseCut(bpy.types.Operator):
     """Cuts, trims and remove gaps with mouse clicks"""
     bl_idname = "power_sequencer.mouse_cut"
@@ -285,6 +283,8 @@ class MouseTrim(bpy.types.Operator):
         if self.remove_gaps:
             bpy.context.scene.frame_current = self.end_frame - 1
             bpy.ops.sequencer.gap_remove()
+
+        bpy.context.scene.frame_current = trim_start
         return {'FINISHED'}
 
 
@@ -294,6 +294,7 @@ class MouseTrim(bpy.types.Operator):
         #     self.start_frame = find_snap_candidate(self.start_frame)
         #     print("old {!s} / new {!s}".format(old_frame, frame))
 
+        to_select = []
         if not self.start_frame or self.end_frame:
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x,
@@ -306,7 +307,6 @@ class MouseTrim(bpy.types.Operator):
             else:
                 self.select_mode = 'cursor'
 
-            to_select = []
             if self.select_mode == 'mouse':
                 if mouse_clicked_strip == []:
                     return {'CANCELLED'}
@@ -319,7 +319,6 @@ class MouseTrim(bpy.types.Operator):
             selection_start, selection_end = get_frame_range(to_select)
             self.start_frame = frame
             self.end_frame = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
-            bpy.context.scene.frame_current = frame
 
         self.to_select = to_select
         self.execute(context)
