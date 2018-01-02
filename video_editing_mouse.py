@@ -119,11 +119,17 @@ class MouseCut(bpy.types.Operator):
     select_mouse, action_mouse = '', ''
     cut_mode = ''
 
+    is_animation_playing = False
+
     @classmethod
     def poll(cls, context):
         return context.sequences is not None
 
     def invoke(self, context, event):
+        self.is_animation_playing = bpy.context.screen.is_animation_playing
+        if self.is_animation_playing:
+            bpy.ops.screen.animation_cancel()
+
         # Detect pen tablets
         if event.pressure not in [0.0, 1.0]:
             self.use_pen_tablet = True
@@ -156,7 +162,6 @@ class MouseCut(bpy.types.Operator):
 
         elif event.type == self.action_mouse and event.value == 'RELEASE':
             self.select_mode = 'cursor' if event.shift else 'smart'
-
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
             if (self.use_pen_tablet and cursor_distance <= self.threshold_trim_distance) \
                or self.start_frame == self.end_frame:
@@ -167,6 +172,10 @@ class MouseCut(bpy.types.Operator):
                 self.cut_strips_or_gap()
             else:
                 bpy.ops.power_sequencer.mouse_trim(start_frame=self.start_frame, end_frame=self.end_frame, select_mode='cursor')
+                bpy.context.scene.frame_current = self.start_frame
+                # FIXME: Find way to restore anim playback in case of trim: defer to mouse_trim?
+                # if self.is_animation_playing:
+                #     bpy.ops.screen.animation_play()
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
