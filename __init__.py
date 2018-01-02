@@ -38,6 +38,8 @@ from operator import attrgetter
 from enum import Enum
 from .handlers import handlers_register, handlers_unregister, PowerSequencerProps
 
+from . import addon_updater_ops
+
 # load and reload submodules
 ##################################
 from .functions import developer_utils
@@ -49,6 +51,9 @@ import traceback
 
 
 def register():
+
+    addon_updater_ops.register(bl_info)
+    
     try:
         bpy.utils.register_module(__name__)
     except:
