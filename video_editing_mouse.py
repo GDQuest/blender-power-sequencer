@@ -117,17 +117,11 @@ class MouseCut(bpy.types.Operator):
     select_mouse, action_mouse = '', ''
     cut_mode = ''
 
-    restore_playback = False
-
     @classmethod
     def poll(cls, context):
         return context.sequences is not None
 
     def invoke(self, context, event):
-        if bpy.context.screen.is_animation_playing:
-            bpy.ops.screen.animation_cancel()
-            self.restore_playback = True
-
         # Detect pen tablets
         if event.pressure not in [0.0, 1.0]:
             self.use_pen_tablet = True
@@ -168,14 +162,11 @@ class MouseCut(bpy.types.Operator):
                 for s in to_select:
                     s.select = True
                 self.cut_strips_or_gap()
-                if self.restore_playback:
-                    bpy.ops.screen.animation_play()
             else:
                 bpy.ops.power_sequencer.mouse_trim(
                     start_frame=self.start_frame,
                     end_frame=self.end_frame,
-                    select_mode='cursor',
-                    restore_playback=self.restore_playback
+                    select_mode='cursor'
                 )
                 bpy.context.scene.frame_current = self.start_frame
             return {'FINISHED'}
@@ -249,7 +240,6 @@ class MouseTrim(bpy.types.Operator):
 
     start_frame, end_frame = IntProperty(), IntProperty()
     to_select = []
-    restore_playback = BoolProperty()
 
     @classmethod
     def poll(cls, context):
@@ -287,18 +277,12 @@ class MouseTrim(bpy.types.Operator):
                 bpy.ops.sequencer.gap_remove()
 
         bpy.context.scene.frame_current = trim_start
-        if self.restore_playback:
-            bpy.ops.screen.animation_play()
         return {'FINISHED'}
 
 
     def invoke(self, context, event):
         # if self.snap_to_closest_cut:
         #     self.start_frame = find_snap_candidate(self.start_frame)
-
-        if bpy.context.screen.is_animation_playing:
-            bpy.ops.screen.animation_cancel()
-            self.restore_playback = True
 
         to_select = []
         if not self.start_frame or self.end_frame:
