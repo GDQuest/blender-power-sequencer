@@ -1,35 +1,57 @@
 import bpy
 from .functions.sequences import SequenceTypes
 
-# TODO: Make the menu contextual, based on the selection size and sequence types
+
 class PowerSequencerMenu(bpy.types.Menu):
-    bl_label = "Power Sequencer Menu"
+    bl_label = "Power Sequencer"
     bl_idname = "SEQUENCER_MT_power_sequencer_menu"
 
     def draw(self, context):
         layout = self.layout
 
+        if not bpy.data.is_saved:
+            layout.label('Please save your project')
+            layout.operator('wm.save_as_mainfile', icon='SAVE_AS', text='Save as')
+            return None
+
+        if not bpy.context.sequences:
+            layout.operator('power_sequencer.import_local_footage', icon='SEQUENCE', text='Import local footage')
+            return None
+
+
         selection = bpy.context.selected_sequences
-        single_selected = len(selection) == 1
+        active_strip = bpy.context.scene.sequence_editor.active_strip
+        types = set([s.type for s in selection])
 
-        if len(selection) >= 1:
-            first_sequence = selection[0]
-            if single_selected and first_sequence.type == 'GAMMA_CROSS':
-                layout.operator('power_sequencer.edit_crossfade', icon='ACTION_TWEAK', text='Edit crossfade')
-            else:
+        if active_strip.type == 'GAMMA_CROSS':
+            layout.operator('power_sequencer.edit_crossfade', icon='ACTION_TWEAK', text='Edit crossfade')
+
+
+
+
+        for t in types:
+            if t in SequenceTypes.VIDEO:
                 layout.operator('power_sequencer.fade_strips', icon='IMAGE_ALPHA', text='Fade strips')
+                break
 
-            layout.separator()
+        if len(selection) == 1:
+            for s in [active_strip, selection[0]]:
+                if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE:
+                    layout.separator()
+                    layout.operator('power_sequencer.add_crossfade', icon='IMAGE_ALPHA', text='Auto crossfade')
+                    break
 
-            if single_selected and first_sequence.type in SequenceTypes.VIDEO or first_sequence.type in SequenceTypes.IMAGE:
-                layout.operator('power_sequencer.add_crossfade', icon='IMAGE_ALPHA', text='Add crossfade')
+        # TODO: Doesn't work from the menu, I guess there's an issue with the invoke method?
+        # layout.separator()
+        # layout.operator('power_sequencer.grab_closest_handle_or_cut', icon='SNAP_SURFACE', text='Grab cut or handle')
 
+        if len(selection) > 1:
             layout.separator()
 
             layout.operator('power_sequencer.ripple_delete', icon='AUTOMERGE_ON', text='Ripple delete')
+            layout.operator('power_sequencer.snap_selection_to_cursor', icon='SNAP_ON', text='Snap selection')
 
-            layout.separator()
+        layout.separator()
 
         layout.operator('power_sequencer.import_local_footage', icon='SEQUENCE', text='Import local footage')
         layout.operator('power_sequencer.render_video', icon='RENDER_ANIMATION', text='Render video for the web')
-
