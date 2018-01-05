@@ -186,12 +186,15 @@ class MouseCut(bpy.types.Operator):
 
         if self.select_mode in ('mouse', 'smart'):
             if overlapping_strips:
-                strips_to_select.extend(overlapping_strips)
+                to_select = [s for s in overlapping_strips if not s.lock]
+                strips_to_select.extend(to_select)
             elif self.select_mode == 'mouse':
                 return None
 
         if self.select_mode == 'cursor' or (not overlapping_strips and self.select_mode == 'smart'):
             for s in bpy.context.sequences:
+                if s.lock:
+                    continue
                 if s.frame_final_start <= start_frame <= s.frame_final_end:
                     strips_to_select.append(s)
         return strips_to_select
