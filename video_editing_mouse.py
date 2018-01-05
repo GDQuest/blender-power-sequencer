@@ -86,7 +86,7 @@ class MouseCut(bpy.types.Operator):
     remove_gaps = BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
-        default=False)
+        default=True)
     cut_gaps = BoolProperty(
         name="Cut gaps",
         description="If you click on a gap, remove it",
@@ -159,12 +159,10 @@ class MouseCut(bpy.types.Operator):
             if (self.use_pen_tablet and cursor_distance <= self.threshold_trim_distance) \
                or self.start_frame == self.end_frame:
                 to_select = self.find_strips_to_cut()
-                if not to_select:
-                    return {'CANCELLED'}
-
                 bpy.ops.sequencer.select_all(action='DESELECT')
                 for s in to_select:
                     s.select = True
+                print(bpy.context.selected_sequences)
                 self.cut_strips_or_gap()
             else:
                 to_select, to_delete = self.find_strips_to_trim()
@@ -231,6 +229,41 @@ class MouseCut(bpy.types.Operator):
                    s.frame_final_start <= trim_end <= s.frame_final_end:
                     to_select.append(s)
         return to_select, to_delete
+
+
+
+def trim_strips(start_frame, end_frame, select_mode, strips_to_trim=[], strips_to_delete=[], remove_gaps=True):
+    """
+    Trims strips in the timeline between the start and end frame. The caller must pass strips to select
+    """
+    trim_start = min(start_frame, end_frame)
+    trim_end = max(start_frame, end_frame)
+    print('num of strips to del: {}'.format(len(strips_to_delete)))
+
+    for s in strips_to_trim:
+        if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
+            bpy.ops.sequencer.select_all(action='DESELECT')
+            s.select = True
+            bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
+            bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
+            strips_to_delete.append(bpy.context.selected_sequences[0])
+            continue
+        elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
+            s.frame_final_start = trim_end
+        elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
+            s.frame_final_end = trim_start
+
+    if strips_to_delete != []:
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        for s in strips_to_delete:
+            s.select = True
+        bpy.ops.sequencer.delete()
+
+    bpy.context.scene.frame_current = trim_start
+    if remove_gaps:
+        bpy.ops.sequencer.gap_remove()
+    return {'FINISHED'}
+
 
 
 class MouseTrim(bpy.types.Operator):
@@ -304,41 +337,6 @@ class MouseTrim(bpy.types.Operator):
         return trim_strips(self.start_frame, self.end_frame, self.select_mode, self.to_select, self.remove_gaps)
 
 
-def trim_strips(start_frame, end_frame, select_mode, strips_to_trim=[], strips_to_delete=[], remove_gaps=True):
-    """
-    Trims strips in the timeline between the start and end frame. The caller must pass strips to select
-    """
-    trim_start = min(start_frame, end_frame)
-    trim_end = max(start_frame, end_frame)
-    print('num of strips to del: {}'.format(len(strips_to_delete)))
-
-    for s in strips_to_trim:
-        if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
-            bpy.ops.sequencer.select_all(action='DESELECT')
-            s.select = True
-            bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
-            bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
-            strips_to_delete.append(bpy.context.selected_sequences[0])
-            continue
-        elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
-            s.frame_final_start = trim_end
-        elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
-            s.frame_final_end = trim_start
-
-    if strips_to_delete != []:
-        bpy.ops.sequencer.select_all(action='DESELECT')
-        for s in strips_to_delete:
-            s.select = True
-        bpy.ops.sequencer.delete()
-
-    if select_mode == 'cursor' and remove_gaps:
-        bpy.context.scene.frame_current = end_frame - 1
-        bpy.ops.sequencer.gap_remove()
-
-    bpy.context.scene.frame_current = trim_start
-    return {'FINISHED'}
-
-
 def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
     """
     Returns strips which start and end within a certain frame range, or that overlap a certain frame range
@@ -396,7 +394,6 @@ def find_closest_surrounding_cuts(frame=0):
            distance_to_start < distance_to_end_cut_frame:
             end_cut_frame = s.frame_final_start
     return start_cut_frame, end_cut_frame
-
 
 
 # TODO: rewrite self.find_cut_and_handles_closest_to_mouse
