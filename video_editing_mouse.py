@@ -238,7 +238,7 @@ def trim_strips(start_frame, end_frame, select_mode, strips_to_trim=[], strips_t
     """
     trim_start = min(start_frame, end_frame)
     trim_end = max(start_frame, end_frame)
-    print('num of strips to del: {}'.format(len(strips_to_delete)))
+    # print('num of strips to del: {}'.format(len(strips_to_delete)))
 
     for s in strips_to_trim:
         if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
@@ -259,11 +259,11 @@ def trim_strips(start_frame, end_frame, select_mode, strips_to_trim=[], strips_t
             s.select = True
         bpy.ops.sequencer.delete()
 
-    bpy.context.scene.frame_current = trim_start
     if remove_gaps:
+        bpy.context.scene.frame_current = trim_end - 1
         bpy.ops.sequencer.gap_remove()
+    bpy.context.scene.frame_current = trim_start
     return {'FINISHED'}
-
 
 
 class MouseTrim(bpy.types.Operator):
@@ -334,7 +334,8 @@ class MouseTrim(bpy.types.Operator):
             self.end_frame = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
 
         self.to_select = to_select
-        return trim_strips(self.start_frame, self.end_frame, self.select_mode, self.to_select, self.remove_gaps)
+        trim_strips(self.start_frame, self.end_frame, self.select_mode, self.to_select, remove_gaps=self.remove_gaps)
+        return {'FINISHED'}
 
 
 def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
