@@ -275,7 +275,7 @@ class RippleDelete(bpy.types.Operator):
                 selection_start, _ = get_frame_range(block)
                 sequencer.delete()
 
-                scene.frame_current = selection_start + 1
+                scene.frame_current = selection_start
                 sequencer.gap_remove(all=False)
 
             # auto move cursor back
