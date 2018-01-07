@@ -1,12 +1,12 @@
 import bpy
-from bpy.props import BoolProperty, IntProperty, StringProperty, EnumProperty
+from bpy.props import BoolProperty, IntProperty, EnumProperty
 from operator import attrgetter
 
-from .functions.global_settings import SequenceTypes, SearchMode
+from .functions.global_settings import SequenceTypes
 from .functions.sequences import find_next_sequences, \
     select_strip_handle, slice_selection, get_frame_range, \
-    find_linked, is_in_range, set_preview_range, filter_sequences_by_type, \
-    find_empty_channel
+    find_linked, set_preview_range, filter_sequences_by_type
+
 
 # TODO: Make it work with 2+ selected strips
 # TODO: make it work with pictures and transform strips
@@ -38,8 +38,8 @@ class AddCrossfade(bpy.types.Operator):
     force_length = BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'"
-        , default=True)
+                     is of the length set in 'Crossfade Length'",
+        default=True)
 
     @classmethod
     def poll(cls, context):
@@ -51,8 +51,7 @@ class AddCrossfade(bpy.types.Operator):
 
         if not len(selection) == 1:
             self.report({"ERROR_INVALID_INPUT"}, "Select a single strip to \
-            crossfade from"
-                           )
+            crossfade from")
             return {"CANCELLED"}
 
         active = bpy.context.scene.sequence_editor.active_strip
@@ -73,25 +72,29 @@ class AddCrossfade(bpy.types.Operator):
         if not next_sequences:
             return {"CANCELLED"}
         threshold = active.channel - 1
-        higher_sequences = [s
-                            for s in next_sequences
-                            if s.channel >= threshold]
-        priority_neighbors = [s
-                              for s in higher_sequences
-                              if s.frame_final_start >= active.frame_final_end
-                              and s.channel - active.channel in (-1, 0, 1)]
+        higher_sequences = [
+            s for s in next_sequences if s.channel >= threshold
+        ]
+        priority_neighbors = [
+            s for s in higher_sequences
+            if s.frame_final_start >= active.frame_final_end and
+            s.channel - active.channel in (-1, 0, 1)
+        ]
         if priority_neighbors:
-            neighbor = min(priority_neighbors,
-                           key=attrgetter('frame_final_start', 'channel'))
+            neighbor = min(
+                priority_neighbors,
+                key=attrgetter('frame_final_start', 'channel'))
         elif higher_sequences:
-            neighbor = min(higher_sequences,
-                           key=attrgetter('channel', 'frame_final_start'))
+            neighbor = min(
+                higher_sequences,
+                key=attrgetter('channel', 'frame_final_start'))
         else:
-            lower_sequences = [s
-                               for s in next_sequences
-                               if s.channel < threshold]
-            neighbor = min(lower_sequences,
-                           key=attrgetter('channel', 'frame_final_start'))
+            lower_sequences = [
+                s for s in next_sequences if s.channel < threshold
+            ]
+            neighbor = min(
+                lower_sequences,
+                key=attrgetter('channel', 'frame_final_start'))
 
         if self.force_length:
             frame_offset = neighbor.frame_final_start - active.frame_final_end
@@ -140,8 +143,9 @@ class AddSpeed(bpy.types.Operator):
             s.select = True
         selection = bpy.context.selected_sequences
 
-        video_sequences = [s for s in selection
-                           if s.type in SequenceTypes.VIDEO]
+        video_sequences = [
+            s for s in selection if s.type in SequenceTypes.VIDEO
+        ]
 
         if not video_sequences:
             self.report({
@@ -154,19 +158,18 @@ class AddSpeed(bpy.types.Operator):
         if self.individual_sequences:
             for s in selection:
                 if s.type in SequenceTypes.EFFECT:
-                    self.report({
-                        "ERROR_INVALID_INPUT"
-                    }, "Can't speed up individual sequences if effect strips \
+                    self.report(
+                        {"ERROR_INVALID_INPUT"},
+                        "Can't speed up individual sequences if effect strips \
                     are selected. Please only select VIDEO or META strips. \
-                    Operation cancelled"
-                                        )
+                    Operation cancelled")
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
             selection_blocks = slice_selection(selection)
 
         for block in selection_blocks:
-            start, end = 0, 0
+            # start, end = 0, 0
             sequencer.select_all(action='DESELECT')
             if len(block) == 1:
                 active = scene.sequence_editor.active_strip = block[0]
@@ -194,15 +197,15 @@ class AddSpeed(bpy.types.Operator):
             source_name = active.name
 
             from math import ceil
-            size = ceil(active.frame_final_duration /
-                        effect_strip.speed_factor)
+            size = ceil(
+                active.frame_final_duration / effect_strip.speed_factor)
             endFrame = active.frame_final_start + size
             sequencer.snap(frame=endFrame)
 
             effect_strip.select = True
             sequencer.meta_make()
-            bpy.context.selected_sequences[0].name = source_name + " " + str(
-                self.speed_factor) + 'x'
+            bpy.context.selected_sequences[
+                0].name = source_name + " " + str(self.speed_factor) + 'x'
         self.report({"INFO"}, "Successfully processed " +
                     str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}
@@ -235,23 +238,23 @@ class ConcatenateStrips(bpy.types.Operator):
 
     concatenate_whole_channel = BoolProperty(
         name="Concatenate all strips in channel",
-        description="If only one strip selected, concatenate the entire channel", default=False)
-
+        description="If only one strip selected, concatenate the entire channel",
+        default=False)
 
     @classmethod
     def poll(cls, context):
         return True
 
-
     def execute(self, context):
-
         def concatenate_sequences(sequences):
             """
             Takes a list of sequences and concatenates them
             Mutates the sequences directly, doesn't return anything
             """
             for channel in channels:
-                concat_sequences = [s for s in sequences if s.channel == channel]
+                concat_sequences = [
+                    s for s in sequences if s.channel == channel
+                ]
                 concat_start = concat_sequences[0].frame_final_end
                 concat_sequences.pop(0)
 
@@ -261,20 +264,21 @@ class ConcatenateStrips(bpy.types.Operator):
                     concat_start += s.frame_final_duration
             return
 
-
         sequences = bpy.context.selected_sequences
 
         # If only 1 sequence selected, find next sequences in channel
         first_strip = None
         if len(sequences) == 1:
             first_strip = sequences[0]
-            in_channel = [s for s in find_next_sequences(sequences) if s.channel == first_strip.channel]
+            in_channel = [
+                s for s in find_next_sequences(sequences)
+                if s.channel == first_strip.channel
+            ]
 
             for s in in_channel:
                 sequences.append(s)
 
-        sequences = filter_sequences_by_type(sequences,
-                                             SequenceTypes.VIDEO,
+        sequences = filter_sequences_by_type(sequences, SequenceTypes.VIDEO,
                                              SequenceTypes.IMAGE,
                                              SequenceTypes.SOUND)
         if len(sequences) <= 1:
@@ -282,7 +286,8 @@ class ConcatenateStrips(bpy.types.Operator):
             return {'CANCELLED'}
 
         channels = list(set([s.channel for s in sequences]))
-        sequences = sorted(sequences, key=attrgetter('channel', 'frame_final_start'))
+        sequences = sorted(
+            sequences, key=attrgetter('channel', 'frame_final_start'))
 
         if not self.concatenate_whole_channel and first_strip:
             next_strip = sequences[1]
@@ -354,19 +359,16 @@ class GrabStillImage(bpy.types.Operator):
         offset = self.strip_duration
 
         if active.type not in SequenceTypes.VIDEO:
-            self.report({
-                "ERROR_INVALID_INPUT"
-            }, "You must select a video or meta strip. \
-                You selected a strip of type"
-                                              + str(active.type) + " instead.")
+            self.report({"ERROR_INVALID_INPUT"},
+                        "You must select a video or meta strip. \
+                You selected a strip of type" + str(active.type) + " instead.")
             return {"CANCELLED"}
 
         if not active.frame_final_start <= start_frame < \
            active.frame_final_end:
             self.report({"ERROR_INVALID_INPUT"},
                         "Your time cursor must be on the frame you want \
-                        to convert to a still image."
-                                                     )
+                        to convert to a still image.")
             return {"CANCELLED"}
 
         if start_frame == active.frame_final_start:
@@ -376,9 +378,8 @@ class GrabStillImage(bpy.types.Operator):
         source_blend_type = active.blend_type
         sequencer.cut(frame=scene.frame_current, type='SOFT', side='RIGHT')
         transform.seq_slide(value=(offset, 0))
-        sequencer.cut(frame=scene.frame_current + offset + 1,
-                      type='SOFT',
-                      side='LEFT')
+        sequencer.cut(
+            frame=scene.frame_current + offset + 1, type='SOFT', side='LEFT')
         transform.seq_slide(value=(-offset, 0))
 
         sequencer.meta_make()
@@ -402,9 +403,10 @@ class ToggleHidden(bpy.types.Operator):
     bl_description = 'Mute or unmute sequences'
     bl_options = {'REGISTER', 'UNDO'}
 
-    use_unselected = BoolProperty(name="Use unselected",
-                                  description="Toggle non selected sequences",
-                                  default=False)
+    use_unselected = BoolProperty(
+        name="Use unselected",
+        description="Toggle non selected sequences",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -414,8 +416,9 @@ class ToggleHidden(bpy.types.Operator):
         selection = bpy.context.selected_sequences
 
         if self.use_unselected:
-            selection = [s for s in bpy.context.sequences
-                         if s not in selection]
+            selection = [
+                s for s in bpy.context.sequences if s not in selection
+            ]
 
         if not selection:
             self.report({"WARNING"}, "No sequences to toggle muted")
@@ -433,13 +436,12 @@ class ChannelOffset(bpy.types.Operator):
     bl_description = 'Move selected strips up or down a channel'
     bl_options = {'REGISTER', 'UNDO'}
 
-    direction = EnumProperty(items=[
-        ('up', 'up', 'Move the selection 1 channel up'), (
-            'down', 'down', 'Move the selection 1 channel down')
-    ],
-                             name='Direction',
-                             description='Move the sequences up or down',
-                             default='up')
+    direction = EnumProperty(
+        items=[('up', 'up', 'Move the selection 1 channel up'),
+               ('down', 'down', 'Move the selection 1 channel down')],
+        name='Direction',
+        description='Move the sequences up or down',
+        default='up')
 
     @classmethod
     def poll(cls, context):
@@ -450,8 +452,8 @@ class ChannelOffset(bpy.types.Operator):
         if not selection:
             return {'CANCELLED'}
 
-        selection = sorted(selection,
-                           key=attrgetter('channel', 'frame_final_start'))
+        selection = sorted(
+            selection, key=attrgetter('channel', 'frame_final_start'))
 
         if self.direction == 'up':
             for s in reversed(selection):
@@ -476,11 +478,11 @@ class SnapSelectionToCursor(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        selection = sorted(bpy.context.selected_sequences, key=attrgetter('frame_final_start'))
+        selection = sorted(
+            bpy.context.selected_sequences,
+            key=attrgetter('frame_final_start'))
         time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
         selection = reversed(selection)
-
-        empty_channel = find_empty_channel()
 
         for s in selection:
             if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
@@ -493,6 +495,7 @@ class BorderSelect(bpy.types.Operator):
     bl_label = 'PS.Border select'
     bl_description = 'Wrapper around Blender\'s border select, \
     deselects handles'
+
     bl_options = {'REGISTER', 'UNDO'}
 
     extend = BoolProperty(
@@ -534,8 +537,7 @@ class GrabSequenceHandle(bpy.types.Operator):
             return {'CANCELLED'}
 
         frame, _ = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)
+            x=event.mouse_region_x, y=event.mouse_region_y)
 
         bpy.ops.sequencer.select_all(action='DESELECT')
         for s in selection:
@@ -585,10 +587,11 @@ class PreviewLastCut(bpy.types.Operator):
     bl_description = 'Toggle preview around the last cut, based on time cursor'
     bl_options = {'REGISTER', 'UNDO'}
 
-    frame_range = IntProperty(name="Preview range",
-                              description="Total duration of the preview",
-                              default=24,
-                              min=1)
+    frame_range = IntProperty(
+        name="Preview range",
+        description="Total duration of the preview",
+        default=24,
+        min=1)
 
     @classmethod
     def poll(cls, context):

@@ -2,9 +2,10 @@
 from math import floor, sqrt
 
 import bpy
-from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty, StringProperty, CollectionProperty
+from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty, CollectionProperty
 from .functions.sequences import find_effect_strips, get_frame_range
 from operator import attrgetter
+
 # import blf
 
 
@@ -47,8 +48,8 @@ def find_snap_candidate(frame=0):
     closest_cut_frame = 1000000
     for s in bpy.context.sequences:
         start_to_frame = frame - s.frame_final_start
-        end_to_frame =  frame - s.frame_final_end
-        distance_to_start = abs( start_to_frame )
+        end_to_frame = frame - s.frame_final_end
+        distance_to_start = abs(start_to_frame)
         distance_to_end = abs(end_to_frame)
         smallest_distance = min(distance_to_start, distance_to_end)
 
@@ -69,19 +70,18 @@ class MouseCut(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'
-                ), ('cursor', 'Time cursor',
-                    'Select all of the strips the time cursor overlaps'),
+        items=[('mouse', 'Mouse',
+                'Only select the strip hovered by the mouse'),
+               ('cursor', 'Time cursor',
+                'Select all of the strips the time cursor overlaps'),
                ('smart', 'Smart',
                 'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
-        description=
-        "Cut only the strip under the mouse or all strips under the time cursor",
+        description="Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
     select_linked = BoolProperty(
         name="Use linked time",
-        description=
-        "In mouse or smart mode, always cut linked strips if this is checked",
+        description="In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
     remove_gaps = BoolProperty(
         name="Remove gaps",
@@ -94,13 +94,11 @@ class MouseCut(bpy.types.Operator):
 
     auto_move_cursor = BoolProperty(
         name="Auto move cursor",
-        description=
-        "When trimming the sequence, auto move the cursor if playback is active",
+        description="When trimming the sequence, auto move the cursor if playback is active",
         default=True)
     cursor_offset = IntProperty(
         name="Cursor trim offset",
-        description=
-        "On trim, during playback, offset the cursor to better see if the cut works",
+        description="On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
         min=0)
     threshold_trim_distance = IntProperty(
@@ -128,9 +126,9 @@ class MouseCut(bpy.types.Operator):
             self.mouse_start_x, self.mouse_start_y = event.mouse_region_x, event.mouse_region_y
 
         frame_float, channel_float = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)
-        self.start_frame, self.start_channel = round(frame_float), floor(channel_float)
+            x=event.mouse_region_x, y=event.mouse_region_y)
+        self.start_frame, self.start_channel = round(frame_float), floor(
+            channel_float)
         self.end_frame = self.start_frame
 
         # Reverse keymaps if the user selects with the left mouse button
@@ -140,11 +138,9 @@ class MouseCut(bpy.types.Operator):
             self.select_mouse = 'LEFTMOUSE'
             self.action_mouse = 'RIGHTMOUSE'
 
-
         bpy.context.scene.frame_current = self.start_frame
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
-
 
     def modal(self, context, event):
         # if event.type in {'LEFTMOUSE', 'RIGHTMOUSE'}:
@@ -166,19 +162,18 @@ class MouseCut(bpy.types.Operator):
                 self.cut_strips_or_gap()
             else:
                 to_select, to_delete = self.find_strips_to_trim()
-                trim_strips(self.start_frame, self.end_frame, self.select_mode, to_select, to_delete, self.remove_gaps)
+                trim_strips(self.start_frame, self.end_frame, self.select_mode,
+                            to_select, to_delete, self.remove_gaps)
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
             x, y = context.region.view2d.region_to_view(
-                x=event.mouse_region_x,
-                y=event.mouse_region_y)
+                x=event.mouse_region_x, y=event.mouse_region_y)
             self.end_frame, self.end_channel = round(x), floor(y)
             bpy.context.scene.frame_current = self.end_frame
             return {'PASS_THROUGH'}
 
         return {'RUNNING_MODAL'}
-
 
     def find_strips_to_cut(self):
         """
@@ -187,10 +182,12 @@ class MouseCut(bpy.types.Operator):
         to_select = []
         overlapping_strips = []
         if self.select_mode == 'smart':
-            overlapping_strips = find_strips_mouse(self.start_frame, self.start_channel, self.select_linked)
+            overlapping_strips = find_strips_mouse(
+                self.start_frame, self.start_channel, self.select_linked)
             to_select.extend(overlapping_strips)
 
-        if self.select_mode == 'cursor' or (not overlapping_strips and self.select_mode == 'smart'):
+        if self.select_mode == 'cursor' or (not overlapping_strips and
+                                            self.select_mode == 'smart'):
             for s in bpy.context.sequences:
                 if s.lock:
                     continue
@@ -198,13 +195,14 @@ class MouseCut(bpy.types.Operator):
                     to_select.append(s)
         return to_select
 
-
     def cut_strips_or_gap(self):
         if self.cut_gaps and len(bpy.context.selected_sequences) == 0:
             bpy.ops.sequencer.gap_remove(all=False)
         else:
-            bpy.ops.sequencer.cut(frame=bpy.context.scene.frame_current, type='SOFT', side='BOTH')
-
+            bpy.ops.sequencer.cut(
+                frame=bpy.context.scene.frame_current,
+                type='SOFT',
+                side='BOTH')
 
     def find_strips_to_trim(self):
         """
@@ -212,12 +210,15 @@ class MouseCut(bpy.types.Operator):
         """
         to_select, to_delete = [], []
         overlapping_strips = []
-        trim_start, trim_end = min(self.start_frame, self.end_frame), max(self.start_frame, self.end_frame)
+        trim_start, trim_end = min(self.start_frame, self.end_frame), max(
+            self.start_frame, self.end_frame)
         if self.select_mode == 'smart':
-            overlapping_strips = find_strips_mouse(trim_start, self.start_channel, self.select_linked)
+            overlapping_strips = find_strips_mouse(
+                trim_start, self.start_channel, self.select_linked)
             to_select.extend(overlapping_strips)
 
-        if self.select_mode == 'cursor' or (not overlapping_strips and self.select_mode == 'smart'):
+        if self.select_mode == 'cursor' or (not overlapping_strips and
+                                            self.select_mode == 'smart'):
             for s in bpy.context.sequences:
                 if s.lock:
                     continue
@@ -231,8 +232,12 @@ class MouseCut(bpy.types.Operator):
         return to_select, to_delete
 
 
-
-def trim_strips(start_frame, end_frame, select_mode, strips_to_trim=[], strips_to_delete=[], remove_gaps=True):
+def trim_strips(start_frame,
+                end_frame,
+                select_mode,
+                strips_to_trim=[],
+                strips_to_delete=[],
+                remove_gaps=True):
     """
     Trims strips in the timeline between the start and end frame. The caller must pass strips to select
     """
@@ -278,17 +283,19 @@ class MouseTrim(bpy.types.Operator):
     bl_label = "PS.Mouse trim strips"
     bl_options = {'REGISTER', 'UNDO'}
 
-
     select_mode = EnumProperty(
-        items=[('mouse', 'Mouse', 'Only select the strip hovered by the mouse'),
-               ('cursor', 'Time cursor', 'Select all of the strips the time cursor overlaps'),
-               ('smart', 'Smart', 'Uses the selection if possible, else uses the other modes')],
+        items=[('mouse', 'Mouse',
+                'Only select the strip hovered by the mouse'),
+               ('cursor', 'Time cursor',
+                'Select all of the strips the time cursor overlaps'),
+               ('smart', 'Smart',
+                'Uses the selection if possible, else uses the other modes')],
         name="Selection mode",
-        description= "Auto-select the strip you click on or that the time cursor overlaps",
+        description="Auto-select the strip you click on or that the time cursor overlaps",
         default='smart')
     select_linked = BoolProperty(
         name="Use linked time",
-        description= "If auto-select, cut linked strips if checked",
+        description="If auto-select, cut linked strips if checked",
         default=False)
     remove_gaps = BoolProperty(
         name="Remove gaps",
@@ -310,11 +317,11 @@ class MouseTrim(bpy.types.Operator):
         to_select = []
         if not self.start_frame or self.end_frame:
             x, y = context.region.view2d.region_to_view(
-                x=event.mouse_region_x,
-                y=event.mouse_region_y)
+                x=event.mouse_region_x, y=event.mouse_region_y)
             frame, channel = round(x), floor(y)
 
-            mouse_clicked_strip = find_strips_mouse(frame, channel, self.select_linked)
+            mouse_clicked_strip = find_strips_mouse(frame, channel,
+                                                    self.select_linked)
             if self.select_mode == 'smart' and mouse_clicked_strip:
                 self.select_mode = 'mouse'
             else:
@@ -331,14 +338,24 @@ class MouseTrim(bpy.types.Operator):
 
             selection_start, selection_end = get_frame_range(to_select)
             self.start_frame = frame
-            self.end_frame = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
+            self.end_frame = selection_end if abs(
+                frame - selection_end) <= abs(
+                    frame - selection_start) else selection_start
 
         self.to_select = to_select
-        trim_strips(self.start_frame, self.end_frame, self.select_mode, self.to_select, remove_gaps=self.remove_gaps)
+        trim_strips(
+            self.start_frame,
+            self.end_frame,
+            self.select_mode,
+            self.to_select,
+            remove_gaps=self.remove_gaps)
         return {'FINISHED'}
 
 
-def find_strips_in_range(start_frame, end_frame, sequences = None, find_overlapping = True):
+def find_strips_in_range(start_frame,
+                         end_frame,
+                         sequences=None,
+                         find_overlapping=True):
     """
     Returns strips which start and end within a certain frame range, or that overlap a certain frame range
     Args:
@@ -420,14 +437,15 @@ class GrabClosestHandleOrCut(bpy.types.Operator):
         view2d = bpy.context.region.view2d
 
         mouse_x, mouse_y = event.mouse_region_x, event.mouse_region_y
-        frame, channel = self.find_cut_and_handles_closest_to_mouse(mouse_x, mouse_y)
-
+        frame, channel = self.find_cut_and_handles_closest_to_mouse(
+            mouse_x, mouse_y)
 
         matching_sequences = []
         for s in bpy.context.sequences:
             if not s.channel == channel:
                 continue
-            if abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1:
+            if abs(s.frame_final_start - frame) <= 1 or abs(
+                    s.frame_final_end - frame) <= 1:
                 matching_sequences.append(s)
         matching_count = len(matching_sequences)
 
@@ -442,8 +460,10 @@ class GrabClosestHandleOrCut(bpy.types.Operator):
 
         elif matching_count == 2:
             cut_select_range = 40
-            sorted_sequences = sorted(matching_sequences, key=attrgetter('frame_final_start'))
-            first_sequence, second_sequence = sorted_sequences[0], sorted_sequences[1]
+            sorted_sequences = sorted(
+                matching_sequences, key=attrgetter('frame_final_start'))
+            first_sequence, second_sequence = sorted_sequences[
+                0], sorted_sequences[1]
 
             cut_x, _ = view2d.view_to_region(frame, channel)
             if abs(mouse_x - cut_x) > cut_select_range:
@@ -461,7 +481,6 @@ class GrabClosestHandleOrCut(bpy.types.Operator):
 
         return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
 
-
     def find_cut_and_handles_closest_to_mouse(self, mouse_x, mouse_y):
         """
         takes the mouse's coordinates in the sequencer area and returns the two strips
@@ -475,11 +494,15 @@ class GrabClosestHandleOrCut(bpy.types.Operator):
 
         for s in bpy.context.sequences:
             channel_offset = s.channel + 0.5
-            start_x, start_y = view2d.view_to_region(s.frame_final_start, channel_offset)
-            end_x, end_y = view2d.view_to_region(s.frame_final_start, channel_offset)
+            start_x, start_y = view2d.view_to_region(s.frame_final_start,
+                                                     channel_offset)
+            end_x, end_y = view2d.view_to_region(s.frame_final_start,
+                                                 channel_offset)
 
-            distance_to_start = self.calculate_distance(start_x, start_y, mouse_x, mouse_y)
-            distance_to_end = self.calculate_distance(end_x, end_y, mouse_x, mouse_y)
+            distance_to_start = self.calculate_distance(
+                start_x, start_y, mouse_x, mouse_y)
+            distance_to_end = self.calculate_distance(end_x, end_y, mouse_x,
+                                                      mouse_y)
 
             if distance_to_start < distance_to_closest_cut:
                 closest_cut = (start_x, start_y)
@@ -488,14 +511,14 @@ class GrabClosestHandleOrCut(bpy.types.Operator):
                 closest_cut = (end_x, end_y)
                 distance_to_closest_cut = distance_to_end
 
-        closest_cut_local_coords = view2d.region_to_view(closest_cut[0], closest_cut[1])
-        frame, channel = round(closest_cut_local_coords[0]), floor(closest_cut_local_coords[1])
+        closest_cut_local_coords = view2d.region_to_view(
+            closest_cut[0], closest_cut[1])
+        frame, channel = round(closest_cut_local_coords[0]), floor(
+            closest_cut_local_coords[1])
         return frame, channel
-
 
     def calculate_distance(self, x1, y1, x2, y2):
         return sqrt((x2 - x1)**2 + (y2 - y1)**2)
-
 
 
 class TrimToSurroundingCuts(bpy.types.Operator):
@@ -508,8 +531,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
 
     margin = FloatProperty(
         name="Trim margin",
-        description=
-        "Margin to leave on either sides of the trim in seconds",
+        description="Margin to leave on either sides of the trim in seconds",
         default=0.2,
         min=0)
     remove_gaps = BoolProperty(
@@ -526,12 +548,10 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             return {'CANCELLED'}
 
         sequencer = bpy.ops.sequencer
-        time_cursor_start_frame = bpy.context.scene.frame_current
 
         # Convert mouse position to frame, channel
         x, y = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)
+            x=event.mouse_region_x, y=event.mouse_region_y)
         frame, channel = round(x), floor(y)
 
         left_cut_frame, right_cut_frame = find_closest_surrounding_cuts(frame)
@@ -540,10 +560,12 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         margin_frame = round(self.margin * bpy.context.scene.render.fps)
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
-            self.report({'WARNING'}, "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
+            self.report({'WARNING'},
+                        "The trim margin is larger than the gap \n Use snap trim or reduce the margin")
             return {'CANCELLED'}
 
-        strips_to_delete, strips_to_trim = find_strips_in_range(left_cut_frame, right_cut_frame)
+        strips_to_delete, strips_to_trim = find_strips_in_range(
+            left_cut_frame, right_cut_frame)
         trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
 
         # print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
@@ -565,13 +587,11 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
                 s.frame_final_end = trim_start
 
-
         # Delete all sequences that are between the cuts
         sequencer.select_all(action='DESELECT')
         for s in strips_to_delete:
             s.select = True
         sequencer.delete()
-
 
         if self.remove_gaps:
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
@@ -597,8 +617,7 @@ class MouseToggleMute(bpy.types.Operator):
 
         # get current frame and channel the mouse hovers
         x, y = context.region.view2d.region_to_view(
-            x=event.mouse_region_x,
-            y=event.mouse_region_y)
+            x=event.mouse_region_x, y=event.mouse_region_y)
         frame, channel = round(x), floor(y)
 
         # Strip selection
@@ -623,7 +642,9 @@ class EditCrossfade(bpy.types.Operator):
 
     def execute(self, context):
         if not context.area.type == 'SEQUENCE_EDITOR':
-            self.report({'WARNING'}, "You need to be in the Video Sequence Editor to use this tool. \
+            self.report({
+                'WARNING'
+            }, "You need to be in the Video Sequence Editor to use this tool. \
                         Operation cancelled.")
             return {'CANCELLED'}
 
@@ -632,8 +653,9 @@ class EditCrossfade(bpy.types.Operator):
         if active.type != "GAMMA_CROSS":
             effect = find_effect_strips(active)
             if effect is None:
-                self.report({'WARNING'},
-                            "The active strip has to be a gamma cross for this tool to work. \
+                self.report({
+                    'WARNING'
+                }, "The active strip has to be a gamma cross for this tool to work. \
                             Operation cancelled.")
                 return {"CANCELLED"}
             active = bpy.context.scene.sequence_editor.active_strip = effect[0]

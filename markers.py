@@ -1,5 +1,5 @@
 import bpy
-from bpy.props import EnumProperty, BoolProperty
+from bpy.props import EnumProperty
 
 # TODO: Move these global constants into classes
 ID_REGEX = r'-?([0-9]+)-?'
@@ -18,6 +18,7 @@ class SyncTitles(bpy.types.Operator):
     bl_description = 'Snap the selected image or text strips to the \
                       corresponding title marker. The marker and strip names \
                       have to start with TITLE-001, ...'
+
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -32,14 +33,17 @@ class SyncTitles(bpy.types.Operator):
             if not markers:
                 self.report({"INFO"}, "No markers, operation cancelled.")
             else:
-                self.report({"INFO"}, "No sequences selected, operation cancelled.")
+                self.report({"INFO"},
+                            "No sequences selected, operation cancelled.")
             return {"CANCELLED"}
 
         title_markers = find_markers(TITLE_REGEX)
         if not title_markers:
-            self.report({"INFO"}, "No title markers found, operation cancelled.")
+            self.report({"INFO"},
+                        "No title markers found, operation cancelled.")
 
-        matched = match_sequences_and_markers(selection, title_markers, TITLE_REGEX)
+        matched = match_sequences_and_markers(selection, title_markers,
+                                              TITLE_REGEX)
         for s, m in matched:
             s.frame_start = m.frame
         return {'FINISHED'}
@@ -162,12 +166,9 @@ class GoToNextMarker(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     target_marker = EnumProperty(
-        items=[
-            ('left', 'left', 'left'), ('right', 'right', 'right')
-        ],
+        items=[('left', 'left', 'left'), ('right', 'right', 'right')],
         name='Target marker',
-        description=
-        'Move to the closest marker to the left or to the right of the cursor',
+        description='Move to the closest marker to the left or to the right of the cursor',
         default='left')
 
     @classmethod
@@ -258,8 +259,9 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
             frame_end = next_marker.frame
         else:
             from operator import attrgetter
-            frame_end = max(bpy.context.scene.sequence_editor.sequences,
-                            key=attrgetter('frame_final_end')).frame_final_end
+            frame_end = max(
+                bpy.context.scene.sequence_editor.sequences,
+                key=attrgetter('frame_final_end')).frame_final_end
 
         from .functions.sequences import set_preview_range
         set_preview_range(frame_start, frame_end)

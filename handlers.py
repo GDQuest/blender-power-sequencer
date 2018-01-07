@@ -5,17 +5,14 @@ from . import addon_updater_ops
 
 class PowerSequencerProps(bpy.types.PropertyGroup):
     playback_speed = bpy.props.EnumProperty(
-        items=[('normal', 'Normal (1x)', ''),
-        ('fast', 'Fast (1.33x)', ''),
-        ('faster', 'Faster (1.66x)', ''),
-        ('double', 'Double (2x)', ''),
-        ('triple', 'Triple (3x)', '')],
-        name = 'Playback speed',
+        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
+               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
+               ('triple', 'Triple (3x)', '')],
+        name='Playback speed',
         default='double')
     frame_pre = bpy.props.IntProperty(
-        name = 'Frame before frame_change',
-        default = 0,
-        min = 0)
+        name='Frame before frame_change', default=0, min=0)
+
 
 class ChangePlaybackSpeed(bpy.types.Operator):
     """
@@ -29,11 +26,9 @@ class ChangePlaybackSpeed(bpy.types.Operator):
     bl_options = {"REGISTER"}
 
     speed = bpy.props.EnumProperty(
-        items=[('normal', 'Normal (1x)', ''),
-        ('fast', 'Fast (1.33x)', ''),
-        ('faster', 'Faster (1.66x)', ''),
-        ('double', 'Double (2x)', ''),
-        ('triple', 'Triple (3x)', '')],
+        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
+               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
+               ('triple', 'Triple (3x)', '')],
         name='Speed',
         description='Change the playback speed',
         default='double')
@@ -73,12 +68,11 @@ def playback_speed_post(scene):
     scene = bpy.context.scene
     playback_speed = scene.power_sequencer.playback_speed
 
-    frame_pre = scene.power_sequencer.frame_pre
     frame_multipler = 1
     # FIXME: problem is that if playback_speed > 0,
-    # frame_pre is > frame_current even if the user went back in time
+    # scene.power_sequencer.frame_pre is > frame_current even if the user went back in time
     # Must take in account all speed levels
-    # if frame_pre < scene.frame_current:
+    # if scene.power_sequencer.frame_pre < scene.frame_current:
     #   frame_multipler = -1
     # Only need to work for backwards playback
 
@@ -129,7 +123,6 @@ def handlers_register():
         if (" playback_speed_post " in str(handler)):
             frame_change_post.remove(handler)
     frame_change_post.append(playback_speed_post)
-
 
 
 def handlers_unregister():

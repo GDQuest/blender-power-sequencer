@@ -8,6 +8,7 @@ from platform import system
 from .functions.sequences import get_frame_range, set_preview_range, \
     slice_selection
 
+
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'power_sequencer.open_project_directory'
     bl_label = 'PS.Open project directory'
@@ -121,7 +122,8 @@ class CopySelectedSequences(bpy.types.Operator):
 
         plural_string = 's' if len(selection) != 1 else ''
         action_verb = 'Cut' if self.delete_selection else 'Copied'
-        report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(action_verb, str(len(selection)), plural_string)
+        report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(
+            action_verb, str(len(selection)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
 
@@ -157,7 +159,6 @@ class CycleScenes(bpy.types.Operator):
 
     def execute(self, context):
         scenes = bpy.data.scenes
-        screen = bpy.context.screen
 
         scene_count = len(scenes)
 
@@ -186,8 +187,7 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
         if not selection:
             return {'CANCELLED'}
         frame_start, frame_end = get_frame_range(
-            sequences=bpy.context.selected_sequences,
-            get_from_start=False)
+            sequences=bpy.context.selected_sequences, get_from_start=False)
 
         if scene.frame_start == frame_start and scene.frame_end == frame_end:
             frame_start, frame_end = get_frame_range(get_from_start=True)
@@ -203,9 +203,7 @@ class SetTimeline(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     adjust = EnumProperty(
-        items=[
-            ('start', 'start', 'start'), ('end', 'end', 'end')
-        ],
+        items=[('start', 'start', 'start'), ('end', 'end', 'end')],
         name='Adjust',
         description='Change the start or the end frame of the timeline',
         default='start')
@@ -281,10 +279,15 @@ class RippleDelete(bpy.types.Operator):
                 sequencer.gap_remove(all=False)
 
             # auto move cursor back
-            if bpy.context.screen.is_animation_playing and len(selection_blocks) == 1:
+            if bpy.context.screen.is_animation_playing and len(
+                    selection_blocks) == 1:
                 sequences = selection_blocks[0]
-                start_frame = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
-                end_frame = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+                start_frame = min(
+                    sequences,
+                    key=attrgetter('frame_final_start')).frame_final_start
+                end_frame = max(
+                    sequences,
+                    key=attrgetter('frame_final_end')).frame_final_end
                 delete_duration = end_frame - start_frame
                 if scene.frame_current > start_frame:
                     cursor_offset = delete_duration
@@ -301,6 +304,5 @@ class RippleDelete(bpy.types.Operator):
         self.report({'INFO'}, report_message)
         if audio_scrub:
             bpy.context.scene.use_audio_scrub = audio_scrub
-
 
         return {'FINISHED'}
