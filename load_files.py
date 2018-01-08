@@ -2,10 +2,8 @@ import os
 import bpy
 import json
 from bpy.props import BoolProperty, IntProperty
-from glob import glob
-from os.path import basename
 
-from .functions.global_settings import ProjectSettings, Extensions
+from .functions.global_settings import Extensions
 from .functions.sequences import find_empty_channel
 
 
@@ -14,6 +12,7 @@ class ImportLocalFootage(bpy.types.Operator):
     bl_label = "PS.Import local footage"
     bl_description = "Import video and audio from the project \
                       folder to VSE strips"
+
     bl_options = {'REGISTER', 'UNDO'}
 
     SEQUENCER_AREA = None
@@ -61,8 +60,12 @@ class ImportLocalFootage(bpy.types.Operator):
         self.SEQUENCER_AREA = self.get_sequencer_area()
 
         project_directory = os.path.split(bpy.data.filepath)[0]
-        folders_to_import = [f for f in os.listdir(project_directory) if f in ('audio', 'img', 'video')]
-        local_footage_files = self.find_local_footage_files(project_directory, folders_to_import, Extensions.DICT)
+        folders_to_import = [
+            f for f in os.listdir(project_directory)
+            if f in ('audio', 'img', 'video')
+        ]
+        local_footage_files = self.find_local_footage_files(
+            project_directory, folders_to_import, Extensions.DICT)
         # print('Project dir: {!s},\nFolders found: {!s},\nLocal files: {!s}'.format(project_directory, folders_to_import, local_footage_files))
 
         files_to_import = self.find_new_files_to_import(local_footage_files)
@@ -71,7 +74,6 @@ class ImportLocalFootage(bpy.types.Operator):
             return {'FINISHED'}
         # print('Files to import: {!s}'.format(files_to_import))
 
-
         imported_sequences, imported_video_sequences = [], []
         import_channel = find_empty_channel()
         imported_videos_have_audio = False
@@ -79,20 +81,26 @@ class ImportLocalFootage(bpy.types.Operator):
         self.warnings = []
         self.start_fps, self.start_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
         if 'audio' in files_to_import.keys():
-            imported = self.import_audio(project_directory, files_to_import['audio'], import_channel)
+            imported = self.import_audio(
+                project_directory, files_to_import['audio'], import_channel)
             imported_sequences.extend(imported)
         if 'video' in files_to_import.keys():
-            imported, self.warnings = self.import_videos(project_directory, files_to_import['video'], import_channel + 1)
+            imported, self.warnings = self.import_videos(
+                project_directory, files_to_import['video'],
+                import_channel + 1)
             imported_sequences.extend(imported)
             imported_video_sequences.extend(imported)
             if len(imported_video_sequences) > len(files_to_import['video']):
                 imported_videos_have_audio = True
         if 'img' in files_to_import.keys():
-            img_import_channel = import_channel + 2 + int(imported_videos_have_audio)
-            imported = self.import_img(project_directory, files_to_import['img'], img_import_channel)
+            img_import_channel = import_channel + 2 + int(
+                imported_videos_have_audio)
+            imported = self.import_img(
+                project_directory, files_to_import['img'], img_import_channel)
             imported_sequences.extend(imported)
 
-        bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(json.dumps(local_footage_files))
+        bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(
+            json.dumps(local_footage_files))
 
         self.new_fps, self.new_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
 
@@ -103,7 +111,9 @@ class ImportLocalFootage(bpy.types.Operator):
             sequencer.meta_make()
             sequencer.meta_toggle()
 
-            videos_in_meta = [s for s in bpy.context.selected_sequences if s.type == 'MOVIE']
+            videos_in_meta = [
+                s for s in bpy.context.selected_sequences if s.type == 'MOVIE'
+            ]
             for s in videos_in_meta:
                 s.channel += 2
             for s in imported_video_sequences:
@@ -117,12 +127,13 @@ class ImportLocalFootage(bpy.types.Operator):
         for s in imported_sequences:
             s.select = True
 
-        if self.warnings or (start_framerate and new_framerate):
+        if self.warnings:
             context.window_manager.invoke_popup(self)
         else:
-            self.report({'INFO'}, "Imported {!s} strips from newly found files.".format(len(imported_sequences)))
+            self.report({'INFO'},
+                        "Imported {!s} strips from newly found files.".format(
+                            len(imported_sequences)))
         return {'FINISHED'}
-
 
     def draw(self, context):
         start_framerate, new_framerate = 0, 0
@@ -134,7 +145,8 @@ class ImportLocalFootage(bpy.types.Operator):
 
         if start_framerate and new_framerate:
             self.layout.label("The project's framerate changed")
-            self.layout.label("from {} to {}".format(start_framerate, new_framerate))
+            self.layout.label(
+                "from {} to {}".format(start_framerate, new_framerate))
             self.layout.separator()
 
         if self.warnings:
@@ -151,7 +163,6 @@ class ImportLocalFootage(bpy.types.Operator):
             self.layout.label("Check the source files' framerate")
             self.layout.label("and transcode them with ffmpeg.")
 
-
     def get_sequencer_area(self):
         """
         Finds and returns the sequencer area to use as a context override in some operators
@@ -161,11 +172,16 @@ class ImportLocalFootage(bpy.types.Operator):
             for area in window.screen.areas:
                 if not area.type == 'SEQUENCE_EDITOR':
                     continue
-                SEQUENCER_AREA = {'window': window, 'screen': window.screen, 'area': area, 'scene': bpy.context.scene}
+                SEQUENCER_AREA = {
+                    'window': window,
+                    'screen': window.screen,
+                    'area': area,
+                    'scene': bpy.context.scene
+                }
         return SEQUENCER_AREA
 
-
-    def find_local_footage_files(self, project_directory, folders_to_import, file_extensions):
+    def find_local_footage_files(self, project_directory, folders_to_import,
+                                 file_extensions):
         """
         Walks through a folder relative to the project directory and returns a list of filepaths that match the extensions.
 
@@ -184,14 +200,18 @@ class ImportLocalFootage(bpy.types.Operator):
         local_footage_files = {}
         for f in folders_to_import:
             local_footage_files[f] = []
-            for root, dirs, files in os.walk(os.path.join(project_directory, f)):
+            for root, dirs, files in os.walk(
+                    os.path.join(project_directory, f)):
                 for ignore_pattern in ('BL_proxy', 'src'):
                     if ignore_pattern in dirs:
                         dirs.remove(ignore_pattern)
-                relative_file_paths = [os.path.relpath(os.path.join(root, name), start=project_directory) for name in files]
+                relative_file_paths = [
+                    os.path.relpath(
+                        os.path.join(root, name), start=project_directory)
+                    for name in files
+                ]
                 local_footage_files[f].extend(relative_file_paths)
         return local_footage_files
-
 
     def create_text_file(self, name):
         """
@@ -216,7 +236,6 @@ class ImportLocalFootage(bpy.types.Operator):
         bpy.data.texts[text_name].name = name
         return bpy.data.texts[name]
 
-
     def get_import_text_file_content(self):
         import_text_file = bpy.data.texts.get('POWER_SEQUENCER_IMPORTS')
         if not import_text_file:
@@ -224,21 +243,24 @@ class ImportLocalFootage(bpy.types.Operator):
         content = import_text_file.as_string()
         return content
 
-
     def find_new_files_to_import(self, files_dict):
         imported_files_text = self.get_import_text_file_content()
-        imported_files = json.loads(imported_files_text) if imported_files_text else {}
+        imported_files = json.loads(
+            imported_files_text) if imported_files_text else {}
         files_to_import = {}
         for key in files_dict.keys():
             if key not in imported_files:
                 files_to_import[key] = files_dict[key]
                 continue
-            files_to_import[key] = [p for p in files_dict[key] if p not in set(imported_files[key])]
+            files_to_import[key] = [
+                p for p in files_dict[key]
+                if p not in set(imported_files[key])
+            ]
             imported_files[key].extend(files_to_import[key])
         return files_to_import
 
-
-    def import_videos(self, project_directory, videos_to_import, import_channel):
+    def import_videos(self, project_directory, videos_to_import,
+                      import_channel):
         """
         Imports a list of files using movie_strip_add
         Checks if the scene's framerate changes after importing the strips
@@ -251,7 +273,7 @@ class ImportLocalFootage(bpy.types.Operator):
         video_import_channel = import_channel + 1 if self.keep_audio else import_channel
         import_frame = bpy.context.scene.frame_current
 
-        imported_sequences, warnings  = [], []
+        imported_sequences, warnings = [], []
         for index, f in enumerate(videos_to_import):
             is_first_import = index == 0
             video_file_path = os.path.join(project_directory, f)
@@ -276,7 +298,8 @@ class ImportLocalFootage(bpy.types.Operator):
 
             if not audio_strip:
                 continue
-            strips_duration_difference = abs(audio_strip.frame_final_end - video_strip.frame_final_end)
+            strips_duration_difference = abs(audio_strip.frame_final_end -
+                                             video_strip.frame_final_end)
             if strips_duration_difference == 1:
                 audio_strip.frame_final_end = video_strip.frame_final_end
             # TODO: defer warnings to the end of the operator's code
@@ -284,7 +307,6 @@ class ImportLocalFootage(bpy.types.Operator):
             elif strips_duration_difference > 1:
                 warnings.append(bpy.path.basename(video_strip.filepath))
         return imported_sequences, warnings
-
 
     def import_audio(self, project_directory, audio_files, import_channel):
         """
@@ -303,7 +325,6 @@ class ImportLocalFootage(bpy.types.Operator):
             new_sequences.extend(bpy.context.selected_sequences)
             import_frame = bpy.context.selected_sequences[0].frame_final_end
         return new_sequences
-
 
     def import_img(self, project_directory, img_files, import_channel):
         import_frame = bpy.context.scene.frame_current
