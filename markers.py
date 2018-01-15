@@ -62,7 +62,7 @@ def match_sequences_and_markers(sequences, markers, regex):
         raise AttributeError('missing attributes')
 
     import re
-    from .functions.global_settings import SequenceTypes
+    from .utils.global_settings import SequenceTypes
     sequences = (s for s in sequences if s.type not in SequenceTypes.EFFECT)
 
     return_list = []
@@ -263,7 +263,7 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
                 bpy.context.scene.sequence_editor.sequences,
                 key=attrgetter('frame_final_end')).frame_final_end
 
-        from .functions.sequences import set_preview_range
+        from .utils.sequences import set_preview_range
         set_preview_range(frame_start, frame_end)
         return {'FINISHED'}
 

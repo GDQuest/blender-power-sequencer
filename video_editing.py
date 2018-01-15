@@ -2,8 +2,8 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 from operator import attrgetter
 
-from .functions.global_settings import SequenceTypes
-from .functions.sequences import find_next_sequences, \
+from .utils.global_settings import SequenceTypes
+from .utils.sequences import find_next_sequences, \
     slice_selection, get_frame_range, \
     find_linked, set_preview_range, filter_sequences_by_type
 

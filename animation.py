@@ -2,7 +2,7 @@
    These can include fades, transforms, etc."""
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty
-from .functions.sequences import SequenceTypes
+from .utils.sequences import SequenceTypes
 
 
 def fade_find_fcurve(sequence=None):
@@ -40,7 +40,7 @@ def fade_clear(sequence=None):
         fcurves.remove(fade_fcurve)
 
 
-# TODO: Use a handler to auto move the fades with extend 
+# TODO: Use a handler to auto move the fades with extend
 # and the strips' handles
 class FadeStrips(bpy.types.Operator):
     bl_idname = "power_sequencer.fade_strips"
@@ -155,7 +155,7 @@ class AddTransformEffect(bpy.types.Operator):
             if s.use_translation and (s.transform.offset_x != 0 or
                                       s.transform.offset_y != 0):
                 continue
-            
+
             image_width = s.elements[0].orig_width
             image_height = s.elements[0].orig_height
             if image_width == 0 or image_height == 0:

@@ -3,8 +3,8 @@ from math import floor, sqrt
 
 import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty, FloatProperty, CollectionProperty
-from .functions.global_settings import SequenceTypes
-from .functions.sequences import get_frame_range
+from .utils.global_settings import SequenceTypes
+from .utils.sequences import get_frame_range
 from operator import attrgetter
 
 

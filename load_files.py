@@ -3,7 +3,7 @@ import bpy
 import json
 from bpy.props import BoolProperty, IntProperty
 
-from .functions.global_settings import Extensions
+from .utils.global_settings import Extensions
 
 
 class ImportLocalFootage(bpy.types.Operator):

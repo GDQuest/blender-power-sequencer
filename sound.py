@@ -1,7 +1,7 @@
 import bpy
 from bpy.props import FloatProperty, EnumProperty
 
-from .functions.global_settings import SequenceTypes
+from .utils.global_settings import SequenceTypes
 
 
 class SoundToggleWaveform(bpy.types.Operator):

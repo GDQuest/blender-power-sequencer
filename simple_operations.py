@@ -5,7 +5,7 @@ from operator import attrgetter
 import os
 from subprocess import Popen
 from platform import system
-from .functions.sequences import get_frame_range, set_preview_range, \
+from .utils.sequences import get_frame_range, set_preview_range, \
     slice_selection
 
 

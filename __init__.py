@@ -42,7 +42,7 @@ from . import addon_updater_ops
 
 # load and reload submodules
 ##################################
-from .functions import developer_utils
+from .utils import developer_utils
 modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 # register
@@ -53,7 +53,7 @@ import traceback
 def register():
 
     addon_updater_ops.register(bl_info)
-    
+
     try:
         bpy.utils.register_module(__name__)
     except:
