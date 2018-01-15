@@ -4,7 +4,7 @@ from operator import attrgetter
 
 from .functions.global_settings import SequenceTypes
 from .functions.sequences import find_next_sequences, \
-    select_strip_handle, slice_selection, get_frame_range, \
+    slice_selection, get_frame_range, \
     find_linked, set_preview_range, filter_sequences_by_type
 
 
@@ -319,18 +319,37 @@ class SmartSnap(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        sequencer = bpy.ops.sequencer
-        current_frame = bpy.context.scene.frame_current
+        frame_current = bpy.context.scene.frame_current
 
-        select_strip_handle(bpy.context.selected_sequences, self.side,
-                            current_frame)
-
-        sequencer.snap(frame=current_frame)
+        self.select_strip_handle(bpy.context.selected_sequences, self.side, frame_current)
+        bpy.ops.sequencer.snap(frame=frame_current)
 
         for s in context.selected_sequences:
             s.select_right_handle = False
             s.select_left_handle = False
         return {"FINISHED"}
+
+    def select_strip_handle(self, sequences, side, frame):
+        """
+        Select the left or right handles of the strips based on the frame number
+        """
+        side = side.upper()
+
+        for s in sequences:
+            s.select_left_handle = False
+            s.select_right_handle = False
+
+            handle_side = ''
+            start, end = s.frame_final_start, s.frame_final_end
+            if side == 'AUTO' and start <= frame <= end:
+                handle_side = 'LEFT' if abs(
+                    frame - start) < s.frame_final_duration / 2 else 'RIGHT'
+            elif side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
+                handle_side = side
+            else:
+                s.select = False
+            if handle_side:
+                bpy.ops.sequencer.select_handles(side=handle_side)
 
 
 class GrabStillImage(bpy.types.Operator):

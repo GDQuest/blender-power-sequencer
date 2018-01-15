@@ -1,21 +1,7 @@
 """Sequence selection and editing related functions"""
 import bpy
-from .global_settings import SequenceTypes, SearchMode
+from .global_settings import SequenceTypes
 from operator import attrgetter
-
-
-def find_empty_channel():
-    """
-    Finds the first empty channel above all others in the VSE
-    and returns it
-    """
-    sequences = bpy.context.sequences
-    if not sequences:
-        return 1
-
-    channels = [s.channel for s in sequences]
-    channels = sorted(list(set(channels)))
-    return channels[-1] + 1
 
 
 def find_next_sequences(sequences):
@@ -57,33 +43,6 @@ def filter_sequences_by_type(sequences, *args):
     return [s for s in sequences if s.type in types_list]
 
 
-def select_strip_handle(sequences, side=None, frame=None):
-    """
-    Select the left or right handles of the strips based on the frame number
-    """
-    if not side and sequences and frame:
-        raise AttributeError('Missing attributes')
-
-    side = side.upper()
-
-    for s in sequences:
-        s.select_left_handle = False
-        s.select_right_handle = False
-
-        handle_side = ''
-        start, end = s.frame_final_start, s.frame_final_end
-        if side == 'AUTO' and start <= frame <= end:
-            handle_side = 'LEFT' if abs(
-                frame - start) < s.frame_final_duration / 2 else 'RIGHT'
-        elif side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
-            handle_side = side
-        else:
-            s.select = False
-        if handle_side:
-            bpy.ops.sequencer.select_handles(side=handle_side)
-    return True
-
-
 def find_strips_mouse(frame=None, channel=None, select_linked=True):
     """
     Finds a list of sequences to select based on the mouse position
@@ -118,7 +77,6 @@ def find_strips_mouse(frame=None, channel=None, select_linked=True):
     return selection
 
 
-# TODO: UNITTEST: always return as many sequences as passed in
 def slice_selection(sequences):
     """
     Takes a list of sequences and breaks it down
@@ -202,31 +160,6 @@ def set_preview_range(start, end):
     scene.frame_preview_end = end
 
 
-def find_effect_strips(sequence):
-    """
-    Takes a single strip and finds effect strips that use it as input
-    Returns the effect strip(s) found as a list, ordered by starting frame
-    Returns None if no effect was found
-    """
-    if sequence.type not in SequenceTypes.VIDEO and sequence.type not in SequenceTypes.IMAGE:
-        return None
-
-    effect_sequences = (s
-                        for s in bpy.context.sequences
-                        if s.type in SequenceTypes.EFFECT)
-    found_effect_strips = []
-    for s in effect_sequences:
-        if s.input_1.name == sequence.name:
-            found_effect_strips.append(s)
-        if s.input_count == 2:
-            if s.input_2.name == sequence.name:
-                found_effect_strips.append(s)
-
-    found_effect_strips = sorted(found_effect_strips,
-                                 key=attrgetter('frame_final_start'))
-    return found_effect_strips
-
-
 def find_linked(sequences):
     """
     Takes a list of sequences and returns a list of all the sequences
@@ -238,9 +171,7 @@ def find_linked(sequences):
     Returns a list of all the linked sequences, but not the sequences passed to the function
     """
     start, end = get_frame_range(sequences)
-    sequences_in_range = [s
-                          for s in bpy.context.sequences
-                          if is_in_range(s, start, end)]
+    sequences_in_range = [s for s in bpy.context.sequences if is_in_range(s, start, end)]
     effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
     selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
 

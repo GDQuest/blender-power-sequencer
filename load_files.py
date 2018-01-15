@@ -4,7 +4,6 @@ import json
 from bpy.props import BoolProperty, IntProperty
 
 from .functions.global_settings import Extensions
-from .functions.sequences import find_empty_channel
 
 
 class ImportLocalFootage(bpy.types.Operator):
@@ -75,7 +74,7 @@ class ImportLocalFootage(bpy.types.Operator):
         # print('Files to import: {!s}'.format(files_to_import))
 
         imported_sequences, imported_video_sequences = [], []
-        import_channel = find_empty_channel()
+        import_channel = self.find_empty_channel()
         imported_videos_have_audio = False
 
         self.warnings = []
@@ -134,6 +133,19 @@ class ImportLocalFootage(bpy.types.Operator):
                         "Imported {!s} strips from newly found files.".format(
                             len(imported_sequences)))
         return {'FINISHED'}
+
+    def find_empty_channel(self):
+        """
+        Finds the first empty channel above all others in the VSE
+        and returns it
+        """
+        sequences = bpy.context.sequences
+        if not sequences:
+            return 1
+
+        channels = [s.channel for s in sequences]
+        channels = sorted(list(set(channels)))
+        return channels[-1] + 1
 
     def draw(self, context):
         start_framerate, new_framerate = 0, 0
