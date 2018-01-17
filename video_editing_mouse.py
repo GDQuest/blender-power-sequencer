@@ -158,7 +158,7 @@ class MouseCut(bpy.types.Operator):
                 for s in to_select:
                     s.select = True
                 print(bpy.context.selected_sequences)
-                self.cut_strips_or_gap()
+                self.cut_strips_or_gap(self.start_frame)
             else:
                 to_select, to_delete = self.find_strips_to_trim()
                 trim_strips(self.start_frame, self.end_frame, self.select_mode,
@@ -194,14 +194,17 @@ class MouseCut(bpy.types.Operator):
                     to_select.append(s)
         return to_select
 
-    def cut_strips_or_gap(self):
+    def cut_strips_or_gap(self, frame_cut):
         if self.cut_gaps and len(bpy.context.selected_sequences) == 0:
             bpy.ops.sequencer.gap_remove(all=False)
         else:
+            frame_current = bpy.context.scene.frame_current
+            bpy.context.scene.frame_current = frame_cut
             bpy.ops.sequencer.cut(
                 frame=bpy.context.scene.frame_current,
                 type='SOFT',
                 side='BOTH')
+            bpy.context.scene.frame_current = frame_current
 
     def find_strips_to_trim(self):
         """
@@ -310,9 +313,6 @@ class MouseTrim(bpy.types.Operator):
         return context.sequences is not None
 
     def invoke(self, context, event):
-        # if self.snap_to_closest_cut:
-        #     self.start_frame = find_snap_candidate(self.start_frame)
-
         to_select = []
         if not self.start_frame or self.end_frame:
             x, y = context.region.view2d.region_to_view(
