@@ -1,31 +1,21 @@
-"""Proxy-related operators
-   The add-on produces proxy video files using ffmpeg,
-   and offers more flexibility than the built-in proxies
-   for simple video projects (online videos, tutorials, vlogs...)."""
 import os
 import bpy
-from bpy.props import BoolProperty, IntProperty, StringProperty
-
-# TODO: store and update proxies function (store/update paths to proxy folders and files)
-# TODO: clear proxies (delete all proxy files)
-# Prompt for confirmation
 
 
-# Sets video strips as proxies
-# TODO: Add settings in addon prefs
-# TODO: Make use of SettingsProxies PropertyGroup
-# TODO: If custom dir, store proxies in a subfolder
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "power_sequencer.set_video_proxies"
     bl_label = "PS.Set selected strips as Proxies"
-    bl_description = "Set all video strips in the current scene as proxies and rebuild"
+    bl_description = """
+    Set all video strips in the current scene as proxies and rebuild
+    using Blender's proxy generation
+    """
     bl_options = {"REGISTER"}
 
-    use_custom_folder = BoolProperty(
+    use_custom_folder = bpy.props.BoolProperty(
         name="Custom proxy folder",
         description="Use a custom folder to store proxies",
         default=True)
-    custom_folder_path = StringProperty(
+    custom_folder_path = bpy.props.StringProperty(
         name="Custom proxy folder path",
         description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
         default=r"D:\Program Files\Blender proxies")
@@ -64,25 +54,24 @@ class SetVideosProxies(bpy.types.Operator):
         return {"FINISHED"}
 
 
-# TODO: Add way to change us
 class SettingsProxies(bpy.types.PropertyGroup):
-    proxy_on_import = BoolProperty(
+    proxy_on_import = bpy.props.BoolProperty(
         name="Auto create proxy",
         description="Set and build videos strips as proxies on import for all strips",
         default=True)
-    use_custom_folder = BoolProperty(
+    use_custom_folder = bpy.props.BoolProperty(
         name="Custom proxy folder",
         description="Use a custom folder to store proxies",
         default=True)
-    custom_folder_path = StringProperty(
+    custom_folder_path = bpy.props.StringProperty(
         name="Custom proxy folder path",
         description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
         default=r"D:\Program Files\Blender proxies")
-    proxy_25 = BoolProperty(name="Proxy at 25%", default=True)
-    proxy_50 = BoolProperty(name="Proxy at 50%", default=False)
-    proxy_75 = BoolProperty(name="Proxy at 75%", default=False)
-    proxy_100 = BoolProperty(name="Proxy at 100%", default=False)
-    proxy_quality = IntProperty(
+    proxy_25 = bpy.props.BoolProperty(name="Proxy at 25%", default=True)
+    proxy_50 = bpy.props.BoolProperty(name="Proxy at 50%", default=False)
+    proxy_75 = bpy.props.BoolProperty(name="Proxy at 75%", default=False)
+    proxy_100 = bpy.props.BoolProperty(name="Proxy at 100%", default=False)
+    proxy_quality = bpy.props.IntProperty(
         name="Proxy JPG quality",
         default=90, min=1, max=100)
 
