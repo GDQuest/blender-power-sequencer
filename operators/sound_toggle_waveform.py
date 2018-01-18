@@ -1,6 +1,4 @@
 import bpy
-from bpy.props import FloatProperty, EnumProperty
-
 from .utils.global_settings import SequenceTypes
 
 
@@ -11,7 +9,7 @@ class SoundToggleWaveform(bpy.types.Operator):
                       or for all strips if no selection is active'
     bl_options = {'REGISTER', 'UNDO'}
 
-    mode = EnumProperty(
+    mode = bpy.props.EnumProperty(
         items=[('auto', 'Auto', 'Automatically toggle the waveform'),
                ('on', 'On', 'Make the waveforms visible'),
                ('off', 'Off', 'Make the waveforms invisible')],
@@ -44,32 +42,4 @@ class SoundToggleWaveform(bpy.types.Operator):
 
         for s in sequences:
             s.show_waveform = show_waveform
-        return {'FINISHED'}
-
-
-class SoundSetVolume(bpy.types.Operator):
-    bl_idname = 'power_sequencer.sound_set_strip_volume'
-    bl_label = 'PS.Sound: set strip volume'
-    bl_description = 'Change the volume of all selected Sound strips (use F6)'
-    bl_options = {'REGISTER', 'UNDO'}
-
-    volume = FloatProperty(
-        name="Volume",
-        description="The volume to use",
-        default=1.0,
-        min=0.0, max=4.0,
-        soft_min=0.0, soft_max=4.0,
-        step=5,
-        precision=2
-    )
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        sequences = [s for s in bpy.context.selected_sequences if s.type in SequenceTypes.SOUND]
-
-        for s in sequences:
-            s.volume = self.volume
         return {'FINISHED'}
