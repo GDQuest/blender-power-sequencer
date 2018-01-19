@@ -14,34 +14,6 @@ class PowerSequencerProps(bpy.types.PropertyGroup):
         name='Frame before frame_change', default=0, min=0)
 
 
-class ChangePlaybackSpeed(bpy.types.Operator):
-    """
-    Change the playback_speed property using an operator property.
-    Used with keymaps
-    """
-    bl_idname = "power_sequencer.change_playback_speed"
-    bl_label = "PS.Change playback speed"
-    bl_description = "Change the playback speed"
-
-    bl_options = {"REGISTER"}
-
-    speed = bpy.props.EnumProperty(
-        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
-               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
-               ('triple', 'Triple (3x)', '')],
-        name='Speed',
-        description='Change the playback speed',
-        default='double')
-
-    @classmethod
-    def poll(cls, context):
-        return True
-
-    def execute(self, context):
-        bpy.context.scene.power_sequencer.playback_speed = self.speed
-        return {"FINISHED"}
-
-
 @persistent
 def load_file_post(arg):
     """
@@ -96,6 +68,7 @@ def draw_playback_speed(self, context):
     layout.prop(scene.power_sequencer, 'playback_speed')
 
 
+# Add-on updater
 def draw_check_for_update(self, context):
     # Call to check for update in background
     # note: built-in checks ensure it runs at most once
