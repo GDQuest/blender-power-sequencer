@@ -40,6 +40,10 @@ from .handlers import handlers_register, handlers_unregister, PowerSequencerProp
 
 from . import addon_updater_ops
 
+from .operators.concatenate_strips import ConcatenateStrips
+from .operators.ripple_delete import RippleDelete
+from .panel import PowerSequencerPanel
+
 # load and reload submodules
 ##################################
 from .utils import developer_utils
