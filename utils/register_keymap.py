@@ -48,7 +48,7 @@ def register_keymap():
                         pass
 
                 for op in operator_names:
-                    if operators[op]:
+                    if len(operators[op]) > 0:
                         shift = 'SHIFT' in operators[op]
                         alt = 'ALT' in operators[op]
                         ctrl = 'CTRL' in operators[op]
