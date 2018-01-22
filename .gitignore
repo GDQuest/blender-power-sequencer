@@ -3,3 +3,4 @@ __pycache__
 /.vscode
 /_references
 /power-sequencer_updater
+linker.py
