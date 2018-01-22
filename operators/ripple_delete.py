@@ -18,6 +18,7 @@ class RippleDelete(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        print('rippling')
         scene = bpy.context.scene
         sequencer = bpy.ops.sequencer
         selection = bpy.context.selected_sequences

@@ -1,0 +1,10 @@
+{
+    "Sequencer": {
+        "SEQUENCE_EDITOR" : {
+            "WINDOW": {
+                "power_sequencer.mouse_cut": ["ACTIONMOUSE", "PRESS", "CTRL"],
+                "power_sequencer.ripple_delete": ["X", "PRESS", "SHIFT"]
+            }
+        }
+    }
+}

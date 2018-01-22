@@ -40,6 +40,10 @@ from .handlers import handlers_register, handlers_unregister, PowerSequencerProp
 
 from . import addon_updater_ops
 
+from .operators.export_keymap import ExportKeymap
+from .operators.import_keymap import ImportKeymap
+
+from .operators.mouse_cut import MouseCut
 from .operators.concatenate_strips import ConcatenateStrips
 from .operators.ripple_delete import RippleDelete
 from .panel import PowerSequencerPanel
@@ -47,6 +51,9 @@ from .panel import PowerSequencerPanel
 # load and reload submodules
 ##################################
 from .utils import developer_utils
+from .utils.register_keymap import register_keymap
+from .utils.unregister_keymap import unregister_keymap
+
 modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 # register
@@ -70,8 +77,12 @@ def register():
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
 
+    register_keymap()
+
 
 def unregister():
+    unregister_keymap()
+    
     try:
         bpy.utils.unregister_module(__name__)
     except:
@@ -79,3 +90,5 @@ def unregister():
 
     handlers_unregister()
     print("Unregistered {}".format(bl_info["name"]))
+
+    
