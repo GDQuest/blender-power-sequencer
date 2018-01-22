@@ -34,6 +34,7 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
         
         shutil.copy(self.filepath, keymap_path)
         
-        self.report({'WARNING'}, 'Restart Blender to finish installing new Keymap')
+        bpy.ops.power_sequencer.unregister_keymap()
+        bpy.ops.power_sequencer.register_keymap()
         
         return {"FINISHED"}

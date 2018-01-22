@@ -16,11 +16,19 @@ def pretty_json(dictionary, indent=0):
     for i in range(len(keys)):
         key = keys[i]
         if type(dictionary[key]) is dict:
-            lines.append(' ' * indent + '"' + key + '": {')
+            lines.append(' ' * indent + '"' + key + '" : {')
             lines.extend(pretty_json(dictionary[key], indent + 4))
             lines.append(' ' * indent + '}')
         else:
-            lines.append(' ' * indent + '"' + key + '": ' + str(dictionary[key]))
+            list_string = '['
+            for x in range(len(dictionary[key])):
+                item = dictionary[key][x]
+                if x < len(dictionary[key]) - 1:
+                    list_string += '"' + item + '", '
+                else:
+                    list_string += '"' + item + '"'
+            list_string += ']'
+            lines.append(' ' * indent + '"' + key + '" : ' + list_string)
 
         if not i == len(keys) - 1:
                 lines[-1] += ','
@@ -57,11 +65,11 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
                     json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname] = [keymap_item.type, keymap_item.value]
 
                     if keymap_item.shift:
-                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append('SHIFT')
+                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append("SHIFT")
                     if keymap_item.ctrl:
-                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append('CTRL')
+                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append("CTRL")
                     if keymap_item.alt:
-                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append('ALT')
+                        json_contents[keymap.name][keymap.space_type][keymap.region_type][keymap_item.idname].append("ALT")
 
                     found_op_ids.append(keymap_item.idname)
 
@@ -95,6 +103,6 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
                             json_contents[name][space_type][region][kmi] = []
 
         with open(self.filepath, 'w') as f:
-            f.write('\n'.join(pretty_json(json_contents)))
+            f.write('{\n' + '\n'.join(pretty_json(json_contents, indent=4)) + '\n}')
 
         return {"FINISHED"}

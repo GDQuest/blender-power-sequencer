@@ -51,8 +51,12 @@ from .panel import PowerSequencerPanel
 # load and reload submodules
 ##################################
 from .utils import developer_utils
+
 from .utils.register_keymap import register_keymap
+from .utils.register_keymap import RegisterKeymap
+
 from .utils.unregister_keymap import unregister_keymap
+from .utils.unregister_keymap import UnregisterKeymap
 
 modules = developer_utils.setup_addon_modules(__path__, __name__)
 

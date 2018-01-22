@@ -29,3 +29,15 @@ def unregister_keymap():
                 for hotkey in current_hotkeys:
                     if hotkey.idname in operator_names:
                         keymap.keymap_items.remove(hotkey)
+
+class UnregisterKeymap(bpy.types.Operator):
+    """
+    Remove keymaps for Power-Sequencer
+    """
+    bl_idname = "power_sequencer.unregister_keymap"
+    bl_label = "Unregister Power-Sequencer Keymap"
+    bl_description = "Unregisters Power-Sequencer keymap"
+
+    def execute(self, context):
+        unregister_keymap()
+        return {"FINISHED"}

@@ -78,3 +78,16 @@ def register_keymap():
                                     'Error:',
                                     'Unable to make keyboard shortcut for',
                                     op]))
+
+class RegisterKeymap(bpy.types.Operator):
+    """
+    Use the keymap.json file to create hotkeys for power sequencer.
+    """
+    bl_idname = "power_sequencer.register_keymap"
+    bl_label = "Register Power-Sequencer Keymap"
+    bl_description = "Registers Power-Sequencer keymap"
+    
+    def execute(self, context):
+        register_keymap()
+        return {"FINISHED"}
+        
