@@ -105,4 +105,5 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
         with open(self.filepath, 'w') as f:
             f.write('{\n' + '\n'.join(pretty_json(json_contents, indent=4)) + '\n}')
 
+        self.report({'INFO'}, 'Exported Power-Sequencer keymap to ' + os.path.basename(self.filepath))
         return {"FINISHED"}

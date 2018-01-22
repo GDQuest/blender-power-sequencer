@@ -79,6 +79,7 @@ def register_keymap():
                                     'Unable to make keyboard shortcut for',
                                     op]))
 
+
 class RegisterKeymap(bpy.types.Operator):
     """
     Use the keymap.json file to create hotkeys for power sequencer.
