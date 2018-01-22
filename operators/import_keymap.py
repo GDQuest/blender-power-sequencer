@@ -3,6 +3,7 @@ import pathlib
 import shutil
 import bpy
 from bpy_extras.io_utils import ImportHelper
+import json
 
 
 class ImportKeymap(bpy.types.Operator, ImportHelper):
@@ -22,6 +23,15 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
     def execute(self, context):
         self.filepath = os.path.abspath(self.filepath)
         
+        try:
+            with open(self.filepath, 'r') as f:
+                json.load(f)
+        except json.decoder.JSONDecodeError:
+            self.report({'ERROR'}, 'User provided .json file is not formatted correctly\nNo Keymaps were changed.')
+            return {"FINISHED"}
+        
+        bpy.ops.power_sequencer.unregister_keymap()
+        
         addons_path = bpy.utils.user_resource('SCRIPTS', "addons")
         operators_path = os.path.dirname(__file__)
         folder = pathlib.Path(operators_path.replace(addons_path, '')).parts[1]
@@ -34,7 +44,7 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
         
         shutil.copy(self.filepath, keymap_path)
         
-        bpy.ops.power_sequencer.unregister_keymap()
         bpy.ops.power_sequencer.register_keymap()
+        self.report({'INFO'}, 'Power-Sequencer keymap updated')
         
         return {"FINISHED"}
