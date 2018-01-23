@@ -14,7 +14,7 @@ class MouseTrim(bpy.types.Operator):
     If there's no precise time range, auto trims based on the closest cut
 
     Args:
-    - start_frame and end_frame (int) define the frame range to trim
+    - frame_start and frame_end (int) define the frame range to trim
     """
     bl_idname = "power_sequencer.mouse_trim"
     bl_label = "PS.Mouse trim strips"
@@ -39,7 +39,7 @@ class MouseTrim(bpy.types.Operator):
         description="When trimming the sequences, remove gaps automatically",
         default=True)
 
-    start_frame, end_frame = IntProperty(), IntProperty()
+    frame_start, frame_end = IntProperty(), IntProperty()
     to_select = []
 
     @classmethod
@@ -48,7 +48,7 @@ class MouseTrim(bpy.types.Operator):
 
     def invoke(self, context, event):
         to_select = []
-        if not self.start_frame or self.end_frame:
+        if not self.frame_start or self.frame_end:
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
             frame, channel = round(x), floor(y)
@@ -70,16 +70,16 @@ class MouseTrim(bpy.types.Operator):
                         to_select.append(s)
 
             selection_start, selection_end = get_frame_range(to_select)
-            self.start_frame = frame
-            self.end_frame = selection_end if abs(
-                frame - selection_end) <= abs(
-                    frame - selection_start) else selection_start
+            self.frame_start = frame
+            self.frame_end = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
 
         self.to_select = to_select
-        trim_strips(
-            self.start_frame,
-            self.end_frame,
-            self.select_mode,
-            self.to_select,
-            remove_gaps=self.remove_gaps)
+        trim_strips(self.frame_start, self.frame_end,
+                    self.select_mode, self.to_select)
+
+        if self.remove_gaps and self.select_mode == 'cursor':
+            bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
+            bpy.ops.sequencer.gap_remove()
+        else:
+            bpy.context.scene.frame_current = frame
         return {'FINISHED'}

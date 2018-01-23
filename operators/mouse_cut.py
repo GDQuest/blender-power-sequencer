@@ -53,8 +53,8 @@ class MouseCut(bpy.types.Operator):
     use_pen_tablet = False
     mouse_start_x, mouse_start_y = 0.0, 0.0
 
-    start_frame, start_channel = 0, 0
-    end_frame, end_channel = 0, 0
+    frame_start, start_channel = 0, 0
+    frame_end, end_channel = 0, 0
     select_mouse, action_mouse = '', ''
     cut_mode = ''
 
@@ -70,8 +70,8 @@ class MouseCut(bpy.types.Operator):
 
         frame_float, channel_float = context.region.view2d.region_to_view(
             x=event.mouse_region_x, y=event.mouse_region_y)
-        self.start_frame, self.start_channel = round(frame_float), floor(channel_float)
-        self.end_frame = self.start_frame
+        self.frame_start, self.start_channel = round(frame_float), floor(channel_float)
+        self.frame_end = self.frame_start
 
         # Reverse keymaps if the user selects with the left mouse button
         self.select_mouse = 'RIGHTMOUSE'
@@ -80,7 +80,7 @@ class MouseCut(bpy.types.Operator):
             self.select_mouse = 'LEFTMOUSE'
             self.action_mouse = 'RIGHTMOUSE'
 
-        bpy.context.scene.frame_current = self.start_frame
+        bpy.context.scene.frame_current = self.frame_start
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
@@ -95,24 +95,30 @@ class MouseCut(bpy.types.Operator):
 
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
             if (self.use_pen_tablet and cursor_distance <= self.threshold_trim_distance) \
-               or self.start_frame == self.end_frame:
+               or self.frame_start == self.frame_end:
                 to_select = self.find_strips_to_cut()
                 bpy.ops.sequencer.select_all(action='DESELECT')
                 for s in to_select:
                     s.select = True
                 print(bpy.context.selected_sequences)
-                self.cut_strips_or_gap(self.start_frame)
+                self.cut_strips_or_gap(self.frame_start)
             else:
                 to_select, to_delete = self.find_strips_to_trim()
-                trim_strips(self.start_frame, self.end_frame, self.select_mode,
-                            to_select, to_delete, self.remove_gaps)
+                trim_strips(self.frame_start, self.frame_end, self.select_mode,
+                            to_select, to_delete)
+
+                if self.remove_gaps and self.select_mode == 'cursor':
+                    bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
+                    bpy.ops.sequencer.gap_remove()
+                else:
+                    bpy.context.scene.frame_current = self.frame_end
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
-            self.end_frame, self.end_channel = round(x), floor(y)
-            bpy.context.scene.frame_current = self.end_frame
+            self.frame_end, self.end_channel = round(x), floor(y)
+            bpy.context.scene.frame_current = self.frame_end
             return {'PASS_THROUGH'}
 
         return {'RUNNING_MODAL'}
@@ -125,7 +131,7 @@ class MouseCut(bpy.types.Operator):
         overlapping_strips = []
         if self.select_mode == 'smart':
             overlapping_strips = find_strips_mouse(
-                self.start_frame, self.start_channel, self.select_linked)
+                self.frame_start, self.start_channel, self.select_linked)
             to_select.extend(overlapping_strips)
 
         if self.select_mode == 'cursor' or (not overlapping_strips and
@@ -133,7 +139,7 @@ class MouseCut(bpy.types.Operator):
             for s in bpy.context.sequences:
                 if s.lock:
                     continue
-                if s.frame_final_start <= self.start_frame <= s.frame_final_end:
+                if s.frame_final_start <= self.frame_start <= s.frame_final_end:
                     to_select.append(s)
         return to_select
 
@@ -155,8 +161,8 @@ class MouseCut(bpy.types.Operator):
         """
         to_select, to_delete = [], []
         overlapping_strips = []
-        trim_start, trim_end = min(self.start_frame, self.end_frame), max(
-            self.start_frame, self.end_frame)
+        trim_start, trim_end = min(self.frame_start, self.frame_end), max(
+            self.frame_start, self.frame_end)
         if self.select_mode == 'smart':
             overlapping_strips = find_strips_mouse(
                 trim_start, self.start_channel, self.select_linked)
