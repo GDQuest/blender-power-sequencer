@@ -49,6 +49,8 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 ##################################
 import traceback
 
+from .ui import PowerSequencerPanel
+
 from .operators import *
 from .keymap import *
 
