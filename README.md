@@ -4,7 +4,7 @@
 </h1>
 
 <p align='center'>
-  <img src="https://raw.githubusercontent.com/GDquest/Blender-power-sequencer/master/img/banner-960w.jpg" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
+  <img src="https://i.imgur.com/6tVdzBQ.jpg" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
 </p>
 
 Blender's video sequencer has a lot of potential, but it lacks essential tools for content creators to edit videos efficiently.
