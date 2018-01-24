@@ -8,4 +8,5 @@ __pycache__
 _make_op_init.py
 _make_util_init.py
 _op_consistency_checker.py
-_addon_linker.py
+addon_linker.py
+todo.txt
