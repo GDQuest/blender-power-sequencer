@@ -9,7 +9,7 @@ class GrabSequenceHandle(bpy.types.Operator):
     If it's on the left side, it moves the left handle.
     """
     bl_idname = 'power_sequencer.grab_sequence_handle'
-    bl_label = 'PS.Grab sequence handles'
+    bl_label = 'Grab sequence handles'
     bl_description = 'Grabs the sequence\'s handle based on the mouse position'
     bl_options = {'REGISTER', 'UNDO'}
 

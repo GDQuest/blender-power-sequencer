@@ -9,7 +9,7 @@ from .utils.get_frame_range import get_frame_range
 # TODO: Improve auto move cursor back
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'power_sequencer.ripple_delete'
-    bl_label = 'PS.Ripple delete'
+    bl_label = 'Ripple delete'
     bl_description = 'Delete the selected sequences and remove gaps'
     bl_options = {'REGISTER', 'UNDO'}
 

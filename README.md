@@ -26,8 +26,6 @@ I built Power Sequencer to help us edit videos as fast as possible. The add-on i
 1. Build **better proxies** with FFmpeg, using a Python script in the `utils/` folder
 1. And much more
 
-*To find all available tools, press <kbd>Spacebar</kbd> and search for 'PS.' (as in PowerSequencer).*
-
 ## Download the beta release
 
 To install the add-on, head to the [latest releases](https://github.com/GDquest/Blender-power-sequencer/releases) and follow the instructions there.
@@ -71,7 +69,7 @@ Imports all images, videos and audios from folders named respectively: `img`, `v
 
 1. Create folders named `img`, `video` and `audio` inside your Blender project folder (where your *.blend* file is)
 2. Put your source images, videos and audio files in the corresponding folders
-3. In Blender, press <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd> (shortcut for `PS.Import local footage` operator)
+3. In Blender, press <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd> (shortcut for `Import local footage` operator)
 
 *You must save your Blender project before you use this feature.*
 
@@ -177,7 +175,7 @@ Crossfades or dissolves are smooth transitions from one video or image strip to 
 ![Add crossfade](https://i.imgur.com/5iHA6fv.gif)
 
 1. Select one strip to fade from
-1. Press <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `PS.Add Crossfade` operator*)
+1. Press <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `Add Crossfade` operator*)
 
 *Power Sequencer finds the closest strip to fade to for you. It looks from strips that start after the active selected strip end frame. If the strip already overlaps with your selection Power Sequencer will ignore it and move to the next one in the editor. It will also first look for strips in the same channel or neighboring channels.*
 
@@ -186,7 +184,7 @@ Crossfades or dissolves are smooth transitions from one video or image strip to 
 ![Edit crossfade](https://imgur.com/rQJi1PH.gif)
 
 1. Select the Gamma Cross effect strip
-1. Press <kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `PS.Edit crossfade` operator*)
+1. Press <kbd>Alt</kbd><kbd>c</kbd> (*shortcut for `Edit crossfade` operator*)
 
 *This tool finds and selects the handles of the effect's input strips. Then it fires the grab mode. It's a shortcut to move a gamma cross effect faster.*
 
@@ -206,7 +204,7 @@ Fade-in and fade-out are gradual opacity transitions.
 ![Fade in only](https://imgur.com/faz3jdV.gif)
 
 1. Select one or more strips
-2. Press <kbd>Ctrl</kbd><kbd>f</kbd> (*shortcut for operator: `PS.Fade strips`*)
+2. Press <kbd>Ctrl</kbd><kbd>f</kbd> (*shortcut for operator: `Fade strips`*)
 
 ### Add fade-out ###
 
@@ -223,10 +221,10 @@ Try to add fades at the very end of your video editing process otherwise you can
 
 #### Add a fade with operator ####
 
-By default `PS.Fade strips` will use the *Fade-in*, but you can also use other types with these steps:
+By default `Fade strips` will use the *Fade-in*, but you can also use other types with these steps:
 
 1. Select one or more strips
-2. Use the `PS.Fade strips operator` (<kbd>Ctrl</kbd><kbd>f</kbd>)
+2. Use the `Fade strips operator` (<kbd>Ctrl</kbd><kbd>f</kbd>)
 3. Press <kbd>F6</kbd> to access operator properties
 4. Change `Fade Type`
 
@@ -253,7 +251,7 @@ Renders a video using the preset options specified in the preferences.
 ![Render for the web](https://imgur.com/gqLl4Qh.gif)
 
 1. Place the mouse cursor over the *Video Sequencer Editor*
-2. Press <kbd>Alt</kbd><kbd>F12</kbd> (shortcut for `PS.Render video for the web` operator)
+2. Press <kbd>Alt</kbd><kbd>F12</kbd> (shortcut for `Render video for the web` operator)
 
 Blender uses only one CPU core for the rendering. This means that
 it's possible to do other things during the rendering: you can also open another Blender
@@ -263,7 +261,7 @@ instance and start editing a new video, withouth major slowdowns.
 
 1. Press <kbd>Ctrl</kbd><kbd>Alt</kbd><kbd>U</kbd> to access *User Preferences*
 2. Select the *Input tab*
-3. Search for `PS.Render video for the web`
+3. Search for `Render video for the web`
 4. Click the arrow to expand details of the keymap
 
 You will see something like:
@@ -291,7 +289,7 @@ Filename of the rendered video. It can be one of:
 
 #### Auto render ####
 
-If checked (it's the default setting), the `PS.Render video for the web` operator will automatically start the rendering.
+If checked (it's the default setting), the `Render video for the web` operator will automatically start the rendering.
 
 If unchecked, it will only update rendering settings, but it will not start rendering: to start the render,
 you will need to click on the *Animation* button in the *Properties Editor*.

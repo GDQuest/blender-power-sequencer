@@ -5,7 +5,7 @@ import bpy
 # See https://github.com/GDquest/Blender-power-sequencer/issues/55
 class SynchronizeTitles(bpy.types.Operator):
     bl_idname = 'power_sequencer.synchronize_titles'
-    bl_label = 'PS.Synchronize titles'
+    bl_label = 'Synchronize titles'
     bl_description = 'Snap the selected image or text strips to the \
                       corresponding title marker. The marker and strip names \
                       have to start with TITLE-001, ...'

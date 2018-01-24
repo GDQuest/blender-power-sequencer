@@ -4,7 +4,7 @@ from .utils.find_neighboring_markers import find_neighboring_markers
 
 class DeleteClosestMarker(bpy.types.Operator):
     bl_idname = 'power_sequencer.delete_closest_marker'
-    bl_label = 'PS.Delete closest marker'
+    bl_label = 'Delete closest marker'
     bl_description = 'Delete the marker closest to the mouse'
     bl_options = {'REGISTER', 'UNDO'}
 

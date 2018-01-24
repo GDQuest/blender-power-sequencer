@@ -3,7 +3,7 @@ import bpy
 
 class ToggleSelectedMute(bpy.types.Operator):
     bl_idname = 'power_sequencer.toggle_selected_mute'
-    bl_label = 'PS.Toggle selected mute'
+    bl_label = 'Toggle selected mute'
     bl_description = 'Mute or unmute selected sequences'
     bl_options = {'REGISTER', 'UNDO'}
 
