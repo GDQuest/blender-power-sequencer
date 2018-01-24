@@ -5,8 +5,8 @@ from .utils.find_linked_sequences import find_linked
 
 
 class AddSpeed(bpy.types.Operator):
-    bl_idname = "power_sequencer.speed_up_sequence"
-    bl_label = "PS.Speed up Sequence"
+    bl_idname = "power_sequencer.add_speed"
+    bl_label = "PS.Add speed"
     bl_description = "Adds a speed effect to your clip, sets its speed and \
         size, wraps it into a meta strip set to over drop for easier editing"
 

@@ -4,8 +4,8 @@ from .utils.find_neighboring_markers import find_neighboring_markers
 
 class GoToNextMarker(bpy.types.Operator):
     """Moves the time cursor to the next marker"""
-    bl_idname = "power_sequencer.go_to_marker"
-    bl_label = "PS.Go to marker"
+    bl_idname = "power_sequencer.go_to_next_marker"
+    bl_label = "PS.Go to next marker"
     bl_options = {'REGISTER', 'UNDO'}
 
     target_marker = bpy.props.EnumProperty(

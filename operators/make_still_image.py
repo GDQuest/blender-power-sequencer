@@ -3,10 +3,12 @@ from .utils.global_settings import SequenceTypes
 
 
 class MakeStillImage(bpy.types.Operator):
-    """Converts image under the cursor to a still image, to create
-    a pause effect in the video, using the active sequence"""
-    bl_idname = "power_sequencer.grab_still_image"
-    bl_label = "PS.Grab still image from active strip"
+    """
+    Converts image under the cursor to a still image, to create
+    a pause effect in the video, using the active sequence
+    """
+    bl_idname = "power_sequencer.make_still_image"
+    bl_label = "PS.Make still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
     strip_duration = bpy.props.IntProperty(

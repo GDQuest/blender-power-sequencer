@@ -4,7 +4,7 @@ import bpy
 class DeleteDirect(bpy.types.Operator):
     """Deletes without prompting for confirmation"""
     bl_idname = "power_sequencer.delete_direct"
-    bl_label = "PS.Delete Direct"
+    bl_label = "PS.Delete direct"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

@@ -2,9 +2,11 @@ import bpy
 
 
 class SetTimelineRange(bpy.types.Operator):
-    """Set the timeline start and end frame using the time cursor"""
-    bl_idname = "power_sequencer.set_timeline"
-    bl_label = "PS.Set timeline start and end"
+    """
+    Set the timeline start and end frame using the time cursor
+    """
+    bl_idname = "power_sequencer.set_timeline_range"
+    bl_label = "PS.Set timeline range"
     bl_options = {'REGISTER', 'UNDO'}
 
     adjust = bpy.props.EnumProperty(

@@ -6,7 +6,7 @@ class DeselectHandlesAndGrab(bpy.types.Operator):
     Deselect the handles of all selected strips and call the
     Sequence Slide operator
     """
-    bl_idname = 'power_sequencer.deselect_handles_seq_slide'
+    bl_idname = 'power_sequencer.deselect_handles_and_grab'
     bl_label = 'PS.Deselect handles and grab'
     bl_description = ''
     bl_options = {'REGISTER', 'UNDO'}
