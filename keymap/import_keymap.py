@@ -3,7 +3,8 @@ import shutil
 import bpy
 from bpy_extras.io_utils import ImportHelper
 import json
-
+from .utils import unregister_keymap
+from .utils import register_keymap
 
 class ImportKeymap(bpy.types.Operator, ImportHelper):
     """
@@ -33,7 +34,7 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
             self.report({'ERROR'}, message)
             return {"FINISHED"}
         
-        bpy.ops.power_sequencer.unregister_keymap()
+        unregister_keymap()
         
         keymap_path = os.path.join(
             os.path.dirname(__file__), 'utils', 'keymap.json')
@@ -45,7 +46,7 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
         
         shutil.copy(self.filepath, keymap_path)
         
-        bpy.ops.power_sequencer.register_keymap()
+        register_keymap()
         self.report({'INFO'}, 'Keymap updated')
         
         return {"FINISHED"}

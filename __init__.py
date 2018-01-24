@@ -52,8 +52,8 @@ import traceback
 from .operators import *
 from .keymap import *
 
-from .keymap.utils import func_register_keymap
-from .keymap.utils import func_unregister_keymap
+from .keymap.utils import register_keymap
+from .keymap.utils import unregister_keymap
 
 
 def register():
@@ -72,11 +72,11 @@ def register():
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
         
-    func_register_keymap()
+    register_keymap()
 
 
 def unregister():
-    func_unregister_keymap()
+    unregister_keymap()
     
     try:
         bpy.utils.unregister_module(__name__)

@@ -1,8 +1,8 @@
 import bpy
 import os
 
-from .utils import func_register_keymap
-from .utils import func_unregister_keymap
+from .utils import register_keymap
+from .utils import unregister_keymap
 
 class SetDefaultKeymap(bpy.types.Operator):
     """
@@ -13,7 +13,7 @@ class SetDefaultKeymap(bpy.types.Operator):
     bl_desription = "Removes user keymap file and re-registers hotkeys"
 
     def execute(self, context):
-        func_unregister_keymap()
+        unregister_keymap()
         
         keymap_path = os.path.join(
             os.path.dirname(__file__), 'utils', 'keymap.json')
@@ -23,7 +23,7 @@ class SetDefaultKeymap(bpy.types.Operator):
         except FileNotFoundError:
             pass
         
-        func_register_keymap()
+        register_keymap()
         self.report({'INFO'}, 'Applied default keymap')
             
         return {"FINISHED"}

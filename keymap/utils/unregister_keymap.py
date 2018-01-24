@@ -4,7 +4,7 @@ import bpy
 from .default_keymap import default_keymap
 
 
-def func_unregister_keymap():
+def unregister_keymap():
     """
     Remove keymaps
     """

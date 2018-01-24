@@ -7,7 +7,7 @@ from .default_keymap import default_keymap
 # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMaps.html
 
 
-def func_register_keymap():
+def register_keymap():
     """
     Use the keymap.json file to create hotkeys.
 
