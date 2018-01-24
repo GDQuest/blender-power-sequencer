@@ -1,5 +1,5 @@
 import bpy
-from .utils.sequences import SequenceTypes
+from ..operators.utils.global_settings import SequenceTypes
 
 
 class PowerSequencerMenu(bpy.types.Menu):
