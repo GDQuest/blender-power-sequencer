@@ -12,7 +12,7 @@ from operator import attrgetter
 # use find_snap_candidate? at least a similar approach
 class GrabClosestHandleOrCut(bpy.types.Operator):
     bl_idname = "power_sequencer.grab_closest_handle_or_cut"
-    bl_label = "PS.Grab closest handle or cut"
+    bl_label = "Grab closest handle or cut"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

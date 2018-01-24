@@ -4,7 +4,7 @@ import bpy
 class SmartSnap(bpy.types.Operator):
     """Trims, extends and snaps selected strips to cursor"""
     bl_idname = "power_sequencer.smart_snap"
-    bl_label = "PS.Smart snap strip handles"
+    bl_label = "Smart snap strip handles"
     bl_options = {'REGISTER', 'UNDO'}
 
     side = bpy.props.EnumProperty(

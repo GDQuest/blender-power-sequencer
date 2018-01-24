@@ -8,7 +8,7 @@ from operator import attrgetter
 
 class EditCrossfade(bpy.types.Operator):
     bl_idname = "power_sequencer.edit_crossfade"
-    bl_label = "PS.Edit crossfade"
+    bl_label = "Edit crossfade"
     bl_options = {'REGISTER', 'UNDO'}
 
     def execute(self, context):

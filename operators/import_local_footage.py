@@ -8,7 +8,7 @@ from .utils.global_settings import Extensions
 
 class ImportLocalFootage(bpy.types.Operator):
     bl_idname = "power_sequencer.import_local_footage"
-    bl_label = "PS.Import local footage"
+    bl_label = "Import local footage"
     bl_description = "Import video and audio from the project \
                       folder to VSE strips"
 

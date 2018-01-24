@@ -21,7 +21,7 @@ class AddCrossfade(bpy.types.Operator):
     Works with MOVIE, IMAGE and META strips
     """
     bl_idname = "power_sequencer.add_crossfade"
-    bl_label = "PS.Add crossfade"
+    bl_label = "Add crossfade"
     bl_description = "Adds a Gamma Cross fade layer effect between \
                       the selected layer and the closest one to its right."
 

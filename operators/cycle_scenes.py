@@ -4,7 +4,7 @@ import bpy
 class CycleScenes(bpy.types.Operator):
     """Cycle through scenes"""
     bl_idname = "power_sequencer.cycle_scenes"
-    bl_label = "PS.Cycle scenes"
+    bl_label = "Cycle scenes"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

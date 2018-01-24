@@ -5,7 +5,7 @@ from bpy.props import BoolProperty, EnumProperty
 
 class RenderForWeb(bpy.types.Operator):
     bl_idname = "power_sequencer.render_for_web"
-    bl_label = "PS.Render for web"
+    bl_label = "Render for web"
     bl_description = "Pick a rendering preset and let Blender name and export the video for you. Replaces strips with proxies if necessary."
     bl_options = {"REGISTER"}
 

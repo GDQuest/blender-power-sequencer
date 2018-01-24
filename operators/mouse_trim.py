@@ -17,7 +17,7 @@ class MouseTrim(bpy.types.Operator):
     - frame_start and frame_end (int) define the frame range to trim
     """
     bl_idname = "power_sequencer.mouse_trim"
-    bl_label = "PS.Mouse trim strips"
+    bl_label = "Mouse trim strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(

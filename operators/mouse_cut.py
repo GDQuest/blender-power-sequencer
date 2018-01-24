@@ -9,7 +9,7 @@ from .utils.trim_strips import trim_strips
 class MouseCut(bpy.types.Operator):
     """Cuts, trims and remove gaps with mouse clicks"""
     bl_idname = "power_sequencer.mouse_cut"
-    bl_label = "PS.Mouse cut strips"
+    bl_label = "Mouse cut strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(

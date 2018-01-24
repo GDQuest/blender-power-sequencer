@@ -4,7 +4,7 @@ import bpy
 class SaveDirect(bpy.types.Operator):
     """Saves current file without prompting for confirmation"""
     bl_idname = "power_sequencer.save_direct"
-    bl_label = "PS.Save direct"
+    bl_label = "Save direct"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

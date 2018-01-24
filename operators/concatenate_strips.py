@@ -12,7 +12,7 @@ class ConcatenateStrips(bpy.types.Operator):
     If a single strip is selected, finds all the strips after it in the channel
     """
     bl_idname = "power_sequencer.concatenate_strips"
-    bl_label = "PS.Concatenate strips"
+    bl_label = "Concatenate strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     concatenate_whole_channel = bpy.props.BoolProperty(
