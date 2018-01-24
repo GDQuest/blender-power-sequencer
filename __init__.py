@@ -49,6 +49,12 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 ##################################
 import traceback
 
+from .operators import *
+from .keymap import *
+
+from .keymap.utils import func_register_keymap
+from .keymap.utils import func_unregister_keymap
+
 
 def register():
 
@@ -65,9 +71,13 @@ def register():
 
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
+        
+    func_register_keymap()
 
 
 def unregister():
+    func_unregister_keymap()
+    
     try:
         bpy.utils.unregister_module(__name__)
     except:

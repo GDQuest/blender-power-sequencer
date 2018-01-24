@@ -68,6 +68,15 @@ class ProxyPreferences(bpy.types.AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+
+        row = layout.row()
+        row.operator("power_sequencer.import_keymap",
+                     icon="LIBRARY_DATA_DIRECT")
+        row.operator("power_sequencer.export_keymap",
+                     icon="NEW")
+        row.operator("power_sequencer.set_default_keymap",
+                     icon="RECOVER_LAST")
+
         layout.prop(self, "video_export_path")
         layout.prop(self, "auto_render_proxies")
         layout.prop(self, "use_custom_folder")
