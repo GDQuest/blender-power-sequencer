@@ -298,10 +298,10 @@ you will need to click on the *Animation* button in the *Properties Editor*.
 
 Here are other recommended add-ons for a better editing workflow:
 
-1. [VSE transform tools](https://github.com/kgeogeo/VSE_Transform_Tools): Move and animate transform effects visually, on the image preview area. The addon auto-registers shortcuts, especially the <kbd>T</kbd> key, to add a Transform effect to selected sequences.
-2. [Easy logging](http://www.easy-logging.net/): Adds tools to derush and tag footage.
+Daniel Oakey's [ rewrite of VSE Transform Tools ](https://github.com/doakey3/VSE_Transform_Tools). This tool lets you animate and move strips from the video preview. The original add-on was abandonned a few years ago. Daniel fixed and rewrote it so now it's super slick!
 
 ## Credits
 
 - [davcri](https://github.com/davcri)
+- [Daniel Oakey](https://github.com/doakey3)
 - [ Nathan Lovato ](https://twitter.com/NathanGDquest)
