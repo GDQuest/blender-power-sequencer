@@ -24,7 +24,6 @@ def unregister_keymap():
         for space_type in space_types:
             region_types = keymap_data[name][space_type].keys()
             for region in region_types:
-                operators = keymap_data[name][space_type][region]
                 operator_names = operators.keys()
 
                 kc = bpy.context.window_manager.keyconfigs[
@@ -32,6 +31,7 @@ def unregister_keymap():
                 keymap = kc.keymaps.new(
                     name, space_type=space_type, region_type=region)
                 current_hotkeys = keymap.keymap_items
+
                 for hotkey in current_hotkeys:
                     if hotkey.idname in operator_names:
                         keymap.keymap_items.remove(hotkey)

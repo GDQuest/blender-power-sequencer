@@ -32,8 +32,7 @@ def register_keymap():
             region_types = keymap_data[name][space_type].keys()
 
             for region in region_types:
-                operators = keymap_data[name][space_type][region]
-                operator_names = operators.keys()
+                operator_names = keymap_data[name][space_type][region].keys()
 
                 keyconfig = bpy.context.window_manager.keyconfigs[
                     'Blender Addon']
@@ -51,35 +50,50 @@ def register_keymap():
                     except KeyError:
                         pass
 
-                # How to check if region is the same here?
                 for op in operator_names:
-                    if len(operators[op]) > 0:
-                        shift = 'SHIFT' in operators[op]
-                        alt = 'ALT' in operators[op]
-                        ctrl = 'CTRL' in operators[op]
+                    numbers = keymap_data[name][space_type][region][op].keys()
+                    for number in numbers:
+                        shortcut = keymap_data[name][space_type][region][op][number]
+                        if len(shortcut) > 0:
+                            shift = 'SHIFT' in shortcut
+                            alt = 'ALT' in shortcut
+                            ctrl = 'CTRL' in shortcut
 
-                        for hotkey in current_hotkeys:
-                            if (not hotkey.idname == op and
-                               hotkey.type == operators[op][0] and
-                               hotkey.value == operators[op][1] and
-                               hotkey.shift == shift and
-                               hotkey.ctrl == ctrl and
-                               hotkey.alt == alt):
-                                print(' '.join(['Conflicting hotkeys:',
-                                                hotkey.idname,
-                                                'vs',
-                                                op,
-                                                '...OVERWRITING']))
-                        try:
-                            kmi = keymap.keymap_items.new(
-                                op,
-                                operators[op][0],
-                                operators[op][1],
-                                shift=shift, alt=alt, ctrl=ctrl)
+                            status = "PRESS"
+                            other_status_types = [
+                                "ANY", "NOTHING", "RELEASE", "CLICK",
+                                "DOUBLE_CLICK", "NORTH", "NORTH_EAST",
+                                "EAST", "SOUTH_EAST", "SOUTH",
+                                "SOUTH_WEST", "WEST", "NORTH_WEST"]
 
-                        # User tried an invalid key name
-                        except TypeError:
-                            print(' '.join([
-                                    'Error:',
-                                    'Unable to make keyboard shortcut for',
-                                    op]))
+                            for status_type in other_status_types:
+                                if status_type in shortcut:
+                                    status = status_type
+                                    break
+
+                            for hotkey in current_hotkeys:
+                                if (not hotkey.idname == op and
+                                   hotkey.type == shortcut[0] and
+                                   hotkey.value == status and
+                                   hotkey.shift == shift and
+                                   hotkey.ctrl == ctrl and
+                                   hotkey.alt == alt):
+                                    print(' '.join(['Conflicting hotkeys:',
+                                                    hotkey.idname,
+                                                    'vs',
+                                                    op,
+                                                    '...OVERWRITING']))
+
+                            try:
+                                kmi = keymap.keymap_items.new(
+                                    op,
+                                    shortcut[0],
+                                    status,
+                                    shift=shift, alt=alt, ctrl=ctrl)
+
+                            # User tried an invalid key name
+                            except TypeError:
+                                print(' '.join([
+                                        'Error:',
+                                        'Unable to make keyboard shortcut for',
+                                        op]))

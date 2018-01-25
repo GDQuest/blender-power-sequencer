@@ -39,14 +39,19 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
                     if re_t not in json[name][sp_t].keys():
                         json[name][sp_t][re_t] = {}
 
-                    json[name][sp_t][re_t][id_n] = [kmi.type, kmi.value]
+                    if id_n not in json[name][sp_t][re_t].keys():
+                        json[name][sp_t][re_t][id_n] = {}
+
+                    key = str(len(json[name][sp_t][re_t][id_n]))
+
+                    json[name][sp_t][re_t][id_n][key] = [kmi.type, kmi.value]
 
                     if kmi.shift:
-                        json[name][sp_t][re_t][id_n].append("SHIFT")
+                        json[name][sp_t][re_t][id_n][key].append("SHIFT")
                     if kmi.ctrl:
-                        json[name][sp_t][re_t][id_n].append("CTRL")
+                        json[name][sp_t][re_t][id_n][key].append("CTRL")
                     if kmi.alt:
-                        json[name][sp_t][re_t][id_n].append("ALT")
+                        json[name][sp_t][re_t][id_n][key].append("ALT")
 
                     found_op_ids.append(kmi.idname)
 
@@ -78,7 +83,7 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
                             if re_t not in json[name][sp_t].keys():
                                 json[name][sp_t][re_t] = {}
 
-                            json[name][sp_t][re_t][kmi] = []
+                            json[name][sp_t][re_t][kmi] = {}
 
         with open(self.filepath, 'w') as f:
             f.write(pretty_json(json))
