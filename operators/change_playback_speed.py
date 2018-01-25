@@ -7,7 +7,7 @@ class ChangePlaybackSpeed(bpy.types.Operator):
     Used with keymaps
     """
     bl_idname = "power_sequencer.change_playback_speed"
-    bl_label = "Change playback speed"
+    bl_label = "Change Playback Speed"
     bl_description = "Change the playback speed"
 
     bl_options = {"REGISTER"}

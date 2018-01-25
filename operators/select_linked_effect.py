@@ -4,7 +4,7 @@ from .utils.find_linked_sequences import find_linked
 
 class SelectLinkedEffect(bpy.types.Operator):
     bl_idname = 'power_sequencer.select_linked_effect'
-    bl_label = 'Select linked effect'
+    bl_label = 'Select Linked Effect'
     bl_description = 'Select all strips that are linked by an effect strip'
     bl_options = {'REGISTER', 'UNDO'}
 

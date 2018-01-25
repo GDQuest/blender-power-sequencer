@@ -8,7 +8,8 @@ class MakeStillImage(bpy.types.Operator):
     a pause effect in the video, using the active sequence
     """
     bl_idname = "power_sequencer.make_still_image"
-    bl_label = "Make still image from active strip"
+    bl_label = "Make Still Image"
+    bl_description = "Make still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
     strip_duration = bpy.props.IntProperty(

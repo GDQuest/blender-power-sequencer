@@ -2,9 +2,9 @@ import bpy
 from .utils.global_settings import SequenceTypes
 
 
-class SoundToggleWaveform(bpy.types.Operator):
-    bl_idname = 'power_sequencer.sound_toggle_waveform'
-    bl_label = 'Sound toggle waveform'
+class ToggleWaveforms(bpy.types.Operator):
+    bl_idname = 'power_sequencer.toggle_waveforms'
+    bl_label = 'Toggle Waveforms'
     bl_description = 'Toggle drawing of the waveform for selected strips \
                       or for all strips if no selection is active'
     bl_options = {'REGISTER', 'UNDO'}

@@ -49,7 +49,8 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 ##################################
 import traceback
 
-from .ui import PowerSequencerPanel
+from .ui import *
+from .ui import init_properties
 
 from .operators import *
 from .keymap import *
@@ -59,7 +60,8 @@ from .keymap.utils import unregister_keymap
 
 
 def register():
-
+    init_properties()
+    
     addon_updater_ops.register(bl_info)
 
     try:

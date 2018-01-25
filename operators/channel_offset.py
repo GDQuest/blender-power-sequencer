@@ -4,7 +4,7 @@ from operator import attrgetter
 
 class ChannelOffset(bpy.types.Operator):
     bl_idname = 'power_sequencer.channel_offset'
-    bl_label = 'Channel offset'
+    bl_label = 'Channel Offset'
     bl_description = 'Move selected strips up or down a channel'
     bl_options = {'REGISTER', 'UNDO'}
 

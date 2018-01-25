@@ -6,7 +6,7 @@ from .utils.global_settings import SequenceTypes
 class SnapSelectionToCursor(bpy.types.Operator):
     """Snap selected strips to the cursor, but as a block"""
     bl_idname = "power_sequencer.snap_selection_to_cursor"
-    bl_label = "Snap selection to cursor"
+    bl_label = "Snap Selection To Cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

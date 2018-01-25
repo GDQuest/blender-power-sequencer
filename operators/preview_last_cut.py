@@ -10,7 +10,7 @@ class PreviewLastCut(bpy.types.Operator):
     If the preview matches the range, resets to the full timeline
     """
     bl_idname = 'power_sequencer.preview_last_cut'
-    bl_label = 'Preview last cut'
+    bl_label = 'Preview Last Cut'
     bl_description = 'Toggle preview around the last cut, based on time cursor'
     bl_options = {'REGISTER', 'UNDO'}
 

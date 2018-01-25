@@ -32,8 +32,8 @@ from .set_videos_proxies import SetVideosProxies
 from .smart_snap import SmartSnap
 from .snap_marker_to_cursor import SnapMarkerToCursor
 from .snap_selection_to_cursor import SnapSelectionToCursor
-from .sound_toggle_waveform import SoundToggleWaveform
 from .synchronize_titles import SynchronizeTitles
 from .toggle_preview_selected_strips import TogglePreviewSelectedStrips
 from .toggle_selected_mute import ToggleSelectedMute
+from .toggle_waveforms import ToggleWaveforms
 from .trim_to_surrounding_cuts import TrimToSurroundingCuts

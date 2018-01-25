@@ -7,7 +7,7 @@ class CopySelectedSequences(bpy.types.Operator):
     Copies the selected sequences without frame offset and optionally deletes the selection to give a cut to clipboard effect
     """
     bl_idname = "power_sequencer.copy_selected_sequences"
-    bl_label = "Copy selected sequences"
+    bl_label = "Copy Selected Sequences"
     bl_options = {'REGISTER', 'UNDO'}
 
     delete_selection = bpy.props.BoolProperty(

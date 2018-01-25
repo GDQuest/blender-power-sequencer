@@ -4,7 +4,7 @@ from .utils.find_neighboring_markers import find_neighboring_markers
 
 class SetPreviewBetweenMarkers(bpy.types.Operator):
     bl_idname = 'power_sequencer.set_preview_between_markers'
-    bl_label = 'Set preview between markers'
+    bl_label = 'Set Preview Between Markers'
     bl_description = "Set the timeline's preview range using the 2 markers closest to the time cursor"
     bl_options = {'REGISTER', 'UNDO'}
 

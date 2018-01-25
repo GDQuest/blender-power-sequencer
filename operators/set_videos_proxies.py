@@ -4,7 +4,7 @@ import bpy
 
 class SetVideosProxies(bpy.types.Operator):
     bl_idname = "power_sequencer.set_video_proxies"
-    bl_label = "Set videos proxies"
+    bl_label = "Set Videos Proxies"
     bl_description = """
     Set all video strips in the current scene as proxies and rebuild
     using Blender's proxy generation
