@@ -19,6 +19,12 @@ def default_keymap():
                     "power_sequencer.border_select" : {
                         "0" : ["B", "SHIFT"]
                     },
+                    "power_sequencer.change_playback_speed" : {
+                        "0" : ["ONE"],
+                        "1" : ["TWO"],
+                        "2" : ["THREE"],
+                        "3" : ["FOUR"]
+                    },
                     "power_sequencer.channel_offset" : {
                         "0" : ["DOWN_ARROW", "ALT"],
                         "1" : ["UP_ARROW", "ALT"]

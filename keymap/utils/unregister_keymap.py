@@ -24,7 +24,7 @@ def unregister_keymap():
         for space_type in space_types:
             region_types = keymap_data[name][space_type].keys()
             for region in region_types:
-                operator_names = operators.keys()
+                operator_names = keymap_data[name][space_type][region].keys()
 
                 kc = bpy.context.window_manager.keyconfigs[
                     'Blender Addon']
