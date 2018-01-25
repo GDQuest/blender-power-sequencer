@@ -14,10 +14,10 @@ def register_keymap():
     Will overwrite existing hotkeys if conflicting, but prints these
     to console.
     """
-    
+
     keymap_filepath = os.path.join(
         os.path.dirname(__file__), 'keymap.json')
-    
+
     try:
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
@@ -39,7 +39,7 @@ def register_keymap():
                     'Blender Addon']
                 keymap = keyconfig.keymaps.new(
                     name, space_type=space_type, region_type=region)
-                
+
                 current_hotkeys = []
                 default_keyconfig_names = [
                     'Blender', 'Blender Addon', 'Blender User']
@@ -83,4 +83,3 @@ def register_keymap():
                                     'Error:',
                                     'Unable to make keyboard shortcut for',
                                     op]))
-        

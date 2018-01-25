@@ -596,4 +596,3 @@ kmi_props_setattr(kmi.properties, 'data_path', 'user_preferences.inputs.ndof_sen
 kmi_props_setattr(kmi.properties, 'value', 0.6666666865348816)
 kmi = km.keymap_items.new('info.reports_display_update', 'TIMER_REPORT', 'ANY', any=True)
 kmi = km.keymap_items.new('wm.console_toggle', 'F2', 'PRESS', ctrl=True)
-

@@ -5,6 +5,7 @@ from .border_select import BorderSelect
 from .channel_offset import ChannelOffset
 from .concatenate_strips import ConcatenateStrips
 from .copy_selected_sequences import CopySelectedSequences
+from .cut_selected_sequences import CutSelectedSequences
 from .cycle_scenes import CycleScenes
 from .decrease_playback_speed import DecreasePlaybackSpeed
 from .delete_closest_marker import DeleteClosestMarker

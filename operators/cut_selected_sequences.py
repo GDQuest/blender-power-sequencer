@@ -2,13 +2,18 @@ import bpy
 from operator import attrgetter
 
 
-class CopySelectedSequences(bpy.types.Operator):
+class CutSelectedSequences(bpy.types.Operator):
     """
-    Copies the selected sequences without frame offset.
+    Cuts selected sequences without frame offset
     """
 
-    bl_idname = "power_sequencer.copy_selected_sequences"
+    bl_idname = "power_sequencer.cut_selected_sequences"
     bl_label = "Copy Selected Sequences"
+    bl_options = {'REGISTER', 'UNDO'}
+
+    @classmethod
+    def poll(cls, context):
+        return True
 
     def execute(self, context):
         selection = context.selected_sequences
@@ -27,9 +32,10 @@ class CopySelectedSequences(bpy.types.Operator):
 
         scene.use_audio_scrub = initial_audio_setting
 
+        sequencer.delete()
+
         plural_string = 's' if len(selection) != 1 else ''
-        report_message = 'Copied {!s} sequence{!s} to the clipboard.'.format(
+        report_message = 'Cut {!s} sequence{!s} to the clipboard.'.format(
             str(len(selection)), plural_string)
         self.report({'INFO'}, report_message)
-
         return {"FINISHED"}

@@ -78,7 +78,7 @@ class Singleton_updater(object):
 		# by default, backup current addon if new is being loaded
 		self._backup_current = True
 		self._backup_ignore_patterns = None
-		
+
 		# set patterns for what files to overwrite on update
 		self._overwrite_patterns = ["*.py","*.pyc"]
 		self._remove_pre_update_patterns = []
@@ -655,7 +655,7 @@ class Singleton_updater(object):
 		if self._verbose: print("Starting download update zip")
 		try:
 			request = urllib.request.Request(url)
-			
+
 			# setup private token if appropriate
 			if self._engine.token != None:
 				if self._engine.name == "gitlab":
@@ -882,7 +882,7 @@ class Singleton_updater(object):
 		except:
 			error = "Error: Failed to remove existing staging directory, consider manually removing "+staging_path
 			if self._verbose: print(error)
-					
+
 
 	def reload_addon(self):
 		# if post_update false, skip this function
@@ -1272,7 +1272,7 @@ class Singleton_updater(object):
 		self._json["update_ready"] = False
 		self._json["version_text"] = {}
 		self.save_updater_json()
-	
+
 	def json_reset_restore(self):
 		self._json["just_restored"] = False
 		self._json["update_ready"] = False

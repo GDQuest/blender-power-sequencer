@@ -10,7 +10,7 @@ class EditCrossfade(bpy.types.Operator):
     bl_idname = "power_sequencer.edit_crossfade"
     bl_label = "Edit Crossfade"
     bl_description = ' '.join([
-        "Adjust the location of the crossfade", 
+        "Adjust the location of the crossfade",
         "between 2 strips"])
     bl_options = {'REGISTER', 'UNDO'}
 

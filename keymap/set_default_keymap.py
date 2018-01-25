@@ -14,16 +14,16 @@ class SetDefaultKeymap(bpy.types.Operator):
 
     def execute(self, context):
         unregister_keymap()
-        
+
         keymap_path = os.path.join(
             os.path.dirname(__file__), 'utils', 'keymap.json')
-        
+
         try:
             os.unlink(keymap_path)
         except FileNotFoundError:
             pass
-        
+
         register_keymap()
         self.report({'INFO'}, 'Applied default keymap')
-            
+
         return {"FINISHED"}

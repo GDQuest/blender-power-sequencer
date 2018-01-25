@@ -13,16 +13,16 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
     bl_idname = "power_sequencer.import_keymap"
     bl_label = "Import Keymap"
     bl_desription = "Imports keymap settings from a JSON file"
-    
+
     filter_glob = bpy.props.StringProperty(
             default="*.json",
             options={"HIDDEN"},
             maxlen=255,
             )
-    
+
     def execute(self, context):
         self.filepath = os.path.abspath(self.filepath)
-        
+
         try:
             with open(self.filepath, 'r') as f:
                 json.load(f)
@@ -30,23 +30,23 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
             message = '\n'.join([
                 'User provided .json file is not formatted correctly',
                 'No Keymaps were changed.'])
-                
+
             self.report({'ERROR'}, message)
             return {"FINISHED"}
-        
+
         unregister_keymap()
-        
+
         keymap_path = os.path.join(
             os.path.dirname(__file__), 'utils', 'keymap.json')
-        
+
         try:
             os.unlink(keymap_path)
         except FileNotFoundError:
             pass
-        
+
         shutil.copy(self.filepath, keymap_path)
-        
+
         register_keymap()
         self.report({'INFO'}, 'Keymap updated')
-        
+
         return {"FINISHED"}

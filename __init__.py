@@ -65,10 +65,10 @@ class PowerSequencerProperties(bpy.types.PropertyGroup):
                ('triple', 'Triple (3x)', '')],
         name='Playback speed',
         default='normal')
-    
+
     frame_pre = bpy.props.IntProperty(
         name='Frame before frame_change', default=0, min=0)
-    
+
     active_tab = bpy.props.StringProperty(
         name="Active Tab",
         description="The name of the active tab in the UI",
@@ -86,18 +86,18 @@ def register():
 
     # Store properties access in the scene and store initial frame
     initialize_properties()
-    
+
     handlers_register()
 
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
-        
+
     register_keymap()
 
 
 def unregister():
     unregister_keymap()
-    
+
     try:
         bpy.utils.unregister_module(__name__)
     except:

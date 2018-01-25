@@ -8,7 +8,7 @@ def unregister_keymap():
     """
     Remove keymaps
     """
-    
+
     keymap_filepath = os.path.join(
         os.path.dirname(__file__), 'keymap.json')
 
