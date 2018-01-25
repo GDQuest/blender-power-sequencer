@@ -14,6 +14,6 @@ class ChangePanelTab(bpy.types.Operator):
     
     def execute(self, context):
         scene = context.scene
-        scene.power_sequencer_active_tab = self.active_tab
+        scene.power_sequencer.active_tab = self.active_tab
         
         return {"FINISHED"}

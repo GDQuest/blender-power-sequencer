@@ -16,10 +16,6 @@ def default_keymap():
                     #"power_sequencer.add_title_marker" : ["M", "PRESS", "SHIFT", "CTRL"],
                     "power_sequencer.border_select" : ["B", "PRESS", "SHIFT"],
                     "power_sequencer.border_select" : ["B", "PRESS"],
-                    "power_sequencer.change_playback_speed" : ["FOUR", "PRESS"],
-                    "power_sequencer.change_playback_speed" : ["ONE", "PRESS"],
-                    "power_sequencer.change_playback_speed" : ["THREE", "PRESS"],
-                    "power_sequencer.change_playback_speed" : ["TWO", "PRESS"],
                     "power_sequencer.concatenate_strips" : ["C", "PRESS", "SHIFT"],
                     "power_sequencer.copy_selected_sequences" : ["C", "PRESS", "CTRL"],
                     "power_sequencer.copy_selected_sequences" : ["X", "PRESS", "CTRL"],
@@ -51,7 +47,9 @@ def default_keymap():
                     "power_sequencer.toggle_selected_mute" : ["H", "PRESS", "ALT"],
                     "power_sequencer.toggle_selected_mute" : ["H", "PRESS"],
                     "power_sequencer.toggle_waveforms" : ["W", "PRESS", "ALT"],
-                    "power_sequencer.trim_to_surrounding_cuts" : ["ACTIONMOUSE", "PRESS", "SHIFT", "ALT"]
+                    "power_sequencer.trim_to_surrounding_cuts" : ["ACTIONMOUSE", "PRESS", "SHIFT", "ALT"],
+                    "power_sequencer.increase_playback_speed" : ["RIGHT_BRACKET", "PRESS"],
+                    "power_sequencer.decrease_playback_speed" : ["LEFT_BRACKET", "PRESS"],
                 }
             }
         }

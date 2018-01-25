@@ -1,3 +1,3 @@
 from .panel import Panel
-from .init_properties import init_properties
+from .initialize_properties import initialize_properties
 from .change_panel_tab import ChangePanelTab

@@ -15,7 +15,7 @@ class Panel(bpy.types.Panel):
 
     def draw(self, context):
         scene = context.scene
-        active_tab = scene.power_sequencer_active_tab
+        active_tab = scene.power_sequencer.active_tab
         categories = {"Sequencer" : "SEQ_SEQUENCER",
                       "Render" : "RENDER_ANIMATION",
                       "Modifier" : "MODIFIER", 
@@ -45,20 +45,20 @@ class Panel(bpy.types.Panel):
                 icon=icon,
                 emboss=active_tab != category).active_tab = category
         
-        if scene.power_sequencer_active_tab == "Sequencer":
+        if scene.power_sequencer.active_tab == "Sequencer":
             row = box.row()
             row.operator('power_sequencer.ripple_delete', 
                 icon='AUTOMERGE_ON')
         
-        elif scene.power_sequencer_active_tab == "Render":
+        elif scene.power_sequencer.active_tab == "Render":
             row = box.row()
             row.label("Render Functions Here")
         
-        elif scene.power_sequencer_active_tab == "Modifier":
+        elif scene.power_sequencer.active_tab == "Modifier":
             row = box.row()
             row.operator('power_sequencer.add_crossfade', 
                 icon="IMAGE_ALPHA")
             
-        elif scene.power_sequencer_active_tab == "Sound":
+        elif scene.power_sequencer.active_tab == "Sound":
             row = box.row()
             row.label("Sound Functions Here")

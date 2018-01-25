@@ -36,7 +36,7 @@ import os
 from math import ceil
 from operator import attrgetter
 from enum import Enum
-from .handlers import handlers_register, handlers_unregister, PowerSequencerProps
+from .handlers import handlers_register, handlers_unregister
 
 from . import addon_updater_ops
 
@@ -50,7 +50,7 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 import traceback
 
 from .ui import *
-from .ui import init_properties
+from .ui import initialize_properties
 
 from .operators import *
 from .keymap import *
@@ -58,10 +58,25 @@ from .keymap import *
 from .keymap.utils import register_keymap
 from .keymap.utils import unregister_keymap
 
+class PowerSequencerProperties(bpy.types.PropertyGroup):
+    playback_speed = bpy.props.EnumProperty(
+        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
+               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
+               ('triple', 'Triple (3x)', '')],
+        name='Playback speed',
+        default='normal')
+    
+    frame_pre = bpy.props.IntProperty(
+        name='Frame before frame_change', default=0, min=0)
+    
+    active_tab = bpy.props.StringProperty(
+        name="Active Tab",
+        description="The name of the active tab in the UI",
+        default="Sequencer"
+        )
+
 
 def register():
-    init_properties()
-    
     addon_updater_ops.register(bl_info)
 
     try:
@@ -70,7 +85,8 @@ def register():
         traceback.print_exc()
 
     # Store properties access in the scene and store initial frame
-    bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(type=PowerSequencerProps)
+    initialize_properties()
+    
     handlers_register()
 
     print("Registered {} with {} modules".format(bl_info["name"], len(

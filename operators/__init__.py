@@ -2,11 +2,11 @@ from .add_crossfade import AddCrossfade
 from .add_speed import AddSpeed
 from .add_transform_effect import AddTransformEffect
 from .border_select import BorderSelect
-from .change_playback_speed import ChangePlaybackSpeed
 from .channel_offset import ChannelOffset
 from .concatenate_strips import ConcatenateStrips
 from .copy_selected_sequences import CopySelectedSequences
 from .cycle_scenes import CycleScenes
+from .decrease_playback_speed import DecreasePlaybackSpeed
 from .delete_closest_marker import DeleteClosestMarker
 from .delete_direct import DeleteDirect
 from .deselect_handles_and_grab import DeselectHandlesAndGrab
@@ -16,6 +16,7 @@ from .go_to_next_marker import GoToNextMarker
 from .grab_closest_handle_or_cut import GrabClosestHandleOrCut
 from .grab_sequence_handle import GrabSequenceHandle
 from .import_local_footage import ImportLocalFootage
+from .increase_playback_speed import IncreasePlaybackSpeed
 from .make_still_image import MakeStillImage
 from .mouse_cut import MouseCut
 from .mouse_toggle_mute import MouseToggleMute

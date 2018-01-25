@@ -3,17 +3,6 @@ from bpy.app.handlers import persistent
 from . import addon_updater_ops
 
 
-class PowerSequencerProps(bpy.types.PropertyGroup):
-    playback_speed = bpy.props.EnumProperty(
-        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
-               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
-               ('triple', 'Triple (3x)', '')],
-        name='Playback speed',
-        default='double')
-    frame_pre = bpy.props.IntProperty(
-        name='Frame before frame_change', default=0, min=0)
-
-
 @persistent
 def load_file_post(arg):
     """
@@ -48,7 +37,9 @@ def playback_speed_post(scene):
     #   frame_multipler = -1
     # Only need to work for backwards playback
 
-    if playback_speed == 'fast' and scene.frame_current % 3 == 0:
+    if playback_speed == 'normal':
+        scene.frame_current = scene.frame_current
+    elif playback_speed == 'fast' and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
     elif playback_speed == 'faster' and scene.frame_current % 2 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
