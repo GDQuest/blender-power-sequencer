@@ -1,9 +1,20 @@
 # Available keys found at:
-# https://docs.blender.org/api/2.78/bpy.types.KeyMapItem.html
+# https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMapItem.html?highlight=keymap_item
 
 def default_keymap():
     """
     Defines the default keymap
+
+    multiple kmi properties are separated with a ';'
+
+        "properties=attribute_1:value_1; attribute_2:value_2"
+
+    values must be string, int, float, or bool
+
+    Check the api to see which attributes can be set here:
+    https://docs.blender.org/api/blender_python_api_2_77_0/bpy.types.KeyMapItems.html#bpy.types.KeyMapItems.new
+
+    By default all kmi's "value" attribute will be "PRESS"
     """
 
     default_keymap = {
@@ -11,107 +22,108 @@ def default_keymap():
             "SEQUENCE_EDITOR" : {
                 "WINDOW": {
                     "power_sequencer.add_crossfade" : {
-                        "0" : ["C", "CTRL", "ALT"]
+                        "0" : ["type=C", "ctrl=True", "alt=True"]
                     },
                     "power_sequencer.add_speed" : {
-                        "0" : ["EQUAL", "SHIFT"]
+                        "0" : ["type=EQUAL", "shift=True"]
                     },
                     "power_sequencer.border_select" : {
-                        "0" : ["B", "SHIFT"]
+                        "0" : ["type=B", "shift=True"]
                     },
                     "power_sequencer.change_playback_speed" : {
-                        "0" : ["ONE"],
-                        "1" : ["TWO"],
-                        "2" : ["THREE"],
-                        "3" : ["FOUR"]
+                        "0" : ["type=ONE", "properties=speed:normal"],
+                        "1" : ["type=TWO", "properties=speed:fast"],
+                        "2" : ["type=THREE", "properties=speed:faster"],
+                        "3" : ["type=FOUR", "properties=speed:double"]
                     },
                     "power_sequencer.channel_offset" : {
-                        "0" : ["DOWN_ARROW", "ALT"],
-                        "1" : ["UP_ARROW", "ALT"]
+                        "0" : ["type=DOWN_ARROW", "alt=True", "properties=direction:up"],
+                        "1" : ["type=UP_ARROW", "alt=True", "properties=direction:down"]
                     },
                     "power_sequencer.channel_offset" : {
-                        "0" : ["DOWN_ARROW", "ALT"],
-                        "1" : ["UP_ARROW", "ALT"]
+                        "0" : ["type=DOWN_ARROW", "alt=True"],
+                        "1" : ["type=UP_ARROW", "alt=True"]
                     },
                     "power_sequencer.concatenate_strips" : {
-                        "0" : ["C", "SHIFT"]
+                        "0" : ["type=C", "properties=concatenate_whole_channel:False"],
+                        "1" : ["type=C", "shift=True", "properties=concatenate_whole_channel:True"]
                     },
                     "power_sequencer.copy_selected_sequences" : {
-                        "0" : ["C", "PRESS", "CTRL"],
-                        "1" : ["X", "PRESS", "CTRL"]
+                        "0" : ["type=C", "ctrl=True", "properties=delete_selection:False"],
+                        "1" : ["type=X", "ctrl=True", "properties=delete_selection:True"]
                     },
                     "power_sequencer.cycle_scenes" : {
-                        "0" : ["TAB", "SHIFT"]
+                        "0" : ["type=TAB", "shift=True"]
                     },
                     "power_sequencer.decrease_playback_speed" : {
-                        "0" : ["LEFT_BRACKET", "PRESS"]
+                        "0" : ["type=LEFT_BRACKET"]
                     },
                     "power_sequencer.delete_direct" : {
-                        "0" : ["DEL", "PRESS"]
+                        "0" : ["type=DEL"]
                     },
                     "power_sequencer.edit_crossfade" : {
-                        "0" : ["C", "ALT"]
+                        "0" : ["type=C", "alt=True"]
                     },
                     "power_sequencer.fade_strips" : {
-                        "0" : ["F", "ALT"],
-                        "1" : ["F", "CTRL"],
-                        "2" : ["F", "PRESS"]
+                        "0" : ["type=F", "alt=True", "properties=fade_type:right"],
+                        "1" : ["type=F", "ctrl=True", "properties=fade_type:left"],
+                        "2" : ["type=F", "properties=fade_type:both"]
                     },
                     "power_sequencer.grab_closest_handle_or_cut" : {
-                        "0" : ["G", "ALT"]
+                        "0" : ["type=G", "alt=True"]
                     },
                     "power_sequencer.grab_sequence_handle" : {
-                        "0" : ["G", "SHIFT"]
+                        "0" : ["type=G", "shift=True"]
                     },
                     "power_sequencer.import_local_footage" : {
-                        "0" : ["I", "SHIFT", "CTRL"]
+                        "0" : ["type=I", "shift=True", "ctrl=True", "properties=keep_audio:True"]
                     },
                     "power_sequencer.increase_playback_speed" : {
-                        "0" : ["RIGHT_BRACKET", "PRESS"]
+                        "0" : ["type=RIGHT_BRACKET"]
                     },
                     "power_sequencer.mouse_cut" : {
-                        "0" : ["ACTIONMOUSE", "CTRL", "SHIFT"],
-                        "1" : ["ACTIONMOUSE", "CTRL"],
-                        "2" : ["SELECTMOUSE", "CTRL"]
+                        "0" : ["type=ACTIONMOUSE", "ctrl=True", "shift=True"],
+                        "1" : ["type=ACTIONMOUSE", "ctrl=True"],
+                        "2" : ["type=SELECTMOUSE", "ctrl=True", "properties=select_mode:smart; remove_gaps:True; cursor_offset:8"]
                     },
                     "power_sequencer.mouse_toggle_mute" : {
-                        "0" : ["ACTIONMOUSE", "ALT"]
+                        "0" : ["type=ACTIONMOUSE", "alt=True"]
                     },
                     "power_sequencer.mouse_trim" : {
-                        "0" : ["SELECTMOUSE", "CTRL"],
-                        "1" : ["SELECTMOUSE", "SHIFT", "CTRL"]
+                        "0" : ["type=SELECTMOUSE", "ctrl=True", "properties=select_mode:smart"],
+                        "1" : ["type=SELECTMOUSE", "shift=True", "ctrl=True", "properties=select_mode:cursor"]
                     },
                     "power_sequencer.preview_last_cut" : {
-                        "0" : ["P", "SHIFT"]
+                        "0" : ["type=P", "shift=True"]
                     },
                     "power_sequencer.render_for_web" : {
-                        "0" : ["F12", "ALT"]
+                        "0" : ["type=F12", "alt=True", "properties=preset:youtube; name_pattern:scene; auto_render:True"]
                     },
                     "power_sequencer.ripple_delete" : {
-                        "0" : ["X", "SHIFT"]
+                        "0" : ["type=X", "shift=True"]
                     },
                     "power_sequencer.save_direct" : {
-                        "0" : ["S", "CTRL"]
+                        "0" : ["type=S", "ctrl=True"]
                     },
                     "power_sequencer.smart_snap" : {
-                        "0" : ["K", "ALT"],
-                        "1" : ["K", "CTRL"]
+                        "0" : ["type=K", "alt=True", "properties=side:right"],
+                        "1" : ["type=K", "ctrl=True", "properties=side:left"]
                     },
                     "power_sequencer.snap_selection_to_cursor" : {
-                        "0" : ["S", "ALT"]
+                        "0" : ["type=S", "alt=True"]
                     },
                     "power_sequencer.toggle_preview_selected_strips" : {
-                        "0" : ["P", "CTRL", "ALT"]
+                        "0" : ["type=P", "ctrl=True", "alt=True"]
                     },
                     "power_sequencer.toggle_selected_mute" : {
-                        "0" : ["H", "ALT"],
-                        "1" : ["H", "PRESS"]
+                        "0" : ["type=H", "alt=True", "properties=use_unselected:True"],
+                        "1" : ["type=H"]
                     },
                     "power_sequencer.toggle_waveforms" : {
-                        "0" : ["W", "ALT"]
+                        "0" : ["type=W", "alt=True"]
                     },
                     "power_sequencer.trim_to_surrounding_cuts" : {
-                        "0" : ["ACTIONMOUSE", "SHIFT", "ALT"]
+                        "0" : ["type=ACTIONMOUSE", "shift=True", "alt=True"]
                     }
                 }
             }

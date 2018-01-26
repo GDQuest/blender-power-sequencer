@@ -2,9 +2,187 @@ import os
 import json
 import bpy
 from .default_keymap import default_keymap
+from .pretty_json import pretty_json
+from pprint import pprint
 
 # For more info on keymaps see:
 # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMaps.html
+
+
+class KMI():
+    """
+    A simple class for holding keymap_item information
+
+    This attempts to be a copy of bpy.types.KeyMapItem, except for
+    some changes in the defaults.
+    """
+    # See the following for options on space_type, region, window:
+    # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMaps.html
+    group = "Sequencer"
+    space_type = "SEQUENCE_EDITOR"
+    region_type = "WINDOW"
+
+    # These values based on:
+    # https://docs.blender.org/api/blender_python_api_2_77_0/bpy.types.KeyMapItems.html#bpy.types.KeyMapItems.new
+    idname = ""
+    type = "NONE"
+    value = "PRESS" # <-- different from bpy.types.KeyMapItem
+    any = False
+    shift = False
+    ctrl = False
+    alt = False
+    oskey = False
+    key_modifier = "NONE"
+    head = False
+
+    properties = {}
+
+    def __init__(self, idname, hotkey_list):
+        self.idname = idname
+
+        for item in hotkey_list:
+            if not item.startswith("properties"):
+                attribute = item.split('=')[0].strip()
+                value = item.split('=')[1].strip()
+                if is_int(value):
+                    value = int(value)
+                elif is_float(value):
+                    value = float(value)
+                elif value == "True":
+                    value = True
+                elif value == "False":
+                    value = False
+
+                setattr(self, attribute, value)
+            else:
+                properties = {}
+                pairs = item.replace('properties', '').strip()[1::].split(';')
+                for pair in pairs:
+                    attribute = pair.split(':')[0].strip()
+                    value = pair.split(':')[1].strip()
+                    if is_int(value):
+                        value = int(value)
+                    elif is_float(value):
+                        value = float(value)
+                    elif value == "True":
+                        value = True
+                    elif value == "False":
+                        value = False
+
+                    if not attribute == "":
+                        properties[attribute] = value
+
+                self.properties = dict(properties)
+
+
+def is_int(string):
+    """
+    Determine if a string is an integer
+    """
+    try:
+        int(string)
+    except ValueError:
+        return False
+    return True
+
+def is_float(string):
+    """
+    Determine if a string is a float
+    """
+    try:
+        float(string)
+    except ValueError:
+        return False
+    return True
+
+def get_current_hotkeys(group, space, region):
+    """
+    Collect all current Blender hotkeys in a group with matching space
+    and region.
+
+    Group names can be found in Blender > User Preferences > Input
+    """
+    hotkeys = []
+    keyconfig_names = ['Blender', 'Blender Addon', 'Blender User']
+
+    for kc_name in keyconfig_names:
+        try:
+            kc = bpy.context.window_manager.keyconfigs[kc_name]
+            km = kc.keymaps[group]
+            if km.space_type == space and km.region_type == region:
+                hotkeys.extend(km.keymap_items)
+        except KeyError:
+            pass
+    return hotkeys
+
+
+def get_potential_hotkeys(keymap_data):
+    """
+    Use keymap_data dictionary to create a list of potential hotkeys
+    to add to Blender.
+    """
+    keymap_paths = []
+    potential_hotkeys = []
+
+    for group in keymap_data.keys():
+        space_types = keymap_data[group].keys()
+        for space in space_types:
+            region_types = keymap_data[group][space].keys()
+            for region in region_types:
+                operator_names = keymap_data[group][space][region].keys()
+                for op in operator_names:
+                    numbers = keymap_data[group][space][region][op].keys()
+                    for number in numbers:
+                        hotkey_list = keymap_data[group][space][region][op][number]
+                        if len(hotkey_list) > 0:
+                            kmi = KMI(op, hotkey_list)
+                            potential_hotkeys.append(kmi)
+                            if not [group, space, region] in keymap_paths:
+                                keymap_paths.append([group, space, region])
+
+    return keymap_paths, potential_hotkeys
+
+
+def get_conflicts(keymap_paths, potential_hotkeys):
+    """
+    Check through potential_hotkeys and see if any of the shortcuts
+    match the current_hotkeys.
+
+    Returns a list of lists:
+    [
+        [hotkey.idname, potential_hotkey.idname]
+    ]
+    """
+    conflicts = []
+
+    for km_path in keymap_paths:
+        group = km_path[0]
+        space = km_path[1]
+        region = km_path[2]
+
+        hotkeys = get_current_hotkeys(group, space, region)
+
+        shared = [
+            'type', 'value', 'any', 'shift', 'ctrl', 'alt', 'oskey',
+            'key_modifier']
+
+        for hotkey in hotkeys:
+            for kmi in potential_hotkeys:
+                if (kmi.group == group and
+                    kmi.space_type == space and
+                    kmi.region_type == region and
+                    hotkey.idname != kmi.idname):
+
+                    same = True
+                    for attribute in shared:
+                        if not getattr(hotkey, attribute) == getattr(kmi, attribute):
+                            same = False
+
+                    if same:
+                        if not [hotkey.idname, kmi.idname] in conflicts:
+                            conflicts.append([hotkey.idname, kmi.idname])
+
+    return conflicts
 
 
 def register_keymap():
@@ -18,82 +196,52 @@ def register_keymap():
     keymap_filepath = os.path.join(
         os.path.dirname(__file__), 'keymap.json')
 
+
+    #resource_path = bpy.utils.resource_path("USER")
+    #userpref_path = os.path.join(resource_path, 'config', 'userpref.blend')
+
+
+    #if os.path.exists(keymap_filepath) and os.path.exists(userpref_path):
+    #    if os.path.getmtime(keymap_filepath) < os.path.getmtime(userpref_path):
+    #        return
+
     try:
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
     except FileNotFoundError:
         keymap_data = default_keymap()
 
-    keymap_names = keymap_data.keys()
-    for name in keymap_names:
-        space_types = keymap_data[name].keys()
+    keymap_paths, potential_hotkeys = get_potential_hotkeys(keymap_data)
 
-        for space_type in space_types:
-            region_types = keymap_data[name][space_type].keys()
+    # Todo: Make a dialog that shows the user what conflicts are present
+    conflicts = get_conflicts(keymap_paths, potential_hotkeys)
+    print("CONFLICTS:")
+    pprint(conflicts)
 
-            for region in region_types:
-                operator_names = keymap_data[name][space_type][region].keys()
+    keyconfig = bpy.context.window_manager.keyconfigs['Blender Addon']
+    for keymap_path in keymap_paths:
+        group = keymap_path[0]
+        space = keymap_path[1]
+        region = keymap_path[2]
 
-                keyconfig = bpy.context.window_manager.keyconfigs[
-                    'Blender Addon']
-                keymap = keyconfig.keymaps.new(
-                    name, space_type=space_type, region_type=region)
+        try:
+            km = keyconfig.keymaps[group]
+        except KeyError:
+            km = keyconfig.keymaps.new(
+                group, space_type=space, region_type=region)
 
-                current_hotkeys = []
-                default_keyconfig_names = [
-                    'Blender', 'Blender Addon', 'Blender User']
-                for def_kc in default_keyconfig_names:
-                    try:
-                        kc = bpy.context.window_manager.keyconfigs[def_kc]
-                        current_hotkeys.extend(
-                            kc.keymaps[name].keymap_items)
-                    except KeyError:
-                        pass
+        for kmi in potential_hotkeys:
+            new_keymap_item = km.keymap_items.new(
+                kmi.idname, kmi.type, kmi.value,
+                any=kmi.any, shift=kmi.shift, ctrl=kmi.ctrl, alt=kmi.alt,
+                oskey=kmi.oskey, key_modifier=kmi.key_modifier,
+                head=kmi.head)
 
-                for op in operator_names:
-                    numbers = keymap_data[name][space_type][region][op].keys()
-                    for number in numbers:
-                        shortcut = keymap_data[name][space_type][region][op][number]
-                        if len(shortcut) > 0:
-                            shift = 'SHIFT' in shortcut
-                            alt = 'ALT' in shortcut
-                            ctrl = 'CTRL' in shortcut
+            for attribute in kmi.properties.keys():
+                value = kmi.properties[attribute]
+                setattr(new_keymap_item.properties, attribute, value)
 
-                            status = "PRESS"
-                            other_status_types = [
-                                "ANY", "NOTHING", "RELEASE", "CLICK",
-                                "DOUBLE_CLICK", "NORTH", "NORTH_EAST",
-                                "EAST", "SOUTH_EAST", "SOUTH",
-                                "SOUTH_WEST", "WEST", "NORTH_WEST"]
-
-                            for status_type in other_status_types:
-                                if status_type in shortcut:
-                                    status = status_type
-                                    break
-
-                            for hotkey in current_hotkeys:
-                                if (not hotkey.idname == op and
-                                   hotkey.type == shortcut[0] and
-                                   hotkey.value == status and
-                                   hotkey.shift == shift and
-                                   hotkey.ctrl == ctrl and
-                                   hotkey.alt == alt):
-                                    print(' '.join(['Conflicting hotkeys:',
-                                                    hotkey.idname,
-                                                    'vs',
-                                                    op,
-                                                    '...OVERWRITING']))
-
-                            try:
-                                kmi = keymap.keymap_items.new(
-                                    op,
-                                    shortcut[0],
-                                    status,
-                                    shift=shift, alt=alt, ctrl=ctrl)
-
-                            # User tried an invalid key name
-                            except TypeError:
-                                print(' '.join([
-                                        'Error:',
-                                        'Unable to make keyboard shortcut for',
-                                        op]))
+    #if not os.path.exists(keymap_filepath):
+    #    pretty = pretty_json(keymap_data)
+    #    with open(keymap_filepath, 'w') as f:
+    #        f.write(pretty)
