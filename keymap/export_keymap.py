@@ -1,9 +1,7 @@
 import os
 import bpy
 from bpy_extras.io_utils import ExportHelper
-import json
 from .utils import pretty_json
-from .utils import default_keymap
 
 
 class ExportKeymap(bpy.types.Operator, ExportHelper):
@@ -24,7 +22,7 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
         kc = bpy.context.window_manager.keyconfigs['Blender Addon']
         for km in kc.keymaps:
             for kmi in km.keymap_items:
-                if kmi.idname.startswith('power_sequencer'):
+                if kmi.idname.startswith('power_sequencer') and kmi.active:
                     name = km.name
                     sp_t = km.space_type
                     re_t = km.region_type
@@ -43,47 +41,35 @@ class ExportKeymap(bpy.types.Operator, ExportHelper):
                         json[name][sp_t][re_t][id_n] = {}
 
                     key = str(len(json[name][sp_t][re_t][id_n]))
+                    hotkey_list = json[name][sp_t][re_t][id_n][key] = []
 
-                    json[name][sp_t][re_t][id_n][key] = [kmi.type, kmi.value]
+                    hotkey_list.append("type=" + kmi.type)
 
-                    if kmi.shift:
-                        json[name][sp_t][re_t][id_n][key].append("SHIFT")
-                    if kmi.ctrl:
-                        json[name][sp_t][re_t][id_n][key].append("CTRL")
+                    if not kmi.value == "PRESS":
+                        hotkey_list.append("value=" + kmi.value)
                     if kmi.alt:
-                        json[name][sp_t][re_t][id_n][key].append("ALT")
+                        hotkey_list.append("alt=" + str(kmi.alt))
+                    if kmi.any:
+                        hotkey_list.append("any=" + str(kmi.any))
+                    if kmi.shift:
+                        hotkey_list.append("shift=" + str(kmi.shift))
+                    if kmi.ctrl:
+                        hotkey_list.append("ctrl=" + str(kmi.ctrl))
+                    if kmi.key_modifier != "NONE":
+                        hotkey_list.append("key_modifier=" + kmi.key_modifier)
+                    if kmi.oskey:
+                        hotkey_list.append("oskey=" + str(kmi.oskey))
+
+                    if len(kmi.properties.items()) > 0:
+                        properties = []
+                        for key in kmi.properties.keys():
+                            value = getattr(kmi.properties, key)
+                            properties.append(''.join([key, ':', str(value)]))
+
+                        prop_str = "properties=" + ';'.join(properties)
+                        hotkey_list.append(prop_str)
 
                     found_op_ids.append(kmi.idname)
-
-        keymap_filepath = os.path.join(
-            os.path.dirname(__file__), 'utils', 'keymap.json')
-
-        try:
-            with open(keymap_filepath, 'r') as f:
-                user_keymap = json.load(f)
-        except FileNotFoundError:
-            user_keymap = default_keymap()
-
-        names = user_keymap.keys()
-        for name in names:
-            space_types = user_keymap[name].keys()
-            for sp_t in space_types:
-                region_types = user_keymap[name][sp_t].keys()
-                for re_t in region_types:
-                    keymap_items = user_keymap[name][sp_t][re_t].keys()
-                    for kmi in keymap_items:
-                        if kmi not in found_op_ids:
-
-                            if name not in json.keys():
-                                json[name] = {}
-
-                            if sp_t not in json[name].keys():
-                                json[name][sp_t] = {}
-
-                            if re_t not in json[name][sp_t].keys():
-                                json[name][sp_t][re_t] = {}
-
-                            json[name][sp_t][re_t][kmi] = {}
 
         with open(self.filepath, 'w') as f:
             f.write(pretty_json(json))

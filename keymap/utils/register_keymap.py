@@ -1,9 +1,10 @@
 import os
 import json
 import bpy
-from .default_keymap import default_keymap
+from .keymap_profiles import *
 from .pretty_json import pretty_json
-from pprint import pprint
+from .addon_module_name import addon_module_name
+from .data2md import data2md, centerWord
 
 # For more info on keymaps see:
 # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMaps.html
@@ -26,7 +27,7 @@ class KMI():
     # https://docs.blender.org/api/blender_python_api_2_77_0/bpy.types.KeyMapItems.html#bpy.types.KeyMapItems.new
     idname = ""
     type = "NONE"
-    value = "PRESS" # <-- different from bpy.types.KeyMapItem
+    value = "PRESS"
     any = False
     shift = False
     ctrl = False
@@ -85,6 +86,7 @@ def is_int(string):
         return False
     return True
 
+
 def is_float(string):
     """
     Determine if a string is a float
@@ -94,6 +96,7 @@ def is_float(string):
     except ValueError:
         return False
     return True
+
 
 def get_current_hotkeys(group, space, region):
     """
@@ -143,6 +146,31 @@ def get_potential_hotkeys(keymap_data):
     return keymap_paths, potential_hotkeys
 
 
+def get_shortcut_string(kmi):
+    """
+    Get the keyboard shortcut for a keymap item in an easy-to-read
+    string
+    """
+
+    shortcut_string = []
+    if kmi.ctrl:
+        shortcut_string.append('Ctrl')
+    if kmi.alt:
+        shortcut_string.append('Alt')
+    if kmi.shift:
+        shortcut_string.append('Shift')
+    if kmi.oskey:
+        shortcut_string.append('OSKey')
+    if kmi.any:
+        shortcut_string.append('Any')
+    if kmi.key_modifier != "NONE":
+        shortcut_string.append(kmi.key_modifier)
+
+    shortcut_string.append(kmi.type)
+
+    return ' '.join(shortcut_string)
+
+
 def get_conflicts(keymap_paths, potential_hotkeys):
     """
     Check through potential_hotkeys and see if any of the shortcuts
@@ -153,7 +181,8 @@ def get_conflicts(keymap_paths, potential_hotkeys):
         [hotkey.idname, potential_hotkey.idname]
     ]
     """
-    conflicts = []
+    current_ids = []
+    conflicts = [["Current Operation", "Power Sequencer Operation", "Shortcut"]]
 
     for km_path in keymap_paths:
         group = km_path[0]
@@ -169,18 +198,22 @@ def get_conflicts(keymap_paths, potential_hotkeys):
         for hotkey in hotkeys:
             for kmi in potential_hotkeys:
                 if (kmi.group == group and
-                    kmi.space_type == space and
-                    kmi.region_type == region and
-                    hotkey.idname != kmi.idname):
+                        kmi.space_type == space and
+                        kmi.region_type == region and
+                        hotkey.idname != kmi.idname):
 
                     same = True
                     for attribute in shared:
                         if not getattr(hotkey, attribute) == getattr(kmi, attribute):
                             same = False
 
-                    if same:
-                        if not [hotkey.idname, kmi.idname] in conflicts:
-                            conflicts.append([hotkey.idname, kmi.idname])
+                    if same and hotkey.idname not in current_ids:
+                        conflicts.append(
+                            [hotkey.idname.split('.')[-1],
+                             kmi.idname.split('.')[-1],
+                             get_shortcut_string(kmi)]
+                        )
+                        current_ids.append(hotkey.idname)
 
     return conflicts
 
@@ -196,27 +229,26 @@ def register_keymap():
     keymap_filepath = os.path.join(
         os.path.dirname(__file__), 'keymap.json')
 
-
-    #resource_path = bpy.utils.resource_path("USER")
-    #userpref_path = os.path.join(resource_path, 'config', 'userpref.blend')
-
-
-    #if os.path.exists(keymap_filepath) and os.path.exists(userpref_path):
-    #    if os.path.getmtime(keymap_filepath) < os.path.getmtime(userpref_path):
-    #        return
-
     try:
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
     except FileNotFoundError:
-        keymap_data = default_keymap()
+        addon_name = addon_module_name()
+        preferences = bpy.context.user_preferences.addons[addon_name].preferences
+        profile = preferences.keymap_profile
+        keymap_data = globals()[profile]()
 
     keymap_paths, potential_hotkeys = get_potential_hotkeys(keymap_data)
 
-    # Todo: Make a dialog that shows the user what conflicts are present
     conflicts = get_conflicts(keymap_paths, potential_hotkeys)
-    print("CONFLICTS:")
-    pprint(conflicts)
+    conflict_string = data2md(conflicts)
+
+    first_line = conflict_string.split('\n')[0]
+    title = centerWord(len(first_line), "Shortcuts Overridden by Power Sequencer")
+    underline = centerWord(len(first_line), "=" * len(title.strip()))
+
+    if len(conflicts) > 0:
+        print('\n'.join(['', title, underline, conflict_string, '']))
 
     keyconfig = bpy.context.window_manager.keyconfigs['Blender Addon']
     for keymap_path in keymap_paths:
@@ -240,8 +272,3 @@ def register_keymap():
             for attribute in kmi.properties.keys():
                 value = kmi.properties[attribute]
                 setattr(new_keymap_item.properties, attribute, value)
-
-    #if not os.path.exists(keymap_filepath):
-    #    pretty = pretty_json(keymap_data)
-    #    with open(keymap_filepath, 'w') as f:
-    #        f.write(pretty)

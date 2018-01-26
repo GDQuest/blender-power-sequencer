@@ -6,6 +6,7 @@ import json
 from .utils import unregister_keymap
 from .utils import register_keymap
 
+
 class ImportKeymap(bpy.types.Operator, ImportHelper):
     """
     Set addon hotkeys based on a JSON file

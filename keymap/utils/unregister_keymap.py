@@ -1,7 +1,8 @@
 import os
 import json
 import bpy
-from .default_keymap import default_keymap
+from .keymap_profiles import *
+from .addon_module_name import addon_module_name
 
 
 def unregister_keymap():
@@ -16,7 +17,10 @@ def unregister_keymap():
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
     except FileNotFoundError:
-        keymap_data = default_keymap()
+        addon_name = addon_module_name()
+        preferences = bpy.context.user_preferences.addons[addon_name].preferences
+        profile = preferences.keymap_profile
+        keymap_data = globals()[profile]()
 
     keymap_names = keymap_data.keys()
     for name in keymap_names:

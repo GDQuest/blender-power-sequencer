@@ -5,6 +5,7 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty
 from . import addon_updater_ops
 
+
 class ProxyPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
 
@@ -66,6 +67,13 @@ class ProxyPreferences(bpy.types.AddonPreferences):
         max=59
         )
 
+    keymap_profile = bpy.props.EnumProperty(
+        items=[('default', 'Default', '')],
+        name="Keymap Profile",
+        description="Keymap profile to load",
+        default='default'
+        )
+
     def draw(self, context):
         layout = self.layout
 
@@ -74,8 +82,11 @@ class ProxyPreferences(bpy.types.AddonPreferences):
                      icon="LIBRARY_DATA_DIRECT")
         row.operator("power_sequencer.export_keymap",
                      icon="NEW")
-        row.operator("power_sequencer.set_default_keymap",
-                     icon="RECOVER_LAST")
+        split = row.split(0.5, align=True)
+        split.operator("power_sequencer.load_profile",
+                       icon="FILE_SCRIPT")
+        split = split.split(1.0, align=True)
+        split.prop(self, "keymap_profile", text="")
 
         layout.prop(self, "video_export_path")
         layout.prop(self, "auto_render_proxies")

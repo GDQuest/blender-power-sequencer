@@ -28,6 +28,7 @@ def indent_json(dictionary, indent=0):
 
     return lines
 
+
 def pretty_json(dictionary):
     """
     Make a json file that is reader-friendly

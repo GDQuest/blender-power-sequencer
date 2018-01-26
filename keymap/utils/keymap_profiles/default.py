@@ -1,7 +1,7 @@
 # Available keys found at:
 # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMapItem.html?highlight=keymap_item
 
-def default_keymap():
+def default():
     """
     Defines the default keymap
 

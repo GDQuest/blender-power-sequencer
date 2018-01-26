@@ -4,13 +4,14 @@ import os
 from .utils import register_keymap
 from .utils import unregister_keymap
 
-class SetDefaultKeymap(bpy.types.Operator):
+
+class LoadProfile(bpy.types.Operator):
     """
-    Reset Power-Sequencer keymap to default
+    Loads a keymap profile
     """
-    bl_idname = "power_sequencer.set_default_keymap"
-    bl_label = "Set default keymap"
-    bl_desription = "Removes user keymap file and re-registers hotkeys"
+    bl_idname = "power_sequencer.load_profile"
+    bl_label = "Load Keymap"
+    bl_desription = "Registers keymap profile"
 
     def execute(self, context):
         unregister_keymap()
@@ -24,6 +25,6 @@ class SetDefaultKeymap(bpy.types.Operator):
             pass
 
         register_keymap()
-        self.report({'INFO'}, 'Applied default keymap')
+        self.report({'INFO'}, 'Loaded keymap')
 
         return {"FINISHED"}

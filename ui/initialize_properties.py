@@ -7,7 +7,8 @@ class PowerSequencerProperties(bpy.types.PropertyGroup):
                ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
                ('triple', 'Triple (3x)', '')],
         name='Playback Speed',
-        default='normal')
+        default='normal'
+        )
 
     frame_pre = bpy.props.IntProperty(
         name='Frame before frame_change', default=0, min=0)
@@ -18,5 +19,7 @@ class PowerSequencerProperties(bpy.types.PropertyGroup):
         default="Sequencer"
         )
 
+
 def initialize_properties():
-    bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(type=PowerSequencerProperties)
+    bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(
+        type=PowerSequencerProperties)
