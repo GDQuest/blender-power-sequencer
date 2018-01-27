@@ -27,6 +27,9 @@ def default():
                     "power_sequencer.add_speed" : {
                         "0" : ["type=EQUAL", "shift=True"]
                     },
+                    "power_sequencer.add_transform" : {
+                        "0" : ["type=T"]
+                    },
                     "power_sequencer.border_select" : {
                         "0" : ["type=B", "shift=True"]
                     },
