@@ -55,7 +55,7 @@ def get_operator_shortcuts(idname):
                                     props = item.replace('properties=', '').split(';')
                                     for prop in props:
                                         if prop.split(':')[0].strip() == 'function':
-                                            shortcuts[key].append("; function=" + prop.split(':')[1].strip())
+                                            shortcuts[key] += "; function=" + prop.split(':')[1].strip()
                                             break
                                     break
     return shortcuts
