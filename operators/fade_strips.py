@@ -7,8 +7,7 @@ from .utils.global_settings import SequenceTypes
 class FadeStrips(bpy.types.Operator):
     bl_idname = "power_sequencer.fade_strips"
     bl_label = "Fade Strips"
-    bl_description = "Fade left, right or both sides of all selected strips \
-                      in the VSE"
+    bl_description = "Fade left, right or both sides of all selected strips in the VSE"
 
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -24,6 +23,8 @@ class FadeStrips(bpy.types.Operator):
         name="Fade type",
         description="Fade in, out, or both in and out. Default is both.",
         default='both')
+
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

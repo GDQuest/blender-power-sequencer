@@ -7,6 +7,7 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
     """Sets the preview range based on selected sequences"""
     bl_idname = "power_sequencer.toggle_preview_selected_strips"
     bl_label = "Toggle Preview Selected Strips"
+    bl_description = "Sets the preview range based on selected sequences"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

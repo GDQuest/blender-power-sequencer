@@ -13,6 +13,7 @@ from operator import attrgetter
 class GrabClosestHandleOrCut(bpy.types.Operator):
     bl_idname = "power_sequencer.grab_closest_handle_or_cut"
     bl_label = "Grab Closest Handle Or Cut"
+    bl_description = "Grab the closest strip's handle, or cut it"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

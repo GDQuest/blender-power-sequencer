@@ -8,12 +8,15 @@ class CopySelectedSequences(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.copy_selected_sequences"
     bl_label = "Copy Selected Sequences"
+    bl_description = "Copy/cut strips without offset from current time indicator"
     bl_options = {'REGISTER', 'UNDO'}
 
     delete_selection = bpy.props.BoolProperty(
         name="Delete selection",
         description="Delete selected strips: acts like cut and paste",
         default=False)
+    
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

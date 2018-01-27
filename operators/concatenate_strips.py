@@ -13,6 +13,7 @@ class ConcatenateStrips(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.concatenate_strips"
     bl_label = "Concatenate Strips"
+    bl_description = "Removes space between strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     concatenate_whole_channel = bpy.props.BoolProperty(

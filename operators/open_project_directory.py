@@ -7,7 +7,7 @@ from subprocess import Popen
 class OpenProjectDirectory(bpy.types.Operator):
     bl_idname = 'power_sequencer.open_project_directory'
     bl_label = 'Open Project Directory'
-    bl_description = 'Opens the Blender project directory in the explorer'
+    bl_description = "Opens the Blender project directory in file explorer"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

@@ -4,8 +4,7 @@ import bpy
 class BorderSelect(bpy.types.Operator):
     bl_idname = 'power_sequencer.border_select'
     bl_label = 'Border Select'
-    bl_description = 'Wrapper around Blender\'s border select, \
-    deselects handles'
+    bl_description = "Wrapper around Blender's border select, deselects handles"
 
     bl_options = {'REGISTER', 'UNDO'}
 

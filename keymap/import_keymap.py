@@ -37,14 +37,6 @@ class ImportKeymap(bpy.types.Operator, ImportHelper):
 
         unregister_keymap()
 
-        keymap_path = os.path.join(
-            os.path.dirname(__file__), 'utils', 'keymap.json')
-
-        try:
-            os.unlink(keymap_path)
-        except FileNotFoundError:
-            pass
-
         shutil.copy(self.filepath, keymap_path)
 
         register_keymap()

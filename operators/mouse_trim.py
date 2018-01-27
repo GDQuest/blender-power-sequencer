@@ -18,6 +18,7 @@ class MouseTrim(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.mouse_trim"
     bl_label = "Mouse Trim Strips"
+    bl_description = "Trim strip from a start to an end frame"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
@@ -41,6 +42,8 @@ class MouseTrim(bpy.types.Operator):
 
     frame_start, frame_end = IntProperty(), IntProperty()
     to_select = []
+    
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

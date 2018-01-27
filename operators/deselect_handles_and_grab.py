@@ -8,7 +8,7 @@ class DeselectHandlesAndGrab(bpy.types.Operator):
     """
     bl_idname = 'power_sequencer.deselect_handles_and_grab'
     bl_label = 'Deselect Handles And Grab'
-    bl_description = ''
+    bl_description = "Deselect the handles of all selected strips and call the Sequence Slide operator"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

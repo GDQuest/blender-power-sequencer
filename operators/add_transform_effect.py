@@ -10,8 +10,7 @@ import bpy
 class AddTransformEffect(bpy.types.Operator):
     bl_idname = 'power_sequencer.add_transform_effect'
     bl_label = 'Add Transform Effect'
-    bl_description = 'Add transform effect to selected image and movie strips. \
-                      Auto centers images'
+    bl_description = "Add transform effect to selected image and movie strips. Auto centers images"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

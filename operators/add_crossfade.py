@@ -22,10 +22,7 @@ class AddCrossfade(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.add_crossfade"
     bl_label = "Add Crossfade"
-    bl_description = ' '.join([
-        "Adds cross fade between selected sequence",
-        "and the closest sequence to it's right"])
-
+    bl_description = "Adds cross fade between selected sequence and the closest sequence to it's right"
     bl_options = {"REGISTER", "UNDO"}
 
     crossfade_length = bpy.props.IntProperty(

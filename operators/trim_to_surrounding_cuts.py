@@ -8,6 +8,7 @@ from math import floor
 class TrimToSurroundingCuts(bpy.types.Operator):
     bl_idname = "power_sequencer.trim_to_surrounding_cuts"
     bl_label = "Trim To Surrounding Cuts"
+    bl_description = "Trim to surrounding cuts"
     bl_options = {'REGISTER', 'UNDO'}
 
     margin = bpy.props.FloatProperty(

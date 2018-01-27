@@ -10,7 +10,7 @@ class GrabSequenceHandle(bpy.types.Operator):
     """
     bl_idname = 'power_sequencer.grab_sequence_handle'
     bl_label = 'Grab Sequence Handles'
-    bl_description = 'Grabs the sequence\'s handle based on the mouse position'
+    bl_description = "Grabs the sequence's handle based on the mouse position"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

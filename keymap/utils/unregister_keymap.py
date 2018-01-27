@@ -39,3 +39,11 @@ def unregister_keymap():
                 for hotkey in current_hotkeys:
                     if hotkey.idname in operator_names:
                         keymap.keymap_items.remove(hotkey)
+    
+    keymap_path = os.path.join(
+            os.path.dirname(__file__), 'keymap.json')
+
+    try:
+        os.unlink(keymap_path)
+    except FileNotFoundError:
+        pass

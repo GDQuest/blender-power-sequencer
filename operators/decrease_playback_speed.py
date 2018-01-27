@@ -16,7 +16,7 @@ class DecreasePlaybackSpeed(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.decrease_playback_speed"
     bl_label = "Decrease Playback Speed"
-    bl_description = "Decrease playback speed down to normal"
+    bl_description = "Decrease playback speed incrementally down to normal"
 
     def execute(self, context):
         scene = context.scene

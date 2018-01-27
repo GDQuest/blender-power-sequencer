@@ -4,11 +4,13 @@ import bpy
 # TODO: rewrite to sync strips to corresponding identifiers instead
 # See https://github.com/GDquest/Blender-power-sequencer/issues/55
 class SynchronizeTitles(bpy.types.Operator):
+    """
+    Snap the selected image or text strips to the corresponding title 
+    marker. The marker and strip names have to start with TITLE-001
+    """
     bl_idname = 'power_sequencer.synchronize_titles'
     bl_label = 'Synchronize Titles'
-    bl_description = 'Snap the selected image or text strips to the \
-                      corresponding title marker. The marker and strip names \
-                      have to start with TITLE-001, ...'
+    bl_description = "Snap the selected image or text strips to the corresponding title marker"
     bl_options = {'REGISTER', 'UNDO'}
 
     TITLE_REGEX = r'^TITLE-?([0-9]+)-?'

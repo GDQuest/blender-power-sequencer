@@ -4,7 +4,7 @@ import bpy
 class SnapMarkerToCursor(bpy.types.Operator):
     bl_idname = 'power_sequencer.snap_marker_to_cursor'
     bl_label = 'Snap Marker To Cursor'
-    bl_description = 'Snap the selected marker to the time cursor'
+    bl_description = 'Snap selected marker to the time cursor'
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

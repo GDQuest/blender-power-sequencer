@@ -31,22 +31,22 @@ def default():
                         "0" : ["type=B", "shift=True"]
                     },
                     "power_sequencer.change_playback_speed" : {
-                        "0" : ["type=ONE", "properties=speed:normal"],
-                        "1" : ["type=TWO", "properties=speed:fast"],
-                        "2" : ["type=THREE", "properties=speed:faster"],
-                        "3" : ["type=FOUR", "properties=speed:double"]
+                        "0" : ["type=ONE", "properties=function:Speed to 1x; speed:normal"],
+                        "1" : ["type=TWO", "properties=function:Speed to 1.33x; speed:fast"],
+                        "2" : ["type=THREE", "properties=function:Speed to 1.66x; speed:faster"],
+                        "3" : ["type=FOUR", "properties=function: Speed to 2x; speed:double"]
                     },
                     "power_sequencer.channel_offset" : {
-                        "0" : ["type=DOWN_ARROW", "alt=True", "properties=direction:up"],
-                        "1" : ["type=UP_ARROW", "alt=True", "properties=direction:down"]
+                        "0" : ["type=UP_ARROW", "alt=True", "properties=function:Move to Open Channel Above; direction:up"],
+                        "1" : ["type=DOWN_ARROW", "alt=True", "properties=function:Move to Open Channel Below; direction:down"]
                     },
                     "power_sequencer.concatenate_strips" : {
                         "0" : ["type=C", "properties=concatenate_whole_channel:False"],
                         "1" : ["type=C", "shift=True", "properties=concatenate_whole_channel:True"]
                     },
                     "power_sequencer.copy_selected_sequences" : {
-                        "0" : ["type=C", "ctrl=True", "properties=delete_selection:False"],
-                        "1" : ["type=X", "ctrl=True", "properties=delete_selection:True"]
+                        "0" : ["type=C", "ctrl=True", "properties=function:Copy; delete_selection:False"],
+                        "1" : ["type=X", "ctrl=True", "properties=function:Cut; delete_selection:True"]
                     },
                     "power_sequencer.cycle_scenes" : {
                         "0" : ["type=TAB", "shift=True"]
@@ -61,9 +61,9 @@ def default():
                         "0" : ["type=C", "alt=True"]
                     },
                     "power_sequencer.fade_strips" : {
-                        "0" : ["type=F", "alt=True", "properties=fade_type:right"],
-                        "1" : ["type=F", "ctrl=True", "properties=fade_type:left"],
-                        "2" : ["type=F", "properties=fade_type:both"]
+                        "0" : ["type=F", "alt=True", "properties=function:Fade Right; fade_type:right"],
+                        "1" : ["type=F", "ctrl=True", "properties=function: Fade Left; fade_type:left"],
+                        "2" : ["type=F", "properties=function: Fade Both; fade_type:both"]
                     },
                     "power_sequencer.grab_closest_handle_or_cut" : {
                         "0" : ["type=G", "alt=True"]
@@ -78,16 +78,16 @@ def default():
                         "0" : ["type=RIGHT_BRACKET"]
                     },
                     "power_sequencer.mouse_cut" : {
-                        "0" : ["type=ACTIONMOUSE", "ctrl=True", "shift=True"],
-                        "1" : ["type=ACTIONMOUSE", "ctrl=True"],
-                        "2" : ["type=SELECTMOUSE", "ctrl=True", "properties=select_mode:smart; remove_gaps:True; cursor_offset:8"]
+                        "0" : ["type=ACTIONMOUSE", "ctrl=True", "shift=True", "properties=function:Cut"],
+                        "1" : ["type=ACTIONMOUSE", "ctrl=True", "properties=function:Cut on Mousemove, Keep Gap"],
+                        "2" : ["type=SELECTMOUSE", "ctrl=True", "properties=function:Cut on Mousemove, Remove Gap; select_mode:smart; remove_gaps:True; cursor_offset:8"]
                     },
                     "power_sequencer.mouse_toggle_mute" : {
                         "0" : ["type=ACTIONMOUSE", "alt=True"]
                     },
                     "power_sequencer.mouse_trim" : {
-                        "0" : ["type=SELECTMOUSE", "ctrl=True", "properties=select_mode:smart"],
-                        "1" : ["type=SELECTMOUSE", "shift=True", "ctrl=True", "properties=select_mode:cursor"]
+                        "0" : ["type=SELECTMOUSE", "ctrl=True", "properties=function:Trim Strip, Keep Gap;select_mode:smart"],
+                        "1" : ["type=SELECTMOUSE", "shift=True", "ctrl=True", "properties=function:Trim Strip, Remove Gap; select_mode:cursor"]
                     },
                     "power_sequencer.preview_last_cut" : {
                         "0" : ["type=P", "shift=True"]
@@ -102,8 +102,8 @@ def default():
                         "0" : ["type=S", "ctrl=True"]
                     },
                     "power_sequencer.smart_snap" : {
-                        "0" : ["type=K", "alt=True", "properties=side:right"],
-                        "1" : ["type=K", "ctrl=True", "properties=side:left"]
+                        "0" : ["type=K", "alt=True", "properties=function:Trim Strip Right; side:right"],
+                        "1" : ["type=K", "ctrl=True", "properties=function:Trim Strip Left; side:left"]
                     },
                     "power_sequencer.snap_selection_to_cursor" : {
                         "0" : ["type=S", "alt=True"]
@@ -112,8 +112,8 @@ def default():
                         "0" : ["type=P", "ctrl=True", "alt=True"]
                     },
                     "power_sequencer.toggle_selected_mute" : {
-                        "0" : ["type=H", "alt=True", "properties=use_unselected:True"],
-                        "1" : ["type=H"]
+                        "0" : ["type=H", "alt=True", "properties=function:Mute Unselected; use_unselected:True"],
+                        "1" : ["type=H", "properties=function:Mute Selected; use_unselected:False"]
                     },
                     "power_sequencer.toggle_waveforms" : {
                         "0" : ["type=W", "alt=True"]

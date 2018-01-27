@@ -5,8 +5,7 @@ from .utils.global_settings import SequenceTypes
 class ToggleWaveforms(bpy.types.Operator):
     bl_idname = 'power_sequencer.toggle_waveforms'
     bl_label = 'Toggle Waveforms'
-    bl_description = 'Toggle drawing of the waveform for selected strips \
-                      or for all strips if no selection is active'
+    bl_description = "Toggle drawing of waveforms for selected strips or for all strips if no selection is active"
     bl_options = {'REGISTER', 'UNDO'}
 
     mode = bpy.props.EnumProperty(

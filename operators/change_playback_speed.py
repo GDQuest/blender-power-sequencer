@@ -19,6 +19,8 @@ class ChangePlaybackSpeed(bpy.types.Operator):
         name='Speed',
         description='Change the playback speed',
         default='double')
+    
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

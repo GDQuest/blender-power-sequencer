@@ -2,9 +2,12 @@ import bpy
 
 
 class SmartSnap(bpy.types.Operator):
-    """Trims, extends and snaps selected strips to cursor"""
+    """
+    Trims, extends and snaps selected strips to cursor
+    """
     bl_idname = "power_sequencer.smart_snap"
     bl_label = "Smart Snap Strip Handles"
+    bl_description = "Trims, extends, and snaps selected strips to cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
     side = bpy.props.EnumProperty(
@@ -13,6 +16,8 @@ class SmartSnap(bpy.types.Operator):
         name="Snap side",
         description="Handle side to use for the snap",
         default='auto')
+
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

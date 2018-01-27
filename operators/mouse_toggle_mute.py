@@ -7,6 +7,7 @@ from .utils.find_strips_mouse import find_strips_mouse
 class MouseToggleMute(bpy.types.Operator):
     bl_idname = "power_sequencer.mouse_toggle_mute"
     bl_label = "Mouse Toggle Mute"
+    bl_description = "Toggle mute status of clicked strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod

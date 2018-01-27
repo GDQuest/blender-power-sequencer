@@ -10,6 +10,7 @@ class MouseCut(bpy.types.Operator):
     """Cuts, trims and remove gaps with mouse clicks"""
     bl_idname = "power_sequencer.mouse_cut"
     bl_label = "Mouse Cut Strips"
+    bl_description = "Fast strip cutting based on mouse position"
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
@@ -57,6 +58,8 @@ class MouseCut(bpy.types.Operator):
     frame_end, end_channel = 0, 0
     select_mouse, action_mouse = '', ''
     cut_mode = ''
+    
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

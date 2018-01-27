@@ -11,6 +11,8 @@ class ToggleSelectedMute(bpy.types.Operator):
         name="Use unselected",
         description="Toggle non selected sequences",
         default=False)
+        
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):
