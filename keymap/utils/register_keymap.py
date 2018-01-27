@@ -10,6 +10,16 @@ from .data2md import data2md, centerWord
 # https://docs.blender.org/api/blender_python_api_2_78_release/bpy.types.KeyMaps.html
 
 
+def kmi_props_setattr(kmi_props, attr, value):
+    try:
+        setattr(kmi_props, attr, value)
+    except AttributeError:
+        print("Warning: property '%s' not found in keymap item '%s'" %
+              (attr, kmi_props.__class__.__name__))
+    except Exception as e:
+        print("Warning: %r" % e)
+
+
 class KMI():
     """
     A simple class for holding keymap_item information
@@ -209,8 +219,8 @@ def get_conflicts(keymap_paths, potential_hotkeys):
 
                     if same and hotkey.idname not in current_ids:
                         conflicts.append(
-                            [hotkey.idname.split('.')[-1],
-                             kmi.idname.split('.')[-1],
+                            [hotkey.idname,
+                             kmi.idname,
                              get_shortcut_string(kmi)]
                         )
                         current_ids.append(hotkey.idname)
@@ -271,4 +281,4 @@ def register_keymap():
 
             for attribute in kmi.properties.keys():
                 value = kmi.properties[attribute]
-                setattr(new_keymap_item.properties, attribute, value)
+                kmi_props_setattr(new_keymap_item.properties, attribute, value)

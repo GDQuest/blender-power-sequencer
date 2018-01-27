@@ -40,10 +40,6 @@ def default():
                         "0" : ["type=DOWN_ARROW", "alt=True", "properties=direction:up"],
                         "1" : ["type=UP_ARROW", "alt=True", "properties=direction:down"]
                     },
-                    "power_sequencer.channel_offset" : {
-                        "0" : ["type=DOWN_ARROW", "alt=True"],
-                        "1" : ["type=UP_ARROW", "alt=True"]
-                    },
                     "power_sequencer.concatenate_strips" : {
                         "0" : ["type=C", "properties=concatenate_whole_channel:False"],
                         "1" : ["type=C", "shift=True", "properties=concatenate_whole_channel:True"]

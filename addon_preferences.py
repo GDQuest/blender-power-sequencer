@@ -68,7 +68,7 @@ class ProxyPreferences(bpy.types.AddonPreferences):
         )
 
     keymap_profile = bpy.props.EnumProperty(
-        items=[('default', 'Default', '')],
+        items=[('default', 'Default', ''), ('premiere', 'Premiere (Not working)', ''), ('final_cut_pro', 'Final Cut Pro (Not working)', '')],
         name="Keymap Profile",
         description="Keymap profile to load",
         default='default'
