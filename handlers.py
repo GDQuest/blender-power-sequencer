@@ -38,7 +38,7 @@ def playback_speed_post(scene):
     # Only need to work for backwards playback
 
     if playback_speed == 'normal':
-        scene.frame_current = scene.frame_current
+        pass
     elif playback_speed == 'fast' and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
     elif playback_speed == 'faster' and scene.frame_current % 2 == 0:
