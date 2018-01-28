@@ -82,8 +82,7 @@ def default():
                     },
                     "power_sequencer.mouse_cut" : {
                         "0" : ["type=ACTIONMOUSE", "ctrl=True", "shift=True", "properties=function:Cut"],
-                        "1" : ["type=ACTIONMOUSE", "ctrl=True", "properties=function:Cut on Mousemove, Keep Gap"],
-                        "2" : ["type=SELECTMOUSE", "ctrl=True", "properties=function:Cut on Mousemove, Remove Gap; select_mode:smart; remove_gaps:True; cursor_offset:8"]
+                        "1" : ["type=ACTIONMOUSE", "ctrl=True", "properties=function:Cut on Mousemove, Keep Gap"]
                     },
                     "power_sequencer.mouse_toggle_mute" : {
                         "0" : ["type=ACTIONMOUSE", "alt=True"]
@@ -123,6 +122,9 @@ def default():
                     },
                     "power_sequencer.trim_to_surrounding_cuts" : {
                         "0" : ["type=ACTIONMOUSE", "shift=True", "alt=True"]
+                    },
+                    "power_sequencer.delete_direct" : {
+                        "0" : ["type=X"]
                     }
                 }
             }
