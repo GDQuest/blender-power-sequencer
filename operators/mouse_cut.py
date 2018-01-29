@@ -1,5 +1,7 @@
 import bpy
 from math import floor
+import bgl
+from mathutils import Vector
 
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
@@ -7,9 +9,9 @@ from .utils.trim_strips import trim_strips
 
 
 class MouseCut(bpy.types.Operator):
-    """Cuts, trims and remove gaps with mouse clicks"""
+    """Cut, trim and remove gaps with mouse clicks"""
     bl_idname = "power_sequencer.mouse_cut"
-    bl_label = "Mouse Cut Strips"
+    bl_label = "Mouse Cut"
     bl_description = "Fast strip cutting based on mouse position"
     bl_options = {'REGISTER', 'UNDO'}
 
@@ -59,6 +61,9 @@ class MouseCut(bpy.types.Operator):
     select_mouse, action_mouse = '', ''
     cut_mode = ''
     
+    mouse_vec_start = Vector([0, 0])
+    handle_cut_trim_line = None
+    
     function = bpy.props.StringProperty("")
 
     @classmethod
@@ -82,6 +87,8 @@ class MouseCut(bpy.types.Operator):
         if bpy.context.user_preferences.inputs.select_mouse == 'LEFT':
             self.select_mouse = 'LEFTMOUSE'
             self.action_mouse = 'RIGHTMOUSE'
+        
+        self.mouse_vec_start = Vector([event.mouse_region_x, event.mouse_region_y])
 
         bpy.context.scene.frame_current = self.frame_start
         context.window_manager.modal_handler_add(self)
@@ -94,6 +101,10 @@ class MouseCut(bpy.types.Operator):
             return {'CANCELLED'}
 
         elif event.type == self.action_mouse and event.value == 'RELEASE':
+            
+            if self.handle_cut_trim_line:
+                bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
+            
             self.select_mode = 'cursor' if event.shift else 'smart'
 
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
@@ -120,6 +131,14 @@ class MouseCut(bpy.types.Operator):
         elif event.type == 'MOUSEMOVE':
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
+            
+            if self.handle_cut_trim_line:
+                bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
+            
+            args = (self, Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]), Vector([round(event.mouse_region_x), self.mouse_vec_start.y]))
+            self.handle_cut_trim_line = bpy.types.SpaceSequenceEditor.draw_handler_add(
+                    draw_cut_trim, args, 'WINDOW', 'POST_PIXEL')
+            
             self.frame_end, self.end_channel = round(x), floor(y)
             bpy.context.scene.frame_current = self.frame_end
             return {'PASS_THROUGH'}
@@ -184,3 +203,35 @@ class MouseCut(bpy.types.Operator):
                    s.frame_final_start <= trim_end <= s.frame_final_end:
                     to_select.append(s)
         return to_select, to_delete
+
+
+def draw_cut_trim(self, start, end):
+    bgl.glEnable(bgl.GL_BLEND)
+    bgl.glLineWidth(2)
+    bgl.glPushMatrix()
+    
+    bgl.glColor4f(1.0, 0.0, 1.0, 0.5)
+    
+    # The Horizontal Line
+    bgl.glBegin(bgl.GL_LINES)
+    bgl.glVertex2f(start.x, start.y)
+    bgl.glVertex2f(end.x, end.y)
+    bgl.glEnd()
+    
+    # The Start Vertical Line
+    bgl.glBegin(bgl.GL_LINES)
+    bgl.glVertex2f(start.x, start.y)
+    bgl.glVertex2f(start.x, 0)
+    bgl.glEnd()
+    
+    # The End Vertical Line
+    bgl.glBegin(bgl.GL_LINES)
+    bgl.glVertex2f(end.x, end.y)
+    bgl.glVertex2f(end.x, 0)
+    bgl.glEnd()
+    
+    bgl.glPopMatrix()
+    
+    bgl.glLineWidth(1)
+    bgl.glDisable(bgl.GL_BLEND)
+    bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
