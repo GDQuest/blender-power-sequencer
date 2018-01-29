@@ -9,7 +9,13 @@ from .utils.trim_strips import trim_strips
 
 
 class MouseCut(bpy.types.Operator):
-    """Cut, trim and remove gaps with mouse clicks"""
+    """
+    ![Demo](https://i.imgur.com/wVvX4ex.gif)
+    With this function you can quickly cut and remove a section of 
+    strips while keeping or collapsing the remaining gap.
+    
+    A [video demo](https://youtu.be/GiLmDhmMVAM?t=1m35s) is available.
+    """
     bl_idname = "power_sequencer.mouse_cut"
     bl_label = "Mouse Cut"
     bl_description = "Fast strip cutting based on mouse position"

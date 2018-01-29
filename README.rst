@@ -205,7 +205,7 @@
             <tr>
                 <td align="center"><kbd>Ctrl,</kbd><kbd>Alt,</kbd><kbd>C</kbd></td>
                 <td>Add Crossfade</td>
-                <td align="center" rowspan="1"><img src="https://i.imgur.com/MoEQkDP.gif" alt="Demo"></td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/ZyEd0jD.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
@@ -498,15 +498,20 @@
                 <th width=208px>Shortcut</th>
         </table>
         <h3><a name="Mouse_Cut" href="#top_Mouse_Cut">Mouse Cut</a></h3>
-    <p>Cut, trim and remove gaps with mouse clicks</p>
+    <p>With this function you can quickly cut and remove a section of 
+    strips while keeping or collapsing the remaining gap.</p>
+    
+    <p>A <a href="https://youtu.be/GiLmDhmMVAM?t=1m35s">video demo</a> is available.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><kbd>Ctrl,</kbd><kbd>Shift,</kbd><kbd>ACTIONMOUSE</kbd></td>
                 <td>Cut</td>
+                <td align="center" rowspan="2"><img src="https://i.imgur.com/wVvX4ex.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><kbd>Ctrl,</kbd><kbd>ACTIONMOUSE</kbd></td>
