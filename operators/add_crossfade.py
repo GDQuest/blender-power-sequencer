@@ -15,6 +15,8 @@ from .utils.find_next_sequences import find_next_sequences
 # effect added to both strips, so we can detect it later. Why?
 class AddCrossfade(bpy.types.Operator):
     """
+    ![Demo](https://i.imgur.com/MoEQkDP.gif)
+    
     Based on the active strip, finds the closest next sequence
     of a similar type, moves it so it overlaps the active strip,
     and adds a gamma_cross effect between them.

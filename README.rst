@@ -201,9 +201,11 @@
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><kbd>Ctrl,</kbd><kbd>Alt,</kbd><kbd>C</kbd></td>
                 <td>Add Crossfade</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/MoEQkDP.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
