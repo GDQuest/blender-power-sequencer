@@ -215,6 +215,9 @@ class MouseCut(bpy.types.Operator):
 
 
 def draw_cut_trim(self, start, end, will_remove_gap):
+    if start.x > end.x:
+        start, end = end, start
+    
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(2)
     bgl.glPushMatrix()
