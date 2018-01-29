@@ -135,7 +135,10 @@ class MouseCut(bpy.types.Operator):
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
             
-            args = (self, Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]), Vector([round(event.mouse_region_x), self.mouse_vec_start.y]))
+            args = (self, 
+                    Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]), 
+                    Vector([round(event.mouse_region_x), self.mouse_vec_start.y]),
+                    event.shift)
             self.handle_cut_trim_line = bpy.types.SpaceSequenceEditor.draw_handler_add(
                     draw_cut_trim, args, 'WINDOW', 'POST_PIXEL')
             
@@ -205,7 +208,7 @@ class MouseCut(bpy.types.Operator):
         return to_select, to_delete
 
 
-def draw_cut_trim(self, start, end):
+def draw_cut_trim(self, start, end, will_remove_gap):
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(2)
     bgl.glPushMatrix()
@@ -229,6 +232,29 @@ def draw_cut_trim(self, start, end):
     bgl.glVertex2f(end.x, end.y)
     bgl.glVertex2f(end.x, 0)
     bgl.glEnd()
+    
+    if will_remove_gap:
+        # First Arrow Head
+        bgl.glBegin(bgl.GL_LINES)
+        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
+        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y + 10)
+        bgl.glEnd()
+        
+        bgl.glBegin(bgl.GL_LINES)
+        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
+        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y - 10)
+        bgl.glEnd()
+        
+        # Last Arrow Head
+        bgl.glBegin(bgl.GL_LINES)
+        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
+        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y + 10)
+        bgl.glEnd()
+        
+        bgl.glBegin(bgl.GL_LINES)
+        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
+        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y - 10)
+        bgl.glEnd()
     
     bgl.glPopMatrix()
     
