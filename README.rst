@@ -579,9 +579,11 @@
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><kbd>Ctrl,</kbd><kbd>Alt,</kbd><kbd>P</kbd></td>
                 <td>Preview To Selection</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/EV1sUrn.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Render_For_Web" href="#top_Render_For_Web">Render For Web</a></h3>

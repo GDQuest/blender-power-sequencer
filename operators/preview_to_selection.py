@@ -5,6 +5,8 @@ from .utils.set_preview_range import set_preview_range
 
 class PreviewToSelection(bpy.types.Operator):
     """
+    ![Demo](https://i.imgur.com/EV1sUrn.gif)
+    
     Sets the scene frame start to the earliest frame start of selected 
     sequences and the scene frame end to the last frame of selected sequences.
     """
