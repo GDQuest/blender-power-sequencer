@@ -3,11 +3,14 @@ from .utils.get_frame_range import get_frame_range
 from .utils.set_preview_range import set_preview_range
 
 
-class TogglePreviewSelectedStrips(bpy.types.Operator):
-    """Sets the preview range based on selected sequences"""
-    bl_idname = "power_sequencer.toggle_preview_selected_strips"
-    bl_label = "Toggle Preview Selected Strips"
-    bl_description = "Sets the preview range based on selected sequences"
+class PreviewToSelection(bpy.types.Operator):
+    """
+    Sets the scene frame start to the earliest frame start of selected 
+    sequences and the scene frame end to the last frame of selected sequences.
+    """
+    bl_idname = "power_sequencer.preview_to_selection"
+    bl_label = "Preview To Selection"
+    bl_description = "Sets the timeline preview range to that of the selected sequences."
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -25,5 +28,5 @@ class TogglePreviewSelectedStrips(bpy.types.Operator):
         if scene.frame_start == frame_start and scene.frame_end == frame_end:
             frame_start, frame_end = get_frame_range(get_from_start=True)
 
-        set_preview_range(frame_start, frame_end)
+        set_preview_range(frame_start, frame_end - 1)
         return {'FINISHED'}

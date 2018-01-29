@@ -110,7 +110,7 @@ def default():
                     "power_sequencer.snap_selection_to_cursor" : {
                         "0" : ["type=S", "alt=True"]
                     },
-                    "power_sequencer.toggle_preview_selected_strips" : {
+                    "power_sequencer.preview_to_selection" : {
                         "0" : ["type=P", "ctrl=True", "alt=True"]
                     },
                     "power_sequencer.toggle_selected_mute" : {

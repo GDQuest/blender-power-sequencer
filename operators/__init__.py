@@ -24,6 +24,7 @@ from .mouse_toggle_mute import MouseToggleMute
 from .mouse_trim import MouseTrim
 from .open_project_directory import OpenProjectDirectory
 from .preview_last_cut import PreviewLastCut
+from .preview_to_selection import PreviewToSelection
 from .render_for_web import RenderForWeb
 from .ripple_delete import RippleDelete
 from .save_direct import SaveDirect
@@ -35,7 +36,6 @@ from .smart_snap import SmartSnap
 from .snap_marker_to_cursor import SnapMarkerToCursor
 from .snap_selection_to_cursor import SnapSelectionToCursor
 from .synchronize_titles import SynchronizeTitles
-from .toggle_preview_selected_strips import TogglePreviewSelectedStrips
 from .toggle_selected_mute import ToggleSelectedMute
 from .toggle_waveforms import ToggleWaveforms
 from .trim_to_surrounding_cuts import TrimToSurroundingCuts
