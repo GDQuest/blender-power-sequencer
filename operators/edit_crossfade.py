@@ -1,12 +1,15 @@
-"""
-Selects the handles of both inputs of a crossfade strip's input and calls the grab operator
-"""
 import bpy
 from .utils.global_settings import SequenceTypes
 from operator import attrgetter
 
 
 class EditCrossfade(bpy.types.Operator):
+    """
+    ![Demo](https://i.imgur.com/rCmLhg6.gif)
+    
+    Selects the handles of both inputs of a crossfade strip's input and 
+    calls the grab operator.
+    """
     bl_idname = "power_sequencer.edit_crossfade"
     bl_label = "Edit Crossfade"
     bl_description = "Adjust the location of the crossfade between 2 strips"

@@ -18,6 +18,7 @@ class BorderSelect(bpy.types.Operator):
         return True
 
     def execute(self, context):
+        print('hello')
         for s in bpy.context.selected_sequences:
             s.select_right_handle = False
             s.select_left_handle = False

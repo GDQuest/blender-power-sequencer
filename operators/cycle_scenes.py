@@ -2,7 +2,11 @@ import bpy
 
 
 class CycleScenes(bpy.types.Operator):
-    """Cycle through scenes"""
+    """
+    ![Demo](https://i.imgur.com/7zhq8Tg.gif)
+    
+    Cycle through scenes.
+    """
     bl_idname = "power_sequencer.cycle_scenes"
     bl_label = "Cycle Scenes"
     bl_description = "Cycle through scenes"

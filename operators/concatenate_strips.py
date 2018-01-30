@@ -8,18 +8,25 @@ from .utils.filter_sequences_by_type import filter_sequences_by_type
 
 class ConcatenateStrips(bpy.types.Operator):
     """
-    Concatenates selected strips (removes space between them)
-    If a single strip is selected, finds all the strips after it in the channel
+    ![Demo](https://i.imgur.com/YyEL8YP.gif)
+
+    Concatenates selected strips in a channel (removes the gap between
+    them) If a single strip is selected, either the next strip in the
+    channel will be concatenated, or all strips in the channel will be
+    concatenated depending on which shortcut is used. All concatenated
+    strips will be selected.
     """
     bl_idname = "power_sequencer.concatenate_strips"
     bl_label = "Concatenate Strips"
-    bl_description = "Removes space between strips"
+    bl_description = "Remove space between strips"
     bl_options = {'REGISTER', 'UNDO'}
 
     concatenate_whole_channel = bpy.props.BoolProperty(
         name="Concatenate all strips in channel",
         description="If only one strip selected, concatenate the entire channel",
         default=False)
+    
+    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):

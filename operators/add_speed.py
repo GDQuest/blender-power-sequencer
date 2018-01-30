@@ -5,9 +5,15 @@ from .utils.find_linked_sequences import find_linked
 
 
 class AddSpeed(bpy.types.Operator):
+    """
+    ![Demo](https://i.imgur.com/lheIZzA.gif)
+    
+    Add 2x speed to strip and set it's frame_end accordingly. 
+    Wraps both the strip and the speed modifier into a META strip.
+    """
     bl_idname = "power_sequencer.add_speed"
     bl_label = "Add Speed"
-    bl_description = "Adds a speed effect to your clip, sets its speed and size, wraps it into a meta strip set to over drop for easier editing"
+    bl_description = "Add 2x speed, set frame end, wrap both into META"
     bl_options = {"REGISTER", "UNDO"}
 
     speed_factor = bpy.props.IntProperty(

@@ -3,8 +3,14 @@ from operator import attrgetter
 
 
 class CopySelectedSequences(bpy.types.Operator):
+    
     """
-    Copies the selected sequences without frame offset and optionally deletes the selection to give a cut to clipboard effect
+    ![Demo](https://i.imgur.com/w6z1Jb1.gif)
+    
+    Copies the selected sequences without frame offset and optionally 
+    deletes the selection to give a cut to clipboard effect. This 
+    operator overrides the default Blender copy method which includes 
+    cursor offset when pasting, which is atypical of copy/paste methods.
     """
     bl_idname = "power_sequencer.copy_selected_sequences"
     bl_label = "Copy Selected Sequences"

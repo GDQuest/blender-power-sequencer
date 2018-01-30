@@ -88,10 +88,8 @@
     generation">Set Videos Proxies</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Add_Speed" href="#Add_Speed" title="Adds a speed effect to your
-    clip, sets its speed and size,
-    wraps it into a meta strip set
-    to over drop for easier editing">Add Speed</a></td>
+            <td width=222px><a name="top_Add_Speed" href="#Add_Speed" title="Add 2x speed, set frame end,
+    wrap both into META">Add Speed</a></td>
             <td width=222px><a name="top_Deselect_Handles_And_Grab" href="#Deselect_Handles_And_Grab" title="Deselect the handles of all
     selected strips and call the
     Sequence Slide operator">Deselect Handles And Grab</a></td>
@@ -146,7 +144,7 @@
     sequences">Toggle Selected Mute</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Concatenate_Strips" href="#Concatenate_Strips" title="Removes space between strips">Concatenate Strips</a></td>
+            <td width=222px><a name="top_Concatenate_Strips" href="#Concatenate_Strips" title="Remove space between strips">Concatenate Strips</a></td>
             <td width=222px><a name="top_Grab_Sequence_Handles" href="#Grab_Sequence_Handles" title="Grabs the sequence's handle
     based on the mouse position">Grab Sequence Handles</a></td>
             <td width=222px><a name="top_Ripple_Delete" href="#Ripple_Delete" title="Delete the selected sequences
@@ -209,15 +207,18 @@
             </tr>
         </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
-    <p></p>
+    <p>Add 2x speed to strip and set it's frame_end accordingly. 
+    Wraps both the strip and the speed modifier into a META strip.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/PLUS.png" alt="PLUS"></td>
                 <td>Add Speed</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/lheIZzA.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Add_Transform" href="#top_Add_Transform">Add Transform</a></h3>
@@ -289,32 +290,42 @@
             </tr>
         </table>
         <h3><a name="Concatenate_Strips" href="#top_Concatenate_Strips">Concatenate Strips</a></h3>
-    <p>Concatenates selected strips (removes space between them)
-    If a single strip is selected, finds all the strips after it in the channel</p>
+    <p>Concatenates selected strips in a channel (removes the gap between
+    them) If a single strip is selected, either the next strip in the
+    channel will be concatenated, or all strips in the channel will be
+    concatenated depending on which shortcut is used. All concatenated
+    strips will be selected.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Concatenate Strips</td>
+                <td>Concatenate selected strips in channel, or concatenate next strip in channel if only 1 strip selected</td>
+                <td align="center" rowspan="2"><img src="https://i.imgur.com/YyEL8YP.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Concatenate Strips</td>
+                <td>Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected</td>
             </tr>
         </table>
         <h3><a name="Copy_Selected_Sequences" href="#top_Copy_Selected_Sequences">Copy Selected Sequences</a></h3>
-    <p>Copies the selected sequences without frame offset and optionally deletes the selection to give a cut to clipboard effect</p>
+    <p>Copies the selected sequences without frame offset and optionally 
+    deletes the selection to give a cut to clipboard effect. This 
+    operator overrides the default Blender copy method which includes 
+    cursor offset when pasting, which is atypical of copy/paste methods.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
                 <td>Copy</td>
+                <td align="center" rowspan="2"><img src="https://i.imgur.com/w6z1Jb1.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/X.png" alt="X"></td>
@@ -322,15 +333,17 @@
             </tr>
         </table>
         <h3><a name="Cycle_Scenes" href="#top_Cycle_Scenes">Cycle Scenes</a></h3>
-    <p>Cycle through scenes</p>
+    <p>Cycle through scenes.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/TAB.png" alt="TAB"></td>
                 <td>Cycle Scenes</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/7zhq8Tg.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Decrease_Playback_Speed" href="#top_Decrease_Playback_Speed">Decrease Playback Speed</a></h3>
@@ -384,15 +397,18 @@
                 <th width=208px>Shortcut</th>
         </table>
         <h3><a name="Edit_Crossfade" href="#top_Edit_Crossfade">Edit Crossfade</a></h3>
-    <p>Selects the handles of both inputs of a crossfade strip's input and calls the grab operator</p>
+    <p>Selects the handles of both inputs of a crossfade strip's input and 
+    calls the grab operator.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
                 <td>Edit Crossfade</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/rCmLhg6.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Fade_Strips" href="#top_Fade_Strips">Fade Strips</a></h3>
