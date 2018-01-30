@@ -6,14 +6,15 @@ from mathutils import Vector
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
+from .utils.draw import draw_line
 
 
 class MouseCut(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/wVvX4ex.gif)
-    With this function you can quickly cut and remove a section of 
+    With this function you can quickly cut and remove a section of
     strips while keeping or collapsing the remaining gap.
-    
+
     A [video demo](https://youtu.be/GiLmDhmMVAM?t=1m35s) is available.
     """
     bl_idname = "power_sequencer.mouse_cut"
@@ -66,10 +67,10 @@ class MouseCut(bpy.types.Operator):
     frame_end, end_channel = 0, 0
     select_mouse, action_mouse = '', ''
     cut_mode = ''
-    
+
     mouse_vec_start = Vector([0, 0])
     handle_cut_trim_line = None
-    
+
     function = bpy.props.StringProperty("")
 
     @classmethod
@@ -87,14 +88,26 @@ class MouseCut(bpy.types.Operator):
         self.frame_start, self.start_channel = round(frame_float), floor(channel_float)
         self.frame_end = self.frame_start
 
+        # Channel drawing coordinates
+        # Note: depending on the zoom level, view_to_region can fail and return 12000 px on the Y axis
+        y_start = context.region.view2d.view_to_region(0, floor(channel_float))[1]
+        y_end = context.region.view2d.view_to_region(0, floor(channel_float) + 1)[1]
+        # view_to_region doesn't support a value of 0 for the channel
+        if self.start_channel == 1:
+            y_channel_2 = context.region.view2d.view_to_region(0, 2)[1]
+            channel_height = y_channel_2 - y_end
+            y_start = y_end - channel_height
+
+        self.channel_coords = Vector((y_start, y_end))
+        self.mouse_vec_start = Vector([event.mouse_region_x, event.mouse_region_y])
+        print(self.channel_coords)
+
         # Reverse keymaps if the user selects with the left mouse button
         self.select_mouse = 'RIGHTMOUSE'
         self.action_mouse = 'LEFTMOUSE'
         if bpy.context.user_preferences.inputs.select_mouse == 'LEFT':
             self.select_mouse = 'LEFTMOUSE'
             self.action_mouse = 'RIGHTMOUSE'
-        
-        self.mouse_vec_start = Vector([event.mouse_region_x, event.mouse_region_y])
 
         bpy.context.scene.frame_current = self.frame_start
         context.window_manager.modal_handler_add(self)
@@ -107,10 +120,10 @@ class MouseCut(bpy.types.Operator):
             return {'CANCELLED'}
 
         elif event.type == self.action_mouse and event.value == 'RELEASE':
-            
+
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
-            
+
             self.select_mode = 'cursor' if event.shift else 'smart'
 
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
@@ -135,20 +148,20 @@ class MouseCut(bpy.types.Operator):
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
-            x, y = context.region.view2d.region_to_view(
-                x=event.mouse_region_x, y=event.mouse_region_y)
-            
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
-            
-            args = (self, 
-                    Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]), 
+
+            args = (self,
+                    Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]),
                     Vector([round(event.mouse_region_x), self.mouse_vec_start.y]),
-                    event.shift)
+                    event.shift,
+                    self.channel_coords)
             self.handle_cut_trim_line = bpy.types.SpaceSequenceEditor.draw_handler_add(
-                    draw_cut_trim, args, 'WINDOW', 'POST_PIXEL')
-            
+                draw_cut_trim, args, 'WINDOW', 'POST_PIXEL')
+
+            x, y = context.region.view2d.region_to_view(x=event.mouse_region_x, y=event.mouse_region_y)
             self.frame_end, self.end_channel = round(x), floor(y)
+            # Move time cursor to preview the cut frame
             bpy.context.scene.frame_current = self.frame_end
             return {'PASS_THROUGH'}
 
@@ -214,59 +227,52 @@ class MouseCut(bpy.types.Operator):
         return to_select, to_delete
 
 
-def draw_cut_trim(self, start, end, will_remove_gap):
+def draw_cut_trim(self, start, end, shift_is_pressed, channel):
     if start.x > end.x:
         start, end = end, start
-    
+
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(2)
     bgl.glPushMatrix()
-    
+
     bgl.glColor4f(1.0, 0.0, 1.0, 0.5)
-    
-    # The Horizontal Line
-    bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(start.x, start.y)
-    bgl.glVertex2f(end.x, end.y)
-    bgl.glEnd()
-    
-    # The Start Vertical Line
-    bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(start.x, 10000)
-    bgl.glVertex2f(start.x, 0)
-    bgl.glEnd()
-    
-    # The End Vertical Line
-    bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(end.x, 10000)
-    bgl.glVertex2f(end.x, 0)
-    bgl.glEnd()
-    
-    if will_remove_gap:
+
+    # horizontal line
+    draw_line(start, end)
+
+    # vertical lines
+    if shift_is_pressed:
+        draw_line(Vector([start.x, 0.0]), Vector([start.x, 1000.0]))
+        draw_line(Vector([end.x, 0.0]), Vector([end.x, 1000.0]))
+    else:
+        draw_line(Vector([start.x, channel.x]), Vector([start.x, channel.y]))
+        draw_line(Vector([end.x, channel.x]), Vector([end.x, channel.y]))
+
+    if shift_is_pressed:
         # First Arrow Head
         bgl.glBegin(bgl.GL_LINES)
         bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
         bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y + 10)
         bgl.glEnd()
-        
+
         bgl.glBegin(bgl.GL_LINES)
         bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
         bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y - 10)
         bgl.glEnd()
-        
+
         # Last Arrow Head
         bgl.glBegin(bgl.GL_LINES)
         bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
         bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y + 10)
         bgl.glEnd()
-        
+
         bgl.glBegin(bgl.GL_LINES)
         bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
         bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y - 10)
         bgl.glEnd()
-    
+
     bgl.glPopMatrix()
-    
+
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
     bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
