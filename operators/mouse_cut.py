@@ -6,7 +6,7 @@ from mathutils import Vector
 from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
-from .utils.draw import draw_line
+from .utils.draw import draw_line, draw_arrow_head
 
 
 class MouseCut(bpy.types.Operator):
@@ -249,27 +249,11 @@ def draw_cut_trim(self, start, end, shift_is_pressed, channel):
         draw_line(Vector([end.x, channel.x]), Vector([end.x, channel.y]))
 
     if shift_is_pressed:
-        # First Arrow Head
-        bgl.glBegin(bgl.GL_LINES)
-        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
-        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y + 10)
-        bgl.glEnd()
-
-        bgl.glBegin(bgl.GL_LINES)
-        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25), start.y)
-        bgl.glVertex2f(start.x + ((end.x - start.x) * 0.25) - 10, start.y - 10)
-        bgl.glEnd()
-
-        # Last Arrow Head
-        bgl.glBegin(bgl.GL_LINES)
-        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
-        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y + 10)
-        bgl.glEnd()
-
-        bgl.glBegin(bgl.GL_LINES)
-        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25), end.y)
-        bgl.glVertex2f(end.x - ((end.x - start.x) * 0.25) + 10, end.y - 10)
-        bgl.glEnd()
+        first_arrow_center = Vector([ start.x + ((end.x - start.x) * 0.25), start.y ])
+        second_arrow_center = Vector([ end.x - ((end.x - start.x) * 0.25), start.y ])
+        arrow_size = Vector([ 10, 20 ])
+        draw_arrow_head(first_arrow_center, arrow_size)
+        draw_arrow_head(second_arrow_center, arrow_size, points_right=False)
 
     bgl.glPopMatrix()
 
