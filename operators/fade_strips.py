@@ -9,19 +9,19 @@ class FadeStrips(bpy.types.Operator):
     ![Demo](https://i.imgur.com/XoUM2vw.gif)
     
     Animate a strips opacity to zero. By default, the duration of the 
-    fade is 12 frames.
+    fade is 0.5 seconds.
     """
     bl_idname = "power_sequencer.fade_strips"
     bl_label = "Fade Strips"
     bl_description = "Fade left, right or both sides of all selected strips in the VSE"
 
     bl_options = {'REGISTER', 'UNDO'}
-
-    fade_length = bpy.props.IntProperty(
-        name="Fade length",
-        description="Length of the fade in frames",
-        default=12,
-        min=1)
+    
+    fade_duration = bpy.props.FloatProperty(
+        name="Fade Duration",
+        description="The Duration of the Fade",
+        default=0.5,
+        min=0)
     fade_type = bpy.props.EnumProperty(
         items=[('both', 'Fade in and out', 'Fade selected strips in and out'),
                ('left', 'Fade in', 'Fade in selected strips'),
@@ -38,6 +38,9 @@ class FadeStrips(bpy.types.Operator):
 
     def execute(self, context):
         scene = bpy.context.scene
+        fps = scene.render.fps / scene.render.fps_base
+        self.fade_length = int(self.fade_duration * fps)
+        
         selection = bpy.context.selected_sequences
         if not selection:
             return {"CANCELLED"}
