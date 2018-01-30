@@ -8,7 +8,7 @@ class AddSpeed(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/lheIZzA.gif)
     
-    Add 2x speed to strip and set it's frame_end accordingly. 
+    Add 2x speed to strip and set it's frame end accordingly. 
     Wraps both the strip and the speed modifier into a META strip.
     """
     bl_idname = "power_sequencer.add_speed"

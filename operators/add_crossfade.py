@@ -19,7 +19,7 @@ class AddCrossfade(bpy.types.Operator):
     
     Based on the active strip, finds the closest next sequence
     of a similar type, moves it so it overlaps the active strip,
-    and adds a gamma_cross effect between them.
+    and adds a gamma cross effect between them.
     Works with MOVIE, IMAGE and META strips
     """
     bl_idname = "power_sequencer.add_crossfade"

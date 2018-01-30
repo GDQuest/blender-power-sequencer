@@ -85,7 +85,7 @@ it so now it's super slick!
 - [davcri](https://github.com/davcri)
 - [Daniel Oakey](https://github.com/doakey3)
 - [ Nathan Lovato ](https://twitter.com/NathanGDquest)
-""".strip())
+""".strip(), extras=['cuddled_lists'])
 
 readme = '\n'.join([title, installation, "<h2>Operators</h2>", op_toc, op_segments])
 lines = readme.split('\n')

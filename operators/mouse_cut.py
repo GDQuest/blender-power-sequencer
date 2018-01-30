@@ -232,13 +232,13 @@ def draw_cut_trim(self, start, end, will_remove_gap):
     
     # The Start Vertical Line
     bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(start.x, start.y)
+    bgl.glVertex2f(start.x, 10000)
     bgl.glVertex2f(start.x, 0)
     bgl.glEnd()
     
     # The End Vertical Line
     bgl.glBegin(bgl.GL_LINES)
-    bgl.glVertex2f(end.x, end.y)
+    bgl.glVertex2f(end.x, 10000)
     bgl.glVertex2f(end.x, 0)
     bgl.glEnd()
     
