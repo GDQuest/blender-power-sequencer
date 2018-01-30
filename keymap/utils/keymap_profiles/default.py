@@ -25,7 +25,7 @@ def default():
                         "0" : ["type=C", "ctrl=True", "alt=True"]
                     },
                     "power_sequencer.add_speed" : {
-                        "0" : ["type=EQUAL", "shift=True"]
+                        "0" : ["type=PLUS", "shift=True"]
                     },
                     "power_sequencer.add_transform" : {
                         "0" : ["type=T"]
