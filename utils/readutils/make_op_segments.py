@@ -98,7 +98,7 @@ def make_op_segments(json):
                 lines.pop(i)
             else:
                 i += 1
-        docstring = markdown('\n'.join(lines))
+        docstring = markdown('\n'.join(lines), extras=['cuddled_lists'])
 
         segments.append('\n'.join([label, docstring, shortcut_table]))
 
