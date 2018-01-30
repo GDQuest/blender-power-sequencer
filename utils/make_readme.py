@@ -39,8 +39,6 @@ there.
 I built Power Sequencer to help us edit videos as fast as possible. The
 add-on is getting better month after month, and it's yours for Free.
 
-I've made hundreds of tutorials over the years. 
-
 ## Contributing ##
 
 This add-on is a living, open project, and we'd be glad to welcome new

@@ -19,8 +19,6 @@
     <p>I built Power Sequencer to help us edit videos as fast as possible. The
     add-on is getting better month after month, and it's yours for Free.</p>
     
-    <p>I've made hundreds of tutorials over the years. </p>
-    
     <h2>Contributing</h2>
     
     <p>This add-on is a living, open project, and we'd be glad to welcome new
@@ -431,7 +429,7 @@
         </table>
         <h3><a name="Fade_Strips" href="#top_Fade_Strips">Fade Strips</a></h3>
     <p>Animate a strips opacity to zero. By default, the duration of the 
-    fade is 12 frames.</p>
+    fade is 0.5 seconds.</p>
     
         <table>
             <tr>
@@ -766,8 +764,8 @@
             </tr>
         </table>
         <h3><a name="Toggle_Waveforms" href="#top_Toggle_Waveforms">Toggle Waveforms</a></h3>
-    <p>Toggle drawing of waveforms for selected strips or for all strips if 
-    no selection is active.</p>
+    <p>Toggle drawing of waveforms for selected strips or for all audio 
+    strips if no selection is active.</p>
     
         <table>
             <tr>
