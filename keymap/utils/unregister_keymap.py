@@ -30,8 +30,7 @@ def unregister_keymap():
             for region in region_types:
                 operator_names = keymap_data[name][space_type][region].keys()
 
-                kc = bpy.context.window_manager.keyconfigs[
-                    'Blender Addon']
+                kc = bpy.context.window_manager.keyconfigs.addon
                 keymap = kc.keymaps.new(
                     name, space_type=space_type, region_type=region)
                 current_hotkeys = keymap.keymap_items

@@ -260,7 +260,9 @@ def register_keymap():
     if len(conflicts) > 0:
         print('\n'.join(['', title, underline, conflict_string, '']))
 
-    keyconfig = bpy.context.window_manager.keyconfigs['Blender Addon']
+    keyconfig = bpy.context.window_manager.keyconfigs.addon
+    if not keyconfig:
+        keyconfig = bpy.context.window_manager.keyconfigs.new("Blender Addon")
     for keymap_path in keymap_paths:
         group = keymap_path[0]
         space = keymap_path[1]
