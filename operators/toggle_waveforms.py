@@ -6,8 +6,8 @@ class ToggleWaveforms(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/HJ5ryhv.gif)
     
-    Toggle drawing of waveforms for selected strips or for all strips if 
-    no selection is active.
+    Toggle drawing of waveforms for selected strips or for all audio 
+    strips if no selection is active.
     """
     bl_idname = 'power_sequencer.toggle_waveforms'
     bl_label = 'Toggle Waveforms'
