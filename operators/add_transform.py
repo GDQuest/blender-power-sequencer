@@ -1,13 +1,14 @@
-"""
-For each strip in the selection:
-- Filters the selection down to image and movie strips
-- Centers the pivot point of image strips.
-- Adds a transform effect and sets it to ALPHA_OVER
-"""
 import bpy
 
 
 class AddTransform(bpy.types.Operator):
+    """
+    For each strip in the selection:
+
+    - Filters the selection down to image and movie strips
+    - Centers the pivot point of image strips.
+    - Adds a transform effect and sets it to ALPHA_OVER
+    """
     bl_idname = 'power_sequencer.add_transform'
     bl_label = 'Add Transform'
     bl_description = "Add transform effect to selected image and movie strips. Auto centers images"
