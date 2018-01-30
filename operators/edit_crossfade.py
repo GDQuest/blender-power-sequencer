@@ -8,7 +8,8 @@ class EditCrossfade(bpy.types.Operator):
     ![Demo](https://i.imgur.com/rCmLhg6.gif)
     
     Selects the handles of both inputs of a crossfade strip's input and 
-    calls the grab operator.
+    calls the grab operator. Allows you to quickly change the location
+    of a fade transition between two strips.
     """
     bl_idname = "power_sequencer.edit_crossfade"
     bl_label = "Edit Crossfade"

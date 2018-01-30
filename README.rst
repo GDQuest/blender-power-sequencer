@@ -149,10 +149,7 @@
     based on the mouse position">Grab Sequence Handles</a></td>
             <td width=222px><a name="top_Ripple_Delete" href="#Ripple_Delete" title="Delete the selected sequences
     and remove gaps">Ripple Delete</a></td>
-            <td width=222px><a name="top_Toggle_Waveforms" href="#Toggle_Waveforms" title="Toggle drawing of waveforms for
-    selected strips or for all
-    strips if no selection is
-    active">Toggle Waveforms</a></td>
+            <td width=222px><a name="top_Toggle_Waveforms" href="#Toggle_Waveforms" title="Toggle audio waveforms">Toggle Waveforms</a></td>
         </tr>
         <tr>
             <td width=222px><a name="top_Copy_Selected_Sequences" href="#Copy_Selected_Sequences" title="Copy/cut strips without offset
@@ -192,7 +189,7 @@
         <h3><a name="Add_Crossfade" href="#top_Add_Crossfade">Add Crossfade</a></h3>
     <p>Based on the active strip, finds the closest next sequence
     of a similar type, moves it so it overlaps the active strip,
-    and adds a gamma_cross effect between them.
+    and adds a gamma cross effect between them.
     Works with MOVIE, IMAGE and META strips</p>
     
         <table>
@@ -207,7 +204,7 @@
             </tr>
         </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
-    <p>Add 2x speed to strip and set it's frame_end accordingly. 
+    <p>Add 2x speed to strip and set it's frame end accordingly. 
     Wraps both the strip and the speed modifier into a META strip.</p>
     
         <table>
@@ -398,7 +395,8 @@
         </table>
         <h3><a name="Edit_Crossfade" href="#top_Edit_Crossfade">Edit Crossfade</a></h3>
     <p>Selects the handles of both inputs of a crossfade strip's input and 
-    calls the grab operator.</p>
+    calls the grab operator. Allows you to quickly change the location
+    of a fade transition between two strips.</p>
     
         <table>
             <tr>
@@ -412,18 +410,18 @@
             </tr>
         </table>
         <h3><a name="Fade_Strips" href="#top_Fade_Strips">Fade Strips</a></h3>
-    <p>Checks if there's a fade animation on a single sequence
-    If the right fcurve is found,
-    volume for audio sequences and blend<em>alpha for other sequences,
-    Returns a tuple of (fade</em>fcurve, fade_type)</p>
+    <p>Animate a strips opacity to zero. By default, the duration of the 
+    fade is 12 frames.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
                 <td>Fade Right</td>
+                <td align="center" rowspan="3"><img src="https://i.imgur.com/XoUM2vw.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
@@ -726,15 +724,18 @@
             </tr>
         </table>
         <h3><a name="Toggle_Waveforms" href="#top_Toggle_Waveforms">Toggle Waveforms</a></h3>
-    <p></p>
+    <p>Toggle drawing of waveforms for selected strips or for all strips if 
+    no selection is active.</p>
     
         <table>
             <tr>
                 <th width=208px>Shortcut</th>
                 <th width=417px>Function</th>
+                <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/W.png" alt="W"></td>
                 <td>Toggle Waveforms</td>
+                <td align="center" rowspan="1"><img src="https://i.imgur.com/HJ5ryhv.gif" alt="Demo"></td>
             </tr>
         </table>
         <h3><a name="Trim_To_Surrounding_Cuts" href="#top_Trim_To_Surrounding_Cuts">Trim To Surrounding Cuts</a></h3>
