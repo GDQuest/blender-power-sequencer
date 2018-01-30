@@ -221,10 +221,13 @@
             </tr>
         </table>
         <h3><a name="Add_Transform" href="#top_Add_Transform">Add Transform</a></h3>
-    <p>For each strip in the selection:
-    - Filters the selection down to image and movie strips
-    - Centers the pivot point of image strips.
-    - Adds a transform effect and sets it to ALPHA_OVER</p>
+    <p>For each strip in the selection:</p>
+    
+    <ul>
+    <li>Filters the selection down to image and movie strips</li>
+    <li>Centers the pivot point of image strips.</li>
+    <li>Adds a transform effect and sets it to ALPHA_OVER</li>
+    </ul>
     
         <table>
             <tr>
