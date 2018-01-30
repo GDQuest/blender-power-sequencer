@@ -13,8 +13,7 @@ class ConcatenateStrips(bpy.types.Operator):
     Concatenates selected strips in a channel (removes the gap between
     them) If a single strip is selected, either the next strip in the
     channel will be concatenated, or all strips in the channel will be
-    concatenated depending on which shortcut is used. All concatenated
-    strips will be selected.
+    concatenated depending on which shortcut is used.
     """
     bl_idname = "power_sequencer.concatenate_strips"
     bl_label = "Concatenate Strips"

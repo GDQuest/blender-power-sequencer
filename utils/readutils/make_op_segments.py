@@ -55,7 +55,7 @@ def make_shortcuts_table(shortcuts, label, demo_images):
 
         table.append('        <td align="center">' + ''.join(hotkeys[i]) + '</td>')
         if len(functions) > 0:
-            table.append('        <td>' + functions[i] + '</td>')
+            table.append('        <td>' + markdown(functions[i]) + '</td>')
 
         if i == 0 and len(demo_images) > 0:
             table.append('        <td align="center" rowspan="' + str(len(hotkeys)) + '">' + ''.join(demo_images) + '</td>')

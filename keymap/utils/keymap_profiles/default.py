@@ -44,7 +44,7 @@ def default():
                         "1" : ["type=DOWN_ARROW", "alt=True", "properties=function:Move to Open Channel Below; direction:down"]
                     },
                     "power_sequencer.concatenate_strips" : {
-                        "0" : ["type=C", "properties=function:Concatenate selected strips in channel, or concatenate next strip in channel if only 1 strip selected; concatenate_whole_channel:False"],
+                        "0" : ["type=C", "properties=function:Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected; concatenate_whole_channel:False"],
                         "1" : ["type=C", "shift=True", "properties=function:Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected;concatenate_whole_channel:True"]
                     },
                     "power_sequencer.copy_selected_sequences" : {

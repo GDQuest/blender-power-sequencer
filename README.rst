@@ -199,7 +199,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Add Crossfade</td>
+                <td><p>Add Crossfade</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/ZyEd0jD.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -214,7 +215,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/PLUS.png" alt="PLUS"></td>
-                <td>Add Speed</td>
+                <td><p>Add Speed</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/lheIZzA.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -230,7 +232,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/T.png" alt="T"></td>
-                <td>Add Transform</td>
+                <td><p>Add Transform</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Border_Select" href="#top_Border_Select">Border Select</a></h3>
@@ -242,7 +245,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/B.png" alt="B"></td>
-                <td>Border Select</td>
+                <td><p>Border Select</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Change_Playback_Speed" href="#top_Change_Playback_Speed">Change Playback Speed</a></h3>
@@ -255,19 +259,23 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ONE.png" alt="ONE"></td>
-                <td>Speed to 1x</td>
+                <td><p>Speed to 1x</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/TWO.png" alt="TWO"></td>
-                <td>Speed to 1.33x</td>
+                <td><p>Speed to 1.33x</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/THREE.png" alt="THREE"></td>
-                <td>Speed to 1.66x</td>
+                <td><p>Speed to 1.66x</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/FOUR.png" alt="FOUR"></td>
-                <td>Speed to 2x</td>
+                <td><p>Speed to 2x</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Channel_Offset" href="#top_Channel_Offset">Channel Offset</a></h3>
@@ -279,19 +287,20 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/UP_ARROW.png" alt="UP_ARROW"></td>
-                <td>Move to Open Channel Above</td>
+                <td><p>Move to Open Channel Above</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/DOWN_ARROW.png" alt="DOWN_ARROW"></td>
-                <td>Move to Open Channel Below</td>
+                <td><p>Move to Open Channel Below</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Concatenate_Strips" href="#top_Concatenate_Strips">Concatenate Strips</a></h3>
     <p>Concatenates selected strips in a channel (removes the gap between
     them) If a single strip is selected, either the next strip in the
     channel will be concatenated, or all strips in the channel will be
-    concatenated depending on which shortcut is used. All concatenated
-    strips will be selected.</p>
+    concatenated depending on which shortcut is used.</p>
     
         <table>
             <tr>
@@ -300,12 +309,14 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Concatenate selected strips in channel, or concatenate next strip in channel if only 1 strip selected</td>
+                <td><p>Concatenate selected strips in channel, or concatenate &amp; select next strip in channel if only 1 strip selected</p>
+        </td>
                 <td align="center" rowspan="2"><img src="https://i.imgur.com/YyEL8YP.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected</td>
+                <td><p>Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Copy_Selected_Sequences" href="#top_Copy_Selected_Sequences">Copy Selected Sequences</a></h3>
@@ -321,12 +332,14 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Copy</td>
+                <td><p>Copy</p>
+        </td>
                 <td align="center" rowspan="2"><img src="https://i.imgur.com/w6z1Jb1.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/X.png" alt="X"></td>
-                <td>Cut</td>
+                <td><p>Cut</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Cycle_Scenes" href="#top_Cycle_Scenes">Cycle Scenes</a></h3>
@@ -339,7 +352,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/TAB.png" alt="TAB"></td>
-                <td>Cycle Scenes</td>
+                <td><p>Cycle Scenes</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/7zhq8Tg.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -363,7 +377,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/LEFT_BRACKET.png" alt="LEFT_BRACKET"></td>
-                <td>Decrease Playback Speed</td>
+                <td><p>Decrease Playback Speed</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Delete_Closest_Marker" href="#top_Delete_Closest_Marker">Delete Closest Marker</a></h3>
@@ -382,7 +397,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/X.png" alt="X"></td>
-                <td>Delete Direct</td>
+                <td><p>Delete Direct</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Deselect_Handles_And_Grab" href="#top_Deselect_Handles_And_Grab">Deselect Handles And Grab</a></h3>
@@ -405,7 +421,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/C.png" alt="C"></td>
-                <td>Edit Crossfade</td>
+                <td><p>Edit Crossfade</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/rCmLhg6.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -420,16 +437,19 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
-                <td>Fade Right</td>
+                <td><p>Fade Right</p>
+        </td>
                 <td align="center" rowspan="3"><img src="https://i.imgur.com/XoUM2vw.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
-                <td>Fade Left</td>
+                <td><p>Fade Left</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
-                <td>Fade Both</td>
+                <td><p>Fade Both</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Go_To_Next_Marker" href="#top_Go_To_Next_Marker">Go To Next Marker</a></h3>
@@ -449,7 +469,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/G.png" alt="G"></td>
-                <td>Grab Closest Handle Or Cut</td>
+                <td><p>Grab Closest Handle Or Cut</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Grab_Sequence_Handles" href="#top_Grab_Sequence_Handles">Grab Sequence Handles</a></h3>
@@ -464,7 +485,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/G.png" alt="G"></td>
-                <td>Grab Sequence Handles</td>
+                <td><p>Grab Sequence Handles</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Import_Local_Footage" href="#top_Import_Local_Footage">Import Local Footage</a></h3>
@@ -477,7 +499,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/I.png" alt="I"></td>
-                <td>Import Local Footage</td>
+                <td><p>Import Local Footage</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Increase_Playback_Speed" href="#top_Increase_Playback_Speed">Increase Playback Speed</a></h3>
@@ -500,7 +523,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/RIGHT_BRACKET.png" alt="RIGHT_BRACKET"></td>
-                <td>Increase Playback Speed</td>
+                <td><p>Increase Playback Speed</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Make_Still_Image" href="#top_Make_Still_Image">Make Still Image</a></h3>
@@ -524,12 +548,14 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ACTIONMOUSE.png" alt="ACTIONMOUSE"></td>
-                <td>Cut</td>
+                <td><p>Cut</p>
+        </td>
                 <td align="center" rowspan="2"><img src="https://i.imgur.com/wVvX4ex.gif" alt="Demo"></td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ACTIONMOUSE.png" alt="ACTIONMOUSE"></td>
-                <td>Cut on Mousemove, Keep Gap</td>
+                <td><p>Cut on Mousemove, Keep Gap</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Mouse_Toggle_Mute" href="#top_Mouse_Toggle_Mute">Mouse Toggle Mute</a></h3>
@@ -541,7 +567,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ACTIONMOUSE.png" alt="ACTIONMOUSE"></td>
-                <td>Mouse Toggle Mute</td>
+                <td><p>Mouse Toggle Mute</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Mouse_Trim_Strips" href="#top_Mouse_Trim_Strips">Mouse Trim Strips</a></h3>
@@ -557,11 +584,13 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SELECTMOUSE.png" alt="SELECTMOUSE"></td>
-                <td>Trim Strip, Keep Gap</td>
+                <td><p>Trim Strip, Keep Gap</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SELECTMOUSE.png" alt="SELECTMOUSE"></td>
-                <td>Trim Strip, Remove Gap</td>
+                <td><p>Trim Strip, Remove Gap</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Open_Project_Directory" href="#top_Open_Project_Directory">Open Project Directory</a></h3>
@@ -582,7 +611,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/P.png" alt="P"></td>
-                <td>Preview Last Cut</td>
+                <td><p>Preview Last Cut</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Preview_To_Selection" href="#top_Preview_To_Selection">Preview To Selection</a></h3>
@@ -596,7 +626,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/P.png" alt="P"></td>
-                <td>Preview To Selection</td>
+                <td><p>Preview To Selection</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/EV1sUrn.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -609,7 +640,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F12.png" alt="F12"></td>
-                <td>Render For Web</td>
+                <td><p>Render For Web</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Ripple_Delete" href="#top_Ripple_Delete">Ripple Delete</a></h3>
@@ -621,7 +653,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/X.png" alt="X"></td>
-                <td>Ripple Delete</td>
+                <td><p>Ripple Delete</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Save_Direct" href="#top_Save_Direct">Save Direct</a></h3>
@@ -633,7 +666,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/S.png" alt="S"></td>
-                <td>Save Direct</td>
+                <td><p>Save Direct</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Select_Linked_Effect" href="#top_Select_Linked_Effect">Select Linked Effect</a></h3>
@@ -673,11 +707,13 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/K.png" alt="K"></td>
-                <td>Trim Strip Right</td>
+                <td><p>Trim Strip Right</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/K.png" alt="K"></td>
-                <td>Trim Strip Left</td>
+                <td><p>Trim Strip Left</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Snap_Marker_To_Cursor" href="#top_Snap_Marker_To_Cursor">Snap Marker To Cursor</a></h3>
@@ -696,7 +732,8 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/S.png" alt="S"></td>
-                <td>Snap Selection To Cursor</td>
+                <td><p>Snap Selection To Cursor</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Synchronize_Titles" href="#top_Synchronize_Titles">Synchronize Titles</a></h3>
@@ -716,11 +753,13 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/H.png" alt="H"></td>
-                <td>Mute Unselected</td>
+                <td><p>Mute Unselected</p>
+        </td>
             </tr>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/H.png" alt="H"></td>
-                <td>Mute Selected</td>
+                <td><p>Mute Selected</p>
+        </td>
             </tr>
         </table>
         <h3><a name="Toggle_Waveforms" href="#top_Toggle_Waveforms">Toggle Waveforms</a></h3>
@@ -734,7 +773,8 @@
                 <th width=256px>Demo</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/W.png" alt="W"></td>
-                <td>Toggle Waveforms</td>
+                <td><p>Toggle Waveforms</p>
+        </td>
                 <td align="center" rowspan="1"><img src="https://i.imgur.com/HJ5ryhv.gif" alt="Demo"></td>
             </tr>
         </table>
@@ -747,6 +787,7 @@
                 <th width=417px>Function</th>
             <tr>
                 <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/SHIFT.png" alt="SHIFT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ACTIONMOUSE.png" alt="ACTIONMOUSE"></td>
-                <td>Trim To Surrounding Cuts</td>
+                <td><p>Trim To Surrounding Cuts</p>
+        </td>
             </tr>
         </table>
