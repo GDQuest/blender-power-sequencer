@@ -29,17 +29,17 @@ def make_shortcuts_table(shortcuts, label, demo_images):
     functions = []
     for key in shortcuts.keys():
         hotkeys.append(shortcuts[key].replace('keys=', '').split(';')[0].split(' '))
-        
+
         if "function=" in shortcuts[key]:
             functions.append(shortcuts[key].split(';')[-1].replace('function=', '').strip())
-        
+
         else:
             functions.append(label)
-    
+
     for i in range(len(hotkeys)):
         for x in range(len(hotkeys[i])):
-            hotkeys[i][x] = '<kbd>' + hotkeys[i][x] + '</kbd>'
-    
+            hotkeys[i][x] = '<img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/' + hotkeys[i][x].replace(',', '').strip().upper() + '.png" alt="' + hotkeys[i][x].replace(',', '').strip().upper() + '">'
+
     hotkeys_width = str(int((888 - 256) * 0.33)) + 'px'
     function_width = str(int((888 - 256) * 0.66)) + 'px'
     table = ['<table>']
@@ -49,17 +49,17 @@ def make_shortcuts_table(shortcuts, label, demo_images):
         table.append('        <th width=' + function_width + '>Function</th>')
     if len(demo_images) > 0:
         table.append('        <th width=' + str(len(demo_images) * 256) + 'px>Demo</th>')
-        
+
     for i in range(len(hotkeys)):
         table.append('    <tr>')
-        
+
         table.append('        <td align="center">' + ''.join(hotkeys[i]) + '</td>')
         if len(functions) > 0:
             table.append('        <td>' + functions[i] + '</td>')
-        
+
         if i == 0 and len(demo_images) > 0:
             table.append('        <td align="center" rowspan="' + str(len(hotkeys)) + '">' + ''.join(demo_images) + '</td>')
-            
+
         table.append('    </tr>')
     table.append('</table>')
     return '\n'.join(table)
@@ -77,7 +77,7 @@ def make_shortcut_table(info):
     lines = table.split('\n')
     for i in range(len(lines)):
         lines[i] = '    ' + lines[i]
-    
+
     return '\n'.join(lines)
 
 
@@ -89,7 +89,7 @@ def make_op_segments(json):
     for key in json.keys():
         label = make_seg_label(json[key]['label'])
         shortcut_table = make_shortcut_table(json[key])
-        
+
         docstring = json[key]['docstring']
         lines = docstring.split('\n')
         i = 0
@@ -99,8 +99,8 @@ def make_op_segments(json):
             else:
                 i += 1
         docstring = markdown('\n'.join(lines))
-        
+
         segments.append('\n'.join([label, docstring, shortcut_table]))
-    
+
     return '\n'.join(segments)
-            
+
