@@ -1,10 +1,9 @@
 import bpy
-from .audiosync import find_offset
 
 
 class AlignAudios(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/egZBkUk.gif)
+    ![Demo](https://i.imgur.com/xkBUzDj.gif)
 
     **Experimental**: this feature may or may not be in the final addon
 
@@ -35,6 +34,9 @@ class AlignAudios(bpy.types.Operator):
         return False
 
     def execute(self, context):
+        # This import is here because it slows blender startup a little
+        from .audiosync import find_offset
+
         try:
             import scipy
         except ImportError:
