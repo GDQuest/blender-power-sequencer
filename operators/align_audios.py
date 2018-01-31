@@ -34,13 +34,12 @@ class AlignAudios(bpy.types.Operator):
         return False
 
     def execute(self, context):
-        # This import is here because it slows blender startup a little
-        from .audiosync import find_offset
-
         try:
             import scipy
         except ImportError:
             self.report({"ERROR"}, "Scipy must be installed to align audios")
+        # This import is here because it slows blender startup a little
+        from .audiosync import find_offset
 
         scene = context.scene
 

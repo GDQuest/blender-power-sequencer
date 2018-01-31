@@ -41,3 +41,4 @@ from .synchronize_titles import SynchronizeTitles
 from .toggle_selected_mute import ToggleSelectedMute
 from .toggle_waveforms import ToggleWaveforms
 from .trim_to_surrounding_cuts import TrimToSurroundingCuts
+from .unspeed import Unspeed
