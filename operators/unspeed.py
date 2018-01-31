@@ -8,7 +8,7 @@ class Unspeed(bpy.types.Operator):
     ungroups all the remaining strips within.
     """
     bl_idname = "power_sequencer.unspeed"
-    bl_label = "Remove Speed"
+    bl_label = "Unspeed"
     bl_description = "Removes speed from META, un-groups META"
     bl_options = {"REGISTER", "UNDO"}
 

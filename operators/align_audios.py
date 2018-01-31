@@ -10,7 +10,9 @@ class AlignAudios(bpy.types.Operator):
     Attempt alignment between the selected audio strip to the active
     audio strip. The better the correlation, the better the result.
 
-    This operator **requires** ffmpeg and scipy to work. Audio must be
+    This operator requires
+    [ffmpeg](https://www.ffmpeg.org/download.html) and
+    [scipy](https://www.scipy.org/install.html) to work. Audio must be
     converted to WAV data prior to analyzing, so longer strips may take
     longer to align. To mitigate this issue, analysis will be limited to
     the first 15 minutes of audio at most.
@@ -38,6 +40,8 @@ class AlignAudios(bpy.types.Operator):
             import scipy
         except ImportError:
             self.report({"ERROR"}, "Scipy must be installed to align audios")
+            return {'FINISHED'}
+
         # This import is here because it slows blender startup a little
         from .audiosync import find_offset
 
