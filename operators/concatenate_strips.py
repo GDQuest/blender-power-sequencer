@@ -50,7 +50,12 @@ class ConcatenateStrips(bpy.types.Operator):
                     concat_start += s.frame_final_duration
             return
 
-        sequences = bpy.context.selected_sequences
+        selected = bpy.context.selected_sequences
+        sequences = []
+        for strip in selected:
+            last_input_1 = get_last_input_1(strip)
+            if last_input_1 and last_input_1 not in sequences:
+                sequences.append(last_input_1)
 
         # If only 1 sequence selected, find next sequences in channel
         first_strip = None
@@ -85,3 +90,15 @@ class ConcatenateStrips(bpy.types.Operator):
 
         concatenate_sequences(sequences)
         return {"FINISHED"}
+
+def get_last_input_1(strip):
+    """
+    Get the last input_1 strip in an input tree
+    Returns None if any strips along the way have an input_2 attribute
+    """
+    if hasattr(strip, 'input_2'):
+        return None
+    elif hasattr(strip, 'input_1'):
+        return get_last_input_1(strip.input_1)
+    else:
+        return strip

@@ -55,7 +55,7 @@ class AlignAudios(bpy.types.Operator):
 
         initial_offset = active.frame_start - align_strip.frame_start
 
-        if score < 1.0:
+        if score == 0:
             self.report({"INFO"}, "Not enough data to attempt alignment")
 
         fps = scene.render.fps / scene.render.fps_base
