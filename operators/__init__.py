@@ -1,6 +1,7 @@
 from .add_crossfade import AddCrossfade
 from .add_speed import AddSpeed
 from .add_transform import AddTransform
+from .align_audios import AlignAudios
 from .border_select import BorderSelect
 from .change_playback_speed import ChangePlaybackSpeed
 from .channel_offset import ChannelOffset
