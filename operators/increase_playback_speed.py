@@ -1,4 +1,5 @@
 import bpy
+from .utils import update_playback
 
 
 class IncreasePlaybackSpeed(bpy.types.Operator):
@@ -31,5 +32,7 @@ class IncreasePlaybackSpeed(bpy.types.Operator):
             new_speed = "triple"
 
         scene.power_sequencer.playback_speed = new_speed
+
+        update_playback()
 
         return {"FINISHED"}

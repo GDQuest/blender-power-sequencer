@@ -1,4 +1,5 @@
 import bpy
+from .utils import update_playback
 
 
 class ChangePlaybackSpeed(bpy.types.Operator):
@@ -19,7 +20,7 @@ class ChangePlaybackSpeed(bpy.types.Operator):
         name='Speed',
         description='Change the playback speed',
         default='double')
-    
+
     function = bpy.props.StringProperty("")
 
     @classmethod
@@ -28,4 +29,7 @@ class ChangePlaybackSpeed(bpy.types.Operator):
 
     def execute(self, context):
         bpy.context.scene.power_sequencer.playback_speed = self.speed
+
+        update_playback()
+
         return {"FINISHED"}
