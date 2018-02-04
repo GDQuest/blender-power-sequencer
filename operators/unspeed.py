@@ -28,10 +28,17 @@ class Unspeed(bpy.types.Operator):
 
         active = scene.sequence_editor.active_strip
 
+        start = active.frame_start
+        end = active.frame_final_end
+        duration = active.frame_duration
+
+        print(start, end, duration)
+
         sub_strips = []
         for strip in active.sequences:
             if strip.type == "SPEED":
                 speed_strip = strip
+                speed_factor = strip.speed_factor
             else:
                 sub_strips.append(strip)
 
@@ -43,7 +50,8 @@ class Unspeed(bpy.types.Operator):
         bpy.ops.sequencer.delete()
 
         for strip in sub_strips:
-            select = True
+            strip.select = True
+            strip.frame_final_end = start + (duration * speed_factor) - 1
 
         return {'FINISHED'}
 
