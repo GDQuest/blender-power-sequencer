@@ -15,17 +15,17 @@ def update_playback():
 
     Instead, we can trigger an update by jostling it's current frame.
     """
-    if not bpy.context.screen.is_animation_playing:
-        scene = bpy.context.scene
-        scrubbing = False
 
-        if scene.use_audio_scrub:
-            scrubbing = True
-            scene.use_audio_scrub = False
+    scene = bpy.context.scene
+    scrubbing = False
 
-        scene.frame_current += 1
-        scene.frame_current -= 1
+    if scene.use_audio_scrub:
+        scrubbing = True
+        scene.use_audio_scrub = False
 
-        if scrubbing:
-            scene.use_audio_scrub = True
+    scene.frame_current += 1
+    scene.frame_current -= 1
+
+    if scrubbing:
+        scene.use_audio_scrub = True
 
