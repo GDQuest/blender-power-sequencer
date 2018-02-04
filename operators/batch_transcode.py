@@ -9,13 +9,13 @@ from urllib import request
 
 class BatchTranscode(bpy.types.Operator, ImportHelper):
     """
-    Batch Transcode a list of videos
+    Batch Transcode videos to a specific framerate.
 
     Select which files to transcode, frame rate, and whether or not to
     include audio. New video files are generated for all the strips that
     are not currently using the desired frame rate.
 
-    This operator is available in the user interface.
+    This operator is available in the user interface only.
     """
 
     bl_idname = "power_sequencer.batch_transcode"
