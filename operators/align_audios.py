@@ -5,8 +5,6 @@ class AlignAudios(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/xkBUzDj.gif)
 
-    **Experimental**: this feature may or may not be in the final addon
-
     Attempt alignment between the selected audio strip to the active
     audio strip. The better the correlation, the better the result.
 
