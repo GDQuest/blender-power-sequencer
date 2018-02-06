@@ -201,6 +201,7 @@ def transcode(filepath, fps, include_audio):
             ['ffmpeg',
              '-i', filepath,
              '-r', str(fps),
+             '-loglevel', 'panic',
              '-vcodec', 'rawvideo',
              '-y',
              output_path])
