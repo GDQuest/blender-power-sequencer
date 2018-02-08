@@ -1,4 +1,5 @@
 import bpy
+from .utils import is_ffmpeg_available
 
 
 class AlignAudios(bpy.types.Operator):
@@ -40,6 +41,10 @@ class AlignAudios(bpy.types.Operator):
             self.report({"ERROR"}, "Scipy must be installed to align audios")
             return {'FINISHED'}
 
+        if not is_ffmpeg_available():
+            self.report({"ERROR"}, "ffmpeg must be installed to align audios")
+            return {'FINISHED'}
+
         # This import is here because it slows blender startup a little
         from .audiosync import find_offset
 
@@ -57,9 +62,6 @@ class AlignAudios(bpy.types.Operator):
         offset, score = find_offset(align_strip_filepath, active_filepath)
 
         initial_offset = active.frame_start - align_strip.frame_start
-
-        if score == 0:
-            self.report({"INFO"}, "Not enough data to attempt alignment")
 
         fps = scene.render.fps / scene.render.fps_base
         frames = int(offset * fps)

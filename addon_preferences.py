@@ -12,6 +12,7 @@ class ProxyPreferences(bpy.types.AddonPreferences):
     video_export_path = StringProperty(
         name="Video render folder",
         description="Relative folder to save videos rendered with the add-on",
+        subtype="FILE_PATH",
         default="")
     auto_render_proxies = BoolProperty(
         name="Create proxies automatically",
@@ -24,6 +25,7 @@ class ProxyPreferences(bpy.types.AddonPreferences):
     custom_folder_path = StringProperty(
         name="Custom proxy folder path",
         description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
+        subtype="FILE_PATH",
         default=r"D:\Program Files\Blender proxies")
 
     proxy_25 = BoolProperty(name="Proxy at 25%", default=True)

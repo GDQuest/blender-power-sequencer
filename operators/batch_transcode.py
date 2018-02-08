@@ -5,6 +5,7 @@ import os
 import subprocess
 from mimetypes import MimeTypes
 from urllib import request
+from .utils import is_ffmpeg_available
 
 
 class BatchTranscode(bpy.types.Operator, ImportHelper):
@@ -125,25 +126,6 @@ def get_framerate(filepath):
     fps = float(number)
 
     return fps
-
-
-def is_ffmpeg_available():
-    """
-    Check if ffmpeg is installed and usable
-
-    Returns
-    -------
-    bool
-    """
-    try:
-        subprocess.call(
-            ['ffmpeg', '--help'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
-        return True
-
-    except OSError:
-        return False
 
 
 def is_video(filepath):
