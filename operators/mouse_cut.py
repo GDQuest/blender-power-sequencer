@@ -92,7 +92,6 @@ class MouseCut(bpy.types.Operator):
         self.frame_start, self.channel_start = round(frame_float), floor(channel_float)
         self.frame_end = self.frame_start
 
-
         # Reverse keymaps if the user selects with the left mouse button
         self.select_mouse = 'RIGHTMOUSE'
         self.action_mouse = 'LEFTMOUSE'
@@ -104,7 +103,7 @@ class MouseCut(bpy.types.Operator):
 
         # Drawing
         self.mouse_vec_start = Vector([event.mouse_region_x, event.mouse_region_y])
-        self.initially_clicked_strips = find_strips_mouse(self.frame_start, self.channel_start, select_linked=True)
+        self.initially_clicked_strips = find_strips_mouse(self.frame_start, self.channel_start, select_linked=self.select_linked)
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
@@ -159,7 +158,6 @@ class MouseCut(bpy.types.Operator):
             else:
                 draw_end_x = event.mouse_region_x
 
-
             args = (self,
                     Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]),
                     Vector([round(draw_end_x), self.mouse_vec_start.y]),
@@ -212,7 +210,7 @@ class MouseCut(bpy.types.Operator):
         Finds and Returns two lists of strips to trim and strips to delete
         """
         to_select, to_delete = [], []
-        overlapping_strips = []
+        # overlapping_strips = []
         trim_start, trim_end = min(self.frame_start, self.frame_end), max(
             self.frame_start, self.frame_end)
 

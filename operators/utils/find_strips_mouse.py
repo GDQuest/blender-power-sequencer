@@ -1,6 +1,7 @@
 import bpy
 
-def find_strips_mouse(frame=None, channel=None, select_linked=True):
+
+def find_strips_mouse(frame=None, channel=None, select_linked=False):
     """
     Finds a list of sequences to select based on the mouse position
     or using the time cursor.
