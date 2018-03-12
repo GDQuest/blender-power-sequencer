@@ -537,7 +537,7 @@
                 <th width=208px>Shortcut</th>
         </table>
         <h3><a name="Mouse_Cut" href="#top_Mouse_Cut">Mouse Cut</a></h3>
-    <p>With this function you can quickly cut and remove a section of 
+    <p>With this function you can quickly cut and remove a section of
     strips while keeping or collapsing the remaining gap.</p>
     
     <p>A <a href="https://youtu.be/GiLmDhmMVAM?t=1m35s">video demo</a> is available.</p>

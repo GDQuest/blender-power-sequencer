@@ -49,9 +49,6 @@ modules = developer_utils.setup_addon_modules(__path__, __name__)
 ##################################
 import traceback
 
-from .ui import *
-from .ui import initialize_properties
-
 from .operators import *
 from .keymap import *
 
@@ -84,8 +81,8 @@ def register():
     except:
         traceback.print_exc()
 
-    # Store properties access in the scene and store initial frame
-    initialize_properties()
+    bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(
+        type=PowerSequencerProperties)
 
     handlers_register()
 
