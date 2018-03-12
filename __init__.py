@@ -25,6 +25,7 @@ bl_info = {
     "version": (0, 9, 0),
     "blender": (2, 79, 0),
     "location": "sequencer",
+    "tracker_url": "https://github.com/GDquest/Blender-power-sequencer/issues",
     "warning": "Beta release, may contain bugs",
     "wiki_url": "https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI",
     "support": "COMMUNITY",
