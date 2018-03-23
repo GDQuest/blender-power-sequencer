@@ -128,7 +128,7 @@ def default():
                     },
                     "power_sequencer.delete_direct" : {
                         "0" : ["type=X"]
-                    }
+                    },
                 }
             }
         }

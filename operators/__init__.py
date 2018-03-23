@@ -4,6 +4,7 @@ from .add_transform import AddTransform
 from .border_select import BorderSelect
 from .change_playback_speed import ChangePlaybackSpeed
 from .channel_offset import ChannelOffset
+from .clear_fades import ClearFades
 from .concatenate_strips import ConcatenateStrips
 from .copy_selected_sequences import CopySelectedSequences
 from .cycle_scenes import CycleScenes
