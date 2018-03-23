@@ -7,8 +7,8 @@ from .utils.global_settings import SequenceTypes
 class FadeStrips(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/XoUM2vw.gif)
-    
-    Animate a strips opacity to zero. By default, the duration of the 
+
+    Animate a strips opacity to zero. By default, the duration of the
     fade is 0.5 seconds.
     """
     bl_idname = "power_sequencer.fade_strips"
@@ -16,7 +16,7 @@ class FadeStrips(bpy.types.Operator):
     bl_description = "Fade left, right or both sides of all selected strips in the VSE"
 
     bl_options = {'REGISTER', 'UNDO'}
-    
+
     fade_duration = bpy.props.FloatProperty(
         name="Fade Duration",
         description="The Duration of the Fade",
@@ -31,6 +31,7 @@ class FadeStrips(bpy.types.Operator):
         default='both')
 
     function = bpy.props.StringProperty("")
+    current_frame = None
 
     @classmethod
     def poll(cls, context):
@@ -40,13 +41,24 @@ class FadeStrips(bpy.types.Operator):
         scene = bpy.context.scene
         fps = scene.render.fps / scene.render.fps_base
         self.fade_length = int(self.fade_duration * fps)
-        
+
+        # Because of the way blender updates opacity, it's best if the
+        # CTI is not on any strip while adding these keyframes.
+        # We put the CTI back afterward
+        self.current_frame = scene.frame_current
+        all_strips = sorted(
+            scene.sequence_editor.sequences_all,
+            key=lambda s: s.frame_final_end)
+        last_frame = all_strips[-1].frame_final_end
+        scene.frame_current = last_frame + 1
+
         selection = bpy.context.selected_sequences
         if not selection:
             return {"CANCELLED"}
 
         fade_sequence_count = 0
         for s in selection:
+
             max_value = s.volume if s.type in SequenceTypes.SOUND else s.blend_alpha
             if not max_value:
                 max_value = 1.0
@@ -86,6 +98,12 @@ class FadeStrips(bpy.types.Operator):
                     frame=frame_end - self.fade_length, value=max_value)
                 keys.insert(frame=frame_end, value=0)
             fade_sequence_count += 1
+
+            # We toggle this to help with updating the opacity change
+            s.mute = not s.mute
+            s.mute = not s.mute
+
+        scene.frame_current = self.current_frame
 
         self.report({"INFO"}, "Added fade animation to {!s} sequences.".format(
             fade_sequence_count))

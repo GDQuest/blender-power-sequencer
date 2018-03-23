@@ -77,6 +77,16 @@
             <td width=222px><a name="top_Add_Crossfade" href="#Add_Crossfade" title="Adds cross fade between
     selected sequence and the
     closest sequence to it's right">Add Crossfade</a></td>
+            <td width=222px><a name="top_Delete_Closest_Marker" href="#Delete_Closest_Marker" title="Delete the marker closest to
+    the mouse">Delete Closest Marker</a></td>
+            <td width=222px><a name="top_Mouse_Cut" href="#Mouse_Cut" title="Fast strip cutting based on
+    mouse position">Mouse Cut</a></td>
+            <td width=222px><a name="top_Set_Timeline_Range" href="#Set_Timeline_Range" title="Set timeline start and end
+    frame using the time cursor">Set Timeline Range</a></td>
+        </tr>
+        <tr>
+            <td width=222px><a name="top_Add_Speed" href="#Add_Speed" title="Add 2x speed, set frame end,
+    wrap both into META">Add Speed</a></td>
             <td width=222px><a name="top_Delete_Direct" href="#Delete_Direct" title="Delete without confirmation">Delete Direct</a></td>
             <td width=222px><a name="top_Mouse_Toggle_Mute" href="#Mouse_Toggle_Mute" title="Toggle mute status of clicked
     strips">Mouse Toggle Mute</a></td>
@@ -86,8 +96,9 @@
     generation">Set Videos Proxies</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Add_Speed" href="#Add_Speed" title="Add 2x speed, set frame end,
-    wrap both into META">Add Speed</a></td>
+            <td width=222px><a name="top_Add_Transform" href="#Add_Transform" title="Add transform effect to
+    selected image and movie
+    strips. Auto centers images">Add Transform</a></td>
             <td width=222px><a name="top_Deselect_Handles_And_Grab" href="#Deselect_Handles_And_Grab" title="Deselect the handles of all
     selected strips and call the
     Sequence Slide operator">Deselect Handles And Grab</a></td>
@@ -97,9 +108,8 @@
     selected strips to cursor">Smart Snap Strip Handles</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Add_Transform" href="#Add_Transform" title="Add transform effect to
-    selected image and movie
-    strips. Auto centers images">Add Transform</a></td>
+            <td width=222px><a name="top_Border_Select" href="#Border_Select" title="Wrapper around Blender's border
+    select, deselects handles">Border Select</a></td>
             <td width=222px><a name="top_Edit_Crossfade" href="#Edit_Crossfade" title="Adjust the location of the
     crossfade between 2 strips">Edit Crossfade</a></td>
             <td width=222px><a name="top_Open_Project_Directory" href="#Open_Project_Directory" title="Opens the Blender project
@@ -108,8 +118,7 @@
     time cursor">Snap Marker To Cursor</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Border_Select" href="#Border_Select" title="Wrapper around Blender's border
-    select, deselects handles">Border Select</a></td>
+            <td width=222px><a name="top_Change_Playback_Speed" href="#Change_Playback_Speed" title="Change the playback speed">Change Playback Speed</a></td>
             <td width=222px><a name="top_Fade_Strips" href="#Fade_Strips" title="Fade left, right or both sides
     of all selected strips in the
     VSE">Fade Strips</a></td>
@@ -119,7 +128,8 @@
     cursor as a block">Snap Selection To Cursor</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Change_Playback_Speed" href="#Change_Playback_Speed" title="Change the playback speed">Change Playback Speed</a></td>
+            <td width=222px><a name="top_Channel_Offset" href="#Channel_Offset" title="Move selected strips up or down
+    a channel">Channel Offset</a></td>
             <td width=222px><a name="top_Go_To_Next_Marker" href="#Go_To_Next_Marker" title="Move time cursor to the next
     marker">Go To Next Marker</a></td>
             <td width=222px><a name="top_Preview_To_Selection" href="#Preview_To_Selection" title="Sets the timeline preview range
@@ -130,8 +140,9 @@
     title marker">Synchronize Titles</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Channel_Offset" href="#Channel_Offset" title="Move selected strips up or down
-    a channel">Channel Offset</a></td>
+            <td width=222px><a name="top_Clear_Fades" href="#Clear_Fades" title="Set selected strips' opacity to
+    1.0 and remove opacity
+    keyframes">Clear Fades</a></td>
             <td width=222px><a name="top_Grab_Closest_Handle_Or_Cut" href="#Grab_Closest_Handle_Or_Cut" title="Grab the closest strip's
     handle, or cut it">Grab Closest Handle Or Cut</a></td>
             <td width=222px><a name="top_Render_For_Web" href="#Render_For_Web" title="Pick a rendering preset and let
@@ -164,7 +175,7 @@
     triple">Increase Playback Speed</a></td>
             <td width=222px><a name="top_Select_Linked_Effect" href="#Select_Linked_Effect" title="Select all strips that are
     linked by an effect strip">Select Linked Effect</a></td>
-            <td width=222px rowspan="3"></td>
+            <td width=222px rowspan="2"></td>
         </tr>
         <tr>
             <td width=222px><a name="top_Decrease_Playback_Speed" href="#Decrease_Playback_Speed" title="Decrease playback speed
@@ -174,14 +185,6 @@
             <td width=222px><a name="top_Set_Preview_Between_Markers" href="#Set_Preview_Between_Markers" title="Set the timeline's preview
     range using the 2 markers
     closest to the time cursor">Set Preview Between Markers</a></td>
-        </tr>
-        <tr>
-            <td width=222px><a name="top_Delete_Closest_Marker" href="#Delete_Closest_Marker" title="Delete the marker closest to
-    the mouse">Delete Closest Marker</a></td>
-            <td width=222px><a name="top_Mouse_Cut" href="#Mouse_Cut" title="Fast strip cutting based on
-    mouse position">Mouse Cut</a></td>
-            <td width=222px><a name="top_Set_Timeline_Range" href="#Set_Timeline_Range" title="Set timeline start and end
-    frame using the time cursor">Set Timeline Range</a></td>
         </tr>
     </table>
         <h3><a name="Add_Crossfade" href="#top_Add_Crossfade">Add Crossfade</a></h3>
@@ -297,6 +300,20 @@
         </td>
             </tr>
         </table>
+        <h3><a name="Clear_Fades" href="#top_Clear_Fades">Clear Fades</a></h3>
+    <p>For each selected strip, set opacity to 1.0 and remove any
+    opacity-keyframes.</p>
+    
+        <table>
+            <tr>
+                <th width=208px>Shortcut</th>
+                <th width=417px>Function</th>
+            <tr>
+                <td align="center"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/CTRL.png" alt="CTRL"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/ALT.png" alt="ALT"><img src="https://cdn.rawgit.com/doakey3/Keyboard-SVGs/master/images/F.png" alt="F"></td>
+                <td><p>Clear Fades</p>
+        </td>
+            </tr>
+        </table>
         <h3><a name="Concatenate_Strips" href="#top_Concatenate_Strips">Concatenate Strips</a></h3>
     <p>Concatenates selected strips in a channel (removes the gap between
     them) If a single strip is selected, either the next strip in the
@@ -385,10 +402,7 @@
         <h3><a name="Delete_Closest_Marker" href="#top_Delete_Closest_Marker">Delete Closest Marker</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Delete_Direct" href="#top_Delete_Direct">Delete Direct</a></h3>
     <p>Deletes without prompting for confirmation</p>
     
@@ -406,10 +420,7 @@
     <p>Deselect the handles of all selected strips and call the
     Sequence Slide operator</p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Edit_Crossfade" href="#top_Edit_Crossfade">Edit Crossfade</a></h3>
     <p>Selects the handles of both inputs of a crossfade strip's input and 
     calls the grab operator. Allows you to quickly change the location
@@ -428,7 +439,7 @@
             </tr>
         </table>
         <h3><a name="Fade_Strips" href="#top_Fade_Strips">Fade Strips</a></h3>
-    <p>Animate a strips opacity to zero. By default, the duration of the 
+    <p>Animate a strips opacity to zero. By default, the duration of the
     fade is 0.5 seconds.</p>
     
         <table>
@@ -456,10 +467,7 @@
         <h3><a name="Go_To_Next_Marker" href="#top_Go_To_Next_Marker">Go To Next Marker</a></h3>
     <p>Moves the time cursor to the next marker</p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Grab_Closest_Handle_Or_Cut" href="#top_Grab_Closest_Handle_Or_Cut">Grab Closest Handle Or Cut</a></h3>
     <p>Selects and grabs the strip handle or cut closest to the mouse cursor.
     Hover near a cut and fire this tool to slide it.</p>
@@ -532,10 +540,7 @@
     <p>Converts image under the cursor to a still image, to create
     a pause effect in the video, using the active sequence</p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Mouse_Cut" href="#top_Mouse_Cut">Mouse Cut</a></h3>
     <p>With this function you can quickly cut and remove a section of
     strips while keeping or collapsing the remaining gap.</p>
@@ -597,10 +602,7 @@
         <h3><a name="Open_Project_Directory" href="#top_Open_Project_Directory">Open Project Directory</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Preview_Last_Cut" href="#top_Preview_Last_Cut">Preview Last Cut</a></h3>
     <p>Finds the closest cut to the time cursor and
     sets the preview to a small range around that frame.
@@ -674,31 +676,19 @@
         <h3><a name="Select_Linked_Effect" href="#top_Select_Linked_Effect">Select Linked Effect</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Set_Preview_Between_Markers" href="#top_Set_Preview_Between_Markers">Set Preview Between Markers</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Set_Timeline_Range" href="#top_Set_Timeline_Range">Set Timeline Range</a></h3>
     <p>Set the timeline start and end frame using the time cursor</p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Set_Videos_Proxies" href="#top_Set_Videos_Proxies">Set Videos Proxies</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Smart_Snap_Strip_Handles" href="#top_Smart_Snap_Strip_Handles">Smart Snap Strip Handles</a></h3>
     <p>Trims, extends and snaps selected strips to cursor</p>
     
@@ -720,10 +710,7 @@
         <h3><a name="Snap_Marker_To_Cursor" href="#top_Snap_Marker_To_Cursor">Snap Marker To Cursor</a></h3>
     <p></p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Snap_Selection_To_Cursor" href="#top_Snap_Selection_To_Cursor">Snap Selection To Cursor</a></h3>
     <p>Snap selected strips to the cursor, but as a block</p>
     
@@ -741,10 +728,7 @@
     <p>Snap the selected image or text strips to the corresponding title 
     marker. The marker and strip names have to start with TITLE-001</p>
     
-        <table>
-            <tr>
-                <th width=208px>Shortcut</th>
-        </table>
+        
         <h3><a name="Toggle_Selected_Mute" href="#top_Toggle_Selected_Mute">Toggle Selected Mute</a></h3>
     <p></p>
     

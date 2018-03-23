@@ -16,7 +16,7 @@ from .utils.find_next_sequences import find_next_sequences
 class AddCrossfade(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/ZyEd0jD.gif)
-    
+
     Based on the active strip, finds the closest next sequence
     of a similar type, moves it so it overlaps the active strip,
     and adds a gamma cross effect between them.
@@ -27,11 +27,11 @@ class AddCrossfade(bpy.types.Operator):
     bl_description = "Adds cross fade between selected sequence and the closest sequence to it's right"
     bl_options = {"REGISTER", "UNDO"}
 
-    crossfade_length = bpy.props.IntProperty(
-        name="Crossfade length",
-        description="Length of the crossfade in frames",
-        default=10,
-        min=1)
+    crossfade_duration = bpy.props.FloatProperty(
+        name="Crossfade Duration",
+        description="The duration of the crossfade",
+        default=0.5,
+        min=0)
     force_length = bpy.props.BoolProperty(
         name="Force crossfade length",
         description="When true, moves the second strip so the crossfade \
@@ -45,6 +45,10 @@ class AddCrossfade(bpy.types.Operator):
     def execute(self, context):
         sequencer = bpy.ops.sequencer
         selection = bpy.context.selected_sequences
+
+        scene = context.scene
+        fps = scene.render.fps / scene.render.fps_base
+        self.crossfade_length = int(self.crossfade_duration * fps)
 
         if not len(selection) == 1:
             self.report({"ERROR_INVALID_INPUT"}, "Select a single strip to \
