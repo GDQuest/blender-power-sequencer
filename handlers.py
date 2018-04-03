@@ -23,21 +23,16 @@ def playback_speed_post(scene):
     It steps over frame rather than increase the playback speed smoothly,
     but it's still useful for faster editing
     """
-    if bpy.context.screen and bpy.context.screen.is_animation_playing:
+    if bpy.context.screen and not bpy.context.screen.is_animation_playing:
         return
 
     scene = bpy.context.scene
     playback_speed = scene.power_sequencer.playback_speed
-
     frame_multipler = 1
-    # FIXME: problem is that if playback_speed > 0,
-    # scene.power_sequencer.frame_pre is > frame_current even if the user went back in time
-    # Must take in account all speed levels
-    # if scene.power_sequencer.frame_pre < scene.frame_current:
-    #   frame_multipler = -1
-    # Only need to work for backwards playback
 
-    if playback_speed == 'normal':
+    if scene.power_sequencer.frame_pre > scene.frame_current:
+        pass
+    elif playback_speed == 'normal':
         pass
     elif playback_speed == 'fast' and scene.frame_current % 3 == 0:
         scene.frame_current = scene.frame_current + 1 * frame_multipler
