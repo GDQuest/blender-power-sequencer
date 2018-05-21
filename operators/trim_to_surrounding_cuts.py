@@ -3,6 +3,7 @@ Find the two closest cuts, trims and deletes all strips above in the range but l
 """
 import bpy
 from math import floor
+from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 
 class TrimToSurroundingCuts(bpy.types.Operator):
@@ -40,7 +41,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
-        margin_frame = round(self.margin * bpy.context.scene.render.fps / bpy.context.scene.render.fps_base)
+        margin_frame = convert_duration_to_frames(self.margin)
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
             self.report({'WARNING'},

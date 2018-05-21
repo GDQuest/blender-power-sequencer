@@ -3,6 +3,7 @@ from operator import attrgetter
 from .utils.global_settings import SequenceTypes
 from .utils.filter_sequences_by_type import filter_sequences_by_type
 from .utils.find_next_sequences import find_next_sequences
+from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 
 # TODO: Make it work with 2+ selected strips
@@ -46,9 +47,7 @@ class AddCrossfade(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         selection = bpy.context.selected_sequences
 
-        scene = context.scene
-        fps = scene.render.fps / scene.render.fps_base
-        self.crossfade_length = int(self.crossfade_duration * fps)
+        self.crossfade_length = convert_duration_to_frames(self.crossfade_duration)
 
         if not len(selection) == 1:
             self.report({"ERROR_INVALID_INPUT"}, "Select a single strip to \

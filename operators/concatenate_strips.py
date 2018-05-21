@@ -24,7 +24,7 @@ class ConcatenateStrips(bpy.types.Operator):
         name="Concatenate all strips in channel",
         description="If only one strip selected, concatenate the entire channel",
         default=False)
-    
+
     function = bpy.props.StringProperty("")
 
     @classmethod

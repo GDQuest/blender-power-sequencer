@@ -39,8 +39,7 @@ class FadeStrips(bpy.types.Operator):
 
     def execute(self, context):
         scene = bpy.context.scene
-        fps = scene.render.fps / scene.render.fps_base
-        self.fade_length = int(self.fade_duration * fps)
+        self.fade_length = convert_duration_to_frames(self.fade_duration)
 
         # Because of the way blender updates opacity, it's best if the
         # CTI is not on any strip while adding these keyframes.
