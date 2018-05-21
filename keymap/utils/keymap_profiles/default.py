@@ -72,7 +72,7 @@ def default():
                         "2" : ["type=F", "properties=function: Fade Both; fade_type:both"]
                     },
                     "power_sequencer.grab_closest_handle_or_cut" : {
-                        "0" : ["type=G", "alt=True"]
+                        "0" : ["type=G", "shift=True", "alt=True"]
                     },
                     "power_sequencer.grab_sequence_handle" : {
                         "0" : ["type=G", "shift=True"]
