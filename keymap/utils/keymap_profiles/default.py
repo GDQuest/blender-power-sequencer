@@ -129,6 +129,9 @@ def default():
                     "power_sequencer.delete_direct" : {
                         "0" : ["type=X"]
                     },
+                    "sequencer.refresh_all" : {
+                        "0" : ["type=R", "shift=True"]
+                    },
                 }
             }
         }
