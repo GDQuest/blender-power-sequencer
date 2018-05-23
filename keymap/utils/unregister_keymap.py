@@ -2,7 +2,7 @@ import os
 import json
 import bpy
 from .keymap_profiles import *
-from .addon_module_name import addon_module_name
+from .get_addon_module_name import get_addon_module_name
 
 
 def unregister_keymap():
@@ -17,7 +17,7 @@ def unregister_keymap():
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
     except FileNotFoundError:
-        addon_name = addon_module_name()
+        addon_name = get_addon_module_name()
         preferences = bpy.context.user_preferences.addons[addon_name].preferences
         profile = preferences.keymap_profile
         keymap_data = globals()[profile]()
@@ -38,7 +38,7 @@ def unregister_keymap():
                 for hotkey in current_hotkeys:
                     if hotkey.idname in operator_names:
                         keymap.keymap_items.remove(hotkey)
-    
+
     keymap_path = os.path.join(
             os.path.dirname(__file__), 'keymap.json')
 

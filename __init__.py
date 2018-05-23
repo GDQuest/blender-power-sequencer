@@ -56,6 +56,7 @@ from .keymap import *
 from .keymap.utils import register_keymap
 from .keymap.utils import unregister_keymap
 
+
 class PowerSequencerProperties(bpy.types.PropertyGroup):
     playback_speed = bpy.props.EnumProperty(
         items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
@@ -71,7 +72,7 @@ class PowerSequencerProperties(bpy.types.PropertyGroup):
         name="Active Tab",
         description="The name of the active tab in the UI",
         default="Sequencer"
-        )
+    )
 
 
 def register():

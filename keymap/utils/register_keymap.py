@@ -3,7 +3,7 @@ import json
 import bpy
 from .keymap_profiles import *
 from .pretty_json import pretty_json
-from .addon_module_name import addon_module_name
+from .get_addon_module_name import get_addon_module_name
 from .data2md import data2md, centerWord
 
 # For more info on keymaps see:
@@ -243,7 +243,7 @@ def register_keymap():
         with open(keymap_filepath, 'r') as f:
             keymap_data = json.load(f)
     except FileNotFoundError:
-        addon_name = addon_module_name()
+        addon_name = get_addon_module_name()
         preferences = bpy.context.user_preferences.addons[addon_name].preferences
         profile = preferences.keymap_profile
         keymap_data = globals()[profile]()

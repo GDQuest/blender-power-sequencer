@@ -3,7 +3,7 @@ import pathlib
 import bpy
 
 
-def addon_module_name():
+def get_addon_module_name():
     """
     Gets the name of the base folder housing this addon
     """
