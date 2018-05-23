@@ -91,8 +91,8 @@ def default():
                         "0" : ["type=ACTIONMOUSE", "alt=True"]
                     },
                     "power_sequencer.mouse_trim" : {
-                        "0" : ["type=SELECTMOUSE", "ctrl=True", "properties=function:Trim Strip, Keep Gap;select_mode:smart"],
-                        "1" : ["type=SELECTMOUSE", "shift=True", "ctrl=True", "properties=function:Trim Strip, Remove Gap; select_mode:cursor"]
+                        "0" : ["type=SELECTMOUSE", "ctrl=True",  "alt=True", "properties=function:Trim Strip, Keep Gap;select_mode:smart"],
+                        "1" : ["type=SELECTMOUSE", "shift=True", "ctrl=True", "alt=True", "properties=function:Trim Strip, Remove Gap; select_mode:cursor"]
                     },
                     "power_sequencer.preview_last_cut" : {
                         "0" : ["type=P", "shift=True"]
