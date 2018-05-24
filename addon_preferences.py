@@ -25,6 +25,7 @@ class ProxyPreferences(bpy.types.AddonPreferences):
         name="Custom proxy folder path",
         description="Store the generated proxies in a specific folder on your hard drive (absolute path)",
         default=r"D:\Program Files\Blender proxies")
+
     proxy_25 = BoolProperty(name="Proxy at 25%", default=True)
     proxy_50 = BoolProperty(name="Proxy at 50%", default=False)
     proxy_75 = BoolProperty(name="Proxy at 75%", default=False)
@@ -67,26 +68,8 @@ class ProxyPreferences(bpy.types.AddonPreferences):
         max=59
         )
 
-    keymap_profile = bpy.props.EnumProperty(
-        items=[('default', 'Default', ''), ('premiere', 'Premiere (Not working)', ''), ('final_cut_pro', 'Final Cut Pro (Not working)', '')],
-        name="Keymap Profile",
-        description="Keymap profile to load",
-        default='default'
-        )
-
     def draw(self, context):
         layout = self.layout
-
-        row = layout.row()
-        row.operator("power_sequencer.import_keymap",
-                     icon="LIBRARY_DATA_DIRECT")
-        row.operator("power_sequencer.export_keymap",
-                     icon="NEW")
-        split = row.split(0.5, align=True)
-        split.operator("power_sequencer.load_profile",
-                       icon="FILE_SCRIPT")
-        split = split.split(1.0, align=True)
-        split.prop(self, "keymap_profile", text="")
 
         layout.prop(self, "video_export_path")
         layout.prop(self, "auto_render_proxies")
