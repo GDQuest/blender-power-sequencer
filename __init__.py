@@ -1,5 +1,5 @@
 '''
-Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi
+Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi, Daniel Oakey, Patrick W. Crawford
 nathan@gdquest.com
 
 Created by Nathan Lovato
