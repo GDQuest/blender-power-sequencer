@@ -1,5 +1,6 @@
 import bpy
 from .utils.global_settings import SequenceTypes
+from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 
 # TODO: Use a handler to auto move the fades with extend
