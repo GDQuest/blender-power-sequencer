@@ -23,6 +23,16 @@ class SmartSnap(bpy.types.Operator):
     def poll(cls, context):
         return True
 
+    def invoke(self, context, event):
+        if context.selected_sequences:
+            return self.execute(context)
+
+        frame_current = context.scene.frame_current
+        for s in context.sequences:
+            if s.frame_final_start <= frame_current < s.frame_final_end:
+                s.select = True
+        return self.execute(context)
+
     def execute(self, context):
         frame_current = bpy.context.scene.frame_current
 
