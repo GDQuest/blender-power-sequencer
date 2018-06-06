@@ -42,7 +42,6 @@ class MouseTrim(bpy.types.Operator):
 
     frame_start, frame_end = IntProperty(), IntProperty()
     to_select = []
-    
     function = bpy.props.StringProperty("")
 
     @classmethod
@@ -51,6 +50,7 @@ class MouseTrim(bpy.types.Operator):
 
     def invoke(self, context, event):
         to_select = []
+        frame, channel = 1, 1
         if not self.frame_start or self.frame_end:
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
@@ -84,5 +84,5 @@ class MouseTrim(bpy.types.Operator):
             bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
             bpy.ops.sequencer.gap_remove()
         else:
-            bpy.context.scene.frame_current = frame
+            bpy.context.scene.frame_current = self.frame_start if self.frame_start else frame
         return {'FINISHED'}
