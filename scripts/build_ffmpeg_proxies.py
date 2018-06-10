@@ -10,8 +10,8 @@ EXT_IMG = ['.png', '.jpg', '.jpeg']
 TYPE_VIDEO = "video"
 TYPE_IMG = "img"
 
-FFMPEG_COMMAND_VIDEO = ["ffmpeg", "-i", "", "-hide_banner", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
-FFMPEG_COMMAND_IMG = ["ffmpeg", "-i", "", "-hide_banner", "-vf", "scale=iw*0.25:ih*0.25", ""]
+FFMPEG_COMMAND_VIDEO = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
+FFMPEG_COMMAND_IMG = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-vf", "scale=iw*0.25:ih*0.25", ""]
 
 
 def parse_cmd_args():
@@ -96,9 +96,20 @@ def make_proxy_command(src_file_path, proxy_base_path):
 
 
 def run_commands(commands):
+
+    total = len(commands)
+    print("found %d file(s) to convert" % total)
     for c in commands:
-        process = subprocess.Popen(c)
+        print('    %s' % c[2])
+
+    count = 1
+    for c in commands:
+        print("%d/%d :: %s" % (count, total, c[2]))
+        process = subprocess.Popen(c, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
+        for line in process.stdout:
+            print("python>>>%s" % line)
         process.wait()
+        count +=1
 
 
 # SCRIPT
