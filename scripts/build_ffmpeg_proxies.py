@@ -10,8 +10,9 @@ EXT_IMG = ['.png', '.jpg', '.jpeg']
 TYPE_VIDEO = "video"
 TYPE_IMG = "img"
 
-FFMPEG_COMMAND_VIDEO = ["ffmpeg", "-i", "", "-hide_banner", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
-FFMPEG_COMMAND_IMG = ["ffmpeg", "-i", "", "-hide_banner", "-vf", "scale=iw*0.25:ih*0.25", ""]
+FFMPEG_COMMAND_VIDEO = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
+FFMPEG_COMMAND_IMG = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-vf", "scale=iw*0.25:ih*0.25", "-y", ""]
+FFPROBE_COMMAND_VIDEO = ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=nb_frames", "-of", "default=noprint_wrappers=1:nokey=1", ""]
 
 
 def parse_cmd_args():
@@ -97,9 +98,32 @@ def make_proxy_command(src_file_path, proxy_base_path):
 
 
 def run_commands(commands):
+
+    map_video_nb_frame = {}
+
+    total = len(commands)
+    print("found %d file(s) to convert" % total)
     for c in commands:
-        process = subprocess.Popen(c)
+        print('    %s' % c[2])
+        if get_file_type(c[2]) == TYPE_VIDEO:
+            probe_frame_cmd = [arg for arg in FFPROBE_COMMAND_VIDEO]
+            probe_frame_cmd[-1] = c[2]
+            map_video_nb_frame[c[2]] = int(subprocess.check_output(probe_frame_cmd).decode())
+    print()
+
+    count = 1
+    for c in commands:
+        print("%d/%d :: %s" % (count, total, c[2]))
+        process = subprocess.Popen(c, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
+        if get_file_type(c[2]) == TYPE_VIDEO:
+            for line in process.stdout:
+                progress = int( line[line.index('=')+2 : line.index(' f')].strip())
+                percent = '{:.0%}'.format(progress / map_video_nb_frame.get(c[2], progress))
+                print('progress: %s' % percent, end='\r')
         process.wait()
+        print('progress: 100%')
+        print('Done!', '\n')
+        count +=1
 
 
 # SCRIPT
