@@ -66,7 +66,7 @@ def get_proxy_file_path(source_file_path):
     folder, file_name = os.path.split(source_file_path)
     extension = os.path.splitext(file_name)[1].lower()
     if extension in EXT_VIDEO:
-        return os.path.join(folder, 'BL_proxy', file_name)
+        return os.path.join(folder, 'BL_proxy', file_name, "proxy_25.avi")
     elif extension in EXT_IMG:
         return os.path.join(folder, 'BL_proxy', 'images', '25', file_name)
     return ''
@@ -91,7 +91,7 @@ def make_proxy_command(src_file_path, proxy_base_path):
     command = [arg for arg in command_template]
     command[2] = src_file_path
     if src_file_type == TYPE_VIDEO:
-        command[-1] = os.path.join(proxy_base_path, "proxy_25.avi")
+        command[-1] = proxy_base_path
     elif src_file_type == TYPE_IMG:
         command[-1] = proxy_base_path + "_proxy.jpg"
     return command
