@@ -40,9 +40,10 @@ def get_media_file_paths(base_project_folder, ignored_folder_names=['BL_proxy'])
     files = []
     FILE_EXTENSIONS = list(EXT_VIDEO + EXT_IMG)
     for dirpath, dirnames, filenames in os.walk(project_folder):
-        for name in ignored_folder_names:
-            if name in dirpath:
-                continue
+        head, tail = os.path.split(dirpath)
+        if tail in ignored_folder_names:
+            dirnames[:] = []
+            continue
 
         for f in filenames:
             file_path = os.path.join(dirpath, f)
@@ -110,9 +111,10 @@ if not project_folder:
 commands = []
 media_files = get_media_file_paths(project_folder)
 for f in media_files:
-    proxy_folder_path = get_proxy_file_path(f)
-    command = make_proxy_command(f, proxy_folder_path)
+    proxy_file_path = get_proxy_file_path(f)
+    command = make_proxy_command(f, proxy_file_path)
 
+    proxy_folder_path = os.path.split(proxy_file_path)[0]
     if not os.path.isdir(proxy_folder_path):
         os.makedirs(proxy_folder_path)
     commands.append(command)
