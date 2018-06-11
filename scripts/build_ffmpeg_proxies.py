@@ -105,9 +105,9 @@ def run_commands(commands):
     for c in commands:
         print('    %s' % c[2])
         if get_file_type(c[2]) == TYPE_VIDEO:
-            command = [arg for arg in FFPROBE_COMMAND_VIDEO]
-            command[-1] = c[2]
-            map_video_nb_frame[c[2]] = int(subprocess.check_output(command).decode())
+            probe_frame_cmd = [arg for arg in FFPROBE_COMMAND_VIDEO]
+            probe_frame_cmd[-1] = c[2]
+            map_video_nb_frame[c[2]] = int(subprocess.check_output(probe_frame_cmd).decode())
     print()
 
     count = 1
@@ -116,8 +116,8 @@ def run_commands(commands):
         process = subprocess.Popen(c, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
         if get_file_type(c[2]) == TYPE_VIDEO:
             for line in process.stdout:
-                progress = int(line[line.index('=')+2:line.index(' f')].strip())
-                percent = '{:.0%}'.format(progress / map_video_nb_frame[c[2]])
+                progress = int( line[line.index('=')+2 : line.index(' f')].strip())
+                percent = '{:.0%}'.format(progress / map_video_nb_frame.get(c[2], progress))
                 print('progress: %s' % percent, end='\r')
         process.wait()
         print('progress: 100%')
