@@ -1,11 +1,5 @@
 import numpy as np
 
-from scipy.signal import hamming, lfilter
-from scipy.fftpack import fft
-from scipy.fftpack.realtransforms import dct
-
-from .trfbank import trfbank
-from .segment_axis import segment_axis
 
 def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     """Compute Mel Frequency Cepstral Coefficients.
@@ -39,6 +33,12 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
            spoken sentences", IEEE Trans. Acoustics. Speech, Signal Proc.
            ASSP-28 (4): 357-366, August 1980."""
 
+    from scipy.signal import hamming, lfilter
+    from scipy.fftpack import fft
+    from scipy.fftpack.realtransforms import dct
+
+    from .trfbank import trfbank
+    from .segment_axis import segment_axis
     # MFCC parameters: taken from auditory toolbox
     over = nwin - 160
     # Pre-emphasis factor (to take into account the -6dB/octave rolloff of the

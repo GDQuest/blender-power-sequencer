@@ -6,7 +6,6 @@ This code is an adaptation of 'audio-offset-finder' by BBC
 import os
 import warnings
 import numpy as np
-from scipy.io import wavfile
 
 from .mfcc import mfcc
 from .convert_and_trim import convert_and_trim
@@ -22,6 +21,7 @@ def find_offset(file1, file2, freq=8000, trim=60*15, correl_nframes=1000):
     Uses cross-correlation of standardised Mel-Frequency Cepstral
     Coefficients
     """
+    from scipy.io import wavfile
     file1 = os.path.abspath(file1)
     file2 = os.path.abspath(file2)
 
