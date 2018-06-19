@@ -3,46 +3,135 @@ import subprocess
 import sys
 import logging
 
+class Video():
+    '''
+    Represents a video
+    '''
+    EXTS = ['.mp4', '.mkv', '.mov', '.flv']
+    GEN_PROXY_TEMPL = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
+    PROBE_FRAMES_TEMPL = ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=nb_frames", "-of", "default=noprint_wrappers=1:nokey=1", ""]
 
-EXT_VIDEO = ['.mp4', '.mkv', '.mov', '.flv']
-EXT_IMG = ['.png', '.jpg', '.jpeg']
+    def __init__(self, path_orig):
+        self.path_orig = path_orig
+        self.num_frames = self.probe_frame(self.path_orig)
+        self.path_proxy = self.gen_path_proxy(self.path_orig)
+        self.proxy_command = self.gen_proxy_command(self.path_orig, self.path_proxy)
 
-TYPE_VIDEO = "video"
-TYPE_IMG = "img"
+    @staticmethod
+    def isVideo(path):
+        return os.path.splitext(path)[1].lower() in Video.EXTS
 
-FFMPEG_COMMAND_VIDEO = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-f", "matroska", "-sn", "-an", "-c:v", "mpeg2video", "-b:v", "1800k", "-filter:v", "scale=iw*0.25:ih*0.25", "-y", ""]
-FFMPEG_COMMAND_IMG = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-vf", "scale=iw*0.25:ih*0.25", "-y", ""]
-FFPROBE_COMMAND_VIDEO = ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=nb_frames", "-of", "default=noprint_wrappers=1:nokey=1", ""]
+    # takes in path to file, returns the number of frames in the video
+    # warning: side effects
+    def probe_frame(self, path):
+        probe_frame_cmd = [arg for arg in self.PROBE_FRAMES_TEMPL]
+        probe_frame_cmd[-1] = path
+        return int(subprocess.check_output(probe_frame_cmd).decode())
 
+    # takes in path to file, returns path the proxy file should be located
+    def gen_path_proxy(self, path):
+        folder, file_name = os.path.split(path)
+        return os.path.join(folder, 'BL_proxy', file_name, "proxy_25.avi")
+    
+    # takes in path to file, returns the command for generating the proxy
+    def gen_proxy_command(self, path_orig, path_proxy):
+        proxy_cmd = [arg for arg in self.GEN_PROXY_TEMPL]
+        proxy_cmd[2] = path_orig
+        proxy_cmd[-1] = path_proxy
+        return proxy_cmd
 
+    # creates the directory for the proxy
+    # warning: side effects
+    def create_proxy_path(self):
+        proxy_folder = os.path.split(self.path_proxy)[0]
+        if not os.path.isdir(proxy_folder):
+            os.makedirs(proxy_folder)
+
+    # calls ffmpeg to generate proxy
+    # warning: side effects
+    def create_proxy_file(self):
+        process = subprocess.Popen(self.proxy_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
+        for line in process.stdout:
+                progress = int( line[line.index('=')+2 : line.index(' f')].strip())
+                percent = '{:.0%}'.format(progress / self.num_frames)
+                print('progress: %s' % percent, end='\r')
+        process.wait()
+        print('progress: 100%')
+        print('Done!', '\n')
+        
+class Image():
+    '''
+    Represents an image
+    '''
+    EXTS = ['.png', '.jpg', '.jpeg']
+    GEN_PROXY_TEMPL = ["ffmpeg", "-i", "", "-v", "quiet", "-stats", "-vf", "scale=iw*0.25:ih*0.25", "-y", ""]
+    
+    def __init__(self, path_orig):
+        self.path_orig = path_orig
+        self.path_proxy = self.gen_path_proxy(self.path_orig)
+        self.proxy_command = self.gen_proxy_command(self.path_orig, self.path_proxy)
+
+    @staticmethod
+    def isImage(path):
+        return os.path.splitext(path)[1].lower() in Image.EXTS
+
+    # takes in path to file, returns path the proxy file should be located
+    def gen_path_proxy(self, path):
+        folder, file_name = os.path.split(path)
+        return os.path.join(folder, 'BL_proxy', 'images', '25', file_name)
+    
+    # takes in path to file, returns the command for generating the proxy
+    def gen_proxy_command(self, path_orig, path_proxy):
+        proxy_cmd = [arg for arg in self.GEN_PROXY_TEMPL]
+        proxy_cmd[2] = path_orig
+        proxy_cmd[-1] = path_proxy + "_proxy.jpg"
+        return proxy_cmd
+
+    # creates the directory for the proxy
+    # warning: side effects
+    def create_proxy_path(self):
+        proxy_folder = os.path.split(self.path_proxy)[0]
+        if not os.path.isdir(proxy_folder):
+            os.makedirs(proxy_folder)
+
+    # calls ffmpeg to generate proxy
+    # warning: side effects
+    def create_proxy_file(self):
+        process = subprocess.Popen(self.proxy_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
+        process.wait()
+        print('progress: 100%')
+        print('Done!', '\n')
+
+# warning: side effects
 def parse_cmd_args():
     """
     Finds and returns the path to the folder passed
     as a command line argument, if it exists
+    Otherwise, logs an error, and uses the current directory
     """
+    path = '.'
     if len(sys.argv) > 1:
-        path = os.path.abspath(sys.argv[1])
-        if not os.path.exists(path):
-            return
-        if os.path.isfile(path) and path.endswith('.blend'):
-            path = os.path.split(path)[0]
-        if not os.path.isdir(path):
-            return
-        return path
+        path_from_args = os.path.abspath(sys.argv[1])
+        if os.path.exists(path_from_args):
+            if os.path.isdir(path_from_args):
+                path = path_from_args
+            elif os.path.isfile(path_from_args) and path.endswith('.blend'):
+                path = os.path.split(path)[0]
+    return path
 
-
-def get_media_file_paths(base_project_folder, ignored_folder_names=['BL_proxy']):
+# warning: side effects 
+def get_media_file_paths(working_dir, ignored_dirs=['BL_proxy']):
     """
-    Walks all files and folders from the base_project_folder
-    except in ignored_folders and returns a list of
-    media file paths, pictures and videos the script can
+    Walks all files and folders from the working_dir
+    except in ignored_dirs and returns a list of
+    media file paths: pictures and videos the script can
     generate a proxy for
     """
     files = []
-    FILE_EXTENSIONS = list(EXT_VIDEO + EXT_IMG)
-    for dirpath, dirnames, filenames in os.walk(project_folder):
-        head, tail = os.path.split(dirpath)
-        if tail in ignored_folder_names:
+    FILE_EXTENSIONS = list(Video.EXTS + Image.EXTS)
+    for dirpath, dirnames, filenames in os.walk(working_dir):
+        tail = os.path.split(dirpath)[1]
+        if tail in ignored_dirs:
             dirnames[:] = []
             continue
 
@@ -53,94 +142,39 @@ def get_media_file_paths(base_project_folder, ignored_folder_names=['BL_proxy'])
                 files.append(os.path.join(dirpath, f))
     return files
 
-
-def get_proxy_file_path(source_file_path):
+if __name__ == '__main__':
     """
-    Takes a source path, relative or absolute, and returns
-    a local proxy folder: the output file path to pass to ffmpeg
-
-    That's the path Blender will look for file proxies
-    e.g. for "video/shot_1.mov", the function returns
-    "video/BL_proxy/shot_1.mov/proxy_25.avi"
+    The actual script:
+    1) get the working dir from args
+    2) scan dir for media objects and add them
+    3) print results of scan
+    4) create proxy
+        - create path
+        - issue ffmpeg command and print progress
     """
-    folder, file_name = os.path.split(source_file_path)
-    extension = os.path.splitext(file_name)[1].lower()
-    if extension in EXT_VIDEO:
-        return os.path.join(folder, 'BL_proxy', file_name, "proxy_25.avi")
-    elif extension in EXT_IMG:
-        return os.path.join(folder, 'BL_proxy', 'images', '25', file_name)
-    return ''
+    working_dir = parse_cmd_args()
+    
+
+    media_file_paths = get_media_file_paths(working_dir)
+    media_objects = []
+
+    for path in media_file_paths:
+        if Video.isVideo(path):
+            media_objects.append(Video(path))
+        elif Image.isImage(path):
+            media_objects.append(Image(path))
 
 
-def get_file_type(path):
-    """
-    returns the type of a file, TYPE_*
-    """
-    path, extension = os.path.splitext(path)
-    return TYPE_IMG if extension.lower() in EXT_IMG else TYPE_VIDEO
-
-
-def make_proxy_command(src_file_path, proxy_base_path):
-    """
-    Takes a template FFMPEG_COMMAND_* and returns the full argument list
-    to call with subprocess.Popen
-    """
-    src_file_type = get_file_type(src_file_path)
-    command_template = FFMPEG_COMMAND_VIDEO if src_file_type == TYPE_VIDEO else FFMPEG_COMMAND_IMG
-
-    command = [arg for arg in command_template]
-    command[2] = src_file_path
-    if src_file_type == TYPE_VIDEO:
-        command[-1] = proxy_base_path
-    elif src_file_type == TYPE_IMG:
-        command[-1] = proxy_base_path + "_proxy.jpg"
-    return command
-
-
-def run_commands(commands):
-
-    map_video_nb_frame = {}
-
-    total = len(commands)
-    print("found %d file(s) to convert" % total)
-    for c in commands:
-        print('    %s' % c[2])
-        if get_file_type(c[2]) == TYPE_VIDEO:
-            probe_frame_cmd = [arg for arg in FFPROBE_COMMAND_VIDEO]
-            probe_frame_cmd[-1] = c[2]
-            map_video_nb_frame[c[2]] = int(subprocess.check_output(probe_frame_cmd).decode())
-    print()
+    total = len(media_objects)
+    print('found %d file(s) to convert' % total)
+    for media in media_objects:
+        print('~~ %s' % media.path_orig)
 
     count = 1
-    for c in commands:
-        print("%d/%d :: %s" % (count, total, c[2]))
-        process = subprocess.Popen(c, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,universal_newlines=True)
-        if get_file_type(c[2]) == TYPE_VIDEO:
-            for line in process.stdout:
-                progress = int( line[line.index('=')+2 : line.index(' f')].strip())
-                percent = '{:.0%}'.format(progress / map_video_nb_frame.get(c[2], progress))
-                print('progress: %s' % percent, end='\r')
-        process.wait()
-        print('progress: 100%')
-        print('Done!', '\n')
-        count +=1
+    for media in media_objects:
+        print()
+        print("%d/%d :: %s" % (count, total, media.path_orig))
+        media.create_proxy_path()
+        media.create_proxy_file()
+        count += 1
 
-
-# SCRIPT
-project_folder = parse_cmd_args()
-if not project_folder:
-    project_folder = '.'
-    logging.warning('The folder passed as an argument isn\'t valid. Using the current folder instead')
-
-commands = []
-media_files = get_media_file_paths(project_folder)
-for f in media_files:
-    proxy_file_path = get_proxy_file_path(f)
-    command = make_proxy_command(f, proxy_file_path)
-
-    proxy_folder_path = os.path.split(proxy_file_path)[0]
-    if not os.path.isdir(proxy_folder_path):
-        os.makedirs(proxy_folder_path)
-    commands.append(command)
-
-run_commands(commands)
