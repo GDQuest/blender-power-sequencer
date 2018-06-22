@@ -149,6 +149,8 @@ class Image(Media):
         "-stats",
         "-vf",
         "scale=iw*0.25:ih*0.25",
+        "-f",
+        "apng",
         "-y",
         "",
     ]
@@ -164,7 +166,7 @@ class Image(Media):
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", file_name, "proxy_25.avi")
+        return os.path.join(folder, "BL_proxy", "images", "25", file_name + "_proxy.jpg")
 
     def get_proxy_command(self, path_source, path_proxy):
         """
