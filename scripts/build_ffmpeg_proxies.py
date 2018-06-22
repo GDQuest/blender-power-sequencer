@@ -129,9 +129,9 @@ class Video(Media):
             progress = int(line[line.index("=") + 2:line.index(" f")].strip())
             percent = "{:.0%}".format(progress / self.frame_count)
             print("progress: %s" % percent, end="\r")
-            process.wait()
-            print("progress: 100%")
-            print("Done!", "\n")
+        process.wait()
+        print("progress: 100%")
+        print("Done!", "\n")
 
 
 class Image(Media):
