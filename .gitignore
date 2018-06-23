@@ -3,6 +3,7 @@ __pycache__
 /.vscode
 /_references
 /power-sequencer_updater
+/test-projects
 
 _addon_linker.py
 readme_tools
