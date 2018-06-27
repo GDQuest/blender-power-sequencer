@@ -7,8 +7,8 @@ from .utils.find_linked_sequences import find_linked
 class AddSpeed(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/lheIZzA.gif)
-    
-    Add 2x speed to strip and set it's frame end accordingly. 
+
+    Add 2x speed to strip and set it's frame end accordingly.
     Wraps both the strip and the speed modifier into a META strip.
     """
     bl_idname = "power_sequencer.add_speed"
@@ -28,7 +28,7 @@ class AddSpeed(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.active_object is not None
+        return True
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
