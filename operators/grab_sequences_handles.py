@@ -2,7 +2,7 @@ import bpy
 from .utils.global_settings import SequenceTypes
 
 
-class GrabSequenceHandles(bpy.types.Operator):
+class GrabSequencesHandles(bpy.types.Operator):
     """
     Extends the selected sequences based on the mouse position.
     If the cursor is to the right of the sequence's middle,

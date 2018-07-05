@@ -16,7 +16,7 @@ from .edit_crossfade import EditCrossfade
 from .fade_strips import FadeStrips
 from .go_to_next_marker import GoToNextMarker
 from .grab_closest_handle_or_cut import GrabClosestHandleOrCut
-from .grab_sequence_handle import GrabSequenceHandle
+from .grab_sequences_handles import GrabSequencesHandles
 from .import_local_footage import ImportLocalFootage
 from .increase_playback_speed import IncreasePlaybackSpeed
 from .make_still_image import MakeStillImage
