@@ -15,8 +15,6 @@ class ChannelOffset(bpy.types.Operator):
         description='Move the sequences up or down',
         default='up')
 
-    function = bpy.props.StringProperty("")
-
     @classmethod
     def poll(cls, context):
         return True

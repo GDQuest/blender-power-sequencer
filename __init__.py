@@ -17,6 +17,19 @@ Created by Nathan Lovato
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+import bpy
+from .handlers import handlers_register, handlers_unregister
+
+# register
+##################################
+import traceback
+from .operators import *
+from . import addon_updater_ops
+
+# load and reload submodules
+##################################
+from .utils import developer_utils
+modules = developer_utils.setup_addon_modules(__path__, __name__)
 
 bl_info = {
     "name": "Power Sequencer",
@@ -30,26 +43,6 @@ bl_info = {
     "support": "COMMUNITY",
     "category": "VSE"
 }
-
-import bpy
-import os
-from math import ceil
-from operator import attrgetter
-from enum import Enum
-from .handlers import handlers_register, handlers_unregister
-
-from . import addon_updater_ops
-
-# load and reload submodules
-##################################
-from .utils import developer_utils
-modules = developer_utils.setup_addon_modules(__path__, __name__)
-
-# register
-##################################
-import traceback
-
-from .operators import *
 
 
 class PowerSequencerProperties(bpy.types.PropertyGroup):
@@ -103,45 +96,35 @@ def register():
     kmi = km.keymap_items.new('power_sequencer.border_select', 'B', 'PRESS', shift=True)
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'ONE', 'PRESS', )
-    kmi_props_setattr(kmi.properties, "function", "Speed to 1x")
     kmi_props_setattr(kmi.properties, "speed", "normal")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'TWO', 'PRESS')
-    kmi_props_setattr(kmi.properties, "function", "Speed to 1.33x")
     kmi_props_setattr(kmi.properties, "speed", "fast")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'THREE', 'PRESS')
-    kmi_props_setattr(kmi.properties, "function", "Speed to 1.66x")
     kmi_props_setattr(kmi.properties, "speed", "faster")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'FOUR', 'PRESS')
-    kmi_props_setattr(kmi.properties, "function", "Speed to 2x")
     kmi_props_setattr(kmi.properties, "speed", "double")
 
     kmi = km.keymap_items.new('power_sequencer.channel_offset', 'UP_ARROW', 'PRESS', alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Move to Open Channel Above')
     kmi_props_setattr(kmi.properties, 'direction', 'up')
 
     kmi = km.keymap_items.new('power_sequencer.channel_offset', 'DOWN_ARROW', 'PRESS', alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Move to Open Channel Below')
     kmi_props_setattr(kmi.properties, 'direction', 'down')
 
     kmi = km.keymap_items.new('power_sequencer.clear_fades', 'F', 'PRESS', alt=True, ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS')
-    kmi_props_setattr(kmi.properties, 'function', 'Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected')
     kmi_props_setattr(kmi.properties, 'concatenate_whole_channel', False)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected')
     kmi_props_setattr(kmi.properties, 'concatenate_whole_channel', True)
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'C', 'PRESS', ctrl=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Copy')
     kmi_props_setattr(kmi.properties, 'delete_selection', False)
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'X', 'PRESS', ctrl=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Cut')
     kmi_props_setattr(kmi.properties, 'delete_selection', True)
 
     kmi = km.keymap_items.new('power_sequencer.cycle_scenes', 'TAB', 'PRESS', shift=True)
@@ -150,15 +133,12 @@ def register():
     kmi = km.keymap_items.new('power_sequencer.edit_crossfade', 'C', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Fade Right',)
     kmi_props_setattr(kmi.properties, 'fade_type', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', ctrl=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Fade Left',)
     kmi_props_setattr(kmi.properties, 'fade_type', 'left')
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS')
-    kmi_props_setattr(kmi.properties, 'function', 'Fade Both',)
     kmi_props_setattr(kmi.properties, 'fade_type', 'both')
 
     kmi = km.keymap_items.new('power_sequencer.grab_closest_handle_or_cut', 'G', 'PRESS', shift=True, alt=True)
@@ -170,19 +150,15 @@ def register():
     kmi = km.keymap_items.new('power_sequencer.increase_playback_speed', 'RIGHT_BRACKET', 'PRESS')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_cut', 'ACTIONMOUSE', 'PRESS', ctrl=True, shift=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Cut')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_cut', 'ACTIONMOUSE', 'PRESS', ctrl=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Cut on Mousemove, Keep Gap')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_toggle_mute', 'ACTIONMOUSE', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Trim Strip, Keep Gap')
     kmi_props_setattr(kmi.properties, 'select_mode', 'smart')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True, shift=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Trim Strip, Remove Gap')
     kmi_props_setattr(kmi.properties, 'select_mode', 'cursor')
 
     kmi = km.keymap_items.new('power_sequencer.preview_last_cut', 'P', 'PRESS', shift=True)
@@ -197,21 +173,17 @@ def register():
     kmi = km.keymap_items.new('power_sequencer.save_direct', 'S', 'PRESS', ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Trim Strip Right')
     kmi_props_setattr(kmi.properties, 'side', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', ctrl=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Trim Strip Left')
     kmi_props_setattr(kmi.properties, 'side', 'left')
 
     kmi = km.keymap_items.new('power_sequencer.snap_selection_to_cursor', 'S', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_selected_mute', 'H', 'PRESS', alt=True)
-    kmi_props_setattr(kmi.properties, 'function', 'Mute Unselected')
     kmi_props_setattr(kmi.properties, 'use_unselected', True)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_selected_mute', 'H', 'PRESS')
-    kmi_props_setattr(kmi.properties, 'function', 'Mute Selected')
     kmi_props_setattr(kmi.properties, 'use_unselected', False)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_waveforms', 'W', 'PRESS', alt=True)

@@ -73,8 +73,6 @@ class MouseCut(bpy.types.Operator):
     mouse_vec_start = Vector([0, 0])
     handle_cut_trim_line = None
 
-    function = bpy.props.StringProperty("")
-
     target_strips = []
 
     @classmethod

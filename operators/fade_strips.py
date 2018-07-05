@@ -31,7 +31,6 @@ class FadeStrips(bpy.types.Operator):
         description="Fade in, out, or both in and out. Default is both.",
         default='both')
 
-    function = bpy.props.StringProperty("")
     current_frame = None
 
     @classmethod

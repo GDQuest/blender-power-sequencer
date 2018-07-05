@@ -17,8 +17,6 @@ class SmartSnap(bpy.types.Operator):
         description="Handle side to use for the snap",
         default='auto')
 
-    function = bpy.props.StringProperty("")
-
     @classmethod
     def poll(cls, context):
         return True

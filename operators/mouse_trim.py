@@ -42,7 +42,6 @@ class MouseTrim(bpy.types.Operator):
 
     frame_start, frame_end = IntProperty(), IntProperty()
     to_select = []
-    function = bpy.props.StringProperty("")
 
     @classmethod
     def poll(cls, context):
