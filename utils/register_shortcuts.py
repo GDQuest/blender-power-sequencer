@@ -67,7 +67,6 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.cycle_scenes', 'TAB', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
-    kmi = km.keymap_items.new('power_sequencer.delete_direct', 'DEL', 'PRESS')
     kmi = km.keymap_items.new('power_sequencer.edit_crossfade', 'C', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', alt=True)
@@ -98,11 +97,11 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.mouse_toggle_mute', 'ACTIONMOUSE', 'PRESS', alt=True)
 
-    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True)
+    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'function', 'Trim Strip, Keep Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'smart')
 
-    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True, shift=True)
+    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, shift=True)
     set_keymap_property(kmi.properties, 'function', 'Trim Strip, Remove Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'cursor')
 
@@ -137,7 +136,11 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.toggle_waveforms', 'W', 'PRESS', alt=True)
     kmi = km.keymap_items.new('power_sequencer.trim_to_surrounding_cuts', 'ACTIONMOUSE', 'PRESS', shift=True, alt=True)
+
     kmi = km.keymap_items.new('power_sequencer.delete_direct', 'X', 'PRESS')
 
     kmi = km.keymap_items.new('sequencer.refresh_all', 'R', 'PRESS', shift=True)
     return km
+
+    # TODO: create a new markers keymap
+    # kmi = km.keymap_items.new('power_sequencer.markers_delete_direct', 'X', 'PRESS')
