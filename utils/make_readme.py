@@ -2,6 +2,7 @@ import math
 import json
 from markdown2 import markdown
 
+SHORTCUTS_JSON_FILE = "./shortcuts_docs.json"
 
 def make_toc_label(label, description):
     """
@@ -230,7 +231,7 @@ it so now it's super slick!
 """.strip(), extras=['cuddled_lists'])
 
     operator_info = {}
-    with open("./shortcuts.json", "r") as json_file:
+    with open(SHORTCUTS_JSON_FILE, "r") as json_file:
         operator_info = json.load(json_file)
     if operator_info == {}:
         return

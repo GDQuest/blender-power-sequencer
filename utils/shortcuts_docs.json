@@ -122,7 +122,7 @@
     "power_sequencer.mouse_trim": {
         "name": "Mouse Trim",
         "description": "Trims a frame range or a selection from a start to an end frame. If there's no precise time range, auto trims based on the closest cut",
-        "shortcuts": ["Ctrl RIGHTMOUSE; Trim strip, keep gap", "Ctrl Shift RIGHTMOUSE; Trim strip, remove gap"],
+        "shortcuts": ["Ctrl Alt RIGHTMOUSE; Trim strip, keep gap", "Ctrl Alt Shift RIGHTMOUSE; Trim strip, remove gap"],
         "demo": ""
     },
     "power_sequencer.preview_last_cut": {

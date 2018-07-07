@@ -97,11 +97,11 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.mouse_toggle_mute', 'ACTIONMOUSE', 'PRESS', alt=True)
 
-    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True)
+    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True)
     set_keymap_property(kmi.properties, 'function', 'Trim Strip, Keep Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'smart')
 
-    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, shift=True)
+    kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True, shift=True)
     set_keymap_property(kmi.properties, 'function', 'Trim Strip, Remove Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'cursor')
 
