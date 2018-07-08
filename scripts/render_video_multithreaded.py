@@ -12,10 +12,26 @@ import subprocess
 import math
 import sys
 
+# https://github.com/mikeycal/the-video-editors-render-script-for-blender#configuring-the-script
+# there seems no easy way to grab the ram usage in a mulitplatform way
+# without writing platform dependent code, or by using a python module
+
+# https://store.steampowered.com/hwsurvey/
+# most popluar config is 4 cores, 8 GB ram, so lets take that as our default
+# with that being our default, this constant makes sense
 CPUS_COUNT = min(int(multiprocessing.cpu_count() / 2), 6)
 UTIL_SCRIPT = "./render_video_multithreaded_script.py"
 
+
 def get_project_data(args):
+    """
+    opens blender, has blender write out scence start, scence end, and render
+    path
+
+    todo:
+    - default render path? (wath happens if its not set)
+    - avoid using a seperate file? (write file from string, then delete?)
+    """
     realpath = os.path.dirname(os.path.realpath(__file__))
     utilfile = os.path.join(realpath, UTIL_SCRIPT)
     command = ['blender', '-b', args.blendfile, '-P', utilfile]
@@ -41,6 +57,10 @@ def get_project_data(args):
 def render_chunks(args, frame_start, frame_end, render_directory):
     """
     Divide render into even sized chunks
+
+    Right now the blender instances are local to here
+    If we want a graceful shutdown, we should try to 
+    return the instances, instead of running them directly from here
     """
     total_frames = frame_end - frame_start
     chunk_frames = int(math.floor(total_frames / args.workers))
@@ -75,6 +95,11 @@ def render_chunks(args, frame_start, frame_end, render_directory):
 def render_proc(args, start_frame, end_frame, render_directory):
     """
     Render a chunk of the blender file.
+
+    This part is failing on my linux machine with an invalid path,
+    needs some cleaning up
+
+    Do we need to keep the dry run?
     """
     # TODO: clean up
     outfilepath = os.path.join("//", render_directory, "render_chunk_#######")
@@ -92,6 +117,10 @@ def render_proc(args, start_frame, end_frame, render_directory):
 def join_chunks(args, render_directory):
     """
     Concatenate the video chunks together with ffmpeg
+
+    I wonder if reading in from the current directory is needed.
+    We could try to keep the chunk files in memory, or add them to the list
+    When the jobs complete
     """
     chunk_files = sorted(f for f in os.listdir(render_directory) if "render_chunk" in f)
 
@@ -114,6 +143,11 @@ def join_chunks(args, render_directory):
     subprocess.check_output(command)
 
 if __name__ == '__main__':
+    """
+    Again, not sure if a dry run is really needed
+    Should probably bring out arg parsing into its own function
+    
+    """
     ap = argparse.ArgumentParser(
         description="Multi-process Blender VSE rendering",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
