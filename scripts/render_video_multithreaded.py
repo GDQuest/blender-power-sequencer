@@ -11,10 +11,6 @@ import multiprocessing
 import subprocess
 import math
 import sys
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-log = logging.getLogger("render_multithreaded")
 
 CPUS_COUNT = min(int(multiprocessing.cpu_count() / 2), 6)
 UTIL_SCRIPT = "./render_video_multithreaded_script.py"
@@ -46,11 +42,8 @@ def render_chunks(args, frame_start, frame_end, render_directory):
     """
     Divide render into even sized chunks
     """
-    log.info("Render frames from %s to %s", frame_start, frame_end)
     total_frames = frame_end - frame_start
-    log.debug("total frames: %s", total_frames)
     chunk_frames = int(math.floor(total_frames / args.workers))
-    log.debug("chunk_frames: %s", chunk_frames)
 
     processes = []
     # Figure out the frame ranges for each worker.
@@ -60,7 +53,6 @@ def render_chunks(args, frame_start, frame_end, render_directory):
     # of extra frames, so we don't need to create an entirely
     # new worker to work on it.
     for i in range(args.workers):
-        log.debug("Setting params for worker %d", i)
         w_start_frame = frame_start + (i * chunk_frames)
         if i == args.workers - 1:
             # Last worker takes up extra frames
@@ -68,22 +60,16 @@ def render_chunks(args, frame_start, frame_end, render_directory):
         else:
             w_end_frame = w_start_frame + chunk_frames - 1
 
-        log.debug("worker %d rendering frames %d to %d", i, w_start_frame,
-                  w_end_frame)
-
         # Set a worker to work on this frame range
         p = multiprocessing.Process(
             target=render_proc,
             args=(args, w_start_frame, w_end_frame, render_directory))
         processes.append(p)
         p.start()
-        log.info("Started render process %d with pid %d", i, p.pid)
 
     # wait for results
     for i, p in enumerate(processes):
-        log.debug("Waiting for proc %d", i)
         p.join()
-    log.info("Render processes complete.")
 
 
 def render_proc(args, start_frame, end_frame, render_directory):
@@ -97,7 +83,6 @@ def render_proc(args, start_frame, end_frame, render_directory):
         '%s' % start_frame, '-e',
         '%s' % end_frame, '-o', outfilepath, '-a'
     ]
-    log.debug("Render command: %s", params)
     if not args.dry_run:
         proc = subprocess.Popen(
             params, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
@@ -109,7 +94,6 @@ def join_chunks(args, render_directory):
     Concatenate the video chunks together with ffmpeg
     """
     chunk_files = sorted(f for f in os.listdir(render_directory) if "render_chunk" in f)
-    log.debug("file list is: %s", chunk_files)
 
     list_file = os.path.join(render_directory, 'render_chunks_list.txt')
 
@@ -120,18 +104,10 @@ def join_chunks(args, render_directory):
     # TODO: get container/extension from before/elsewhere in the script
     extension = os.path.splitext(os.path.basename(chunk_files[0]))[1]
     output_path = os.path.join(filebase, "output" + extension)
-    log.debug(
-        """
-        Blend file base path: %s,
-        extension %s
-        output_path %s
-        """, filebase, extension, output_path)
-    log.info("Joining parts into: %s", output_path)
     command = [
         'ffmpeg', '-stats', '-f', 'concat', '-safe', '0', '-i', list_file,
         '-c', 'copy', output_path
     ]
-    log.debug("ffmpeg command: %s", command)
     sys.exit()
     if args.dry_run:
         return
