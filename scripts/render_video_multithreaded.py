@@ -20,20 +20,29 @@ import sys
 # most popluar config is 4 cores, 8 GB ram, so lets take that as our default
 # with that being our default, this constant makes sense
 CPUS_COUNT = min(int(multiprocessing.cpu_count() / 2), 6)
-UTIL_SCRIPT = "./render_video_multithreaded_script.py"
+
+UTIL_SCRIPT = \
+"""\
+import bpy
+
+scene = bpy.context.scene
+print("START %d" % (scene.frame_start))
+print("END %d" % (scene.frame_end))
+print("RENDERPATH %s" % (scene.render.filepath))
+"""
 
 
-def get_project_data(args):
+def get_project_frame_range(args):
     """
-    opens blender, has blender write out scence start, scence end, and render
-    path
-
-    todo:
-    - default render path? (wath happens if its not set)
-    - avoid using a seperate file? (write file from string, then delete?)
+    opens blender, has blender write out the start and end frames of the scene,
+    and returns it as a tuple
     """
     realpath = os.path.dirname(os.path.realpath(__file__))
-    utilfile = os.path.join(realpath, UTIL_SCRIPT)
+    utilfile = os.path.join(realpath, 'temp_util.py')
+
+    with open(utilfile, 'w+') as util:
+        util.write(UTIL_SCRIPT)
+    
     command = ['blender', '-b', args.blendfile, '-P', utilfile]
     process = subprocess.Popen(
         command,
@@ -42,7 +51,6 @@ def get_project_data(args):
         universal_newlines=True)
 
     frame_start, frame_end = 0, 0
-    render_path = ""
     for line in process.stdout:
         if line.startswith("START"):
             frame_start = int(line.split()[1])
@@ -50,22 +58,36 @@ def get_project_data(args):
             frame_end = int(line.split()[1])
         elif line.startswith("RENDERPATH"):
             render_path = line.split()[1]
-
+            if '//' in render_path:
+                render_path = os.path.join(os.path.split(args.blendfile)[0], "render")
+    
+    print(render_path)
+    
+    os.remove(utilfile)
     return (frame_start, frame_end, render_path)
 
-
-def render_chunks(args, frame_start, frame_end, render_directory):
+def gen_render_process_args(args, start_frame, end_frame, render_path):
     """
-    Divide render into even sized chunks
+    Generates 
+    """
+    # TODO: clean up
+    chunk_path = os.path.join(render_path,  "render_chunk_")
+    params = [
+        'blender', '-b', args.blendfile, '-s',
+        '%s' % start_frame, '-e',
+        '%s' % end_frame, '-o', chunk_path, '-a'
+    ]
+    return params
 
-    Right now the blender instances are local to here
-    If we want a graceful shutdown, we should try to 
-    return the instances, instead of running them directly from here
+
+def gen_render_chunk_cmds(args, frame_start, frame_end, render_path):
+    """
+    Returns a list of processes that are the 
     """
     total_frames = frame_end - frame_start
     chunk_frames = int(math.floor(total_frames / args.workers))
 
-    processes = []
+    render_chunk_cmds = []
     # Figure out the frame ranges for each worker.
     # The last worker will need to render a few extra
     # frames if the total number of frames doesn't Divide
@@ -80,48 +102,35 @@ def render_chunks(args, frame_start, frame_end, render_directory):
         else:
             w_end_frame = w_start_frame + chunk_frames - 1
 
-        # Set a worker to work on this frame range
-        p = multiprocessing.Process(
-            target=render_proc,
-            args=(args, w_start_frame, w_end_frame, render_directory))
-        processes.append(p)
-        p.start()
+        render_chunk_cmds.append(gen_render_process_args(args, w_start_frame, w_end_frame, render_path))
+    return render_chunk_cmds
 
-    # wait for results
-    for i, p in enumerate(processes):
-        p.join()
+def render_chunk(chunk_cmd):
+    print(chunk_cmd)
+    subprocess.Popen(chunk_cmd).wait()
 
 
-def render_proc(args, start_frame, end_frame, render_directory):
-    """
-    Render a chunk of the blender file.
-
-    This part is failing on my linux machine with an invalid path,
-    needs some cleaning up
-
-    Do we need to keep the dry run?
-    """
-    # TODO: clean up
-    outfilepath = os.path.join("//", render_directory, "render_chunk_#######")
-    params = [
-        'blender', '-b', args.blendfile, '-s',
-        '%s' % start_frame, '-e',
-        '%s' % end_frame, '-o', outfilepath, '-a'
-    ]
-    if not args.dry_run:
-        proc = subprocess.Popen(
-            params, stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-        stdoutdata, stderrdata = proc.communicate()
+# many thanks to this blog post: 
+# https://rsmith.home.xs4all.nl/programming/parallel-execution-with-python.html
 
 
+def render_multiprocess(args, frame_start, frame_end, render_path):
+    chunk_cmds = gen_render_chunk_cmds(args, frame_start, frame_end, render_path)
+
+    pool = multiprocessing.Pool(processes=(len(chunk_cmds)))
+    pool.map(render_chunk, chunk_cmds)
+    pool.close()
+    pool.join()
+
+"""
 def join_chunks(args, render_directory):
-    """
+    """"""
     Concatenate the video chunks together with ffmpeg
 
     I wonder if reading in from the current directory is needed.
     We could try to keep the chunk files in memory, or add them to the list
     When the jobs complete
-    """
+    """"""
     chunk_files = sorted(f for f in os.listdir(render_directory) if "render_chunk" in f)
 
     list_file = os.path.join(render_directory, 'render_chunks_list.txt')
@@ -141,13 +150,9 @@ def join_chunks(args, render_directory):
     if args.dry_run:
         return
     subprocess.check_output(command)
+"""
 
-if __name__ == '__main__':
-    """
-    Again, not sure if a dry run is really needed
-    Should probably bring out arg parsing into its own function
-    
-    """
+def parse_arguments():
     ap = argparse.ArgumentParser(
         description="Multi-process Blender VSE rendering",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -175,14 +180,21 @@ if __name__ == '__main__':
     ap.add_argument('blendfile', help="Blender project file to render.")
 
     args = ap.parse_args()
-    frame_start, frame_end, render_path = get_project_data(args)
+    args.blendfile = os.path.abspath(args.blendfile)
+    return args
 
-    # TODO: needs testing and/or a cleaner solution
-    render_directory = os.path.normpath(os.path.dirname(render_path))[1:]
-    blender_project_folder = os.path.dirname(args.blendfile)
-    render_directory_full_path = os.path.join(blender_project_folder, render_directory)
 
-    if not args.concat_only:
-        render_chunks(args, frame_start, frame_end, render_directory)
-    if not args.render_only:
-        join_chunks(args, render_directory_full_path)
+if __name__ == '__main__':
+    """
+    Again, not sure if a dry run is really needed
+
+    Note, since renderpath in blender is relative by default,
+    we can just have to user supply us the path to where we should 
+    render
+    """
+
+    args = parse_arguments()
+    frame_start, frame_end, render_path = get_project_frame_range(args)
+
+    render_multiprocess(args, frame_start,frame_end, render_path)
+    

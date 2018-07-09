@@ -40,7 +40,7 @@ class Media:
             self.proxy_command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            universal_newlines=True, )
+            universal_newlines=True)
         process.wait()
         print("progress: 100%")
         print("Done!", "\n")
@@ -123,7 +123,7 @@ class Video(Media):
             self.proxy_command,
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
-            universal_newlines=True, )
+            universal_newlines=True)
 
         for line in process.stdout:
             progress = int(line[line.index("=") + 2:line.index(" f")].strip())
