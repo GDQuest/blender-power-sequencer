@@ -21,136 +21,198 @@ import sys
 # with that being our default, this constant makes sense
 CPUS_COUNT = min(int(multiprocessing.cpu_count() / 2), 6)
 
-UTIL_SCRIPT = \
+FRAME_RANGE_SCRIPT = \
 """\
 import bpy
 
 scene = bpy.context.scene
 print("START %d" % (scene.frame_start))
 print("END %d" % (scene.frame_end))
-print("RENDERPATH %s" % (scene.render.filepath))
 """
 
+MIXDOWN_SCRIPT = \
+"""\
+import bpy
+scene = bpy.context.scene
+sed = scene.sequence_editor
+sequences = sed.sequences_all
+for strip in sequences:
+    if strip.type != "SOUND":
+        strip.mute = True
+bpy.ops.sound.mixdown(filepath="%s", check_existing=False, relative_path=False, container="FLAC", codec="FLAC")
+"""
 
-def get_project_frame_range(args):
+BLENDER_CMD_TEMPLATE = [
+    'blender',
+    '-b',
+    '',
+    '-P',
+    ''
+]
+
+BLENDER_CHUNK_RENDER_CMD_TEMPLATE = [
+    'blender',
+    '-b',
+    '',
+    '-s',
+    '',
+    '-e',
+    '',
+    '-o',
+    '',
+    '-a'
+]
+
+BLENDER_AUDIO_MIXDOWN_CMD_TEMPLATE = [
+    'blender',
+    '-b',
+    '',
+    '-s',
+    '',
+    '-e',
+    '',
+    '-o',
+    '',
+    '-P',
+    ''
+]
+
+
+def get_project_info(blendfile):
     """
     opens blender, has blender write out the start and end frames of the scene,
-    and returns it as a tuple
+    generates the render path, and returns the trio as a tuple
     """
-    realpath = os.path.dirname(os.path.realpath(__file__))
-    utilfile = os.path.join(realpath, 'temp_util.py')
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    frame_range_script_path = os.path.join(script_path, 'temp_frame_range_script.py')
 
-    with open(utilfile, 'w+') as util:
-        util.write(UTIL_SCRIPT)
+    with open(frame_range_script_path, 'w+') as script:
+        script.write(FRAME_RANGE_SCRIPT)
     
-    command = ['blender', '-b', args.blendfile, '-P', utilfile]
+    info_cmd = [arg for arg in BLENDER_CMD_TEMPLATE]
+    info_cmd[2] = blendfile
+    info_cmd[-1] = frame_range_script_path
+
     process = subprocess.Popen(
-        command,
+        info_cmd,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         universal_newlines=True)
 
-    frame_start, frame_end = 0, 0
+    frame_start = 0
+    frame_end = 0
+    render_path = os.path.join(os.path.split(blendfile)[0], "render")
+    
     for line in process.stdout:
         if line.startswith("START"):
             frame_start = int(line.split()[1])
         elif line.startswith("END"):
             frame_end = int(line.split()[1])
-        elif line.startswith("RENDERPATH"):
-            render_path = line.split()[1]
-            if '//' in render_path:
-                render_path = os.path.join(os.path.split(args.blendfile)[0], "render")
-    
-    print(render_path)
-    
-    os.remove(utilfile)
+                
+    os.remove(frame_range_script_path)
+
     return (frame_start, frame_end, render_path)
 
-def gen_render_process_args(args, start_frame, end_frame, render_path):
+def gen_render_process_args(render_setting, start_frame, end_frame, render_path):
     """
-    Generates 
+    Generates a list of strings that is the cmd to spawn a chunck render process
     """
-    # TODO: clean up
-    chunk_path = os.path.join(render_path,  "render_chunk_")
-    params = [
-        'blender', '-b', args.blendfile, '-s',
-        '%s' % start_frame, '-e',
-        '%s' % end_frame, '-o', chunk_path, '-a'
-    ]
-    return params
+    blendfile, workers = render_setting
+
+    chunk_path = os.path.join(render_path, 'render_parts', "render_chunk_")
+
+    render_cmd = [arg for arg in BLENDER_CHUNK_RENDER_CMD_TEMPLATE]
+
+    render_cmd[2] = blendfile
+    render_cmd[4]= '%s' % start_frame
+    render_cmd[6]= '%s' % end_frame
+    render_cmd[8] = chunk_path
+    
+    return render_cmd
 
 
-def gen_render_chunk_cmds(args, frame_start, frame_end, render_path):
+def gen_render_chunk_cmds(render_setting, frame_start, frame_end, render_path):
     """
-    Returns a list of processes that are the 
+    Returns a list of cmds to run in order to generate chunks
     """
     total_frames = frame_end - frame_start
-    chunk_frames = int(math.floor(total_frames / args.workers))
+    blendfile, workers =  render_setting
+    chunk_frames = int(math.floor(total_frames / workers))
 
     render_chunk_cmds = []
-    # Figure out the frame ranges for each worker.
-    # The last worker will need to render a few extra
-    # frames if the total number of frames doesn't Divide
-    # neatly, but this is usually a relatively small number
-    # of extra frames, so we don't need to create an entirely
-    # new worker to work on it.
-    for i in range(args.workers):
+
+    for i in range(workers):
         w_start_frame = frame_start + (i * chunk_frames)
-        if i == args.workers - 1:
-            # Last worker takes up extra frames
+        if i == workers - 1:
             w_end_frame = frame_end
         else:
             w_end_frame = w_start_frame + chunk_frames - 1
 
-        render_chunk_cmds.append(gen_render_process_args(args, w_start_frame, w_end_frame, render_path))
+        render_chunk_cmds.append(gen_render_process_args(render_setting, w_start_frame, w_end_frame, render_path))
+
     return render_chunk_cmds
 
 def render_chunk(chunk_cmd):
-    print(chunk_cmd)
-    subprocess.Popen(chunk_cmd).wait()
+    """
+    The actual running of the chunk render process
+    """
+    start_frame = chunk_cmd[4]
+    end_frame = chunk_cmd[6]
+
+    print('    >> started chunck render [%s::%s]' % (start_frame, end_frame))
+    subprocess.check_output(chunk_cmd, stderr=subprocess.STDOUT)
+    print('    << finished chunck render [%s::%s]' % (start_frame, end_frame))
 
 
 # many thanks to this blog post: 
 # https://rsmith.home.xs4all.nl/programming/parallel-execution-with-python.html
 
 
-def render_multiprocess(args, frame_start, frame_end, render_path):
-    chunk_cmds = gen_render_chunk_cmds(args, frame_start, frame_end, render_path)
+def render_video_multiprocess(render_setting, frame_start, frame_end, render_path):
+    """
+    manages the chunk rendering processes via a pool
+    """
+    print("\n~~ rendering project into parts...\n")
+    chunk_cmds = gen_render_chunk_cmds(render_setting, frame_start, frame_end, render_path)
 
     pool = multiprocessing.Pool(processes=(len(chunk_cmds)))
     pool.map(render_chunk, chunk_cmds)
     pool.close()
     pool.join()
 
-"""
-def join_chunks(args, render_directory):
-    """"""
-    Concatenate the video chunks together with ffmpeg
+def render_audio(render_setting, frame_start, frame_end, render_path):
+    """
+    renders the audio on a single thread, straight from blender
+    """
+    blendfile, workers = render_setting
 
-    I wonder if reading in from the current directory is needed.
-    We could try to keep the chunk files in memory, or add them to the list
-    When the jobs complete
-    """"""
-    chunk_files = sorted(f for f in os.listdir(render_directory) if "render_chunk" in f)
+    script_path = os.path.dirname(os.path.abspath(__file__))
+    mixdown_script_path = os.path.join(script_path, 'mixdown_script.py')
 
-    list_file = os.path.join(render_directory, 'render_chunks_list.txt')
+    mixdown_path = os.path.join(render_path, 'render_parts', "mixdown.flac")
 
-    with open(list_file, 'w') as fp:
-        fp.write('\n'.join(["file %s" % x for x in chunk_files]))
-    filebase = os.path.splitext(args.blendfile)[0]
-    print(args.blendfile)
-    # TODO: get container/extension from before/elsewhere in the script
-    extension = os.path.splitext(os.path.basename(chunk_files[0]))[1]
-    output_path = os.path.join(filebase, "output" + extension)
-    command = [
-        'ffmpeg', '-stats', '-f', 'concat', '-safe', '0', '-i', list_file,
-        '-c', 'copy', output_path
-    ]
-    sys.exit()
-    if args.dry_run:
-        return
-    subprocess.check_output(command)
-"""
+    with open(mixdown_script_path, 'w+') as script:
+        script.write(MIXDOWN_SCRIPT % mixdown_path)
+
+    mixdown_cmd = [arg for arg in BLENDER_AUDIO_MIXDOWN_CMD_TEMPLATE]
+    mixdown_cmd[2] = blendfile
+    mixdown_cmd[4] = '%s' % frame_start
+    mixdown_cmd[6] = '%s' % frame_end
+    mixdown_cmd[8] = mixdown_path
+    mixdown_cmd[10] = mixdown_script_path
+
+    subprocess.Popen(mixdown_cmd).wait()
+
+    #os.remove(mixdown_script_path)
+
+def render_multiprocess(render_setting, frame_start, frame_end, render_path):
+    render_video_multiprocess(render_setting, frame_start, frame_end, render_path)
+    render_audio(render_setting, frame_start, frame_end, render_path)
+
+
+def concat_parts(render_setting, render_path):
+    pass
+
 
 def parse_arguments():
     ap = argparse.ArgumentParser(
@@ -163,20 +225,15 @@ def parse_arguments():
         default=CPUS_COUNT,
         help="Number of workers in the pool.")
     ap.add_argument(
-        '--concat-only',
+        '--concat',
         action='store_true',
-        default=False,
-        help="Don't render new sections, just concat existing ones.")
+        default=True,
+        help="Concat parts.")
     ap.add_argument(
-        '--render-only',
+        '--render',
         action='store_true',
-        default=False,
-        help="Render sections, but don't concat.")
-    ap.add_argument(
-        '--dry-run',
-        action='store_true',
-        default=False,
-        help="Do everything but the complex, time-consuming subprocesses.")
+        default=True,
+        help="Render parts.")
     ap.add_argument('blendfile', help="Blender project file to render.")
 
     args = ap.parse_args()
@@ -186,15 +243,17 @@ def parse_arguments():
 
 if __name__ == '__main__':
     """
-    Again, not sure if a dry run is really needed
-
-    Note, since renderpath in blender is relative by default,
-    we can just have to user supply us the path to where we should 
-    render
+    The Main Function Of The Program
     """
 
     args = parse_arguments()
-    frame_start, frame_end, render_path = get_project_frame_range(args)
 
-    render_multiprocess(args, frame_start,frame_end, render_path)
+    frame_start, frame_end, render_path = get_project_info(args.blendfile)
+
+    render_setting = (args.blendfile, args.workers)
+
+    if args.render:
+        render_multiprocess(render_setting, frame_start,frame_end, render_path)
+    if args.concat:
+        concat_parts(render_setting, render_path)
     
