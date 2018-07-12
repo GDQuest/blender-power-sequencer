@@ -57,11 +57,11 @@ def generate_render_chunk_commands(render_settings, frame_start, frame_end, rend
         """
         blendfile, workers = render_settings
         chunk_path = os.path.join(render_path, "render_parts", "render_chunk_")
-        return [
-            "blender", "-b", blendfile, "-s",
-            str(start_frame), "-e",
-            str(end_frame), "-o", chunk_path, "-a", "-Y"
-        ]
+        render_video_only_script = os.path.join(PATH_TO_SCRIPT, "blender_scripts/render_video_only.py")
+        return ["blender", "-b", blendfile, "-s",
+                str(start_frame), "-e",
+                str(end_frame), "-o", chunk_path, "-a",
+                "-P", render_video_only_script, "-Y"]
 
     total_frames = frame_end - frame_start
     blendfile, workers = render_settings
@@ -127,19 +127,19 @@ def generate_concatenate_command(render_parts_path, chunk_list_path):
     """
     ext = ""
     for f in os.listdir(render_parts_path):
-        if not f.endswith(".txt"):
-            ext = os.path.splitext(f)[1]
-            break
+        if f.endswith(".txt") or f.endswith(".flac"):
+            continue
+        ext = os.path.splitext(f)[1]
+        break
     concat_path = os.path.join(render_parts_path, "video_concat" + ext)
 
     concat_cmd = ["ffmpeg", "-stats", "-f", "concat", "-safe", "-0", "-i",
                   chunk_list_path, "-c", "copy", "-y", concat_path]
-    print(concat_cmd)
     log.debug("FFMPEG concatenate command: " + " ".join(concat_cmd))
     return concat_cmd
 
 
-def create_chunks_list_file(chunk_list_path):
+def get_chunks_files_as_list(chunk_list_path):
     """
     Create a text file with a list of video chunks to concatenate with FFMPEG
     Returns the path to the newly created file
@@ -147,18 +147,22 @@ def create_chunks_list_file(chunk_list_path):
     render_parts_path = os.path.split(chunk_list_path)[0]
 
     chunk_list = []
-    with open(chunk_list_path, "w") as chunk_list_file:
-        for file in os.listdir(render_parts_path):
-            if file.startswith("render_chunk_"):
-                chunk_list.append(file)
-        chunk_list = sorted(chunk_list)
-        log.debug("Render chunks:\n%s" % chunk_list)
-        if not chunk_list:
-            log.warn("No render chunks found, cannot concatenate the video.")
-            return
-        for chunk in chunk_list:
+    for file in os.listdir(render_parts_path):
+        if file.startswith("render_chunk_"):
+            chunk_list.append(file)
+    chunk_list = sorted(chunk_list)
+    log.debug("Render chunks:\n%s" % chunk_list)
+    return chunk_list
+
+
+def create_chunks_list_file(file_path, _file_list):
+    with open(file_path, "w") as chunk_list_file:
+        lines = []
+        for chunk in chunk_file_list:
             chunk_abspath = os.path.join(render_parts_path, chunk)
-            chunk_list_file.write("file \'{!s}\'\n".format(chunk_abspath))
+            log.debug(chunk_abspath)
+            lines.append("file \'{!s}\'".format(chunk_abspath) + "\n")
+        chunk_list_file.writelines(lines)
 
 
 def call(command):
@@ -172,17 +176,18 @@ def call(command):
         universal_newlines=True).wait()
 
 
-def generate_join_parts_command(render_path, concatenate_file_path):
+def generate_join_parts_command(render_path, concat_video_file_path):
     """
     Calls ffmpeg to join the video and the audio in order to create the final
     render
     """
     mixdown_path = os.path.join(render_path, "render_parts", "mixdown.flac")
-    ext = os.path.splitext(concatenate_file_path)[1]
+    ext = os.path.splitext(concat_video_file_path)[1]
     return [
-        "ffmpeg", "-stats", "-i", concatenate_file_path, "-i", mixdown_path,
-        "-c:v", "copy", "-map", "0:v:0", "-map", "1:a:0", "-y",
-        os.path.join(render_path, "render" + ext)
+        "ffmpeg", "-stats", "-i", concat_video_file_path, "-i", mixdown_path,
+        "-map", "0:v:0", "-c:v", "copy",
+        "-map", "1:a:0", "-c:a", "aac", "-b:a", "192k",
+        "-y", os.path.join(render_path, "render" + ext)
     ]
 
 
@@ -195,12 +200,23 @@ def parse_arguments():
         "--workers",
         type=int,
         default=CPUS_COUNT,
-        help="Number of workers in the pool.", )
+        help="Number of workers in the pool.")
     ap.add_argument(
         '--dry-run',
         action='store_true',
         default=False,
         help="Run the script without actual rendering or creating files and folders. For debugging purposes")
+    ap.add_argument(
+        '-d',
+        '--debug',
+        action='store_true',
+        default=False,
+        help="Print debug log messages to the console")
+    ap.add_argument(
+        '--concatenate-only',
+        action='store_true',
+        default=False,
+        help="Only concatenate the video chunks and merge the video and audio mixdown")
     ap.add_argument("blendfile", help="Blender project file to render.")
 
     args = ap.parse_args()
@@ -212,7 +228,7 @@ def parse_arguments():
 if __name__ == "__main__":
     args = parse_arguments()
     render_settings = (args.blendfile, args.workers)
-    if args.dry_run:
+    if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
@@ -228,27 +244,30 @@ if __name__ == "__main__":
     render_chunk_commands = generate_render_chunk_commands(render_settings, frame_start, frame_end, render_path)
     mixdown_command = generate_render_mixdown_command(render_settings, render_path)
 
-    if not args.dry_run:
+    if not (args.dry_run or args.concatenate_only):
         print("~~ rendering video and audio", end="")
         render_multiprocess(render_chunk_commands)
         call(mixdown_command)
         print("Done!\n")
 
-    chunks_list_file_path = os.path.join(render_parts_path, "chunks_list.txt")
-    create_chunks_list_file(chunks_list_file_path)
-    log.debug("Chunks file path: %s" % chunks_list_file_path)
+    chunks_file_path = os.path.join(render_parts_path, "chunks_list.txt")
 
-    concatenate_command = generate_concatenate_command(render_parts_path, chunks_list_file_path)
-    os.remove(chunks_list_file_path)
-    concatenate_file_path = concatenate_command[-1]
-    join_parts_command = generate_join_parts_command(render_path, concatenate_file_path)
+    concatenate_command = generate_concatenate_command(render_parts_path, chunks_file_path)
+    log.debug(" ".join(concatenate_command))
+    concat_video_file_path = concatenate_command[-1]
+    join_audio_video_command = generate_join_parts_command(render_path, concat_video_file_path)
+    log.debug(" ".join(join_audio_video_command))
 
-    if not args.dry_run:
-        print("~~ rendering video and audio", end="")
-        render_multiprocess(render_chunk_commands)
-        call(mixdown_command)
-        print("Done!\n")
+    chunk_file_list = get_chunks_files_as_list(chunks_file_path)
+    log.debug("Chunks file path: %s" % chunks_file_path)
+    create_chunks_list_file(chunks_file_path, chunk_file_list)
+
+    if not chunk_file_list:
+        log.warn("No render chunks found, cannot concatenate the video.")
+    elif not args.dry_run:
         print("~~ now joining parts to make final render... ", end="")
         call(concatenate_command)
-        call(join_parts_command)
+        subprocess.call(join_audio_video_command)
         print("Done!\n")
+
+    os.remove(chunks_file_path)
