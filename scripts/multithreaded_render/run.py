@@ -11,7 +11,6 @@ import multiprocessing
 import subprocess
 import math
 import logging
-import sys
 
 # https://github.com/mikeycal/the-video-editors-render-script-for-blender#configuring-the-script
 # there seems no easy way to grab the ram usage in a mulitplatform way
@@ -21,7 +20,7 @@ import sys
 # https://store.steampowered.com/hwsurvey/
 CPUS_COUNT = min(int(multiprocessing.cpu_count() / 2), 6)
 PATH_TO_SCRIPT = os.path.dirname(os.path.abspath(__file__))
-log = logging.getLogger("render_multithreaded")
+log = logging.getLogger()
 
 
 def get_project_info(blendfile):
@@ -82,62 +81,74 @@ def generate_render_chunk_commands(render_settings, frame_start, frame_end, rend
         render_chunk_commands.append(render_command)
 
     # DEBUG MESSAGE
-    # commands_as_string = ""
-    # for c in render_chunk_commands:
-    #     command = " ".join(c)
-    #     commands_as_string += command + "\n"
-    # log.debug("Commands:\n%s" % commands_as_string)
+    commands_as_string = ""
+    for c in render_chunk_commands:
+        command = " ".join(c)
+        commands_as_string += command + "\n"
+    log.debug("Commands:\n%s" % commands_as_string)
     return render_chunk_commands
 
 
-def render_video_multiprocess(chunk_cmds):
+def render_multiprocess(commands_list):
     """
     Manages the chunk rendering processes via a pool
     many thanks to this blog post:
     https://rsmith.home.xs4all.nl/programming/parallel-execution-with-python.html
     """
-    pool = multiprocessing.Pool(processes=(len(chunk_cmds)))
-    pool.map(render_chunk, chunk_cmds)
+    assert commands_list
+    pool = multiprocessing.Pool(processes=(len(commands_list)))
+    pool.map(render_chunk, commands_list)
     pool.close()
     pool.join()
 
 
-def render_chunk(chunk_cmd):
+def render_chunk(command):
     """
     Spawns a subprocess to render one chunk of the video
     """
-    # start_frame, end_frame = chunk_cmd[4], chunk_cmd[6]
-    subprocess.check_output(chunk_cmd, stderr=subprocess.STDOUT)
+    subprocess.check_output(command, stderr=subprocess.STDOUT)
 
 
-def render_audio(render_settings, frame_start, frame_end, render_path):
+def generate_render_mixdown_command(render_settings, render_path):
     """
     renders the audio on a single thread, straight from blender
     """
     blendfile, workers = render_settings
     mixdown_script_path = os.path.join(PATH_TO_SCRIPT, "blender_scripts/render_mixdown.py")
-    mixdown_path = os.path.join(render_path, "render_parts", "mixdown.flac")
     mixdown_cmd = ["blender", "-b", blendfile,
                    "-Y", "-P", mixdown_script_path]
-    log.debug("\n" + "Mixdown audio command: " + " ".join(mixdown_cmd))
-    subprocess.Popen(
-        mixdown_cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        universal_newlines=True, ).wait()
+    log.debug("Mixdown audio command: " + " ".join(mixdown_cmd))
+    return mixdown_cmd
 
 
-def concatenate_chunks(render_path):
+def generate_concatenate_command(render_parts_path, chunk_list_path):
     """
-    Calls ffmpeg to concatenate the chunks. also returns the path to the newly
-    created file
+    Generates and returns an FFMPEG command to call as a subprocess
     """
-    parts_dir = os.path.join(render_path, "render_parts")
-    chunk_list_path = os.path.join(parts_dir, "chunk_list.txt")
+    ext = ""
+    for f in os.listdir(render_parts_path):
+        if not f.endswith(".txt"):
+            ext = os.path.splitext(f)[1]
+            break
+    concat_path = os.path.join(render_parts_path, "video_concat" + ext)
+
+    concat_cmd = ["ffmpeg", "-stats", "-f", "concat", "-safe", "-0", "-i",
+                  chunk_list_path, "-c", "copy", "-y", concat_path]
+    print(concat_cmd)
+    log.debug("FFMPEG concatenate command: " + " ".join(concat_cmd))
+    return concat_cmd
+
+
+def create_chunks_list_file(chunk_list_path):
+    """
+    Create a text file with a list of video chunks to concatenate with FFMPEG
+    Returns the path to the newly created file
+    """
+    render_parts_path = os.path.split(chunk_list_path)[0]
 
     chunk_list = []
-    with open(chunk_list_path, "w+") as chunk_list_file:
-        for file in os.listdir(parts_dir):
+    with open(chunk_list_path, "w") as chunk_list_file:
+        for file in os.listdir(render_parts_path):
             if file.startswith("render_chunk_"):
                 chunk_list.append(file)
         chunk_list = sorted(chunk_list)
@@ -146,41 +157,33 @@ def concatenate_chunks(render_path):
             log.warn("No render chunks found, cannot concatenate the video.")
             return
         for chunk in chunk_list:
-            chunk_abspath = os.path.join(parts_dir, chunk)
+            chunk_abspath = os.path.join(render_parts_path, chunk)
             chunk_list_file.write("file \'{!s}\'\n".format(chunk_abspath))
 
-    ext = os.path.splitext(chunk_list[0])[1]
-    concat_path = os.path.join(parts_dir, "video_concat%s" % ext)
 
-    concat_cmd = ["ffmpeg", "-stats", "-f", "concat", "-safe", "-0", "-i",
-                  chunk_list_path, "-c", "copy", "-y", concat_path]
-    log.debug("\nFFMPEG concatenate command: %s" % " ".join(concat_cmd))
+def call(command):
+    """
+    Call a command with Popen and wait for it to finish
+    """
     subprocess.Popen(
-        concat_cmd,
+        command,
         stdout=subprocess.PIPE,
         stderr=subprocess.STDOUT,
         universal_newlines=True).wait()
-    os.remove(chunk_list_path)
-    return (concat_path, ext)
 
 
-def join_parts(render_path, video_concat_path, ext):
+def generate_join_parts_command(render_path, concatenate_file_path):
     """
     Calls ffmpeg to join the video and the audio in order to create the final
     render
     """
     mixdown_path = os.path.join(render_path, "render_parts", "mixdown.flac")
-
-    join_cmd = [
-        "ffmpeg", "-stats", "-i", video_concat_path, "-i", mixdown_path,
+    ext = os.path.splitext(concatenate_file_path)[1]
+    return [
+        "ffmpeg", "-stats", "-i", concatenate_file_path, "-i", mixdown_path,
         "-c:v", "copy", "-map", "0:v:0", "-map", "1:a:0", "-y",
-        os.path.join(render_path, "render%s" % ext)
+        os.path.join(render_path, "render" + ext)
     ]
-    subprocess.Popen(
-        join_cmd,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        universal_newlines=True).wait()
 
 
 def parse_arguments():
@@ -208,6 +211,7 @@ def parse_arguments():
 # SCRIPT
 if __name__ == "__main__":
     args = parse_arguments()
+    render_settings = (args.blendfile, args.workers)
     if args.dry_run:
         logging.basicConfig(level=logging.DEBUG)
     else:
@@ -216,16 +220,35 @@ if __name__ == "__main__":
     print("~~ probing blendfile for project info... ", end="")
     frame_start, frame_end, render_path = get_project_info(args.blendfile)
     print("Done!\n")
-    render_settings = (args.blendfile, args.workers)
 
-    print("~~ rendering video", end="")
+    render_parts_path = os.path.join(render_path, "render_parts")
+    if not os.path.exists(render_parts_path):
+        os.makedirs(os.path.join(render_path, "render_parts"))
+
     render_chunk_commands = generate_render_chunk_commands(render_settings, frame_start, frame_end, render_path)
-    render_video_multiprocess(render_chunk_commands)
-    print("~~ rendering audio mixdown", end="")
-    render_audio(render_settings, frame_start, frame_end, render_path)
-    print("Done!\n")
+    mixdown_command = generate_render_mixdown_command(render_settings, render_path)
 
-    print("~~ now joining parts to make final render... ", end="")
-    video_concat_path, extension = concatenate_chunks(render_path)
-    join_parts(render_path, video_concat_path, extension)
-    print("Done!\n")
+    if not args.dry_run:
+        print("~~ rendering video and audio", end="")
+        render_multiprocess(render_chunk_commands)
+        call(mixdown_command)
+        print("Done!\n")
+
+    chunks_list_file_path = os.path.join(render_parts_path, "chunks_list.txt")
+    create_chunks_list_file(chunks_list_file_path)
+    log.debug("Chunks file path: %s" % chunks_list_file_path)
+
+    concatenate_command = generate_concatenate_command(render_parts_path, chunks_list_file_path)
+    os.remove(chunks_list_file_path)
+    concatenate_file_path = concatenate_command[-1]
+    join_parts_command = generate_join_parts_command(render_path, concatenate_file_path)
+
+    if not args.dry_run:
+        print("~~ rendering video and audio", end="")
+        render_multiprocess(render_chunk_commands)
+        call(mixdown_command)
+        print("Done!\n")
+        print("~~ now joining parts to make final render... ", end="")
+        call(concatenate_command)
+        call(join_parts_command)
+        print("Done!\n")
