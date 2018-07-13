@@ -21,48 +21,39 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.add_crossfade', 'C', 'PRESS', ctrl=True, alt=True)
     kmi = km.keymap_items.new('power_sequencer.add_speed', 'PLUS', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.add_transform', 'T', 'PRESS')
+    # TODO: make it replace built-in?
     kmi = km.keymap_items.new('power_sequencer.border_select', 'B', 'PRESS', shift=True)
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'ONE', 'PRESS', )
-    set_keymap_property(kmi.properties, "function", "Speed to 1x")
     set_keymap_property(kmi.properties, "speed", "normal")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'TWO', 'PRESS')
-    set_keymap_property(kmi.properties, "function", "Speed to 1.33x")
     set_keymap_property(kmi.properties, "speed", "fast")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'THREE', 'PRESS')
-    set_keymap_property(kmi.properties, "function", "Speed to 1.66x")
     set_keymap_property(kmi.properties, "speed", "faster")
 
     kmi = km.keymap_items.new('power_sequencer.change_playback_speed', 'FOUR', 'PRESS')
-    set_keymap_property(kmi.properties, "function", "Speed to 2x")
     set_keymap_property(kmi.properties, "speed", "double")
 
     kmi = km.keymap_items.new('power_sequencer.channel_offset', 'UP_ARROW', 'PRESS', alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Move to Open Channel Above')
     set_keymap_property(kmi.properties, 'direction', 'up')
 
     kmi = km.keymap_items.new('power_sequencer.channel_offset', 'DOWN_ARROW', 'PRESS', alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Move to Open Channel Below')
     set_keymap_property(kmi.properties, 'direction', 'down')
 
     kmi = km.keymap_items.new('power_sequencer.clear_fades', 'F', 'PRESS', alt=True, ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS')
-    set_keymap_property(kmi.properties, 'function', 'Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected')
     set_keymap_property(kmi.properties, 'concatenate_whole_channel', False)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True)
-    set_keymap_property(kmi.properties, 'function', 'Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected')
     set_keymap_property(kmi.properties, 'concatenate_whole_channel', True)
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'C', 'PRESS', ctrl=True)
-    set_keymap_property(kmi.properties, 'function', 'Copy')
     set_keymap_property(kmi.properties, 'delete_selection', False)
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'X', 'PRESS', ctrl=True)
-    set_keymap_property(kmi.properties, 'function', 'Cut')
     set_keymap_property(kmi.properties, 'delete_selection', True)
 
     kmi = km.keymap_items.new('power_sequencer.cycle_scenes', 'TAB', 'PRESS', shift=True)
@@ -70,15 +61,12 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.edit_crossfade', 'C', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Fade Right',)
     set_keymap_property(kmi.properties, 'fade_type', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', ctrl=True)
-    set_keymap_property(kmi.properties, 'function', 'Fade Left',)
     set_keymap_property(kmi.properties, 'fade_type', 'left')
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS')
-    set_keymap_property(kmi.properties, 'function', 'Fade Both',)
     set_keymap_property(kmi.properties, 'fade_type', 'both')
 
     kmi = km.keymap_items.new('power_sequencer.grab_closest_handle_or_cut', 'G', 'PRESS', shift=True, alt=True)
@@ -90,19 +78,15 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.increase_playback_speed', 'RIGHT_BRACKET', 'PRESS')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_cut', 'ACTIONMOUSE', 'PRESS', ctrl=True, shift=True)
-    set_keymap_property(kmi.properties, 'function', 'Cut')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_cut', 'ACTIONMOUSE', 'PRESS', ctrl=True)
-    set_keymap_property(kmi.properties, 'function', 'Cut on Mousemove, Keep Gap')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_toggle_mute', 'ACTIONMOUSE', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Trim Strip, Keep Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'smart')
 
     kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True, shift=True)
-    set_keymap_property(kmi.properties, 'function', 'Trim Strip, Remove Gap')
     set_keymap_property(kmi.properties, 'select_mode', 'cursor')
 
     kmi = km.keymap_items.new('power_sequencer.preview_last_cut', 'P', 'PRESS', shift=True)
@@ -117,21 +101,17 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.save_direct', 'S', 'PRESS', ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Trim Strip Right')
     set_keymap_property(kmi.properties, 'side', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', ctrl=True)
-    set_keymap_property(kmi.properties, 'function', 'Trim Strip Left')
     set_keymap_property(kmi.properties, 'side', 'left')
 
     kmi = km.keymap_items.new('power_sequencer.snap_selection_to_cursor', 'S', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_selected_mute', 'H', 'PRESS', alt=True)
-    set_keymap_property(kmi.properties, 'function', 'Mute Unselected')
     set_keymap_property(kmi.properties, 'use_unselected', True)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_selected_mute', 'H', 'PRESS')
-    set_keymap_property(kmi.properties, 'function', 'Mute Selected')
     set_keymap_property(kmi.properties, 'use_unselected', False)
 
     kmi = km.keymap_items.new('power_sequencer.toggle_waveforms', 'W', 'PRESS', alt=True)
@@ -142,5 +122,40 @@ def register_shortcuts():
     kmi = km.keymap_items.new('sequencer.refresh_all', 'R', 'PRESS', shift=True)
     return km
 
-    # TODO: create a new markers keymap
-    # kmi = km.keymap_items.new('power_sequencer.markers_delete_direct', 'X', 'PRESS')
+
+def convert_keymap_to_dict(keymap):
+    """
+    Loop through all entries in a Blender KeyMap
+    Returns a list of KeyMapItem as dictionaries
+    Use it to serialize shortcuts as JSON
+    """
+    keymap_dict = {}
+    for k in keymap.keymap_items:
+        new_entry = {
+            k.idname: {
+                "name": k.name,
+                "description": "",
+                "shortcuts": [
+                    {
+                        "description": "",
+                        "type": k.type,
+                        "ctrl": k.ctrl,
+                        "shift": k.shift,
+                        "alt": k.alt,
+                        "properties": [
+                        ]
+                    }
+                ],
+                "demo": ""
+            }
+        }
+        for key in k.properties.keys():
+            value = getattr(k.properties, key)
+            new_entry[k.idname]["shortcuts"]["properties"].append(
+                {key: value}
+            )
+        if k.idname in keymap_dict.keys():
+            keymap_dict[k.idname]["shortcuts"].extend(new_entry[k.idname]["shortcuts"])
+        else:
+            keymap_dict.append(new_entry)
+    return keymap_dict
