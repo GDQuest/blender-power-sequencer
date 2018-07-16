@@ -1,5 +1,6 @@
 import bpy
 from .utils.global_settings import SequenceTypes
+from .utils.find_closest_strip import find_closest_strip
 
 
 class GrabSequencesHandles(bpy.types.Operator):
@@ -19,17 +20,20 @@ class GrabSequencesHandles(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.sequences) > 0
 
     def invoke(self, context, event):
-        selection = bpy.context.selected_sequences
-
-        if not selection:
-            return {'CANCELLED'}
-
-        self.frame, _ = context.region.view2d.region_to_view(
+        self.frame = context.region.view2d.region_to_view(
             x=event.mouse_region_x,
-            y=event.mouse_region_y)
+            y=event.mouse_region_y)[0]
+
+        selection = bpy.context.selected_sequences
+        if not selection:
+            closest_strip = find_closest_strip(bpy.context.sequences,
+                               event.mouse_region_x,
+                               event.mouse_region_y)
+            self.select_closest_handle(closest_strip)
+            return self.execute(context)
 
         bpy.ops.sequencer.select_all(action='DESELECT')
         for s in selection:
@@ -41,9 +45,10 @@ class GrabSequencesHandles(bpy.types.Operator):
                     pass
             else:
                 self.select_closest_handle(s)
+        return self.execute(context)
 
-        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
-        return {'FINISHED'}
+    def execute(self, context):
+        return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
 
     def select_closest_handle(self, sequence):
         middle = sequence.frame_final_start + sequence.frame_final_duration / 2
