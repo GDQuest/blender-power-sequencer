@@ -30,14 +30,14 @@ class GrabSequencesHandles(bpy.types.Operator):
         selection = bpy.context.selected_sequences
         if not selection:
             closest_strip = find_closest_strip(bpy.context.sequences,
-                               event.mouse_region_x,
-                               event.mouse_region_y)
+                                               event.mouse_region_x,
+                                               event.mouse_region_y)
             self.select_closest_handle(closest_strip)
             return self.execute(context)
 
         bpy.ops.sequencer.select_all(action='DESELECT')
         for s in selection:
-            if s.type in SequenceTypes.EFFECT:
+            if s.type in SequenceTypes.EFFECT and not s.type == 'COLOR':
                 self.select_closest_handle(s.input_1)
                 try:
                     self.select_closest_handle(s.input_2)
