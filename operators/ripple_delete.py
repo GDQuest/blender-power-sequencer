@@ -4,9 +4,6 @@ from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.get_frame_range import get_frame_range
 
 
-# TODO: To do a proper ripple, gotta move the sequences "manually" i.e. when you delete the
-# first sequence on the leftmost side of the sequencer
-# TODO: Improve auto move cursor back
 class RippleDelete(bpy.types.Operator):
     bl_idname = 'power_sequencer.ripple_delete'
     bl_label = 'Ripple Delete'
@@ -59,7 +56,7 @@ class RippleDelete(bpy.types.Operator):
                 sequencer.delete()
 
                 scene.frame_current = selection_start
-                sequencer.gap_remove(all=False)
+                bpy.ops.power_sequencer.remove_gaps(all=False)
 
             # auto move cursor back
             if bpy.context.screen.is_animation_playing and len(
