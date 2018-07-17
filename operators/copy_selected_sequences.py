@@ -24,7 +24,7 @@ class CopySelectedSequences(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.selected_sequences) > 0
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
