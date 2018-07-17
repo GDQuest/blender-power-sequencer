@@ -1,4 +1,5 @@
 import bpy
+from operator import attrgetter
 from .utils.global_settings import SequenceTypes
 from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.find_linked_sequences import find_linked
@@ -63,7 +64,7 @@ class AddSpeed(bpy.types.Operator):
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
-            selection_blocks = slice_selection(selection)
+            selection_blocks = slice_selection(sorted(selection, key=attrgetter('frame_final_start')))
 
         for block in selection_blocks:
             # start, end = 0, 0

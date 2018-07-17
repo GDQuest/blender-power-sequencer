@@ -36,7 +36,7 @@ class RippleDelete(bpy.types.Operator):
             bpy.context.scene.use_audio_scrub = False
 
         # If only 1 block of strips, we store linked strips
-        selection_blocks = slice_selection(selection)
+        selection_blocks = slice_selection(sorted(selection, key=attrgetter('frame_final_start')))
 
         surrounding_strips = []
         is_single_channel = len(selection_blocks) == 1 and len(channels) == 1
