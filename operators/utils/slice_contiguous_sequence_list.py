@@ -8,12 +8,14 @@ def slice_selection(sorted_sequences):
     that are connected in time.
     """
     # Find when 2 sequences are not connected in time
-    last_sequence = sorted_sequences[0]
     break_ids = [0]
+    last_sequence = sorted_sequences[0]
+    last_biggest_frame_end = last_sequence.frame_final_end
     index = 0
     for s in sorted_sequences:
-        if s.frame_final_start > last_sequence.frame_final_end + 1:
+        if s.frame_final_start > last_biggest_frame_end + 1:
             break_ids.append(index)
+        last_biggest_frame_end = max(last_biggest_frame_end, s.frame_final_end)
         last_sequence = s
         index += 1
 
