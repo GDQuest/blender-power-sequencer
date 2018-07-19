@@ -13,15 +13,16 @@ def find_closest_strip(sequences, mouse_x, mouse_y):
         start_x, start_y = view2d.view_to_region(
             s.frame_final_start, channel_offset)
         end_x, end_y = view2d.view_to_region(
-            s.frame_final_start, channel_offset)
+            s.frame_final_end, channel_offset)
 
-        strip_center_x = (start_x + end_x) / 2
-        strip_center_y = (start_y + end_y) / 2
-        distance_to_strip = calculate_distance(
-            strip_center_x, strip_center_y, mouse_x, mouse_y)
-        print("Strip {}, distance: {!s}".format(s.name, distance_to_strip))
+        distance_to_left_handle = calculate_distance(
+            start_x, start_y, mouse_x, mouse_y)
+        distance_to_right_handle = calculate_distance(
+            end_x, end_y, mouse_x, mouse_y)
 
-        if distance_to_strip < distance_to_closest_strip:
+        distance_smallest = min(distance_to_left_handle, distance_to_right_handle)
+        if distance_smallest < distance_to_closest_strip:
+            print("Smallest distance: {}, {!s}".format(s.name, distance_smallest))
             closest_strip = s
-            distance_to_closest_strip = distance_to_strip
+            distance_to_closest_strip = distance_smallest
     return closest_strip

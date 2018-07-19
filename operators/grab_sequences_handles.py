@@ -16,6 +16,7 @@ class GrabSequencesHandles(bpy.types.Operator):
     bl_description = "Grabs the sequence's handle based on the mouse position"
     bl_options = {'REGISTER', 'UNDO'}
 
+    always_find_closest = bpy.props.BoolProperty(name="Always find closest", default=False)
     frame = 0
 
     @classmethod
@@ -28,7 +29,8 @@ class GrabSequencesHandles(bpy.types.Operator):
             y=event.mouse_region_y)[0]
 
         selection = bpy.context.selected_sequences
-        if not selection:
+        if self.always_find_closest or not selection:
+            bpy.ops.sequencer.select_all(action='DESELECT')
             closest_strip = find_closest_strip(bpy.context.sequences,
                                                event.mouse_region_x,
                                                event.mouse_region_y)
