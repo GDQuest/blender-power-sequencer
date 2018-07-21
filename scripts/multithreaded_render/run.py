@@ -8,6 +8,7 @@ Under GPL license
 import argparse
 import os
 import multiprocessing
+import signal
 import subprocess
 import math
 import logging
@@ -95,11 +96,21 @@ def render_multiprocess(commands_list):
     many thanks to this blog post:
     https://rsmith.home.xs4all.nl/programming/parallel-execution-with-python.html
     """
+    # def process_kbd_interrupt_signal():
+    #     signal.signal(signal.SIGINT, signal.SIG_IGN)
+
     assert commands_list
-    pool = multiprocessing.Pool(processes=(len(commands_list)))
-    pool.map(render_chunk, commands_list)
-    pool.close()
-    pool.join()
+    pool = multiprocessing.Pool(len(commands_list))
+    try:
+        pool.map(render_chunk, commands_list)
+        pool.close()
+    except KeyboardInterrupt:
+        print("KeyboardInterrupt: terminating process")
+        pool.terminate()
+    except Exception as e:
+        pool.terminate()
+    finally:
+        pool.join()
 
 
 def render_chunk(command):
@@ -233,7 +244,7 @@ if __name__ == "__main__":
     else:
         logging.basicConfig(level=logging.INFO)
 
-    print("~~ probing blendfile for project info... ", end="")
+    print("~~ probing blendfile for project info... ")
     frame_start, frame_end, render_path = get_project_info(args.blendfile)
     print("Done!\n")
 
@@ -245,8 +256,10 @@ if __name__ == "__main__":
     mixdown_command = generate_render_mixdown_command(render_settings, render_path)
 
     if not (args.dry_run or args.concatenate_only):
-        print("~~ rendering video and audio", end="")
+        print("~~ rendering video and audio")
         render_multiprocess(render_chunk_commands)
+        print("Rendering video chunks done!")
+
         call(mixdown_command)
         print("Done!\n")
 
@@ -265,7 +278,7 @@ if __name__ == "__main__":
     if not chunk_file_list:
         log.warn("No render chunks found, cannot concatenate the video.")
     elif not args.dry_run:
-        print("~~ now joining parts to make final render... ", end="")
+        print("~~ now joining parts to make final render... ")
         call(concatenate_command)
         subprocess.call(join_audio_video_command)
         print("Done!\n")
