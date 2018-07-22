@@ -8,7 +8,7 @@ Under GPL license
 import argparse
 import os
 import multiprocessing
-import signal
+import sys
 import subprocess
 import math
 import logging
@@ -224,10 +224,20 @@ def parse_arguments():
         default=False,
         help="Print debug log messages to the console")
     ap.add_argument(
+        '--mixdown-only',
+        action='store_true',
+        default=False,
+        help="Only render the audio mixdown")
+    ap.add_argument(
         '--concatenate-only',
         action='store_true',
         default=False,
-        help="Only concatenate the video chunks and merge the video and audio mixdown")
+        help="Only export the audio from the project")
+    ap.add_argument(
+        '--render-only',
+        action='store_true',
+        default=False,
+        help="Render the video on multiple threads and exit")
     ap.add_argument("blendfile", help="Blender project file to render.")
 
     args = ap.parse_args()
@@ -256,15 +266,19 @@ if __name__ == "__main__":
     mixdown_command = generate_render_mixdown_command(render_settings, render_path)
 
     if not (args.dry_run or args.concatenate_only):
-        print("~~ rendering video and audio")
-        render_multiprocess(render_chunk_commands)
-        print("Rendering video chunks done!")
+        if not args.mixdown_only:
+            print("~~ rendering video and audio")
+            render_multiprocess(render_chunk_commands)
+            print("Rendering video chunks done!")
 
-        call(mixdown_command)
+        if not args.render_only:
+            print("Rendering audio mixdown")
+            call(mixdown_command)
         print("Done!\n")
+    if args.mixdown_only or args.render_only:
+        sys.exit()
 
     chunks_file_path = os.path.join(render_parts_path, "chunks_list.txt")
-
     concatenate_command = generate_concatenate_command(render_parts_path, chunks_file_path)
     log.debug(" ".join(concatenate_command))
     concat_video_file_path = concatenate_command[-1]
