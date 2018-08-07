@@ -17,8 +17,12 @@ class Media:
         "-stats",
     ]
 
-    def __init__(self, path_source):
+    def __init__(self, path_source, **kwargs):
         self.path_source = path_source
+        self.options = kwargs
+
+        if "size" not in self.options:
+            self.options["size"] = 25
 
     @classmethod
     def is_same_type(cls, file_path):
@@ -52,8 +56,8 @@ class Video(Media):
     """
     EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv"]
 
-    def __init__(self, path_source):
-        super().__init__(path_source)
+    def __init__(self, path_source, **kwargs):
+        super().__init__(path_source, **kwargs)
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = self.get_frame_count(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
@@ -82,7 +86,8 @@ class Video(Media):
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", file_name, "proxy_25.avi")
+        return os.path.join(folder, "BL_proxy", file_name,
+                            "proxy_{}.avi".format(self.options["size"]))
 
     def get_proxy_command(self, path_source, path_proxy):
         """
@@ -104,7 +109,7 @@ class Video(Media):
             "-b:v",
             "1800k",
             "-filter:v",
-            "scale=iw*0.25:ih*0.25",
+            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
             "-y",
             path_proxy,
         ]
@@ -136,8 +141,8 @@ class Image(Media):
 
     EXTENSIONS = [".png", ".jpg", ".jpeg"]
 
-    def __init__(self, path_source):
-        super().__init__(path_source)
+    def __init__(self, path_source, **kwargs):
+        super().__init__(path_source, **kwargs)
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
                                                     self.path_proxy)
@@ -147,7 +152,8 @@ class Image(Media):
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", "images", "25", file_name + "_proxy.jpg")
+        return os.path.join(folder, "BL_proxy", "images",
+                            str(self.options["size"]), file_name + "_proxy.jpg")
 
     def get_proxy_command(self, path_source, path_proxy):
         """
@@ -163,7 +169,7 @@ class Image(Media):
             "-f",
             "apng",
             "-filter:v",
-            "scale=iw*0.25:ih*0.25",
+            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
             "-y",
             path_proxy,
         ]
@@ -221,13 +227,14 @@ if __name__ == "__main__":
 
     working_dir = get_path_from_command_line()
     media_file_paths = get_media_file_paths(working_dir)
+    options = dict()
 
     media_objects = []
     for path in media_file_paths:
         if Video.is_same_type(path):
-            media_objects.append(Video(path))
+            media_objects.append(Video(path, **options))
         elif Image.is_same_type(path):
-            media_objects.append(Image(path))
+            media_objects.append(Image(path, **options))
 
     total = len(media_objects)
     print("found %d file(s) to convert" % total)
