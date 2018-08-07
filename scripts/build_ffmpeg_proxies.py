@@ -60,6 +60,8 @@ class Video(Media):
         super().__init__(path_source, **kwargs)
         if "codec" not in self.options:
             self.options["codec"] = "mpeg2video"
+        if "bitrate" not in self.options:
+            self.options["bitrate"] = "1800k"
 
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = self.get_frame_count(self.path_source)
@@ -110,7 +112,7 @@ class Video(Media):
             "-c:v",
             self.options["codec"],
             "-b:v",
-            "1800k",
+            self.options["bitrate"],
             "-filter:v",
             "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
             "-y",
