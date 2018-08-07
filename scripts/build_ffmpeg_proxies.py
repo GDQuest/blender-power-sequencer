@@ -51,38 +51,6 @@ class Video(Media):
     Represents a video
     """
     EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-        "-f",
-        "matroska",
-        "-sn",
-        "-an",
-        "-c:v",
-        "mpeg2video",
-        "-b:v",
-        "1800k",
-        "-filter:v",
-        "scale=iw*0.25:ih*0.25",
-        "-y",
-        "",
-    ]
-    FFPROBE_COMMAND_TEMPLATE = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=nb_frames",
-        "-of",
-        "default=noprint_wrappers=1:nokey=1",
-        "",
-    ]
 
     def __init__(self, path_source):
         super().__init__(path_source)
@@ -95,8 +63,18 @@ class Video(Media):
         """
         takes in path to file, returns the number of frames in the video
         """
-        ffprobe_frame_cmd = [arg for arg in self.FFPROBE_COMMAND_TEMPLATE]
-        ffprobe_frame_cmd[-1] = path
+        ffprobe_frame_cmd = [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=nb_frames",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            path,
+        ]
         return int(subprocess.check_output(ffprobe_frame_cmd).decode())
 
     def get_path_proxy(self, path):
@@ -110,9 +88,26 @@ class Video(Media):
         """
         takes in path to file, returns the command for generating the proxy
         """
-        proxy_cmd = [arg for arg in self.PROXY_COMMAND_TEMPLATE]
-        proxy_cmd[2] = path_source
-        proxy_cmd[-1] = path_proxy
+        proxy_cmd = [
+            "ffmpeg",
+            "-i",
+            path_source,
+            "-v",
+            "quiet",
+            "-stats",
+            "-f",
+            "matroska",
+            "-sn",
+            "-an",
+            "-c:v",
+            "mpeg2video",
+            "-b:v",
+            "1800k",
+            "-filter:v",
+            "scale=iw*0.25:ih*0.25",
+            "-y",
+            path_proxy,
+        ]
         return proxy_cmd
 
     def create_proxy_file(self):
@@ -140,20 +135,6 @@ class Image(Media):
     """
 
     EXTENSIONS = [".png", ".jpg", ".jpeg"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-        "-vf",
-        "scale=iw*0.25:ih*0.25",
-        "-f",
-        "apng",
-        "-y",
-        "",
-    ]
 
     def __init__(self, path_source):
         super().__init__(path_source)
@@ -172,9 +153,20 @@ class Image(Media):
         """
         takes in path to file, returns the command for generating the proxy
         """
-        proxy_cmd = [arg for arg in self.PROXY_COMMAND_TEMPLATE]
-        proxy_cmd[2] = path_source
-        proxy_cmd[-1] = path_proxy
+        proxy_cmd = [
+            "ffmpeg",
+            "-i",
+            path_source,
+            "-v",
+            "quiet",
+            "-stats",
+            "-f",
+            "apng",
+            "-filter:v",
+            "scale=iw*0.25:ih*0.25",
+            "-y",
+            path_proxy,
+        ]
         return proxy_cmd
 
 
