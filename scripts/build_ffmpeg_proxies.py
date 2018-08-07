@@ -58,6 +58,9 @@ class Video(Media):
 
     def __init__(self, path_source, **kwargs):
         super().__init__(path_source, **kwargs)
+        if "codec" not in self.options:
+            self.options["codec"] = "mpeg2video"
+
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = self.get_frame_count(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
@@ -105,7 +108,7 @@ class Video(Media):
             "-sn",
             "-an",
             "-c:v",
-            "mpeg2video",
+            self.options["codec"],
             "-b:v",
             "1800k",
             "-filter:v",
