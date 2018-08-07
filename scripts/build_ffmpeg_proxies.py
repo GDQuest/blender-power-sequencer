@@ -156,7 +156,7 @@ class Image(Media):
     ]
 
     def __init__(self, path_source):
-        self.path_source = path_source
+        super().__init__(path_source)
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
                                                     self.path_proxy)
