@@ -35,7 +35,7 @@ class SwapStrips(bpy.types.Operator):
             for s in other_sequences:
                 if s.channel != small_strip.channel:
                     continue
-                if s.frame_final_end < small_strip.frame_final_start:
+                if s.frame_final_end <= small_strip.frame_final_start:
                     continue
 
                 if s.frame_final_start < small_strip.frame_final_start + \
