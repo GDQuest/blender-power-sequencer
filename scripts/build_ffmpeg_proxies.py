@@ -8,14 +8,6 @@ class Media:
     Base interface to generate proxies from with ffmpeg
     """
     EXTENSIONS = ["test"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-    ]
 
     def __init__(self, path_source, **kwargs):
         self.path_source = path_source
