@@ -185,8 +185,8 @@ def get_path_from_command_line():
         if os.path.exists(path_from_args):
             if os.path.isdir(path_from_args):
                 path = path_from_args
-            elif os.path.isfile(path_from_args) and path.endswith(".blend"):
-                path = os.path.split(path)[0]
+            elif os.path.isfile(path_from_args) and path_from_args.endswith(".blend"):
+                path = os.path.dirname(path_from_args)
     return path
 
 
