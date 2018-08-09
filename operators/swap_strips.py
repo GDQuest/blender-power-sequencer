@@ -35,7 +35,7 @@ class SwapStrips(bpy.types.Operator):
             for s in other_sequences:
                 if s.channel != small_strip.channel:
                     continue
-                if s.frame_final_end < small_strip.frame_final_start:
+                if s.frame_final_end <= small_strip.frame_final_start:
                     continue
 
                 if s.frame_final_start < small_strip.frame_final_start + \
@@ -46,6 +46,9 @@ class SwapStrips(bpy.types.Operator):
         end_frame = max(bpy.context.sequences, key=attrgetter('frame_final_end')).frame_final_end
         small_strip_start, big_strip_start  = small_strip.frame_final_start, big_strip.frame_final_start
 
+        end_frame += big_strip.frame_final_duration - \
+                small_strip.frame_final_duration
+        
         # Move both strips to an empty location, otherwise they'll collide upon moving
         self.move_to_frame(small_strip, end_frame)
         self.move_to_frame(big_strip, end_frame + small_strip.frame_final_duration + 1)
