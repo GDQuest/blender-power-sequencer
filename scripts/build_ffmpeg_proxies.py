@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 import sys
@@ -173,22 +174,19 @@ class Image(Media):
         return proxy_cmd
 
 
-def get_path_from_command_line():
+def get_working_directory(path):
     """
-    Finds and returns the path to the folder passed
-    as a command line argument, if it exists
-    Otherwise, logs an error, and uses the current directory
+    If path is an actually directory its absolute path is returned. If it is a
+    .blend file the absolute path to the containing directory is returned. In
+    all other cases the current directory is returned.
     """
-    path = "."
-    if len(sys.argv) > 1:
-        path_from_args = os.path.abspath(sys.argv[1])
-        if os.path.exists(path_from_args):
-            if os.path.isdir(path_from_args):
-                path = path_from_args
-            elif os.path.isfile(path_from_args) and path_from_args.endswith(".blend"):
-                path = os.path.dirname(path_from_args)
-    return path
-
+    abs_path = os.path.abspath(path)
+    if os.path.exists(abs_path):
+        if os.path.isdir(abs_path):
+            return abs_path
+        elif os.path.isfile(abs_path) and abs_path.endswith(".blend"):
+            return os.path.dirname(abs_path)
+    return "."
 
 def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
     """
@@ -215,14 +213,22 @@ def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
 
 if __name__ == "__main__":
     """
-    1) Get the working directory from the command line
+    1) Parse arguments to get the working directory
     2) Find video and image files and create a Media object for each of them
     3) create proxy
         - create path
         - issue ffmpeg command and print progress
     """
 
-    working_dir = get_path_from_command_line()
+    parser = argparse.ArgumentParser(description="Create proxies for Blender VSE using FFMPEG.")
+    parser.add_argument("working_directory", nargs="?",
+                        help="The directory containing media to create proxies for")
+    args = parser.parse_args()
+
+    working_dir = "."
+    if args.working_directory:
+        working_dir = get_working_directory(args.working_directory)
+
     media_file_paths = get_media_file_paths(working_dir)
     options = dict()
 
