@@ -1,3 +1,4 @@
+import argparse
 import os
 import subprocess
 import sys
@@ -7,15 +8,6 @@ class Media:
     """
     Base interface to generate proxies from with ffmpeg
     """
-    EXTENSIONS = ["test"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-    ]
 
     def __init__(self, path_source, **kwargs):
         self.path_source = path_source
@@ -181,22 +173,19 @@ class Image(Media):
         return proxy_cmd
 
 
-def get_path_from_command_line():
+def get_working_directory(path):
     """
-    Finds and returns the path to the folder passed
-    as a command line argument, if it exists
-    Otherwise, logs an error, and uses the current directory
+    If path is an actually directory its absolute path is returned. If it is a
+    .blend file the absolute path to the containing directory is returned. In
+    all other cases an exception is raised.
     """
-    path = "."
-    if len(sys.argv) > 1:
-        path_from_args = os.path.abspath(sys.argv[1])
-        if os.path.exists(path_from_args):
-            if os.path.isdir(path_from_args):
-                path = path_from_args
-            elif os.path.isfile(path_from_args) and path.endswith(".blend"):
-                path = os.path.split(path)[0]
-    return path
-
+    abs_path = os.path.abspath(path)
+    if os.path.exists(abs_path):
+        if os.path.isdir(abs_path):
+            return abs_path
+        elif os.path.isfile(abs_path) and abs_path.endswith(".blend"):
+            return os.path.dirname(abs_path)
+    raise ValueError("{} is neither a directory nor a .blend file".format(path))
 
 def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
     """
@@ -220,19 +209,33 @@ def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
                 file_paths.append(os.path.join(dirpath, f))
     return file_paths
 
+OPTIONS_PRESETS = dict()
 
 if __name__ == "__main__":
     """
-    1) Get the working directory from the command line
+    1) Parse arguments to get the working directory and encoding presets
     2) Find video and image files and create a Media object for each of them
     3) create proxy
         - create path
         - issue ffmpeg command and print progress
     """
 
-    working_dir = get_path_from_command_line()
+    parser = argparse.ArgumentParser(description="Create proxies for Blender VSE using FFMPEG.")
+    parser.add_argument("working_directory", nargs="?",
+                        help="The directory containing media to create proxies for")
+    parser.add_argument("-p", "--preset", help="A preset name for proxy encoding",
+                        choices=[])
+    args = parser.parse_args()
+
+    working_dir = "."
+    if args.working_directory:
+        working_dir = get_working_directory(args.working_directory)
+
     media_file_paths = get_media_file_paths(working_dir)
+
     options = dict()
+    if args.preset:
+        options = OPTIONS_PRESETS[args.preset]
 
     media_objects = []
     for path in media_file_paths:
