@@ -178,7 +178,7 @@ def get_working_directory(path):
     """
     If path is an actually directory its absolute path is returned. If it is a
     .blend file the absolute path to the containing directory is returned. In
-    all other cases the current directory is returned.
+    all other cases an exception is raised.
     """
     abs_path = os.path.abspath(path)
     if os.path.exists(abs_path):
@@ -186,7 +186,7 @@ def get_working_directory(path):
             return abs_path
         elif os.path.isfile(abs_path) and abs_path.endswith(".blend"):
             return os.path.dirname(abs_path)
-    return "."
+    raise ValueError("{} is neither a directory nor a .blend file".format(path))
 
 def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
     """
