@@ -17,8 +17,12 @@ class Media:
         "-stats",
     ]
 
-    def __init__(self, path_source):
+    def __init__(self, path_source, **kwargs):
         self.path_source = path_source
+        self.options = kwargs
+
+        if "size" not in self.options:
+            self.options["size"] = 25
 
     @classmethod
     def is_same_type(cls, file_path):
@@ -51,41 +55,14 @@ class Video(Media):
     Represents a video
     """
     EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-        "-f",
-        "matroska",
-        "-sn",
-        "-an",
-        "-c:v",
-        "mpeg2video",
-        "-b:v",
-        "1800k",
-        "-filter:v",
-        "scale=iw*0.25:ih*0.25",
-        "-y",
-        "",
-    ]
-    FFPROBE_COMMAND_TEMPLATE = [
-        "ffprobe",
-        "-v",
-        "error",
-        "-select_streams",
-        "v:0",
-        "-show_entries",
-        "stream=nb_frames",
-        "-of",
-        "default=noprint_wrappers=1:nokey=1",
-        "",
-    ]
 
-    def __init__(self, path_source):
-        super().__init__(path_source)
+    def __init__(self, path_source, **kwargs):
+        super().__init__(path_source, **kwargs)
+        if "codec" not in self.options:
+            self.options["codec"] = "mpeg2video"
+        if "bitrate" not in self.options:
+            self.options["bitrate"] = "1800k"
+
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = self.get_frame_count(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
@@ -95,8 +72,18 @@ class Video(Media):
         """
         takes in path to file, returns the number of frames in the video
         """
-        ffprobe_frame_cmd = [arg for arg in self.FFPROBE_COMMAND_TEMPLATE]
-        ffprobe_frame_cmd[-1] = path
+        ffprobe_frame_cmd = [
+            "ffprobe",
+            "-v",
+            "error",
+            "-select_streams",
+            "v:0",
+            "-show_entries",
+            "stream=nb_frames",
+            "-of",
+            "default=noprint_wrappers=1:nokey=1",
+            path,
+        ]
         return int(subprocess.check_output(ffprobe_frame_cmd).decode())
 
     def get_path_proxy(self, path):
@@ -104,15 +91,33 @@ class Video(Media):
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", file_name, "proxy_25.avi")
+        return os.path.join(folder, "BL_proxy", file_name,
+                            "proxy_{}.avi".format(self.options["size"]))
 
     def get_proxy_command(self, path_source, path_proxy):
         """
         takes in path to file, returns the command for generating the proxy
         """
-        proxy_cmd = [arg for arg in self.PROXY_COMMAND_TEMPLATE]
-        proxy_cmd[2] = path_source
-        proxy_cmd[-1] = path_proxy
+        proxy_cmd = [
+            "ffmpeg",
+            "-i",
+            path_source,
+            "-v",
+            "quiet",
+            "-stats",
+            "-f",
+            "matroska",
+            "-sn",
+            "-an",
+            "-c:v",
+            self.options["codec"],
+            "-b:v",
+            self.options["bitrate"],
+            "-filter:v",
+            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
+            "-y",
+            path_proxy,
+        ]
         return proxy_cmd
 
     def create_proxy_file(self):
@@ -140,23 +145,9 @@ class Image(Media):
     """
 
     EXTENSIONS = [".png", ".jpg", ".jpeg"]
-    PROXY_COMMAND_TEMPLATE = [
-        "ffmpeg",
-        "-i",
-        "",
-        "-v",
-        "quiet",
-        "-stats",
-        "-vf",
-        "scale=iw*0.25:ih*0.25",
-        "-f",
-        "apng",
-        "-y",
-        "",
-    ]
 
-    def __init__(self, path_source):
-        self.path_source = path_source
+    def __init__(self, path_source, **kwargs):
+        super().__init__(path_source, **kwargs)
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
                                                     self.path_proxy)
@@ -166,15 +157,27 @@ class Image(Media):
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", "images", "25", file_name + "_proxy.jpg")
+        return os.path.join(folder, "BL_proxy", "images",
+                            str(self.options["size"]), file_name + "_proxy.jpg")
 
     def get_proxy_command(self, path_source, path_proxy):
         """
         takes in path to file, returns the command for generating the proxy
         """
-        proxy_cmd = [arg for arg in self.PROXY_COMMAND_TEMPLATE]
-        proxy_cmd[2] = path_source
-        proxy_cmd[-1] = path_proxy
+        proxy_cmd = [
+            "ffmpeg",
+            "-i",
+            path_source,
+            "-v",
+            "quiet",
+            "-stats",
+            "-f",
+            "apng",
+            "-filter:v",
+            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
+            "-y",
+            path_proxy,
+        ]
         return proxy_cmd
 
 
@@ -229,13 +232,14 @@ if __name__ == "__main__":
 
     working_dir = get_path_from_command_line()
     media_file_paths = get_media_file_paths(working_dir)
+    options = dict()
 
     media_objects = []
     for path in media_file_paths:
         if Video.is_same_type(path):
-            media_objects.append(Video(path))
+            media_objects.append(Video(path, **options))
         elif Image.is_same_type(path):
-            media_objects.append(Image(path))
+            media_objects.append(Image(path, **options))
 
     total = len(media_objects)
     print("found %d file(s) to convert" % total)
