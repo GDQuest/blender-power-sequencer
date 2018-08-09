@@ -210,10 +210,11 @@ def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
                 file_paths.append(os.path.join(dirpath, f))
     return file_paths
 
+OPTIONS_PRESETS = dict()
 
 if __name__ == "__main__":
     """
-    1) Parse arguments to get the working directory
+    1) Parse arguments to get the working directory and encoding presets
     2) Find video and image files and create a Media object for each of them
     3) create proxy
         - create path
@@ -223,6 +224,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Create proxies for Blender VSE using FFMPEG.")
     parser.add_argument("working_directory", nargs="?",
                         help="The directory containing media to create proxies for")
+    parser.add_argument("-p", "--preset", help="A preset name for proxy encoding",
+                        choices=[])
     args = parser.parse_args()
 
     working_dir = "."
@@ -230,7 +233,10 @@ if __name__ == "__main__":
         working_dir = get_working_directory(args.working_directory)
 
     media_file_paths = get_media_file_paths(working_dir)
+
     options = dict()
+    if args.preset:
+        options = OPTIONS_PRESETS[args.preset]
 
     media_objects = []
     for path in media_file_paths:
