@@ -47,7 +47,7 @@ class SwapStrips(bpy.types.Operator):
         small_strip_start, big_strip_start  = small_strip.frame_final_start, big_strip.frame_final_start
 
         end_frame += big_strip.frame_final_duration - \
-            small_strip.frame_final_duration
+                small_strip.frame_final_duration
         
         # Move both strips to an empty location, otherwise they'll collide upon moving
         self.move_to_frame(small_strip, end_frame)
