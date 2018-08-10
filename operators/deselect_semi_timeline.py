@@ -41,12 +41,12 @@ class DeselectSemiTimeline(bpy.types.Operator):
     
     def strip_frame(self, strip, at_left, strategy=2):
         """
-        Represents a strips by a frame, using various strategies, based on the
+        Represents a strip by a frame, using various strategies, based on the
         region the strip lies.
         Args:
         - strip: The strip to extract a frame representation of it.
-        - at_left: True, to indicate that the strip lies at the left of the
-                       time cursor, or False for right of the time cursor.
+        - at_left: True, to indicate that the mouse lies at the left of the
+                   time cursor, or False for right of the time cursor.
         - strategy: The strategy number to be used in the frame representation
                     of the strip. 1 to use the frame_final_end if at_left is 
                     True or to use frame_final_start if at_left is False.
