@@ -1,0 +1,3 @@
+[submodule "scripts/BPSRender"]
+	path = scripts/BPSRender
+	url = https://gitlab.com/razcore/BPSRender.git
