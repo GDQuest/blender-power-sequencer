@@ -1,7 +1,7 @@
-def slice_selection(sorted_sequences):
+def slice_selection(sequences):
     """
-    Takes a list of sorted_sequences (by frame_final_start)
-    and breaks it down into multiple lists of connected sequences
+    Takes a list of sequences and breaks it down
+    into multiple lists of connected sequences
 
     Returns a list of lists of sequences,
     each list corresponding to a block of sequences
@@ -9,6 +9,7 @@ def slice_selection(sorted_sequences):
     """
     # Find when 2 sequences are not connected in time
     break_ids = [0]
+    sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
     last_sequence = sorted_sequences[0]
     last_biggest_frame_end = last_sequence.frame_final_end
     index = 0

@@ -64,7 +64,7 @@ class AddSpeed(bpy.types.Operator):
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
-            selection_blocks = slice_selection(sorted(selection, key=attrgetter('frame_final_start')))
+            selection_blocks = slice_selection(selection)
 
         for block in selection_blocks:
             # start, end = 0, 0
