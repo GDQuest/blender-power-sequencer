@@ -1,5 +1,6 @@
 '''
-Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi, Daniel Oakey, Patrick W. Crawford
+Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi, Daniel Oakey, Patrick W. Crawford,
+Razvan Radulescu, Pranav Sharma, Jooert, Blezyn
 nathan@gdquest.com
 
 Created by Nathan Lovato
@@ -36,7 +37,7 @@ bl_info = {
     "name": "Power Sequencer",
     "description": "Video editing tools for content creators",
     "author": "Nathan Lovato",
-    "version": (1, 0, 0),
+    "version": (1, 1, 0),
     "blender": (2, 79, 0),
     "location": "sequencer",
     "tracker_url": "https://github.com/GDquest/Blender-power-sequencer/issues",

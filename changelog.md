@@ -1,31 +1,43 @@
-## Version 1.1
+# Power Sequencer 1.1
 
-Big thanks to @doakey3 and @sudopluto for their work! Thanks to them this new version brings a lot of new features and improvements to the add-on!
+Huge thanks to all the contributors who made this release possible: @doakey3 and @sudopluto, @razcore-art, @jooert, and @Blezyn, who recently joined the adventure 😊. Thanks to them this new version brings many new features and improvements to the add-on!
 
-### FFmpeg build proxies
+## Free tutorials
 
-Big thanks to @sudopluto for his work on the proxy generation script. He added % based-reporting and rewrote the code to make it easier to extend in the future, and to eventually make the script accessible from Blender.
+Two new tutorials came out to complement the project: they are about Python programming, to help more people create their own tools and contribute to existing add-ons:
 
-### Multithreaded rendering
-
-Use all your CPU power to render videos! Running multiple instances of Blender in the background, this script will smartly distribute rendering across your CPU cores. You can limit the number of cores and keep working while renders happen in the background.
-
-Thanks to Justin Warren for the original [pulverize](https://github.com/sciactive/pulverize/blob/master/pulverize.py) script. We've fixed some of its bugs and we're looking to add new features to it.
-
-### Auto align audio
-
-Using a free technology from the BBC, this tour will try to automatically synchronise audio recordings with your footage.
-
-### batch transcode videos
-
-A tool to transcode all your videos to the same frame rate with FFMPEG
-
-### Unspeed
+- [Learn to Code Blender Features in Python: Add-On Programming Tutorial](https://www.youtube.com/watch?v=1_Jo9NShkP8)
+- [https://www.youtube.com/watch?v=IQgLBnPO2uo](Auto-Completion for Blender Python in Any Code Editor)
 
 
-### Clear fades
+## 🎥🕺 New features
 
-### Other improvements
+- **Multithreaded rendering** with BPSRender: use this command line tool to leverage all your CPU cores! Works on all platforms and available as a stand-alone program. ⚠ Only tested on Ubuntu and Windows 10! *Known issues: on Windows, you will sometimes need to close Blender instances manually with the task manager if you interrupt the render.*
 
-Auto select strips under the time cursor in smart snap if nothing is selected
-Force update on playback speed even if playback is active or inactive
+- **Unspeed**: remove a speed effect from a video sequence
+- **Clear fades**: remove fade animation cleanly on selected sequences
+- **Deselect strips** to the left or right of the time cursor
+- **Swap two strips**: works across channels and not just to the left or the right of the selected strip, unlike Blender's built-in tool
+- **Markers as time codes**: write a list of timecodes followed by the markers' names to create quick links in your YouTube video description or comments
+- **Match strips to markers**: snap selected strips to markers that have a similar name
+
+
+### ⚠ Experimental
+
+- **Auto align audio and video**: this tool for tech-savy people, currently not available in blender
+- **Batch transcode videos**: transcode selected videos to the same frame rate from blender! Uses FFMPEG. More work planned for version 1.2
+- **Trim in and and out points**: trim the left or the right of the strip closest to the mouse, using the time cursor. No shortcut assigned by default: you'll have to create shortcut entries manually for `power_sequencer.trim_three_point_edit`
+
+## ✅ Improvements
+
+*Existing features got some love as well!*
+
+- **Multithreaded proxies** now shows a percentage-based progress for each video being rendered
+- **Multithreaded proxies**: supports calling presets from the command line. More work planned for version 1.2
+- Many small improvements happened to exsting features, e.g. to automatically select strip near the mouse cursor if nothing is selected.
+
+## Fixes 🤕
+
+**Restored the missing interface** code so you can call the contextual Power Sequencer menu again, nd find the power sequencer tab i the and menu. we need help to design the UI: we have a developer who wants to work on it, but we need a UX designer to guide him!
+
+Reply to [this issue](https://github.com/GDquest/Blender-power-sequencer/issues/90) and [that issue](https://github.com/GDquest/Blender-power-sequencer/issues/89) if you want to help us wit it 😄
