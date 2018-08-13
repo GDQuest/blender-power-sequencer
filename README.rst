@@ -161,7 +161,10 @@
     selected strips to cursor">Smart Snap</a></td>
         </tr>
         <tr>
-            <td width=222px><a name="top_Border_Select" href="#Border_Select" title="">Border Select</a></td>
+            <td width=222px><a name="top_Border_Select" href="#Border_Select" title="Deselects the strips' handles
+    before applying border select,
+    so you don't have to deselect
+    manually first">Border Select</a></td>
             <td width=222px><a name="top_Delete_Direct" href="#Delete_Direct" title="Delete without confirmation.
     Replaces default Blender
     setting">Delete Direct</a></td>
@@ -287,7 +290,7 @@
         </tr>
     </table>
         <h3><a name="Border_Select" href="#top_Border_Select">Border Select</a></h3>
-    <p></p>
+    <p>Deselects the strips' handles before applying border select, so you don't have to deselect manually first</p>
     
     <table>
         <tr>

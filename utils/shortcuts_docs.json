@@ -19,7 +19,7 @@
     },
     "power_sequencer.border_select": {
         "name": "Border Select",
-        "description": "",
+        "description": "Deselects the strips' handles before applying border select, so you don't have to deselect manually first",
         "shortcuts": ["Shift B; Border Select"],
         "demo": ""
     },
