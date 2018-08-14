@@ -1,3 +1,5 @@
+from operator import attrgetter
+
 def slice_selection(sequences):
     """
     Takes a list of sequences and breaks it down
