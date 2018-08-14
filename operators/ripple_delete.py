@@ -46,7 +46,6 @@ class RippleDelete(bpy.types.Operator):
             for s in selection_blocks[0]:
                 s.select = True
             sequencer.delete()
-
         else:
             for block in selection_blocks:
                 sequencer.select_all(action='DESELECT')
@@ -56,9 +55,8 @@ class RippleDelete(bpy.types.Operator):
                 sequencer.delete()
 
                 scene.frame_current = selection_start
-                bpy.ops.sequencer.remove_gaps(all=False)
+                bpy.ops.sequencer.gap_remove(all=False)
                 # bpy.ops.power_sequencer.remove_gaps(all=False)
-
             # auto move cursor back
             if bpy.context.screen.is_animation_playing and len(
                     selection_blocks) == 1:
