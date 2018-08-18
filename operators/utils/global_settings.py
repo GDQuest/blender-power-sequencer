@@ -24,6 +24,7 @@ class SequenceTypes():
     EFFECT = ['CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER', 'ALPHA_UNDER',
               'GAMMA_CROSS', 'MULTIPLY', 'OVER_DROP', 'WIPE', 'GLOW',
               'TRANSFORM', 'COLOR', 'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR']
+    TRANSITION = ['CROSS', 'GAMMA_CROSS', 'WIPE']
     SOUND = ['SOUND']
     IMAGE = ['IMAGE']
 

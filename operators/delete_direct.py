@@ -14,6 +14,7 @@ class DeleteDirect(bpy.types.Operator):
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
+        bpy.ops.power_sequencer.crossfade_remove()
         bpy.ops.sequencer.delete()
 
         selection_length = len(selection)
