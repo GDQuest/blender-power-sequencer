@@ -12,9 +12,14 @@ class DeleteDirect(bpy.types.Operator):
     def poll(cls, context):
         return True
 
+    def invoke(self, context, event):
+        cr = bpy.ops.power_sequencer.crossfade_remove
+        if cr.poll():
+            cr()
+        return self.execute(context)
+
     def execute(self, context):
         selection = bpy.context.selected_sequences
-        bpy.ops.power_sequencer.crossfade_remove()
         bpy.ops.sequencer.delete()
 
         selection_length = len(selection)
