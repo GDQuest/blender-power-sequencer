@@ -2,6 +2,7 @@ import bpy
 from operator import attrgetter
 from .utils.find_next_sequences import find_next_sequences
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.global_settings import SequenceTypes
 
 
 # TODO: make it work with pictures and transform strips
@@ -34,32 +35,34 @@ class AddCrossfade(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.scene.sequence_editor.active_strip
+        active = bpy.context.scene.sequence_editor.active_strip
+        return active and active.type != 'SOUND' and active.type not in SequenceTypes.TRANSITION
 
     def execute(self, context):
         active = bpy.context.scene.sequence_editor.active_strip
-        crossfade_length = convert_duration_to_frames(self.crossfade_duration)
-        print(len(bpy.context.sequences))
-        print(len(bpy.context.scene.sequence_editor.sequences))
-        next_in_channel = [
-            s for s in find_next_sequences(active)
-            if s.channel == active.channel
-        ]
+        next_in_channel = [s for s in find_next_sequences(active)
+                           if s.channel == active.channel]
         if not next_in_channel:
             return {'CANCELLED'}
-        next_sequence = min(next_in_channel, key=attrgetter('frame_final_start'))
+
+        next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
+        next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))
         if not next_sequence:
             return {'CANCELLED'}
 
         if self.auto_move_strip:
             frame_offset = next_sequence.frame_final_start - active.frame_final_end
             next_sequence.frame_start -= frame_offset
-
         if next_sequence.frame_final_start == active.frame_final_end:
+            crossfade_length = convert_duration_to_frames(self.crossfade_duration)
             next_sequence.frame_final_start += crossfade_length / 2
             active.frame_final_end -= crossfade_length / 2
-        active.select = True
-        next_sequence.select = True
-        bpy.context.scene.sequence_editor.active_strip = next_sequence
-        bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
+        self.apply_crossfade(active, next_sequence)
         return {"FINISHED"}
+
+    def apply_crossfade(self, strip_from, strip_to):
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        strip_from.select = True
+        strip_to.select = True
+        bpy.context.scene.sequence_editor.active_strip = strip_to
+        bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')

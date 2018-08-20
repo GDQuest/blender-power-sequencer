@@ -27,6 +27,7 @@ class SequenceTypes():
     TRANSITION = ['CROSS', 'GAMMA_CROSS', 'WIPE']
     SOUND = ['SOUND']
     IMAGE = ['IMAGE']
+    TRANSITIONABLE = VIDEO + IMAGE
 
 
 # TODO: Replace FileTypes with that
