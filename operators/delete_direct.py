@@ -1,4 +1,5 @@
 import bpy
+from .utils.global_settings import SequenceTypes
 
 
 class DeleteDirect(bpy.types.Operator):
@@ -12,17 +13,18 @@ class DeleteDirect(bpy.types.Operator):
     def poll(cls, context):
         return True
 
-    def invoke(self, context, event):
-        cr = bpy.ops.power_sequencer.crossfade_remove
-        if cr.poll():
-            cr()
-        return self.execute(context)
-
     def execute(self, context):
         selection = bpy.context.selected_sequences
+        selection_length = len(selection)
+
+        bpy.ops.power_sequencer.crossfade_remove()
+        for s in selection:
+            try:
+                s.select = True
+            except:
+                pass
         bpy.ops.sequencer.delete()
 
-        selection_length = len(selection)
         report_message = 'Deleted ' + str(selection_length) + ' sequence'
         report_message += 's' if selection_length > 1 else ''
         self.report({'INFO'}, report_message)
