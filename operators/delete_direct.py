@@ -11,7 +11,7 @@ class DeleteDirect(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(bpy.context.selected_sequences) > 0
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
