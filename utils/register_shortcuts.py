@@ -18,7 +18,7 @@ def register_shortcuts():
         space_type='SEQUENCE_EDITOR',
         region_type='WINDOW')
 
-    kmi = km.keymap_items.new('power_sequencer.add_crossfade', 'C', 'PRESS', ctrl=True, alt=True)
+    kmi = km.keymap_items.new('power_sequencer.crossfade_add', 'C', 'PRESS', ctrl=True, alt=True)
     kmi = km.keymap_items.new('power_sequencer.add_speed', 'PLUS', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.add_transform', 'T', 'PRESS')
     # TODO: make it replace built-in?
@@ -58,7 +58,7 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.cycle_scenes', 'TAB', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
-    kmi = km.keymap_items.new('power_sequencer.edit_crossfade', 'C', 'PRESS', alt=True)
+    kmi = km.keymap_items.new('power_sequencer.crossfade_edit', 'C', 'PRESS', alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', alt=True)
     set_keymap_property(kmi.properties, 'fade_type', 'right')

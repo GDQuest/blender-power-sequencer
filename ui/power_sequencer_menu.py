@@ -28,7 +28,7 @@ class PowerSequencerMenu(bpy.types.Menu):
 
         if active_strip.type == 'GAMMA_CROSS':
             layout.operator(
-                'power_sequencer.edit_crossfade',
+                'power_sequencer.crossfade_edit',
                 icon='ACTION_TWEAK',
                 text='Edit crossfade')
 
@@ -45,7 +45,7 @@ class PowerSequencerMenu(bpy.types.Menu):
                 if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE:
                     layout.separator()
                     layout.operator(
-                        'power_sequencer.add_crossfade',
+                        'power_sequencer.crossfade_add',
                         icon='IMAGE_ALPHA',
                         text='Auto crossfade')
                     break

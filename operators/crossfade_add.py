@@ -8,7 +8,7 @@ from .utils.global_settings import SequenceTypes
 # TODO: make it work with pictures and transform strips
 # TODO: If source strip has a special blending mode, use that for crossfade?
 # TODO: make sure there's no effect on the strip?
-class AddCrossfade(bpy.types.Operator):
+class CrossfadeAdd(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/ZyEd0jD.gif)
 
@@ -17,7 +17,7 @@ class AddCrossfade(bpy.types.Operator):
     and adds a gamma cross effect between them.
     Works with MOVIE, IMAGE and META strips
     """
-    bl_idname = "power_sequencer.add_crossfade"
+    bl_idname = "power_sequencer.crossfade_add"
     bl_label = "Add Crossfade"
     bl_description = "Adds cross fade between selected sequence and the closest sequence to it's right"
     bl_options = {"REGISTER", "UNDO"}

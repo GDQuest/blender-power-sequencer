@@ -1,5 +1,5 @@
 {
-    "power_sequencer.add_crossfade": {
+    "power_sequencer.crossfade_add": {
         "name": "Add Crossfade",
         "description": "Based on the active strip, finds the closest next sequence of a similar type, moves it so it overlaps the active strip, and adds a gamma cross effect between them. Works with MOVIE, IMAGE and META strips",
         "shortcuts": ["Ctrl Alt C; Add Crossfade"],
@@ -71,7 +71,7 @@
         "shortcuts": ["X; Delete direct", "DEL; Delete direct"],
         "demo": ""
     },
-    "power_sequencer.edit_crossfade": {
+    "power_sequencer.crossfade_edit": {
         "name": "Edit Crossfade",
         "description": "Selects the handles of both inputs of a crossfade strip's input and calls the grab operator. Allows you to quickly change the location of a fade transition between two strips.",
         "shortcuts": ["Alt C; Edit Crossfade"],

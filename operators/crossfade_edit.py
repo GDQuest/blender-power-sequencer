@@ -2,7 +2,7 @@ import bpy
 from .utils.global_settings import SequenceTypes
 
 
-class EditCrossfade(bpy.types.Operator):
+class CrossfadeEdit(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/rCmLhg6.gif)
 
@@ -10,7 +10,7 @@ class EditCrossfade(bpy.types.Operator):
     calls the grab operator. Allows you to quickly change the location
     of a fade transition between two strips.
     """
-    bl_idname = "power_sequencer.edit_crossfade"
+    bl_idname = "power_sequencer.crossfade_edit"
     bl_label = "Edit Crossfade"
     bl_description = "Adjust the location of the crossfade between 2 strips"
     bl_options = {'REGISTER', 'UNDO'}

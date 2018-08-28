@@ -56,7 +56,7 @@ class Panel(bpy.types.Panel):
 
         elif scene.power_sequencer.active_tab == "Modifier":
             row = box.row()
-            row.operator('power_sequencer.add_crossfade', icon="IMAGE_ALPHA")
+            row.operator('power_sequencer.crossfade_add', icon="IMAGE_ALPHA")
 
         elif scene.power_sequencer.active_tab == "Sound":
             row = box.row()
