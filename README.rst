@@ -1,38 +1,38 @@
 .. raw:: html
 
-    
+
     <h1 align="center">
       Blender Power Sequencer</br>
       <small>The Free add-on for content creators</small>
     </h1>
-    
+
     <p align='center'>
-      <img src="https://i.imgur.com/6tVdzBQ.jpg" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
+      <img src="https://i.imgur.com/LbxKduw.png" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
     </p>
-    
+
     <p>I've made <a href="http://youtube.com/c/gdquest">hundreds of tutorials</a> over the
     years. After working with popular professional programs like Vegas and
     Resolve, I now <strong>work exclusively with Blender</strong>. It does have some
     limitations, but it's the most stable and versatile tool you'll find out
     there.</p>
-    
+
     <p>I built Power Sequencer to help us edit videos as fast as possible. The
     add-on is getting better month after month, and it's yours for Free.</p>
-    
+
     <h2>Contributing</h2>
-    
+
     <p>This add-on is a living, open project, and we'd be glad to welcome new
     contributors! We need people to:</p>
-    
+
     <ul>
     <li>Code new features</li>
     <li>Improve existing features</li>
     <li>Help solidify the code</li>
     <li>Write mini-tutorials on the <a href="https://github.com/GDquest/Blender-power-sequencer-docs/">docs repository</a></li>
     </ul>
-    
+
     <h2>Installation</h2>
-    
+
     <ol>
     <li>Download the repository. Go to
     <a href="https://github.com/GDquest/Blender-power-sequencer/releases">Releases</a>
@@ -46,31 +46,31 @@
     <li>Save User Settings so the addon remains active every time you open
     Blender</li>
     </ol>
-    
+
     <h2>Usage</h2>
-    
+
     <p>The docs are in progress. Until the dedicated website is ready, you can
     find them on the <a href="https://github.com/GDquest/Blender-power-sequencer-docs/">power-sequencer-docs repository</a>.
     There's also a growing list of <a href="https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI">Free video tutorials</a>
     on Youtube (<em>14 videos at the time of writing</em>).</p>
-    
+
     <h2>Other add-ons</h2>
-    
+
     <p>Here are other recommended add-ons for a better editing workflow:</p>
-    
+
     <p>Daniel Oakey's <a href="https://github.com/doakey3/VSE_Transform_Tools">rewrite of VSE Transform Tools</a>.
     This tool lets you animate and move strips from the video preview. The
     original add-on was abandoned a few years ago. Daniel fixed and rewrote
     it so now it's super slick!</p>
-    
+
     <h2>Credits</h2>
-    
+
     <ul>
     <li><a href="https://github.com/davcri">davcri</a></li>
     <li><a href="https://github.com/doakey3">Daniel Oakey</a></li>
     <li><a href="https://twitter.com/NathanGDquest"> Nathan Lovato </a></li>
     </ul>
-    
+
     <h2>Operators</h2>
     <table>
         <tr>
@@ -106,7 +106,7 @@
             <td width=222px><a name="top_Cycle_Scenes" href="#Cycle_Scenes" title="Cycle through scenes.">Cycle Scenes</a></td>
             <td width=222px><a name="top_Increase_Playback_Speed" href="#Increase_Playback_Speed" title="Playback speed may be set to
     any of the following speeds:
-    
+
     *
     Normal (1x)
     * Fast (1.33x)
@@ -115,7 +115,7 @@
     * Double (2x)
     *
     Triple (3x)
-    
+
     Activating this
     operator will increase playback
     speed through each of these
@@ -127,7 +127,7 @@
         <tr>
             <td width=222px><a name="top_Add_Transform" href="#Add_Transform" title="For each strip in the
     selection:
-    
+
     * Filters the
     selection down to image and
     movie strips
@@ -138,7 +138,7 @@
     sets it to ALPHA_OVER">Add Transform</a></td>
             <td width=222px><a name="top_Decrease_Playback_Speed" href="#Decrease_Playback_Speed" title="Playback speed may be set to
     any of the following speeds:
-    
+
     *
     Normal (1x)
     * Fast (1.33x)
@@ -147,7 +147,7 @@
     * Double (2x)
     *
     Triple (3x)
-    
+
     Activating this
     operator will decrease playback
     speed through each of these
@@ -242,7 +242,7 @@
     </table>
         <h3><a name="Add_Crossfade" href="#top_Add_Crossfade">Add Crossfade</a></h3>
     <p>Based on the active strip, finds the closest next sequence of a similar type, moves it so it overlaps the active strip, and adds a gamma cross effect between them. Works with MOVIE, IMAGE and META strips</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -257,7 +257,7 @@
     </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
     <p>Add 2x speed to strip and set it's frame end accordingly. Wraps both the strip and the speed modifier into a META strip.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -272,13 +272,13 @@
     </table>
         <h3><a name="Add_Transform" href="#top_Add_Transform">Add Transform</a></h3>
     <p>For each strip in the selection:</p>
-    
+
     <ul>
     <li>Filters the selection down to image and movie strips</li>
     <li>Centers the pivot point of image strips</li>
     <li>Adds a transform effect and sets it to ALPHA_OVER</li>
     </ul>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -291,7 +291,7 @@
     </table>
         <h3><a name="Border_Select" href="#top_Border_Select">Border Select</a></h3>
     <p>Deselects the strips' handles before applying border select, so you don't have to deselect manually first</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -304,7 +304,7 @@
     </table>
         <h3><a name="Change_Playback_Speed" href="#top_Change_Playback_Speed">Change Playback Speed</a></h3>
     <p>Change the playback_speed property using an operator property. Used with keymaps</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -332,7 +332,7 @@
     </table>
         <h3><a name="Channel_Offset" href="#top_Channel_Offset">Channel Offset</a></h3>
     <p>Move selected strip to the nearest open channel above/down</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -350,7 +350,7 @@
     </table>
         <h3><a name="Clear_Fades" href="#top_Clear_Fades">Clear Fades</a></h3>
     <p>Set strip opacity to 1.0 and remove all opacity-keyframes</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -363,7 +363,7 @@
     </table>
         <h3><a name="Concatenate_Strips" href="#top_Concatenate_Strips">Concatenate Strips</a></h3>
     <p>Concatenates selected strips in a channel (removes the gap between them) If a single strip is selected, either the next strip in the channel will be concatenated, or all strips in the channel will be concatenated depending on which shortcut is used.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -383,7 +383,7 @@
     </table>
         <h3><a name="Copy_Selected_Sequences" href="#top_Copy_Selected_Sequences">Copy Selected Sequences</a></h3>
     <p>Copies the selected sequences without frame offset and optionally deletes the selection to give a cut to clipboard effect. This operator overrides the default Blender copy method which includes cursor offset when pasting, which is atypical of copy/paste methods.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -403,7 +403,7 @@
     </table>
         <h3><a name="Cycle_Scenes" href="#top_Cycle_Scenes">Cycle Scenes</a></h3>
     <p>Cycle through scenes.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -418,7 +418,7 @@
     </table>
         <h3><a name="Decrease_Playback_Speed" href="#top_Decrease_Playback_Speed">Decrease Playback Speed</a></h3>
     <p>Playback speed may be set to any of the following speeds:</p>
-    
+
     <ul>
     <li>Normal (1x)</li>
     <li>Fast (1.33x)</li>
@@ -426,9 +426,9 @@
     <li>Double (2x)</li>
     <li>Triple (3x)</li>
     </ul>
-    
+
     <p>Activating this operator will decrease playback speed through each of these steps until minimum speed is reached.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -441,7 +441,7 @@
     </table>
         <h3><a name="Delete_Direct" href="#top_Delete_Direct">Delete Direct</a></h3>
     <p>Delete without confirmation. Replaces default Blender setting</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -459,7 +459,7 @@
     </table>
         <h3><a name="Edit_Crossfade" href="#top_Edit_Crossfade">Edit Crossfade</a></h3>
     <p>Selects the handles of both inputs of a crossfade strip's input and calls the grab operator. Allows you to quickly change the location of a fade transition between two strips.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -472,7 +472,7 @@
     </table>
         <h3><a name="Fade_Strips" href="#top_Fade_Strips">Fade Strips</a></h3>
     <p>Animate a strips opacity to zero. By default, the duration of the fade is 0.5 seconds.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -497,7 +497,7 @@
     </table>
         <h3><a name="Grab_Closest_Handle_or_Cut" href="#top_Grab_Closest_Handle_or_Cut">Grab Closest Handle or Cut</a></h3>
     <p>Selects and grabs the strip handle or cut closest to the mouse cursor. Hover near a cut and fire this tool to slide it.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -510,7 +510,7 @@
     </table>
         <h3><a name="Grab_Sequence_Handle" href="#top_Grab_Sequence_Handle">Grab Sequence Handle</a></h3>
     <p>Extends the sequence based on the mouse position. If the cursor is to the right of the sequence's middle, it moves the right handle. If it's on the left side, it moves the left handle.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -523,7 +523,7 @@
     </table>
         <h3><a name="Import_Local_Footage" href="#top_Import_Local_Footage">Import Local Footage</a></h3>
     <p>Finds the first empty channel above all others in the VSE and returns it</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -536,7 +536,7 @@
     </table>
         <h3><a name="Increase_Playback_Speed" href="#top_Increase_Playback_Speed">Increase Playback Speed</a></h3>
     <p>Playback speed may be set to any of the following speeds:</p>
-    
+
     <ul>
     <li>Normal (1x)</li>
     <li>Fast (1.33x)</li>
@@ -544,9 +544,9 @@
     <li>Double (2x)</li>
     <li>Triple (3x)</li>
     </ul>
-    
+
     <p>Activating this operator will increase playback speed through each of these steps until maximum speed is reached.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -559,7 +559,7 @@
     </table>
         <h3><a name="Mouse_Cut" href="#top_Mouse_Cut">Mouse Cut</a></h3>
     <p>Quickly cut and remove a section of strips while keeping or collapsing the remaining gap.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -579,7 +579,7 @@
     </table>
         <h3><a name="Mouse_Toggle_Mute" href="#top_Mouse_Toggle_Mute">Mouse Toggle Mute</a></h3>
     <p>Toggle mute a sequence as you click on it</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -592,7 +592,7 @@
     </table>
         <h3><a name="Mouse_Trim" href="#top_Mouse_Trim">Mouse Trim</a></h3>
     <p>Trims a frame range or a selection from a start to an end frame. If there's no precise time range, auto trims based on the closest cut</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -610,7 +610,7 @@
     </table>
         <h3><a name="Preview_Last_Cut" href="#top_Preview_Last_Cut">Preview Last Cut</a></h3>
     <p>Finds the closest cut to the time cursor and sets the preview to a small range around that frame. If the preview matches the range, resets to the full timeline</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -623,7 +623,7 @@
     </table>
         <h3><a name="Preview_to_selection" href="#top_Preview_to_selection">Preview to selection</a></h3>
     <p>Sets the scene frame start to the earliest frame start of selected sequences and the scene frame end to the last frame of selected sequences.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -638,7 +638,7 @@
     </table>
         <h3><a name="Render_for_Web" href="#top_Render_for_Web">Render for Web</a></h3>
     <p>Render video with good settings for web upload</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -651,7 +651,7 @@
     </table>
         <h3><a name="Ripple_Delete" href="#top_Ripple_Delete">Ripple Delete</a></h3>
     <p>Delete selected strips and collapse remaining gaps.</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -664,7 +664,7 @@
     </table>
         <h3><a name="Save_Direct" href="#top_Save_Direct">Save Direct</a></h3>
     <p>Save without confirmation, overrides Blender default</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -677,7 +677,7 @@
     </table>
         <h3><a name="Smart_Snap" href="#top_Smart_Snap">Smart Snap</a></h3>
     <p>Trims, extends and snaps selected strips to cursor</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -690,7 +690,7 @@
     </table>
         <h3><a name="Snap_Selection_to_Cursor" href="#top_Snap_Selection_to_Cursor">Snap Selection to Cursor</a></h3>
     <p>Snap selected strips to cursor</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -703,7 +703,7 @@
     </table>
         <h3><a name="Toggle_Selected_Mute" href="#top_Toggle_Selected_Mute">Toggle Selected Mute</a></h3>
     <p>Mute or unmute selected strip</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -716,7 +716,7 @@
     </table>
         <h3><a name="Toggle_Waveforms" href="#top_Toggle_Waveforms">Toggle Waveforms</a></h3>
     <p>Toggle auio waveforms for selected audio strips</p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -731,7 +731,7 @@
     </table>
         <h3><a name="Trim_to_Surrounding_Cuts" href="#top_Trim_to_Surrounding_Cuts">Trim to Surrounding Cuts</a></h3>
     <p></p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
@@ -744,7 +744,7 @@
     </table>
         <h3><a name="Refresh_All" href="#top_Refresh_All">Refresh All</a></h3>
     <p></p>
-    
+
     <table>
         <tr>
             <th width=208px>Shortcut</th>
