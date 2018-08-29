@@ -83,6 +83,12 @@
         "shortcuts": ["Alt F; Fade Right", "Ctrl F; Fade Left", "F; Fade Both"],
         "demo": "https://i.imgur.com/XoUM2vw.gif"
     },
+    "power_sequencer.grab": {
+        "name": "Auto select and grab",
+        "description": "Grab and move sequences. If you have no strips selected, it automatically finds the strip closest to the mouse and selects it",
+        "shortcuts": ["G"],
+        "demo": ""
+    },
     "power_sequencer.grab_closest_handle_or_cut": {
         "name": "Grab Closest Handle or Cut",
         "description": "Selects and grabs the strip handle or cut closest to the mouse cursor. Hover near a cut and fire this tool to slide it.",

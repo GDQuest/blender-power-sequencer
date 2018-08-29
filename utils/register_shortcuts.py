@@ -69,6 +69,7 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS')
     set_keymap_property(kmi.properties, 'fade_type', 'both')
 
+    kmi = km.keymap_items.new('power_sequencer.grab', 'G', 'PRESS')
     kmi = km.keymap_items.new('power_sequencer.grab_closest_cut', 'G', 'PRESS', shift=True, alt=True)
     kmi = km.keymap_items.new('power_sequencer.grab_sequence_handle', 'G', 'PRESS', shift=True)
 
