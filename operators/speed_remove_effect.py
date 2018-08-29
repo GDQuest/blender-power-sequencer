@@ -15,6 +15,7 @@ class Unspeed(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         scene = context.scene
+        active_strip = scene.sequence_editor.active_strip
         if not (scene.sequence_editor and active_strip):
             return False
         result = active_strip.select and active_strip.type == 'META'
