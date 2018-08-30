@@ -46,12 +46,15 @@ class SwapStrips(bpy.types.Operator):
                     strip_1.frame_final_end != strip_2.frame_final_end:
                 return {'CANCELLED'}
             
-            strip_1_channel = strip_1.channel
-            strip_2_channel = strip_2.channel
+            effect_strip = strip_1 if hasattr(strip_1, 'input_1') else strip_2
+            other_strip = strip_1 if effect_strip != strip_1 else strip_2
             
-            strip_1.channel += 1
-            strip_2.channel = strip_1_channel
-            strip_1.channel = strip_2_channel
+            effect_strip_channel = effect_strip.channel
+            other_strip_channel = other_strip.channel
+            
+            effect_strip.channel -= 1
+            other_strip.channel = effect_strip_channel
+            effect_strip.channel = other_strip_channel
             
             return {'FINISHED'}
         
@@ -192,10 +195,8 @@ class SwapStrips(bpy.types.Operator):
         
         if "up" == self.direction:
             strips = [s for s in context.sequences if s.channel > strip.channel]
-            
         elif "down" == self.direction:
             strips = [s for s in context.sequences if s.channel < strip.channel]
-            
         elif "left" == self.direction:
             strips = [s for s in context.sequences if s.frame_final_end < \
                     strip.frame_final_start]
