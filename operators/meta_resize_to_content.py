@@ -13,7 +13,11 @@ class MetaResizeToContent(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return next(s for s in bpy.context.selected_sequences if s.type == 'META')
+        try:
+            meta = next(s for s in bpy.context.selected_sequences if s.type == 'META')
+        except StopIteration:
+            return False
+        return True
 
     def execute(self, context):
         selected_meta_strips = (s for s in bpy.context.selected_sequences if s.type == 'META')
