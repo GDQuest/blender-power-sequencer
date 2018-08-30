@@ -15,7 +15,7 @@ class RemoveGaps(bpy.types.Operator):
         name="Ignore Locked Strips",
         description="Remove gaps without moving locked strips",
         default=True)
-    remove_all = bpy.props.BoolProperty(
+    all = bpy.props.BoolProperty(
         name="Remove All",
         description="Remove all gaps starting from the time cursor",
         default=False)
@@ -31,25 +31,29 @@ class RemoveGaps(bpy.types.Operator):
 
         sequences_to_process = (s for s in context.sequences if s.frame_final_start >= frame_start or s.frame_final_end > frame_start)
         sequence_blocks = slice_selection(sequences_to_process)
-        # DEBUG prints
-        # print("%s sequence blocks found" % len(sequence_blocks))
-        # for block in sequence_blocks:
-        #     print("Block start {!s}, end {!s}, len {!s}".format(block[0].frame_final_start, block[-1].frame_final_end, len(block)))
 
         first_gap_frame = self.find_first_gap_frame(sequence_blocks[0], frame_start)
         if first_gap_frame == None:
             return {'FINISHED'}
-        print(first_gap_frame)
 
-        self.remove_gaps(sequence_blocks[1:], first_gap_frame, self.remove_all)
+        first_block_start = min(sequence_blocks[0], key=attrgetter('frame_final_start')).frame_final_start
+        blocks_after_gap = sequence_blocks[1:] if first_block_start <= first_gap_frame else sequence_blocks
+        self.remove_gaps(blocks_after_gap, first_gap_frame)
         return {'FINISHED'}
 
     def find_first_gap_frame(self, sorted_sequences, frame_start):
-        sequences_frame_start = min(sorted_sequences, key=attrgetter('frame_final_start')).frame_final_start
-        sequences_frame_end = max(sorted_sequences, key=attrgetter('frame_final_end')).frame_final_end
-        return frame_start if sequences_frame_start > frame_start else sequences_frame_end
+        strips_before_start = (s for s in bpy.context.sequences if s.frame_final_end < frame_start)
 
-    def remove_gaps(self, sequence_blocks, gap_frame_start, remove_all=False):
+        end_frame_before_gap = max(strips_before_start, key=attrgetter('frame_final_end')).frame_final_end
+        strips_start = min(sorted_sequences, key=attrgetter('frame_final_start')).frame_final_start
+        strips_end = max(sorted_sequences, key=attrgetter('frame_final_end')).frame_final_end
+
+        if strips_start > frame_start:
+            return end_frame_before_gap if end_frame_before_gap < strips_start else frame_start
+        else:
+            return strips_end
+
+    def remove_gaps(self, sequence_blocks, gap_frame_start):
         for block in sequence_blocks:
             gap_size = block[0].frame_final_start - gap_frame_start
             # print("Gap size: %s" % gap_size)
@@ -60,17 +64,6 @@ class RemoveGaps(bpy.types.Operator):
                     s.frame_start -= gap_size
                 except AttributeError:
                     pass
-            if not self.remove_all:
+            if not self.all:
                 break
             gap_frame_start = block[-1].frame_final_end
-
-    def find_sequences_after_gap(self, sorted_sequences, first_gap_frame):
-        after_gap = []
-        if self.ignore_locked:
-            after_gap = [s for s in sorted_sequences
-                            if s.frame_final_start >= first_gap_frame and
-                            not s.lock]
-        else:
-            after_gap = [s for s in sorted_sequences
-                            if s.frame_final_start >= first_gap_frame]
-        return after_gap
