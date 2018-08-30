@@ -11,7 +11,8 @@ class ClearFades(bpy.types.Operator):
     bl_description = "Set selected strips' opacity to 1.0 and remove opacity keyframes"
     bl_options = {'REGISTER', 'UNDO'}
 
-    def execute(self, context):
+    @classmethod
+    def poll(cls, context):
         scene = context.scene
         if scene.sequence_editor and len(context.selected_sequences) > 0:
             return True
@@ -32,6 +33,4 @@ class ClearFades(bpy.types.Operator):
                     if strip == eval(
                             curve.data_path.replace('.blend_alpha', '')):
                         fcurves.remove(curve)
-
-
         return {'FINISHED'}
