@@ -69,6 +69,12 @@ class RemoveGaps(bpy.types.Operator):
                     s.frame_start -= gap_size
                 except AttributeError:
                     pass
+            self.move_markers(gap_frame_start, gap_size)
             if not self.all:
                 break
             gap_frame_start = block[-1].frame_final_end
+
+    def move_markers(self, gap_frame_start, gap_size):
+        markers = (m for m in bpy.context.scene.timeline_markers if m.frame > gap_frame_start)
+        for m in markers:
+            m.frame -= min({gap_size, m.frame - gap_frame_start})
