@@ -132,7 +132,7 @@ class MouseCut(bpy.types.Operator):
 
                 if self.remove_gaps and self.select_mode == 'cursor':
                     bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
-                    bpy.ops.sequencer.gap_remove()
+                    bpy.ops.power_sequencer.remove_gaps()
                 else:
                     bpy.context.scene.frame_current = self.frame_end
             return {'FINISHED'}
@@ -193,7 +193,7 @@ class MouseCut(bpy.types.Operator):
 
     def cut_strips_or_gap(self, frame_cut):
         if self.cut_gaps and len(bpy.context.selected_sequences) == 0:
-            bpy.ops.sequencer.gap_remove(all=False)
+            bpy.ops.power_sequencer.remove_gaps()
         else:
             frame_current = bpy.context.scene.frame_current
             bpy.context.scene.frame_current = frame_cut
