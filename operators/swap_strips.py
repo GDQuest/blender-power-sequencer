@@ -31,9 +31,9 @@ class SwapStrips(bpy.types.Operator):
     def execute(self, context):
         strip_1 = context.selected_sequences[0]
         if len(context.selected_sequences) == 1:
-            strip_2 = self.closest_direction_strip(context, \
+            strip_2 = self.find_closest_direction_strip(context, \
                     context.selected_sequences[0])
-            if None == strip_2:
+            if not strip_2:
                 return {'CANCELLED'}
         else:
             strip_2 = context.selected_sequences[1]
@@ -183,7 +183,7 @@ class SwapStrips(bpy.types.Operator):
                     u.channel += 1
             s.channel = channel
             
-    def closest_direction_strip(self, context, strip):
+    def find_closest_direction_strip(self, context, strip):
         """
         Finds the closest strip to a given strip in a specific direction.
         Args:
