@@ -61,7 +61,6 @@ class RemoveGaps(bpy.types.Operator):
     def remove_gaps(self, sequence_blocks, gap_frame_start):
         for block in sequence_blocks:
             gap_size = block[0].frame_final_start - gap_frame_start
-            # print("Gap size: %s" % gap_size)
             if gap_size < 1:
                 continue
             for s in block:
