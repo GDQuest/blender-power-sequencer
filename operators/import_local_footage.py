@@ -218,7 +218,7 @@ class ImportLocalFootage(bpy.types.Operator):
                 relative_file_paths = [
                     os.path.relpath(
                         os.path.join(root, name), start=project_directory)
-                    for name in files
+                    for name in sorted(files)
                 ]
                 local_footage_files[f].extend(relative_file_paths)
         return local_footage_files
