@@ -16,7 +16,7 @@ def find_strips_mouse(frame, channel, select_linked=False):
     """
     sequences = [s for s in bpy.context.sequences if not s.lock and s.channel == channel]
     try:
-        under_mouse = list(next(s for s in sequences if s.frame_final_start <= frame <= s.frame_final_end))
+        under_mouse = [next(s for s in sequences if s.frame_final_start <= frame <= s.frame_final_end)]
     except StopIteration:
         return []
 
