@@ -1,33 +1,62 @@
 import bpy
 from operator import attrgetter
+from .utils.find_closest_strip import find_closest_strip
 
 class SwapStrips(bpy.types.Operator):
     """
-    Swaps the 2 selected strips between them. More specific, places the first
-    strip in the channel and starting frame (frame_final_start) of the second
-    strip, and places the second strip in the channel and starting frame
-    (frame_final_end) of the first strip. If there is no space for the swap, it 
-    does nothing. If at least 1 of the selected strips is of effect type, the
-    operator won't have any effect.
+    Swaps the 2 strips between them. More specific, places the first strip in 
+    the channel and starting frame (frame_final_start) of the second strip, and 
+    places the second strip in the channel and starting frame (frame_final_end) 
+    of the first strip. If there is no space for the swap, it does nothing.
     """
     bl_idname = "power_sequencer.swap_strips"
     bl_label = "Swap Strips"
-    bl_description = "Swaps the 2 selected strips between them"
+    bl_description = "Swaps 2 strips between them"
     bl_options = {"REGISTER", "UNDO"}
+    
+    direction = bpy.props.EnumProperty(
+		name="Direction",
+		description="The direction to find the closest strip",
+		items=[("up", "Up", "The direction up from the selected strip"), \
+                ("down", "Down", "The direction down from the selected strip"), \
+                ("left", "Left", "The direction left from the selected strip"), \
+                ("right", "Right", "The direction right from the selected strip")],
+        default="up"
+	)
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_sequences) == 2
+        return len(bpy.context.selected_sequences) in range(1, 3)
 
     def execute(self, context):
         strip_1 = context.selected_sequences[0]
-        strip_2 = context.selected_sequences[1]
-        
+        if len(context.selected_sequences) == 1:
+            strip_2 = self.find_closest_direction_strip(context, \
+                    context.selected_sequences[0])
+            if not strip_2:
+                return {'CANCELLED'}
+        else:
+            strip_2 = context.selected_sequences[1]
+            
         if strip_1.lock or strip_2.lock:
             return {'CANCELLED'}
         
         if hasattr(strip_1, 'input_1') or hasattr(strip_2, 'input_1'):
-            return {'CANCELLED'}
+            if strip_1.frame_final_start != strip_2.frame_final_start or \
+                    strip_1.frame_final_end != strip_2.frame_final_end:
+                return {'CANCELLED'}
+            
+            effect_strip = strip_1 if hasattr(strip_1, 'input_1') else strip_2
+            other_strip = strip_1 if effect_strip != strip_1 else strip_2
+            
+            effect_strip_channel = effect_strip.channel
+            other_strip_channel = other_strip.channel
+            
+            effect_strip.channel -= 1
+            other_strip.channel = effect_strip_channel
+            effect_strip.channel = other_strip_channel
+            
+            return {'FINISHED'}
         
         s1_start, s1_channel = strip_1.frame_final_start, strip_1.channel
         s2_start, s2_channel = strip_2.frame_final_start, strip_2.channel
@@ -153,3 +182,31 @@ class SwapStrips(bpy.types.Operator):
                 if u.channel == channel and u != s:
                     u.channel += 1
             s.channel = channel
+            
+    def find_closest_direction_strip(self, context, strip):
+        """
+        Finds the closest strip to a given strip in a specific direction.
+        Args:
+        - strip: The base strip.
+        Returns: The closest strip to the given strip, in the proper direction.
+                 If no strip is found, returns None.
+        """
+        view2d = bpy.context.region.view2d
+        
+        if "up" == self.direction:
+            strips = [s for s in context.sequences if s.channel > strip.channel]
+        elif "down" == self.direction:
+            strips = [s for s in context.sequences if s.channel < strip.channel]
+        elif "left" == self.direction:
+            strips = [s for s in context.sequences if s.frame_final_end < \
+                    strip.frame_final_start]
+        elif "right" == self.direction:
+            strips = [s for s in context.sequences if s.frame_final_start > \
+                    strip.frame_final_end]
+                    
+        if not strips:
+            return None
+            
+        start_x, start_y = view2d.view_to_region(strip.frame_final_start, \
+                    strip.channel + 0.5)
+        return find_closest_strip(strips, start_x, start_y)
