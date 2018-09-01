@@ -2,9 +2,9 @@ import bpy
 from .utils.find_neighboring_markers import find_neighboring_markers
 
 
-class GoToNextMarker(bpy.types.Operator):
+class MarkerGoToNext(bpy.types.Operator):
     """Moves the time cursor to the next marker"""
-    bl_idname = "power_sequencer.go_to_next_marker"
+    bl_idname = "power_sequencer.marker_go_to_next"
     bl_label = "Go To Next Marker"
     bl_description = "Move time cursor to the next marker"
     bl_options = {'REGISTER', 'UNDO'}
