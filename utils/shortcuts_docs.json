@@ -35,7 +35,7 @@
         "shortcuts": ["Alt UP_ARROW; Move to open channel above", "Alt DOWN_ARROW; Move to open channel above"],
         "demo": ""
     },
-    "power_sequencer.clear_fades": {
+    "power_sequencer.fade_clear": {
         "name": "Clear Fades",
         "description": "Set strip opacity to 1.0 and remove all opacity-keyframes",
         "shortcuts": ["Ctrl Alt F; Clear fades"],
@@ -77,7 +77,7 @@
         "shortcuts": ["Alt C; Edit Crossfade"],
         "demo": ""
     },
-    "power_sequencer.fade_strips": {
+    "power_sequencer.fade_add": {
         "name": "Fade Strips",
         "description": "Animate a strips opacity to zero. By default, the duration of the fade is 0.5 seconds.",
         "shortcuts": ["Alt F; Fade Right", "Ctrl F; Fade Left", "F; Fade Both"],

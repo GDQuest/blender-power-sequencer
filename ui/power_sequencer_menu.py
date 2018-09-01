@@ -35,7 +35,7 @@ class PowerSequencerMenu(bpy.types.Menu):
         for t in types:
             if t in SequenceTypes.VIDEO:
                 layout.operator(
-                    'power_sequencer.fade_strips',
+                    'power_sequencer.fade_add',
                     icon='IMAGE_ALPHA',
                     text='Fade strips')
                 break

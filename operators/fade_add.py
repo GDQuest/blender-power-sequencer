@@ -5,14 +5,14 @@ from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 # TODO: Use a handler to auto move the fades with extend
 # and the strips' handles
-class FadeStrips(bpy.types.Operator):
+class FadeAdd(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/XoUM2vw.gif)
 
     Animate a strips opacity to zero. By default, the duration of the
     fade is 0.5 seconds.
     """
-    bl_idname = "power_sequencer.fade_strips"
+    bl_idname = "power_sequencer.fade_add"
     bl_label = "Fade Strips"
     bl_description = "Fade left, right or both sides of all selected strips in the VSE"
 

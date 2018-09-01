@@ -42,7 +42,7 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.channel_offset', 'DOWN_ARROW', 'PRESS', alt=True)
     set_keymap_property(kmi.properties, 'direction', 'down')
 
-    kmi = km.keymap_items.new('power_sequencer.clear_fades', 'F', 'PRESS', alt=True, ctrl=True)
+    kmi = km.keymap_items.new('power_sequencer.fade_clear', 'F', 'PRESS', alt=True, ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS')
     set_keymap_property(kmi.properties, 'concatenate_whole_channel', False)
@@ -60,13 +60,13 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
     kmi = km.keymap_items.new('power_sequencer.crossfade_edit', 'C', 'PRESS', alt=True)
 
-    kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', alt=True)
+    kmi = km.keymap_items.new('power_sequencer.fade_add', 'F', 'PRESS', alt=True)
     set_keymap_property(kmi.properties, 'fade_type', 'right')
 
-    kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS', ctrl=True)
+    kmi = km.keymap_items.new('power_sequencer.fade_add', 'F', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'fade_type', 'left')
 
-    kmi = km.keymap_items.new('power_sequencer.fade_strips', 'F', 'PRESS')
+    kmi = km.keymap_items.new('power_sequencer.fade_add', 'F', 'PRESS')
     set_keymap_property(kmi.properties, 'fade_type', 'both')
 
     kmi = km.keymap_items.new('power_sequencer.grab', 'G', 'PRESS')
