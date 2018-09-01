@@ -5,17 +5,15 @@ from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.global_settings import SequenceTypes
 
 
-# TODO: make it work with pictures and transform strips
-# TODO: If source strip has a special blending mode, use that for crossfade?
-# TODO: make sure there's no effect on the strip?
+# TODO: update docstrings
 class CrossfadeAdd(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/ZyEd0jD.gif)
 
-    Finds the closest sequence after the active strip,
-    of a similar type, moves it next to the selected strip (optional)
-    and adds a gamma cross effect between them.
-    Works with MOVIE, IMAGE and META strips
+    For each selected strip, finds the next sequence in the channel,
+    optionally moves it next to the first strip, and adds
+    a gamma cross effect between them.
+    Currently works with MOVIE, IMAGE and META strips.
     """
     bl_idname = "power_sequencer.crossfade_add"
     bl_label = "Add Crossfade"
@@ -35,29 +33,30 @@ class CrossfadeAdd(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        active = bpy.context.scene.sequence_editor.active_strip
-        return active and active.type != 'SOUND' and active.type not in SequenceTypes.TRANSITION
+        try:
+            next(s for s in context.sequences if s.type not in SequenceTypes.TRANSITION.extend(SequenceTypes.SOUND))
+            return True
+        except StopIteration:
+            return False
 
     def execute(self, context):
-        active = bpy.context.scene.sequence_editor.active_strip
-        next_in_channel = [s for s in find_next_sequences(active)
-                           if s.channel == active.channel]
-        if not next_in_channel:
-            return {'CANCELLED'}
+        sorted_selection = sorted(context.selected_sequences, key=attrgetter('frame_final_start'))
+        for selected_strip in sorted_selection:
+            next_in_channel = [s for s in find_next_sequences(selected_strip)
+                            if s.channel == selected_strip.channel]
+            next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
+            next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))
 
-        next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
-        next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))
-        if not next_sequence:
-            return {'CANCELLED'}
+            if self.auto_move_strip:
+                frame_offset = next_sequence.frame_final_start - selected_strip.frame_final_end
+                next_sequence.frame_start -= frame_offset
 
-        if self.auto_move_strip:
-            frame_offset = next_sequence.frame_final_start - active.frame_final_end
-            next_sequence.frame_start -= frame_offset
-        if next_sequence.frame_final_start == active.frame_final_end:
-            crossfade_length = convert_duration_to_frames(self.crossfade_duration)
-            next_sequence.frame_final_start += crossfade_length / 2
-            active.frame_final_end -= crossfade_length / 2
-        self.apply_crossfade(active, next_sequence)
+            if next_sequence.frame_final_start == selected_strip.frame_final_end:
+                crossfade_length = convert_duration_to_frames(self.crossfade_duration)
+                next_sequence.frame_final_start += crossfade_length / 2
+                selected_strip.frame_final_end -= crossfade_length / 2
+
+            self.apply_crossfade(selected_strip, next_sequence)
         return {"FINISHED"}
 
     def apply_crossfade(self, strip_from, strip_to):
