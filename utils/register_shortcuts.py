@@ -13,11 +13,19 @@ def set_keymap_property(properties, property_name, value):
 
 def register_shortcuts():
     wm = bpy.context.window_manager
+
+    # Global frame navigation shortcuts
+    km = wm.keyconfigs.addon.keymaps.new(
+        name='Frames',
+        space_type='EMPTY')
+    kmi = km.keymap_items.new('power_sequencer.jump_time_offset', 'RIGHT_ARROW', 'PRESS', shift=True)
+    set_keymap_property(kmi.properties, 'direction', 'forward')
+    kmi = km.keymap_items.new('power_sequencer.jump_time_offset', 'LEFT_ARROW', 'PRESS', shift=True)
+    set_keymap_property(kmi.properties, 'direction', 'backward')
+
     km = wm.keyconfigs.addon.keymaps.new(
         name='Sequencer',
-        space_type='SEQUENCE_EDITOR',
-        region_type='WINDOW')
-
+        space_type='SEQUENCE_EDITOR')
     kmi = km.keymap_items.new('power_sequencer.crossfade_add', 'C', 'PRESS', ctrl=True, alt=True)
     kmi = km.keymap_items.new('power_sequencer.add_speed', 'PLUS', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.add_transform', 'T', 'PRESS')
