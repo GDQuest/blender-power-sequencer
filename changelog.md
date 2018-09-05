@@ -14,6 +14,8 @@ You can test them by going to the Blender preferences, add-ons tab, Power Sequen
 
 Learn to use BPSrender from the command line! We still need people to tell us that it works well everywhere before we can integrate it in Blender. Also, we need your help to design a nice render panel 😄
 
+![Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
+
 *Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`*
 
 ### 🎥🕺 New features ###
@@ -21,6 +23,7 @@ Learn to use BPSrender from the command line! We still need people to tell us th
 - **Remove crossfade**: Remove crossfades in a clean way, as you'd expect! If you select one or more transition effects like Crossfade or Wipe, pressing <kbd>X</kbd> will now bring the sequences back together to form a precise cut.
 - **Remove Gaps and ignore locked strips**: Blender's default tool to remove gap isn't very smart. We had to code our own to create the next feature...
 - **Cut with the mouse, without touching locked strips**: edit to music with the add-on's fast mouse-based tools! Lock your audio strip and you're good to go 😃
+- **Select related strips**: find and select effects related to the selection, to then cut, copy or duplicate a strip with everything that should come with it.
 
 #### Meta strips ####
 
@@ -34,6 +37,7 @@ Learn to use BPSrender from the command line! We still need people to tell us th
   - This makes it a lot easier to export Blender edits to Davinci Resolve, Premiere, or Final Cut with the [EDL export add-on](https://github.com/tin2tin/ExportEDL)
 - **Swap strips vertically**: You can now conveniently change the order of effects or linked strips, e.g. picture overlays
 - Smartly remove strips: if you press X but don't have anything selected, Power Sequencer will find and delete the strips under the mouse cursor for you!
+- Jump in time with <kbd>Shift</kbd> <kbd>➡</kbd> and <kbd>Shift</kbd> <kbd>⬅</kbd>: It's consistent with <kbd>⬅</kbd> and <kbd>➡</kbd> to move 1 frame on the timeline. This new tool works in seconds so the jump will be the same regardless of your project's framerate!
 
 #### Improvements to the source code ####
 
