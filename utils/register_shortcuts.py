@@ -98,7 +98,7 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.mouse_trim', 'SELECTMOUSE', 'PRESS', ctrl=True, alt=True, shift=True)
     set_keymap_property(kmi.properties, 'select_mode', 'cursor')
 
-    kmi = km.keymap_items.new('power_sequencer.preview_last_cut', 'P', 'PRESS', shift=True)
+    kmi = km.keymap_items.new('power_sequencer.preview_closest_cut', 'P', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.preview_to_selection', 'P', 'PRESS', ctrl=True, alt=True)
 
     kmi = km.keymap_items.new('power_sequencer.render_for_web', 'F12', 'PRESS', alt=True)

@@ -131,7 +131,7 @@
         "shortcuts": ["Ctrl Alt RIGHTMOUSE; Trim strip, keep gap", "Ctrl Alt Shift RIGHTMOUSE; Trim strip, remove gap"],
         "demo": ""
     },
-    "power_sequencer.preview_last_cut": {
+    "power_sequencer.preview_closest_cut": {
         "name": "Preview Last Cut",
         "description": "Finds the closest cut to the time cursor and sets the preview to a small range around that frame. If the preview matches the range, resets to the full timeline",
         "shortcuts": ["Shift P; Preview last cut"],
