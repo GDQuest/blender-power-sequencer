@@ -4,17 +4,17 @@ import bpy
 class CycleScenes(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/7zhq8Tg.gif)
-    
+
     Cycle through scenes.
     """
-    bl_idname = "power_sequencer.cycle_scenes"
+    bl_idname = "power_sequencer.scene_cycle"
     bl_label = "Cycle Scenes"
     bl_description = "Cycle through scenes"
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(bpy.data.scenes) > 1
 
     def execute(self, context):
         scenes = bpy.data.scenes
