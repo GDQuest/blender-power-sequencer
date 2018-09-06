@@ -9,6 +9,11 @@ class SceneCreateFromSelection(bpy.types.Operator):
     bl_description = "Create a scene from the selected sequences, copying the current scene's settings, and replace the selection with the newly created scene as a strip"
     bl_options = {'REGISTER', 'UNDO'}
 
+    move_to_first_frame = bpy.props.BoolProperty(
+        name="Move to First Frame",
+        description="The strips will start at frame 1 on the new scene",
+        default=True
+    )
     @classmethod
     def poll(cls, context):
         return len(context.selected_sequences) > 0
@@ -23,10 +28,17 @@ class SceneCreateFromSelection(bpy.types.Operator):
         # Create new scene for the scene strip
         bpy.ops.scene.new(type='FULL_COPY')
         new_scene_name = bpy.context.scene.name
-        bpy.ops.power_sequencer.preview_to_selection()
 
         bpy.ops.sequencer.select_all(action='INVERT')
         bpy.ops.power_sequencer.delete_direct()
+        frame_offset = selection_start_frame - 1
+        for s in bpy.context.sequences:
+            try:
+                s.frame_start -= frame_offset
+            except Exception:
+                continue
+        bpy.ops.sequencer.select_all()
+        bpy.ops.power_sequencer.preview_to_selection()
 
         # Back to start scene
         bpy.context.screen.scene = bpy.data.scenes[start_scene_name]
