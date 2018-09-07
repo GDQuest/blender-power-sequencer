@@ -61,9 +61,9 @@ class SelectRelatedStrips(bpy.types.Operator):
         bpy.ops.sequencer.select_all(action='DESELECT')
         strip.select = True
         bpy.ops.transform.seq_slide(value=(0, 0))
+        strip.select = False
         for s in context.selected_sequences:
-            if s != strip:
-                neighbours.append(s)
+            neighbours.append(s)
                 
         try:
             neighbours.append(strip.input_1)
