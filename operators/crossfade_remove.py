@@ -20,8 +20,10 @@ class CrossfadeRemove(bpy.types.Operator):
         return len(bpy.context.selected_sequences) > 0
 
     def execute(self, context):
-        to_process = self.sequences_override or bpy.context.selected_sequences
+        to_process = self.sequences_override if self.sequences_override else bpy.context.selected_sequences
         sequences = [s for s in to_process if s.type in SequenceTypes.TRANSITION]
+        if not sequences:
+            return {'FINISHED'}
         bpy.ops.sequencer.select_all(action='DESELECT')
         for sequence in sequences:
             effect_middle_frame = round((sequence.frame_final_start + sequence.frame_final_end) / 2)
