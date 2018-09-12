@@ -1,8 +1,8 @@
-import argparse
 import os
 import subprocess
-import sys
 
+import argparse
+import sys
 
 class Media:
     """
@@ -46,14 +46,14 @@ class Video(Media):
     """
     Represents a video
     """
-    EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv"]
+    EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv", ".mts"]
 
     def __init__(self, path_source, **kwargs):
         super().__init__(path_source, **kwargs)
         if "codec" not in self.options:
-            self.options["codec"] = "mpeg2video"
-        if "bitrate" not in self.options:
-            self.options["bitrate"] = "1800k"
+            self.options["codec"] = ""
+        if "crf" not in self.options:
+            self.options["crf"] = "25"
 
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = self.get_frame_count(self.path_source)
@@ -62,7 +62,7 @@ class Video(Media):
 
     def get_frame_count(self, path):
         """
-        takes in path to file, returns the number of frames in the video
+        Returns the number of frames in the video, using the ffprobe program
         """
         ffprobe_frame_cmd = [
             "ffprobe",
@@ -80,7 +80,7 @@ class Video(Media):
 
     def get_path_proxy(self, path):
         """
-        takes in path to file, returns path the proxy file should be located
+        Returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
         return os.path.join(folder, "BL_proxy", file_name,
@@ -88,26 +88,19 @@ class Video(Media):
 
     def get_proxy_command(self, path_source, path_proxy):
         """
-        takes in path to file, returns the command for generating the proxy
+        Returns the ffmpeg command to generate a proxy file with the command line
         """
         proxy_cmd = [
             "ffmpeg",
             "-i",
             path_source,
-            "-v",
-            "quiet",
-            "-stats",
-            "-f",
-            "matroska",
-            "-sn",
-            "-an",
             "-c:v",
             self.options["codec"],
-            "-b:v",
-            self.options["bitrate"],
+            "-crf",
+            self.options["crf"],
             "-filter:v",
             "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
-            "-y",
+            "-sn", "-an", "-v", "quiet", "-stats", "-y",
             path_proxy,
         ]
         return proxy_cmd
@@ -171,88 +164,3 @@ class Image(Media):
             path_proxy,
         ]
         return proxy_cmd
-
-
-def get_working_directory(path):
-    """
-    If path is an actually directory its absolute path is returned. If it is a
-    .blend file the absolute path to the containing directory is returned. In
-    all other cases an exception is raised.
-    """
-    abs_path = os.path.abspath(path)
-    if os.path.exists(abs_path):
-        if os.path.isdir(abs_path):
-            return abs_path
-        elif os.path.isfile(abs_path) and abs_path.endswith(".blend"):
-            return os.path.dirname(abs_path)
-    raise ValueError("{} is neither a directory nor a .blend file".format(path))
-
-def get_media_file_paths(working_dir, ignored_dirs=["BL_proxy"]):
-    """
-    Walks all files and folders from the working_dir
-    except in ignored_dirs and returns a list of
-    media file paths: pictures and videos the script can
-    generate a proxy for
-    """
-    file_paths = []
-    FILE_EXTENSIONS = list(Video.EXTENSIONS + Image.EXTENSIONS)
-    for dirpath, dirnames, filenames in os.walk(working_dir):
-        tail = os.path.split(dirpath)[1]
-        if tail in ignored_dirs:
-            dirnames[:] = []
-            continue
-
-        for f in filenames:
-            file_path = os.path.join(dirpath, f)
-            extension = os.path.splitext(file_path)[1]
-            if extension.lower() in FILE_EXTENSIONS:
-                file_paths.append(os.path.join(dirpath, f))
-    return file_paths
-
-OPTIONS_PRESETS = dict()
-
-if __name__ == "__main__":
-    """
-    1) Parse arguments to get the working directory and encoding presets
-    2) Find video and image files and create a Media object for each of them
-    3) create proxy
-        - create path
-        - issue ffmpeg command and print progress
-    """
-
-    parser = argparse.ArgumentParser(description="Create proxies for Blender VSE using FFMPEG.")
-    parser.add_argument("working_directory", nargs="?",
-                        help="The directory containing media to create proxies for")
-    parser.add_argument("-p", "--preset", help="A preset name for proxy encoding",
-                        choices=[])
-    args = parser.parse_args()
-
-    working_dir = "."
-    if args.working_directory:
-        working_dir = get_working_directory(args.working_directory)
-
-    media_file_paths = get_media_file_paths(working_dir)
-
-    options = dict()
-    if args.preset:
-        options = OPTIONS_PRESETS[args.preset]
-
-    media_objects = []
-    for path in media_file_paths:
-        if Video.is_same_type(path):
-            media_objects.append(Video(path, **options))
-        elif Image.is_same_type(path):
-            media_objects.append(Image(path, **options))
-
-    total = len(media_objects)
-    print("found %d file(s) to convert" % total)
-    for media in media_objects:
-        print("~~ %s" % media.path_source)
-
-    count = 1
-    for media in media_objects:
-        print()
-        print("%d/%d :: %s" % (count, total, media.path_source))
-        media.create_proxy_directory()
-        media.create_proxy_file()
-        count += 1
