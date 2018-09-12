@@ -6,7 +6,7 @@
 
 You can test them by going to the Blender preferences, add-ons tab, Power Sequencer, and by clicking `Install latest master / old version`. You can go back to the stable version with the same button.
 
-[Power Sequencer switch to master branch](https://i.imgur.com/LusqIxy.png)
+![Power Sequencer switch to master branch](https://i.imgur.com/LusqIxy.png)
 
 ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
 
@@ -14,7 +14,7 @@ You can test them by going to the Blender preferences, add-ons tab, Power Sequen
 
 Learn to use BPSrender from the command line! We still need people to tell us that it works well everywhere before we can integrate it in Blender. Also, we need your help to design a nice render panel 😄
 
-![Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
+[Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
 
 *Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`*
 
@@ -31,13 +31,19 @@ Learn to use BPSrender from the command line! We still need people to tell us th
 - **UnMeta many strips**: <kbd>Alt</kbd> <kbd>G</kbd> now works on all selected meta strips at once
 - **Auto-trim** your nested timelines when you UnMeta strips: also works by default with <kbd>Alt</kbd> <kbd>G</kbd>. If you don't want this to happen, use Resize to Content first
 
+#### Scenes ####
+
+- **Convert selection to scene strip**: If you want to use the node compositor to do complex grade, or to help organize your project, you'll want to use scene strips at times, instead of meta strips.
+
 ### ✅ Improvements ###
 
 - Auto crossfades (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>) now work in a **single channel by default**, as in every other professional video editing program
+  - You can also **add multiple crossfades** at a time, e.g. to create an image slideshow with fades between each picture
   - This makes it a lot easier to export Blender edits to Davinci Resolve, Premiere, or Final Cut with the [EDL export add-on](https://github.com/tin2tin/ExportEDL)
 - **Swap strips vertically**: You can now conveniently change the order of effects or linked strips, e.g. picture overlays
 - Smartly remove strips: if you press X but don't have anything selected, Power Sequencer will find and delete the strips under the mouse cursor for you!
 - Jump in time with <kbd>Shift</kbd> <kbd>➡</kbd> and <kbd>Shift</kbd> <kbd>⬅</kbd>: It's consistent with <kbd>⬅</kbd> and <kbd>➡</kbd> to move 1 frame on the timeline. This new tool works in seconds so the jump will be the same regardless of your project's framerate!
+- **Concatenate in multiple channels at a time**, and concatenate linked strips! The concatenate tool got a rewrite to make better decisions based on your selection
 
 #### Improvements to the source code ####
 
