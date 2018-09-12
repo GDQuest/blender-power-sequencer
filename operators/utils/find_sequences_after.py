@@ -1,8 +1,6 @@
 import bpy
-from operator import attrgetter
 
-
-def find_next_sequences(sequence):
+def find_sequences_after(sequence):
     """
     Finds the strips following the sequences passed to the function
     Args:

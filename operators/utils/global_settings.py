@@ -28,6 +28,7 @@ class SequenceTypes():
     SOUND = ['SOUND']
     IMAGE = ['IMAGE']
     TRANSITIONABLE = VIDEO + IMAGE
+    CONCATENATE = VIDEO + SOUND + IMAGE
 
 
 # TODO: Replace FileTypes with that

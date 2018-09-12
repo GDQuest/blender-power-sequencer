@@ -1,6 +1,6 @@
 import bpy
 from operator import attrgetter
-from .utils.find_next_sequences import find_next_sequences
+from .utils.find_sequences_after import find_sequences_after
 from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.global_settings import SequenceTypes
 
@@ -42,7 +42,7 @@ class CrossfadeAdd(bpy.types.Operator):
     def execute(self, context):
         sorted_selection = sorted(context.selected_sequences, key=attrgetter('frame_final_start'))
         for selected_strip in sorted_selection:
-            next_in_channel = [s for s in find_next_sequences(selected_strip)
+            next_in_channel = [s for s in find_sequences_after(selected_strip)
                             if s.channel == selected_strip.channel]
             next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
             next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))

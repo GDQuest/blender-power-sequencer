@@ -2,8 +2,7 @@ import bpy
 from operator import attrgetter
 
 from .utils.global_settings import SequenceTypes
-from .utils.find_next_sequences import find_next_sequences
-from .utils.filter_sequences_by_type import filter_sequences_by_type
+from .utils.find_sequences_after import find_sequences_after
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 
@@ -26,7 +25,6 @@ class ConcatenateStrips(bpy.types.Operator):
         name="Concatenate all strips in channel",
         description="If only one strip selected, concatenate the entire channel",
         default=False)
-
     frame, channel = -1, -1
 
     @classmethod
@@ -38,62 +36,41 @@ class ConcatenateStrips(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-        sequences = bpy.context.selected_sequences
-        # if no selected sequences, check if there's one under the cursor
-        if not sequences:
-            sequences_under_cursor = find_strips_mouse(self.frame, self.channel, select_linked=False)
-            if not sequences_under_cursor:
-                return {'CANCELLED'}
-            else:
-                sequences = sequences_under_cursor
-
-        # If only 1 sequence selected, find next sequences in channel
-        first_strip = None
-        if len(sequences) == 1:
-            first_strip = sequences[0]
-            in_channel = [
-                s for s in find_next_sequences(first_strip)
-                if s.channel == first_strip.channel
-            ]
-            for s in in_channel:
-                sequences.append(s)
-        sequences = filter_sequences_by_type(sequences, SequenceTypes.VIDEO,
-                                             SequenceTypes.IMAGE,
-                                             SequenceTypes.SOUND)
-
-        if len(sequences) <= 1:
-            self.report({"INFO"}, "No strips to concatenate.")
-            return {'CANCELLED'}
-
-        channels = list(set([s.channel for s in sequences]))
-        sequences = sorted(
-            sequences,
-            key=attrgetter('channel', 'frame_final_start'))
-
-        if not self.concatenate_whole_channel and first_strip:
-            next_strip = sequences[1]
-            self.concatenate_sequences([first_strip, next_strip], channels)
-            first_strip.select = False
-            next_strip.select = True
-            return {"FINISHED"}
-
-        self.concatenate_sequences(sequences, channels)
+        sequences = context.selected_sequences if context.selected_sequences else find_strips_mouse(self.frame, self.channel, select_linked=False)
+        # Only one sequence selected per channel
+        channels = set([s.channel for s in sequences])
+        if len(channels) == len(sequences):
+            for s in sequences:
+                in_channel = [strip for strip in find_sequences_after(s) if strip.channel == s.channel]
+                in_channel.append(s)
+                to_concatenate = [strip for strip in in_channel if strip.type in SequenceTypes.CONCATENATE]
+                self.concatenate(to_concatenate)
+        else:
+            channels = list(set([s.channel for s in sequences]))
+            for channel in channels:
+                self.concatenate([s for s in sequences if s.channel == channel])
         return {"FINISHED"}
 
-    def concatenate_sequences(self, sequences, channels):
+    def concatenate(self, sequences):
         """
-        Takes a list of sequences and concatenates them
-        Mutates the sequences directly, doesn't return anything
+        Takes a list of sequences in a single channel, sorts them by frame_final_start,
+        and concatenates them.
+        Returns None
         """
-        for channel in channels:
-            concat_sequences = [
-                s for s in sequences if s.channel == channel
-            ]
-            concat_start = concat_sequences[0].frame_final_end
-            concat_sequences.pop(0)
+        if len(sequences) == 1:
+            return
+        sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
+        first_strip = sorted_sequences[0]
+        if self.concatenate_whole_channel:
+            to_concatenate = sorted_sequences[1:]
+        else:
+            first_strip.select = False
+            second_strip = sorted_sequences[1]
+            second_strip.select = True
+            to_concatenate = [second_strip]
 
-            for s in concat_sequences:
-                gap = s.frame_final_start - concat_start
-                s.frame_start -= gap
-                concat_start += s.frame_final_duration
-        return
+        concatenate_start = first_strip.frame_final_end
+        for s in to_concatenate:
+            gap = s.frame_final_start - concatenate_start
+            s.frame_start -= gap
+            concatenate_start += s.frame_final_duration

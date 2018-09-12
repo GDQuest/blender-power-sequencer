@@ -3,6 +3,7 @@ from operator import attrgetter
 
 class SceneCreateFromSelection(bpy.types.Operator):
     """
+    Convert selected strips in a scene strip
     """
     bl_idname = 'power_sequencer.scene_create_from_selection'
     bl_label = 'Scene Create From Selection'
