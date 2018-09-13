@@ -1,36 +1,45 @@
+"""
+Collection of objects to represent supported media sources: Video and Image
+The objects store rendering options and can create and call commands to render proxies
+with ffmpeg, using the subprocess module
+"""
 import os
 import subprocess
-
-import argparse
-import sys
+import multiprocessing
+from .presets import PRESETS
+from .utils import get_frame_count
 
 class Media:
     """
-    Base interface to generate proxies from with ffmpeg
+    Base interface to generate proxies with ffmpeg
     """
+    EXTENSIONS = []
 
     def __init__(self, path_source, **kwargs):
         self.path_source = path_source
+        self.proxy_command = []
+        self.path_proxy = ''
         self.options = kwargs
-
-        if "size" not in self.options:
-            self.options["size"] = 25
 
     @classmethod
     def is_same_type(cls, file_path):
-        return os.path.splitext(path)[1].lower() in cls.EXTENSIONS
+        """
+        Returns true if the file extension matches one of the class's EXTENSIONS
+        """
+        return os.path.splitext(file_path)[1].lower() in cls.EXTENSIONS
 
     def create_proxy_directory(self):
         """
-        creates the directory for the proxy
+        Create a BL_proxy folder relative to the file,
+        where the final proxy will be stored
         """
         proxy_folder = os.path.split(self.path_proxy)[0]
         if not os.path.isdir(proxy_folder):
             os.makedirs(proxy_folder)
 
-    def create_proxy_file(self):
+    def render_proxy_file(self):
         """
-        calls ffmpeg to generate proxy
+        Calls ffmpeg to render the proxy, using the object's own render command
         """
         process = subprocess.Popen(
             self.proxy_command,
@@ -50,33 +59,16 @@ class Video(Media):
 
     def __init__(self, path_source, **kwargs):
         super().__init__(path_source, **kwargs)
-        if "codec" not in self.options:
-            self.options["codec"] = ""
-        if "crf" not in self.options:
-            self.options["crf"] = "25"
+
+        default_options = PRESETS['mp4']
+        for key in default_options:
+            if not key in self.options.keys():
+                self.options[key] = default_options[key]
 
         self.path_proxy = self.get_path_proxy(self.path_source)
-        self.frame_count = self.get_frame_count(self.path_source)
+        self.frame_count = get_frame_count(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
                                                     self.path_proxy)
-
-    def get_frame_count(self, path):
-        """
-        Returns the number of frames in the video, using the ffprobe program
-        """
-        ffprobe_frame_cmd = [
-            "ffprobe",
-            "-v",
-            "error",
-            "-select_streams",
-            "v:0",
-            "-show_entries",
-            "stream=nb_frames",
-            "-of",
-            "default=noprint_wrappers=1:nokey=1",
-            path,
-        ]
-        return int(subprocess.check_output(ffprobe_frame_cmd).decode())
 
     def get_path_proxy(self, path):
         """
@@ -89,25 +81,30 @@ class Video(Media):
     def get_proxy_command(self, path_source, path_proxy):
         """
         Returns the ffmpeg command to generate a proxy file with the command line
+        See this post to understand all the options below:
+        https://github.com/GDquest/Blender-power-sequencer/issues/174#issuecomment-420586813
         """
-        proxy_cmd = [
+        encoding_speed_option = self.options['encoding_speed']['key']
+        encoding_speed = self.options['encoding_speed']['value']
+        ffmpeg_command = [
             "ffmpeg",
-            "-i",
-            path_source,
-            "-c:v",
-            self.options["codec"],
-            "-crf",
-            self.options["crf"],
-            "-filter:v",
-            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
-            "-sn", "-an", "-v", "quiet", "-stats", "-y",
-            path_proxy,
-        ]
-        return proxy_cmd
+            "-i", path_source,
+            "-pix_fmt", "yuv420p",
+            "-c:v", self.options["codec"],
+            "-crf", str(self.options["crf"]),
+            "-g", "1",
+            encoding_speed_option, encoding_speed,
+            "-vf", "colormatrix=bt601:bt709",
+            "-filter:v", "scale=iw*{size}:ih*{size}".format(size=self.options["size"]/100),
+            "-sn", "-an", "-v", "quiet", "-stats", "-y"]
+        if self.options['format'] == 'webm':
+            ffmpeg_command += ["-threads", str(multiprocessing.cpu_count())]
+        ffmpeg_command.append(path_proxy)
+        return ffmpeg_command
 
-    def create_proxy_file(self):
+    def render_proxy_file(self):
         """
-        Overrides create_proxy_file from Media
+        Overrides render_proxy_file from Media
         """
         process = subprocess.Popen(
             self.proxy_command,
@@ -120,6 +117,7 @@ class Video(Media):
             percent = "{:.0%}".format(progress / self.frame_count)
             print("progress: %s" % percent, end="\r")
         process.wait()
+        print(" ".join(self.proxy_command))
         print("progress: 100%")
         print("Done!", "\n")
 
@@ -159,7 +157,7 @@ class Image(Media):
             "-f",
             "apng",
             "-filter:v",
-            "scale=iw*{size}:ih*{size}".format(size = self.options["size"]/100),
+            "scale=iw*{size}:ih*{size}".format(size=self.options["size"]/100),
             "-y",
             path_proxy,
         ]

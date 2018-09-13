@@ -14,7 +14,7 @@ MP4_DEFAULTS = {
     'codec': 'libx264',
     'crf': 25,
     'encoding_speed': {
-        'key': "preset",
+        'key': "-preset",
         'value': "faster",
     },
 }
@@ -23,7 +23,21 @@ WEBM_DEFAULTS = {
     'codec': "libvpx",
     'crf': 25,
     'encoding_speed': {
-        'key': "speed",
+        'key': "-speed",
         'value': 16,
     },
+}
+NVENC_DEFAULTS = {
+    'format': 'mp4',
+    'codec': "h264_nvenc",
+    'crf': 25,
+    'encoding_speed': {
+        'key': "-preset",
+        'value': "faster",
+    },
+}
+PRESETS = {
+    'mp4': MP4_DEFAULTS,
+    'webm': WEBM_DEFAULTS,
+    'nvenc': NVENC_DEFAULTS
 }
