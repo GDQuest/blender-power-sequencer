@@ -47,8 +47,7 @@ class Media:
             stderr=subprocess.STDOUT,
             universal_newlines=True)
         process.wait()
-        print("progress: 100%")
-        print("Done!", "\n")
+        print("progress: 100%\n")
 
 
 class Video(Media):
@@ -79,16 +78,18 @@ class Video(Media):
         See this post to understand all the options below:
         https://github.com/GDquest/Blender-power-sequencer/issues/174#issuecomment-420586813
         """
-        encoding_speed_option = self.options['encoding_speed']['key']
-        encoding_speed = self.options['encoding_speed']['value']
+        encoding_speed_key = self.options['encoding_speed']['key']
+        encoding_speed_value = self.options['encoding_speed']['value']
+        crf_key = self.options['constant_rate_factor']['key']
+        crf_value = self.options['constant_rate_factor']['value']
         ffmpeg_command = [
             "ffmpeg",
             "-i", path_source,
             "-pix_fmt", "yuv420p",
             "-c:v", self.options["codec"],
-            "-crf", str(self.options["crf"]),
+            crf_key, crf_value,
             "-g", "1",
-            encoding_speed_option, encoding_speed,
+            encoding_speed_key, encoding_speed_value,
             "-vf", "colormatrix=bt601:bt709",
             "-filter:v", "scale=iw*{size}:ih*{size}".format(size=self.options["size"]/100),
             "-sn", "-an", "-v", "quiet", "-stats", "-y"]
@@ -112,9 +113,7 @@ class Video(Media):
             percent = "{:.0%}".format(progress / self.frame_count)
             print("progress: %s" % percent, end="\r")
         process.wait()
-        print(" ".join(self.proxy_command))
-        print("progress: 100%")
-        print("Done!", "\n")
+        print("progress: 100%\n")
 
 
 class Image(Media):

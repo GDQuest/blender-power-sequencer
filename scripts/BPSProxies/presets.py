@@ -9,10 +9,23 @@ For detailed information, see:
 https://github.com/GDquest/Blender-power-sequencer/issues/174#issuecomment-420586813
 
 """
+BASE = {
+    'constant_rate_factor': {
+        'key': "-crf",
+        'value': "25"
+    },
+    'encoding_speed': {
+        'key': "-preset",
+        'value': "faster",
+    },
+}
 MP4_DEFAULTS = {
     'format': 'mp4',
     'codec': 'libx264',
-    'crf': 25,
+    'constant_rate_factor': {
+        'key': "-crf",
+        'value': "25"
+    },
     'encoding_speed': {
         'key': "-preset",
         'value': "faster",
@@ -21,16 +34,22 @@ MP4_DEFAULTS = {
 WEBM_DEFAULTS = {
     'format': 'webm',
     'codec': "libvpx",
-    'crf': 25,
+    'constant_rate_factor': {
+        'key': "-crf",
+        'value': "25"
+    },
     'encoding_speed': {
         'key': "-speed",
-        'value': 16,
+        'value': "16",
     },
 }
 NVENC_DEFAULTS = {
     'format': 'mp4',
     'codec': "h264_nvenc",
-    'crf': 25,
+    'constant_rate_factor': {
+        'key': "-qp",
+        'value': "25"
+    },
     'encoding_speed': {
         'key': "-preset",
         'value': "fast",
