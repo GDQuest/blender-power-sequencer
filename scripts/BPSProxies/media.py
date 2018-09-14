@@ -15,11 +15,11 @@ class Media:
     """
     EXTENSIONS = []
 
-    def __init__(self, path_source, **kwargs):
+    def __init__(self, path_source, options):
         self.path_source = path_source
         self.proxy_command = []
         self.path_proxy = ''
-        self.options = kwargs
+        self.options = options
 
     @classmethod
     def is_same_type(cls, file_path):
@@ -57,13 +57,8 @@ class Video(Media):
     """
     EXTENSIONS = [".mp4", ".mkv", ".mov", ".flv", ".mts"]
 
-    def __init__(self, path_source, **kwargs):
-        super().__init__(path_source, **kwargs)
-
-        default_options = PRESETS['mp4']
-        for key in default_options:
-            if not key in self.options.keys():
-                self.options[key] = default_options[key]
+    def __init__(self, path_source, options):
+        super().__init__(path_source, options)
 
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.frame_count = get_frame_count(self.path_source)
@@ -129,8 +124,8 @@ class Image(Media):
 
     EXTENSIONS = [".png", ".jpg", ".jpeg"]
 
-    def __init__(self, path_source, **kwargs):
-        super().__init__(path_source, **kwargs)
+    def __init__(self, path_source, options):
+        super().__init__(path_source, options)
         self.path_proxy = self.get_path_proxy(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
                                                     self.path_proxy)

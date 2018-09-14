@@ -52,12 +52,17 @@ def get_command_line_arguments():
     parser = argparse.ArgumentParser(description="Create proxies for Blender VSE using FFMPEG.")
     parser.add_argument("working_directory", nargs="?", default=".",
                         help="The directory containing media to create proxies for")
-    parser.add_argument("-p", "--preset", help="A preset name for proxy encoding",
-                        choices=PRESETS.keys())
+    parser.add_argument("-p", "--preset",
+                        choices=PRESETS.keys(),
+                        help="a preset name for proxy encoding")
     parser.add_argument("-s", "--size",
                         type=int, default=25,
                         choices=PROXY_SIZES,
                         help="The size of the proxies to render, either 25, 50, or 100")
+    parser.add_argument('--dry-run',
+                   action='store_true',
+                   help=('Run the script without actual rendering or creating files and'
+                         ' folders. For DEBUGGING purposes'))
     return parser.parse_args()
 
 def create_media(path_list, options):
@@ -69,9 +74,9 @@ def create_media(path_list, options):
     medias = []
     for path in path_list:
         if Video.is_same_type(path):
-            medias.append(Video(path, **options))
+            medias.append(Video(path, options))
         elif Image.is_same_type(path):
-            medias.append(Image(path, **options))
+            medias.append(Image(path, options))
     return medias
 
 if __name__ == "__main__":
@@ -94,11 +99,16 @@ if __name__ == "__main__":
     total = len(media_objects)
     print("found %d file(s) to convert" % total)
     for media in media_objects:
-        print("~~ %s" % media.path_source)
+        if args.dry_run:
+            print(" ".join(media.proxy_command))
+        else:
+            print("~~ %s" % media.path_source)
 
     count = 1
     for media in media_objects:
+        if args.dry_run:
+            continue
         print("%d/%d :: %s" % (count, total, media.path_source))
+        count += 1
         media.create_proxy_directory()
         media.render_proxy_file()
-        count += 1
