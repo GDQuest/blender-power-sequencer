@@ -25,6 +25,16 @@ Learn to use BPSrender from the command line! We still need people to tell us th
 - **Cut with the mouse, without touching locked strips**: edit to music with the add-on's fast mouse-based tools! Lock your audio strip and you're good to go 😃
 - **Select related strips**: find and select effects related to the selection, to then cut, copy or duplicate a strip with everything that should come with it.
 
+#### BPSProxies ####
+
+The proxy render script got serious love in this version.
+
+- Thanks to François Grassard, a TV engineer, we now have **super efficient proxy rendering** presets! These proxies are designed to be easy on Blender, and they offer way smoother preview than Blender's ones 😃. They also generate way faster
+- You can now use convenient presets to render proxies, thanks to [@jooert](https://github.com/jooert). Use the `--preset` or `-p` option followed by the preset's name. This version ships with the `mp4`, `webm`, and `nvenc` presets
+    - Nvenc is Nvidia's solution to encode MP4 with your graphics card. It requires ffmpeg 4, an nvidia GPU that supports Nvenc encoding, and I'm not sure this is available on linux! But it will work on Windows. It's especially fast with 50% and 100% sized proxies. The rendering speed difference isn't as big with 25% proxies.
+- You can now **render 25%, 50%, and 100% proxies**! The default size is still 25%. use the `--size` option (`-s` in short form) when calling the program from the command line. E.g. `-s 50` to generate 50% proxies
+- The code is better organized now, easier to read and to contribute to in the future. Thanks [@sudopluto](https://github.com/sudopluto) for making this possible 🙂
+
 #### Meta strips ####
 
 - **Resize to content**: if you edit inside a group or meta strip, you may want to trim it to use it as a compositing group. Now you can! Works on all selected strips at once.
