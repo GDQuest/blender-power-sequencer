@@ -4,14 +4,10 @@ Offers mp4 and webm options
 """
 import argparse
 import os
-from enum import Enum
 from .media import Video, Image
 from .presets import PRESETS
 
-class Sizes(Enum):
-    proxy_25 = 25
-    proxy_50 = 50
-    proxy_100 = 100
+PROXY_SIZES = [25, 50, 100]
 
 def get_working_directory(path):
     """
@@ -58,11 +54,10 @@ def get_command_line_arguments():
                         help="The directory containing media to create proxies for")
     parser.add_argument("-p", "--preset", help="A preset name for proxy encoding",
                         choices=PRESETS.keys())
-    parser.add_argument("-s",
-                        "--size",
-                        help="The size of the proxies to render, either 25, 50, or 100",
-                        default=25,
-                        choices=[Sizes.proxy_25, Sizes.proxy_50, Sizes.proxy_100])
+    parser.add_argument("-s", "--size",
+                        type=int, default=25,
+                        choices=PROXY_SIZES,
+                        help="The size of the proxies to render, either 25, 50, or 100")
     return parser.parse_args()
 
 def create_media(path_list, options):
