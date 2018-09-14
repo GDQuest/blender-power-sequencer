@@ -33,7 +33,7 @@ NVENC_DEFAULTS = {
     'crf': 25,
     'encoding_speed': {
         'key': "-preset",
-        'value': "faster",
+        'value': "fast",
     },
 }
 PRESETS = {
