@@ -2,7 +2,7 @@ import bpy
 from ..operators.utils.global_settings import SequenceTypes
 
 
-class PowerSequencerMenu(bpy.types.Menu):
+class PowerSequencerMenuContextual(bpy.types.Menu):
     bl_label = "Power Sequencer"
     bl_idname = "SEQUENCER_MT_power_sequencer_menu"
 
@@ -13,14 +13,14 @@ class PowerSequencerMenu(bpy.types.Menu):
             layout.label('Please save your project')
             layout.operator(
                 'wm.save_as_mainfile', icon='SAVE_AS', text='Save as')
-            return None
+            return
 
         if not bpy.context.sequences:
             layout.operator(
                 'power_sequencer.import_local_footage',
                 icon='SEQUENCE',
                 text='Import local footage')
-            return None
+            return
 
         selection = bpy.context.selected_sequences
         active_strip = bpy.context.scene.sequence_editor.active_strip

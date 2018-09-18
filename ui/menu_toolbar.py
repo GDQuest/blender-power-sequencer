@@ -1,7 +1,7 @@
 import bpy
 
 
-class PowerSequencerUIMenu(bpy.types.Menu):
+class PowerSequencerMenuToolbar(bpy.types.Menu):
     bl_idname = "SEQUENCER_MT_power_sequencer"
     bl_label = "Power Sequencer"
 
@@ -14,18 +14,18 @@ class PowerSequencerUIMenu(bpy.types.Menu):
 
         layout.separator()
 
-        layout.menu("PS_MT_trim")
-        layout.menu("PS_MT_strips")
-        layout.menu("PS_MT_select")
-        layout.menu("PS_MT_render")
-        layout.menu("PS_MT_playback")
-        layout.menu("PS_MT_markers")
-        layout.menu("PS_MT_file")
-        layout.menu("PS_MT_edit")
-        layout.menu("PS_MT_audio")
+        layout.menu("PowerSequencer_MT_trim")
+        layout.menu("PowerSequencer_MT_strips")
+        layout.menu("PowerSequencer_MT_select")
+        layout.menu("PowerSequencer_MT_render")
+        layout.menu("PowerSequencer_MT_playback")
+        layout.menu("PowerSequencer_MT_markers")
+        layout.menu("PowerSequencer_MT_file")
+        layout.menu("PowerSequencer_MT_edit")
+        layout.menu("PowerSequencer_MT_audio")
 
 
-class PS_MT_playback(bpy.types.Menu):
+class PowerSequencer_MT_playback(bpy.types.Menu):
     bl_label = "Playback Speed"
 
     def draw(self, context):
@@ -35,7 +35,7 @@ class PS_MT_playback(bpy.types.Menu):
         layout.operator("power_sequencer.change_playback_speed")
 
 
-class PS_MT_strips(bpy.types.Menu):
+class PowerSequencer_MT_strips(bpy.types.Menu):
     bl_label = "Strips Operation"
 
     def draw(self, context):
@@ -44,7 +44,7 @@ class PS_MT_strips(bpy.types.Menu):
 
         layout.separator()
 
-        layout.menu("PS_MT_strips_speed")
+        layout.menu("PowerSequencer_MT_strips_speed")
         layout.operator("power_sequencer.concatenate_strips")
         layout.operator("power_sequencer.fade_strips")
         layout.operator("power_sequencer.swap_strips")
@@ -52,10 +52,10 @@ class PS_MT_strips(bpy.types.Menu):
 
         layout.separator()
 
-        layout.menu("PS_MT_strips_fades")
+        layout.menu("PowerSequencer_MT_strips_fades")
 
 
-class PS_MT_strips_speed (bpy.types.Menu):
+class PowerSequencer_MT_strips_speed (bpy.types.Menu):
     bl_label = "Speed"
 
     def draw(self, context):
@@ -64,7 +64,7 @@ class PS_MT_strips_speed (bpy.types.Menu):
         layout.operator("power_sequencer.unspeed")
 
 
-class PS_MT_strips_fades (bpy.types.Menu):
+class PowerSequencer_MT_strips_fades (bpy.types.Menu):
     bl_label = "Fade in/out"
 
     def draw(self, context):
@@ -73,22 +73,22 @@ class PS_MT_strips_fades (bpy.types.Menu):
         layout.operator("power_sequencer.fade_clear")
 
 
-class PS_MT_select(bpy.types.Menu):
+class PowerSequencer_MT_select(bpy.types.Menu):
     bl_label = "Select"
 
     def draw(self, context):
         layout = self.layout
         layout.operator("power_sequencer.border_select")
         layout.operator("power_sequencer.select_linked_effect")
-        layout.menu("PS_MT_deselect")
+        layout.menu("PowerSequencer_MT_deselect")
 
         layout.separator()
 
-        layout.menu("PS_MT_grab")
-        layout.menu("PS_MT_snap")
+        layout.menu("PowerSequencer_MT_grab")
+        layout.menu("PowerSequencer_MT_snap")
 
 
-class PS_MT_deselect(bpy.types.Menu):
+class PowerSequencer_MT_deselect(bpy.types.Menu):
     bl_label = "Deselect"
 
     def draw(self, context):
@@ -97,7 +97,7 @@ class PS_MT_deselect(bpy.types.Menu):
         layout.operator("power_sequencer.deselect_handles_and_grab")
 
 
-class PS_MT_grab(bpy.types.Menu):
+class PowerSequencer_MT_grab(bpy.types.Menu):
     bl_label = "Grab"
 
     def draw(self, context):
@@ -107,7 +107,7 @@ class PS_MT_grab(bpy.types.Menu):
         layout.operator("power_sequencer.grab_sequence_handle")
 
 
-class PS_MT_snap(bpy.types.Menu):
+class PowerSequencer_MT_snap(bpy.types.Menu):
     bl_label = "Snap"
 
     def draw(self, context):
@@ -116,12 +116,12 @@ class PS_MT_snap(bpy.types.Menu):
         layout.operator("power_sequencer.snap_selection_to_cursor")
 
 
-class PS_MT_edit(bpy.types.Menu):
+class PowerSequencer_MT_edit(bpy.types.Menu):
     bl_label = "Edit"
 
     def draw(self, context):
         layout = self.layout
-        layout.menu("PS_MT_delete")
+        layout.menu("PowerSequencer_MT_delete")
 
         layout.separator()
 
@@ -129,7 +129,7 @@ class PS_MT_edit(bpy.types.Menu):
         layout.operator("power_sequencer.copy_selected_sequences")
 
 
-class PS_MT_delete(bpy.types.Menu):
+class PowerSequencer_MT_delete(bpy.types.Menu):
     bl_label = "Delete"
 
     def draw(self, context):
@@ -138,12 +138,12 @@ class PS_MT_delete(bpy.types.Menu):
         layout.operator("power_sequencer.ripple_delete")
 
 
-class PS_MT_markers(bpy.types.Menu):
+class PowerSequencer_MT_markers(bpy.types.Menu):
     bl_label = "Markers"
 
     def draw(self, context):
         layout = self.layout
-        layout.menu("PS_MT_marker_delete")
+        layout.menu("PowerSequencer_MT_marker_delete")
 
         layout.separator()
 
@@ -154,7 +154,7 @@ class PS_MT_markers(bpy.types.Menu):
         layout.operator("power_sequencer.markers_snap_matching_strips")
 
 
-class PS_MT_marker_delete(bpy.types.Menu):
+class PowerSequencer_MT_marker_delete(bpy.types.Menu):
     bl_label = "Delete Marker"
 
     def draw(self, context):
@@ -163,7 +163,7 @@ class PS_MT_marker_delete(bpy.types.Menu):
         layout.operator("power_sequencer.markers_delete_direct")
 
 
-class PS_MT_render(bpy.types.Menu):
+class PowerSequencer_MT_render(bpy.types.Menu):
     bl_label = "Render"
 
     def draw(self, context):
@@ -173,7 +173,7 @@ class PS_MT_render(bpy.types.Menu):
 
 
 
-class PS_MT_file(bpy.types.Menu):
+class PowerSequencer_MT_file(bpy.types.Menu):
     bl_label = "File"
 
     def draw(self, context):
@@ -184,7 +184,7 @@ class PS_MT_file(bpy.types.Menu):
         layout.operator("power_sequencer.set_video_proxies")
 
 
-class PS_MT_trim(bpy.types.Menu):
+class PowerSequencer_MT_trim(bpy.types.Menu):
     bl_label = "Trim"
 
     def draw(self, context):
@@ -193,12 +193,12 @@ class PS_MT_trim(bpy.types.Menu):
         layout.operator("power_sequencer.trim_to_surrounding_cuts")
 
         layout.separator()
-        layout.menu("PS_MT_mouse")
+        layout.menu("PowerSequencer_MT_mouse")
         layout.separator()
-        layout.menu("PS_MT_preview")
+        layout.menu("PowerSequencer_MT_preview")
 
 
-class PS_MT_mouse(bpy.types.Menu):
+class PowerSequencer_MT_mouse(bpy.types.Menu):
     bl_label = "Mouse Trim"
 
     def draw(self, context):
@@ -207,7 +207,7 @@ class PS_MT_mouse(bpy.types.Menu):
         layout.operator("power_sequencer.mouse_trim")
 
 
-class PS_MT_preview(bpy.types.Menu):
+class PowerSequencer_MT_preview(bpy.types.Menu):
     bl_label = "Preview"
 
     def draw(self, context):
@@ -216,7 +216,7 @@ class PS_MT_preview(bpy.types.Menu):
         layout.operator("power_sequencer.preview_to_selection")
 
 
-class PS_MT_audio(bpy.types.Menu):
+class PowerSequencer_MT_audio(bpy.types.Menu):
     bl_label = "Audio"
 
     def draw(self, context):
@@ -227,10 +227,10 @@ class PS_MT_audio(bpy.types.Menu):
 
         layout.separator()
 
-        layout.menu("PS_MT_crossfade")
+        layout.menu("PowerSequencer_MT_crossfade")
 
 
-class PS_MT_crossfade(bpy.types.Menu):
+class PowerSequencer_MT_crossfade(bpy.types.Menu):
     bl_label = "Crossfade"
 
     def draw(self, context):
