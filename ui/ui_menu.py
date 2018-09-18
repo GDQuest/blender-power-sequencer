@@ -8,20 +8,20 @@ class PowerSequencerUIMenu(bpy.types.Menu):
         layout = self.layout
         
         layout.operator(
-            "power_sequencer.cycle_scenes"
+            "power_sequencer.synchronize_titles"
         )
         layout.operator(
             "power_sequencer.set_timeline_range"
         )
         layout.operator(
-            "power_sequencer.synchronize_titles"
+            "power_sequencer.cycle_scenes"
         )
         layout.operator(
             "power_sequencer.channel_offset"
         )
         layout.separator()
         layout.menu(
-            "PS_MT_playback"
+            "PS_MT_trim"
         )
         layout.menu(
             "PS_MT_strips"
@@ -30,7 +30,10 @@ class PowerSequencerUIMenu(bpy.types.Menu):
             "PS_MT_select"
         )
         layout.menu(
-            "PS_MT_edit"
+            "PS_MT_render"
+        )
+        layout.menu(
+            "PS_MT_playback"
         )
         layout.menu(
             "PS_MT_markers"
@@ -39,10 +42,7 @@ class PowerSequencerUIMenu(bpy.types.Menu):
             "PS_MT_file"
         )
         layout.menu(
-            "PS_MT_render"
-        )
-        layout.menu(
-            "PS_MT_trim"
+            "PS_MT_edit"
         )
         layout.menu(
             "PS_MT_audio"
