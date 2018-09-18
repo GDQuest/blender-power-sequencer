@@ -30,8 +30,8 @@ from . import addon_updater_ops
 
 # load and reload submodules
 ##################################
-from .utils import developer_utils
-modules = developer_utils.setup_addon_modules(__path__, __name__, ignore_packages=[".utils", ".audiosync"], ignore_modules=["addon_updater"])
+from .utils import addon_auto_imports
+modules = addon_auto_imports.setup_addon_modules(__path__, __name__, ignore_packages=[".utils", ".audiosync"], ignore_modules=["addon_updater"])
 
 bl_info = {
     "name": "Power Sequencer",
