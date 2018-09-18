@@ -1,6 +1,8 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import addon_updater_ops
+from .ui import PowerSequencerUIMenu
+
 
 
 @persistent
@@ -53,6 +55,9 @@ def draw_playback_speed(self, context):
     scene = context.scene
     layout.prop(scene.power_sequencer, 'playback_speed')
 
+def draw_ui_menu(self, context):
+    layout = self.layout
+    layout.menu(PowerSequencerUIMenu.bl_idname)
 
 # Add-on updater
 def draw_check_for_update(self, context):
@@ -67,6 +72,7 @@ def draw_check_for_update(self, context):
 
 def handlers_register():
     # MENUS
+    bpy.types.SEQUENCER_HT_header.append(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.append(draw_playback_speed)
     bpy.types.SEQUENCER_HT_header.append(draw_check_for_update)
 
@@ -86,6 +92,7 @@ def handlers_register():
 
 def handlers_unregister():
     # MENUS
+    bpy.types.SEQUENCER_HT_header.remove(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.remove(draw_playback_speed)
     bpy.types.SEQUENCER_HT_header.remove(draw_check_for_update)
 
