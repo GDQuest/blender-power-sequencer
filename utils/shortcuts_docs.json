@@ -53,7 +53,7 @@
         "shortcuts": ["Ctrl C; Copy selected strips", "Ctrl X; Cut selected strips"],
         "demo": "https://i.imgur.com/w6z1Jb1.gif"
     },
-    "power_sequencer.cycle_scenes": {
+    "power_sequencer.scenes_cycle": {
         "name": "Cycle Scenes",
         "description": "Cycle through scenes.",
         "shortcuts": ["Shift TAB; Cycle scenes"],

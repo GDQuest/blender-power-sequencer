@@ -64,7 +64,7 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'X', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', True)
 
-    kmi = km.keymap_items.new('power_sequencer.cycle_scenes', 'TAB', 'PRESS', shift=True)
+    kmi = km.keymap_items.new('power_sequencer.scenes_cycle', 'TAB', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
     kmi = km.keymap_items.new('power_sequencer.crossfade_edit', 'C', 'PRESS', alt=True)
 

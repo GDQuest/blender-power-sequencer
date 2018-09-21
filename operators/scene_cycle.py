@@ -7,7 +7,7 @@ class CycleScenes(bpy.types.Operator):
 
     Cycle through scenes.
     """
-    bl_idname = "power_sequencer.scene_cycle"
+    bl_idname = "power_sequencer.scenes_cycle"
     bl_label = "Cycle Scenes"
     bl_description = "Cycle through scenes"
     bl_options = {'REGISTER', 'UNDO'}
