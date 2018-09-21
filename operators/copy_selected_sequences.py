@@ -24,17 +24,25 @@ class CopySelectedSequences(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.selected_sequences) > 0
+        bpy.context.scene.sequence_editor
+        return context.scene.sequence_editor is not None
 
     def execute(self, context):
         selection = bpy.context.selected_sequences
+
+        if len(selection) == 0:
+            self.report({'INFO'}, "Please select at least one strip")
+            return {'CANCELLED'}
+
         cursor_start_frame = bpy.context.scene.frame_current
         sequencer = bpy.ops.sequencer
 
-        # Deactivate audio playback
+        # Deactivate audio playback and video preview
         scene = bpy.context.scene
         initial_audio_setting = scene.use_audio_scrub
+        initial_proxy_size = context.space_data.proxy_render_size
         scene.use_audio_scrub = False
+        context.space_data.proxy_render_size = 'NONE'
 
         first_sequence = min(selection, key=attrgetter('frame_final_start'))
         bpy.context.scene.frame_current = first_sequence.frame_final_start
@@ -42,6 +50,7 @@ class CopySelectedSequences(bpy.types.Operator):
         bpy.context.scene.frame_current = cursor_start_frame
 
         scene.use_audio_scrub = initial_audio_setting
+        context.space_data.proxy_render_size = initial_proxy_size
 
         if self.delete_selection:
             sequencer.delete()
