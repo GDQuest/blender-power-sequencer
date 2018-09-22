@@ -14,9 +14,16 @@ You can test them by going to the Blender preferences, add-ons tab, Power Sequen
 
 Learn to use BPSrender from the command line! We still need people to tell us that it works well everywhere before we can integrate it in Blender. Also, we need your help to design a nice render panel 😄
 
-[Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
+- [Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
+- [Precise and Fast selections with Blender's Sequencer](https://www.youtube.com/watch?v=ewwFVsNCBNg)
 
 *Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`*
+
+### 💻 User Interface
+
+Thanks to @aditiapratama and @libreartist, we now have a nice **toolbar menu**! It will show you most available tools and keyboard shortcuts.
+
+![Power Sequencer toolbar menu](https://i.imgur.com/M8Mk5RH.png)
 
 ### 🎥🕺 New features ###
 
@@ -68,6 +75,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - BPSrender got a few fixes:
   - If you set your render to the /tmp\ folder, BPSrender wouldn't work. It now reads your render settings instead to properly set the render path
   - Render now works as expected when there's whitespace in the file paths
+- Proxies rendered with BPSProxies should now be in sync with the original footage: the previous settings we used caused offsets in rare cases
 
 ### Support us and get better tools! ###
 
@@ -98,6 +106,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - **Deselect strips** to the left or right of the time cursor
 - **Swap two strips**: works across channels and not just to the left or the right of the selected strip, unlike Blender's built-in tool
 - **Markers as time codes**: write a list of timecodes followed by the markers' names to create quick links in your YouTube video description or comments
+- **Markers from selected strips**: Create a new marker at the start of each strip in the selection
 - **Match strips to markers**: snap selected strips to markers that have a similar name
 
 ### ✅ Improvements ###
