@@ -1,4 +1,5 @@
 import bpy
+import operator
 from .utils.global_settings import SequenceTypes
 
 
@@ -12,10 +13,14 @@ class MakeStillImage(bpy.types.Operator):
     bl_description = "Make still image from active strip"
     bl_options = {'REGISTER', 'UNDO'}
 
+    gap_to_duration = bpy.props.BoolProperty(
+        name="Gap as length",
+        description="Use the gap between two strips as the duration",
+        default=True)
     strip_duration = bpy.props.IntProperty(
         name="Strip length",
         description="Length of the new strip in frames",
-        default=106)
+        default=30)
 
     @classmethod
     def poll(cls, context):
@@ -46,6 +51,17 @@ class MakeStillImage(bpy.types.Operator):
         if start_frame == active.frame_final_start:
             scene.frame_current = start_frame + 1
 
+        if self.gap_to_duration:
+            strips = sorted(scene.sequence_editor.sequences, key=operator.attrgetter('frame_final_start'))
+
+            for s in strips:
+                if s.frame_final_start > active.frame_final_start and s.channel == active.channel:
+                    next = s
+                    break
+
+            offset = next.frame_final_start - active.frame_final_end
+
+
         active.select = True
         source_blend_type = active.blend_type
         sequencer.cut(frame=scene.frame_current, type='SOFT', side='RIGHT')
@@ -53,6 +69,9 @@ class MakeStillImage(bpy.types.Operator):
         sequencer.cut(
             frame=scene.frame_current + offset + 1, type='SOFT', side='LEFT')
         transform.seq_slide(value=(-offset, 0))
+
+        if not self.gap_to_duration:
+            sequencer.gap_insert(frames = offset)
 
         sequencer.meta_make()
         active = scene.sequence_editor.active_strip
