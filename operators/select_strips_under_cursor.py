@@ -9,23 +9,17 @@ class SelectStripsUnderCursor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.sequences) > 0
     
     def execute(self, context):
-        if len(context.sequences) == 0:
-            self.report({'INFO'}, "No sequences found")
-            return {'CANCELLED'}
-
         current_frame = context.scene.frame_current
-        selected_sequences = 0
+        sequences_to_select = []
         for s in context.sequences:
-            final = s.frame_start + s.frame_duration
-            if s.frame_start <= current_frame and final >= current_frame:
-                s.select = True
-                selected_sequences += 1
-        if selected_sequences == 0:
-            self.report({'INFO'}, "No sequences under the cursor - none selected")
+            if s.frame_final_start <= current_frame and s.frame_final_end >= current_frame:
+                sequences_to_select.append(s)
+        if not sequences_to_select:
             return {'CANCELLED'}
-
+        for s in sequences_to_select:
+            s.select = True
         return {'FINISHED'}
         
