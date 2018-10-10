@@ -17,7 +17,7 @@ class CrossfadeAdd(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.crossfade_add"
     bl_label = "Add Crossfade"
-    bl_description = "Adds cross fade between selected sequence and the closest sequence to it's right"
+    bl_description = "Adds cross fade between selected sequence and the closest sequence to its right"
     bl_options = {"REGISTER", "UNDO"}
 
     crossfade_duration = bpy.props.FloatProperty(
@@ -44,6 +44,8 @@ class CrossfadeAdd(bpy.types.Operator):
         for selected_strip in sorted_selection:
             next_in_channel = [s for s in find_sequences_after(selected_strip)
                             if s.channel == selected_strip.channel]
+            if not next_in_channel:
+                continue
             next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
             next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))
 
