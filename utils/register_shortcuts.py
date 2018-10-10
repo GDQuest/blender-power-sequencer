@@ -116,6 +116,7 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.delete_direct', 'X', 'PRESS')
 
     kmi = km.keymap_items.new('sequencer.refresh_all', 'R', 'PRESS', shift=True)
+    kmi = km.keymap_items.new('power_sequencer.mouse_space_strips', 'EQUAL', 'PRESS')
     return km
 
 
