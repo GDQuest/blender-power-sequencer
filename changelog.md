@@ -31,6 +31,7 @@ Thanks to @aditiapratama and @libreartist, we now have a nice **toolbar menu**! 
 - **Remove Gaps and ignore locked strips**: Blender's default tool to remove gap isn't very smart. We had to code our own to create the next feature...
 - **Cut with the mouse, without touching locked strips**: edit to music with the add-on's fast mouse-based tools! Lock your audio strip and you're good to go 😃
 - **Select related strips**: find and select effects related to the selection, to then cut, copy or duplicate a strip with everything that should come with it.
+- **Space strips based on mouse position**: this is bound to the <kbd>=</kbd> key by default
 
 #### BPSProxies ####
 
@@ -76,6 +77,8 @@ We've reorganized and simplified many features, to make it easier for you to rea
   - If you set your render to the /tmp\ folder, BPSrender wouldn't work. It now reads your render settings instead to properly set the render path
   - Render now works as expected when there's whitespace in the file paths
 - Proxies rendered with BPSProxies should now be in sync with the original footage: the previous settings we used caused offsets in rare cases
+- Fixed errors when trying to delete strips
+- Fixed Concatenate not taking in account the selection if more than one strip is selected in a given channel
 
 ### Support us and get better tools! ###
 
