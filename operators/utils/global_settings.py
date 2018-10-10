@@ -20,15 +20,15 @@ class ProjectSettings():
 
 
 class SequenceTypes():
-    VIDEO = ['MOVIE', 'MOVIECLIP', 'META', 'SCENE']
-    EFFECT = ['CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER', 'ALPHA_UNDER',
+    VIDEO = ('MOVIE', 'MOVIECLIP', 'META', 'SCENE')
+    EFFECT = ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER', 'ALPHA_UNDER',
               'GAMMA_CROSS', 'MULTIPLY', 'OVER_DROP', 'WIPE', 'GLOW',
-              'TRANSFORM', 'COLOR', 'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR']
-    TRANSITION = ['CROSS', 'GAMMA_CROSS', 'WIPE']
-    SOUND = ['SOUND']
-    IMAGE = ['IMAGE']
-    TRANSITIONABLE = VIDEO + IMAGE
-    CONCATENATE = VIDEO + SOUND + IMAGE
+              'TRANSFORM', 'COLOR', 'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR')
+    TRANSITION = ('CROSS', 'GAMMA_CROSS', 'WIPE')
+    SOUND = ('SOUND')
+    IMAGE = ('IMAGE')
+    TRANSITIONABLE = tuple(list(VIDEO) + list(IMAGE))
+    CONCATENATE = tuple(list(VIDEO) + list(SOUND) + list(IMAGE))
 
 
 # TODO: Replace FileTypes with that

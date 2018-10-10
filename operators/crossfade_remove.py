@@ -17,7 +17,7 @@ class CrossfadeRemove(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_sequences) > 0
+        return len([s for s in context.selected_sequences if s.type in SequenceTypes.TRANSITION]) > 0
 
     def execute(self, context):
         to_process = self.sequences_override if self.sequences_override else bpy.context.selected_sequences

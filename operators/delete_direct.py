@@ -25,7 +25,8 @@ class DeleteDirect(bpy.types.Operator):
         start_selection = self.get_start_selection()
         selection_length = len(start_selection)
 
-        bpy.ops.power_sequencer.crossfade_remove()
+        if bpy.ops.power_sequencer.crossfade_remove.poll():
+            bpy.ops.power_sequencer.crossfade_remove()
         for s in start_selection:
             try:
                 s.select = True
