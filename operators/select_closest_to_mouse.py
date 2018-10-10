@@ -13,7 +13,7 @@ class SelectClosestToMouse(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        mouse = get_mouse_frame_and_channel(event)
-        strip = find_strips_mouse(mouse[0], mouse[1])[0]
+        frame, channel = get_mouse_frame_and_channel(event)
+        strip = find_strips_mouse(frame, channel)[0]
         strip.select = True
         return {"FINISHED"}
