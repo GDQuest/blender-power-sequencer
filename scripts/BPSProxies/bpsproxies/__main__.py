@@ -55,10 +55,12 @@ def get_command_line_arguments():
     parser.add_argument("-p", "--preset",
                         choices=PRESETS.keys(),
                         help="a preset name for proxy encoding")
-    parser.add_argument("-s", "--size",
-                        type=int, default=25,
+    parser.add_argument("-s", "--sizes",
+                        nargs='+',
+                        type=int,
+                        default=[25],
                         choices=PROXY_SIZES,
-                        help="The size of the proxies to render, either 25, 50, or 100")
+                        help="A list of sizes of the proxies to render, either 25, 50, or 100")
     parser.add_argument('--dry-run',
                    action='store_true',
                    help=('Run the script without actual rendering or creating files and'
@@ -94,7 +96,7 @@ def main():
         render_options = PRESETS[args.preset]
     else:
         render_options = PRESETS['mp4']
-    render_options['size'] = args.size
+    render_options['sizes'] = args.sizes
 
     media_objects = create_media(find_media_files(working_dir), render_options)
     total = len(media_objects)
