@@ -79,8 +79,9 @@ def create_media(path_list, options):
             medias.append(Image(path, options))
     return medias
 
-if __name__ == "__main__":
+def main():
     """
+    Script entry point.
     1) Parse arguments to get the working directory and encoding presets
     2) Find video and image files and create a Media object for each of them
     3) create proxy
@@ -112,3 +113,6 @@ if __name__ == "__main__":
         count += 1
         media.create_proxy_directory()
         media.render_proxy_file()
+
+if __name__ == '__main__':
+    main()
