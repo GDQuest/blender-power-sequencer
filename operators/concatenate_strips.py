@@ -56,7 +56,7 @@ class ConcatenateStrips(bpy.types.Operator):
         Takes a list of sequences in a single channel, sorts them by frame_final_start,
         and concatenates them.
         """
-        if len(sequences) == 1:
+        if len(sequences) <= 1:
             return
         sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
         first_strip = sorted_sequences[0]
