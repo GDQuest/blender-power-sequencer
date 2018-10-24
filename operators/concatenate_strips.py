@@ -21,7 +21,7 @@ class ConcatenateStrips(bpy.types.Operator):
     bl_description = "Remove space between strips"
     bl_options = {'REGISTER', 'UNDO'}
 
-    concatenate_whole_channel = bpy.props.BoolProperty(
+    concatenate_all = bpy.props.BoolProperty(
         name="Concatenate all strips in channel",
         description="If only one strip selected, concatenate the entire channel",
         default=False)
@@ -32,24 +32,26 @@ class ConcatenateStrips(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        self.frame, self.channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(event)
+        if not context.selected_sequences:
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
-        sequences = context.selected_sequences if context.selected_sequences else find_strips_mouse(self.frame, self.channel, select_linked=False)
-        # Only one sequence selected per channel
-        channels = set([s.channel for s in sequences])
-        if len(channels) == len(sequences):
-            for s in sequences:
+        selection = context.selected_sequences
+        channels = set([s.channel for s in selection])
+        if len(channels) == len(selection):
+            for s in selection:
                 in_channel = [strip for strip in find_sequences_after(s) if strip.channel == s.channel]
                 in_channel.append(s)
                 to_concatenate = [strip for strip in in_channel if strip.type in SequenceTypes.CONCATENATE]
                 self.concatenate(to_concatenate)
+            return {'FINISHED'}
         else:
-            channels = list(set([s.channel for s in sequences]))
+            channels = list(set([s.channel for s in selection]))
             for channel in channels:
-                self.concatenate([s for s in sequences if s.channel == channel])
-        return {"FINISHED"}
+                self.concatenate([s for s in selection if s.channel == channel])
+        return {'FINISHED'}
 
     def concatenate(self, sequences):
         """
@@ -60,7 +62,7 @@ class ConcatenateStrips(bpy.types.Operator):
             return
         sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
         first_strip = sorted_sequences[0]
-        if self.concatenate_whole_channel or len(sorted_sequences) > 2:
+        if self.concatenate_all:
             to_concatenate = sorted_sequences[1:]
         else:
             first_strip.select = False

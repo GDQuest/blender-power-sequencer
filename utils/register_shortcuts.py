@@ -58,9 +58,9 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.fade_clear', 'F', 'PRESS', alt=True, ctrl=True)
 
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS')
-    set_keymap_property(kmi.properties, 'concatenate_whole_channel', False)
+    set_keymap_property(kmi.properties, 'concatenate_all', False)
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True)
-    set_keymap_property(kmi.properties, 'concatenate_whole_channel', True)
+    set_keymap_property(kmi.properties, 'concatenate_all', True)
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'C', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', False)
