@@ -58,10 +58,12 @@ The proxy render script got serious love in this version.
 - Auto crossfades (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>) now work in a **single channel by default**, as in every other professional video editing program
   - You can also **add multiple crossfades** at a time, e.g. to create an image slideshow with fades between each picture
   - This makes it a lot easier to export Blender edits to Davinci Resolve, Premiere, or Final Cut with the [EDL export add-on](https://github.com/tin2tin/ExportEDL)
+- Delete direct now automatically **deletes the strip under the mouse cursor** if there's nothing selected.
 - **Swap strips vertically**: You can now conveniently change the order of effects or linked strips, e.g. picture overlays
 - Smartly remove strips: if you press X but don't have anything selected, Power Sequencer will find and delete the strips under the mouse cursor for you!
 - Jump in time with <kbd>Shift</kbd> <kbd>➡</kbd> and <kbd>Shift</kbd> <kbd>⬅</kbd>: It's consistent with <kbd>⬅</kbd> and <kbd>➡</kbd> to move 1 frame on the timeline. This new tool works in seconds so the jump will be the same regardless of your project's framerate!
 - **Concatenate in multiple channels at a time**, and concatenate linked strips! The concatenate tool got a rewrite to make better decisions based on your selection
+- **Auto-selection**: If you don't have anything selected, Power Sequencer will use the strip under the cursor for concatenate, delete, and grab operators, saving your extra keystrokes and time 😄
 
 #### Improvements to the source code ####
 
@@ -79,6 +81,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - Proxies rendered with BPSProxies should now be in sync with the original footage: the previous settings we used caused offsets in rare cases
 - Fixed errors when trying to delete strips
 - Fixed Concatenate not taking in account the selection if more than one strip is selected in a given channel
+- Fixed strips changing channels when using Snap Selection to Cursor
 
 ### Support us and get better tools! ###
 
