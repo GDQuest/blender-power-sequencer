@@ -39,21 +39,21 @@ class ConcatenateStrips(bpy.types.Operator):
 
     def execute(self, context):
         selection = context.selected_sequences
+        next_strip_only = True if len(selection) == 1 else False
         channels = set([s.channel for s in selection])
         if len(channels) == len(selection):
             for s in selection:
                 in_channel = [strip for strip in find_sequences_after(s) if strip.channel == s.channel]
                 in_channel.append(s)
                 to_concatenate = [strip for strip in in_channel if strip.type in SequenceTypes.CONCATENATE]
-                self.concatenate(to_concatenate)
+                self.concatenate(to_concatenate, next_strip_only)
             return {'FINISHED'}
-        else:
-            channels = list(set([s.channel for s in selection]))
-            for channel in channels:
-                self.concatenate([s for s in selection if s.channel == channel])
+
+        for channel in channels:
+            self.concatenate([s for s in selection if s.channel == channel])
         return {'FINISHED'}
 
-    def concatenate(self, sequences):
+    def concatenate(self, sequences, next_strip_only=False):
         """
         Takes a list of sequences in a single channel, sorts them by frame_final_start,
         and concatenates them.
@@ -62,7 +62,7 @@ class ConcatenateStrips(bpy.types.Operator):
             return
         sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
         first_strip = sorted_sequences[0]
-        if self.concatenate_all:
+        if self.concatenate_all or not next_strip_only:
             to_concatenate = sorted_sequences[1:]
         else:
             first_strip.select = False
