@@ -12,16 +12,15 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.selected_sequences) > 0
 
     def execute(self, context):
         selection = sorted(
             bpy.context.selected_sequences,
             key=attrgetter('frame_final_start'))
         time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
-        selection = reversed(selection)
-
-        for s in selection:
-            if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE or s.type in SequenceTypes.SOUND:
-                s.frame_start -= time_move
+        
+        bpy.ops.power_sequencer.select_related_strips()
+        bpy.ops.transform.seq_slide(value=(-time_move, 0))
+        
         return {'FINISHED'}
