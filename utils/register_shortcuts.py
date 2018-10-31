@@ -117,6 +117,8 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('sequencer.refresh_all', 'R', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.mouse_space_strips', 'EQUAL', 'PRESS')
+    # TODO find appropriate shortcut for cut_strips_under_cursor
+    # kmi = km.keymap_items.new('power_sequencer.cut_strips_under_cursor', 'K', 'PRESS', alt=True)
     return km
 
 

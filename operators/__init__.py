@@ -5,6 +5,7 @@ from .add_transform import AddTransform
 from .border_select import BorderSelect
 from .change_playback_speed import ChangePlaybackSpeed
 from .channel_offset import ChannelOffset
+from .cut_strips_under_cursor import CutStripsUnderCursor
 from .fade_add import FadeAdd
 from .fade_clear import FadeClear
 from .concatenate_strips import ConcatenateStrips
@@ -45,4 +46,5 @@ from .trim_to_surrounding_cuts import TrimToSurroundingCuts
 from .jump_time_offset import JumpTimeOffset
 from .jump_to_cut import JumpToCut
 from .delete_direct import DeleteDirect
+from .select_strips_under_cursor import SelectStripsUnderCursor
 
