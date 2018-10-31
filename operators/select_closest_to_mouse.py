@@ -2,6 +2,7 @@ import bpy
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 
+
 class SelectClosestToMouse(bpy.types.Operator):
     bl_idname = 'power_sequencer.select_closest_to_mouse'
     bl_label = 'Select Closest to Mouse'
@@ -26,3 +27,4 @@ class SelectClosestToMouse(bpy.types.Operator):
         except Exception:
             return {"CANCELLED"}
         return {"FINISHED"}
+

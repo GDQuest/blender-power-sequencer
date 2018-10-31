@@ -1,7 +1,7 @@
 import bpy
 
 
-class CycleScenes(bpy.types.Operator):
+class SceneCycle(bpy.types.Operator):
     """
     ![Demo](https://i.imgur.com/7zhq8Tg.gif)
 

@@ -25,10 +25,10 @@ class SequenceTypes():
               'GAMMA_CROSS', 'MULTIPLY', 'OVER_DROP', 'WIPE', 'GLOW',
               'TRANSFORM', 'COLOR', 'SPEED', 'ADJUSTMENT', 'GAUSSIAN_BLUR')
     TRANSITION = ('CROSS', 'GAMMA_CROSS', 'WIPE')
-    SOUND = tuple(['SOUND'])
-    IMAGE = tuple(['IMAGE'])
-    TRANSITIONABLE = tuple(VIDEO + IMAGE)
-    CONCATENATE = tuple(VIDEO + SOUND + IMAGE)
+    SOUND = ('SOUND',)
+    IMAGE = ('IMAGE',)
+    TRANSITIONABLE = VIDEO + IMAGE
+    CONCATENATE = VIDEO + SOUND + IMAGE
 
 
 # TODO: Replace FileTypes with that
@@ -50,3 +50,4 @@ class SearchMode():
     NEXT = 1
     CHANNEL = 2
     ALL = 3
+

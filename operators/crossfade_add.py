@@ -17,7 +17,8 @@ class CrossfadeAdd(bpy.types.Operator):
     """
     bl_idname = "power_sequencer.crossfade_add"
     bl_label = "Add Crossfade"
-    bl_description = "Adds cross fade between selected sequence and the closest sequence to its right"
+    bl_description = ("Adds cross fade between selected sequence and the"
+                      " closest sequence to its right")
     bl_options = {"REGISTER", "UNDO"}
 
     crossfade_duration = bpy.props.FloatProperty(
@@ -27,34 +28,42 @@ class CrossfadeAdd(bpy.types.Operator):
         min=0)
     auto_move_strip = bpy.props.BoolProperty(
         name="Auto Move Strip",
-        description="When true, moves the second strip so the crossfade \
-                     is of the length set in 'Crossfade Length'",
+        description=("When true, moves the second strip so the crossfade"
+                     " is of the length set in 'Crossfade Length'"),
         default=True)
 
     @classmethod
     def poll(cls, context):
         try:
-            next(s for s in context.sequences if s.type not in SequenceTypes.TRANSITION.extend(SequenceTypes.SOUND))
+            next(s for s in context.sequences if s.type not in
+                 SequenceTypes.TRANSITION + SequenceTypes.SOUND)
             return True
         except StopIteration:
             return False
 
     def execute(self, context):
-        sorted_selection = sorted(context.selected_sequences, key=attrgetter('frame_final_start'))
+        sorted_selection = sorted(context.selected_sequences,
+                                  key=attrgetter('frame_final_start'))
         for selected_strip in sorted_selection:
             next_in_channel = [s for s in find_sequences_after(selected_strip)
-                            if s.channel == selected_strip.channel]
+                               if s.channel == selected_strip.channel]
             if not next_in_channel:
                 continue
-            next_transitionable = (s for s in next_in_channel if s.type in SequenceTypes.TRANSITIONABLE)
-            next_sequence = min(next_transitionable, key=attrgetter('frame_final_start'))
+            next_transitionable = (s for s in next_in_channel
+                                   if s.type in SequenceTypes.TRANSITIONABLE)
+            next_sequence = min(next_transitionable,
+                                key=attrgetter('frame_final_start'))
 
             if self.auto_move_strip:
-                frame_offset = next_sequence.frame_final_start - selected_strip.frame_final_end
+                frame_offset = (next_sequence.frame_final_start -
+                                selected_strip.frame_final_end)
                 next_sequence.frame_start -= frame_offset
 
-            if next_sequence.frame_final_start == selected_strip.frame_final_end:
-                crossfade_length = convert_duration_to_frames(self.crossfade_duration)
+            if next_sequence.frame_final_start == \
+               selected_strip.frame_final_end:
+                crossfade_length = convert_duration_to_frames(
+                    self.crossfade_duration
+                )
                 next_sequence.frame_final_start += crossfade_length / 2
                 selected_strip.frame_final_end -= crossfade_length / 2
 
@@ -67,3 +76,4 @@ class CrossfadeAdd(bpy.types.Operator):
         strip_to.select = True
         bpy.context.scene.sequence_editor.active_strip = strip_to
         bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
+
