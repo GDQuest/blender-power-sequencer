@@ -63,11 +63,10 @@ class RemoveGaps(bpy.types.Operator):
             gap_size = block[0].frame_final_start - gap_frame_start
             if gap_size < 1:
                 continue
+            bpy.ops.sequencer.select_all(action='DESELECT')
             for s in block:
-                try:
-                    s.frame_start -= gap_size
-                except AttributeError:
-                    pass
+                s.select = True
+            bpy.ops.transform.seq_slide(value=(-gap_size, 0.0))
             self.move_markers(gap_frame_start, gap_size)
             if not self.all:
                 break
