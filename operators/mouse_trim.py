@@ -75,13 +75,13 @@ class MouseTrim(bpy.types.Operator):
             self.frame_start = frame
             self.frame_end = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
 
-        self.to_select = to_select
+        self.to_select = [s for s in to_select if not s.lock]
         trim_strips(self.frame_start, self.frame_end,
                     self.select_mode, self.to_select)
 
         if self.remove_gaps and self.select_mode == 'cursor':
             bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
-            bpy.ops.sequencer.gap_remove()
+            bpy.ops.power_sequencer.remove_gaps()
         else:
             bpy.context.scene.frame_current = self.frame_start if self.frame_start else frame
         return {'FINISHED'}
