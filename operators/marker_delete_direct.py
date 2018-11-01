@@ -1,11 +1,11 @@
 import bpy
 
 
-class MarkersDeleteDirect(bpy.types.Operator):
+class MarkerDeleteDirect(bpy.types.Operator):
     """
     Delete selected markers instantly, skipping the default confirmation prompt
     """
-    bl_idname = 'power_sequencer.markers_delete_direct'
+    bl_idname = 'power_sequencer.marker_delete_direct'
     bl_label = 'Delete Markers Instantly'
     bl_description = 'Delete selected markers without asking for confirmation'
     bl_options = {'REGISTER', 'UNDO'}
