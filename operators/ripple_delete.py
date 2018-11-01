@@ -55,8 +55,7 @@ class RippleDelete(bpy.types.Operator):
                 sequencer.delete()
 
                 scene.frame_current = selection_start
-                bpy.ops.sequencer.remove_gaps(all=False)
-                # bpy.ops.power_sequencer.remove_gaps(all=False)
+                bpy.ops.power_sequencer.remove_gaps()
             # auto move cursor back
             if bpy.context.screen.is_animation_playing and len(
                     selection_blocks) == 1:
