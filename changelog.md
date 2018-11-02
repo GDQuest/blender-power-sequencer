@@ -65,6 +65,7 @@ The proxy render script got serious love in this version.
 - **Concatenate in multiple channels at a time**, and concatenate linked strips! The concatenate tool got a rewrite to make better decisions based on your selection
 - **Concatenate towards the right**: Press <kbd>Alt</kbd> <kbd>C</kbd> and <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>C</kbd> to respectively concatenate the previous strip towards the next one, or concatenate all strips before the selected towards the right.
 - **Auto-selection**: If you don't have anything selected, Power Sequencer will use the strip under the cursor for concatenate, delete, and grab operators, saving your extra keystrokes and time 😄
+- **Edit crossfades with the grab tool**: grab became smarter. If you only select cross effects, it G will select the handles on either side of the crossfade instead of trying to move it directly.
 
 #### Improvements to the source code ####
 

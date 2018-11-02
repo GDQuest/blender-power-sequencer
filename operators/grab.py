@@ -1,5 +1,6 @@
 import bpy
-from .utils.find_closest_strip import find_closest_strip
+from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.global_settings import SequenceTypes
 
 
 class Grab(bpy.types.Operator):
@@ -17,10 +18,14 @@ class Grab(bpy.types.Operator):
         return context is not None
 
     def invoke(self, context, event):
-        if len(bpy.context.selected_sequences) == 0:
-            closest_strip = find_closest_strip(bpy.context.sequences, event.mouse_x, event.mouse_y)
-            closest_strip.select = True
+        frame, channel = get_mouse_frame_and_channel(event)
+        if not context.selected_sequences:
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
+        first_sequence = bpy.context.selected_sequences[0]
+        if len(bpy.context.selected_sequences) == 1 and first_sequence.type in SequenceTypes.TRANSITION:
+            bpy.context.scene.sequence_editor.active_strip = first_sequence
+            return bpy.ops.power_sequencer.crossfade_edit()
         return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')

@@ -76,12 +76,6 @@
         "shortcuts": ["X; Delete direct", "DEL; Delete direct"],
         "demo": ""
     },
-    "power_sequencer.crossfade_edit": {
-        "name": "Edit Crossfade",
-        "description": "Selects the handles of both inputs of a crossfade strip's input and calls the grab operator. Allows you to quickly change the location of a fade transition between two strips.",
-        "shortcuts": ["Alt C; Edit Crossfade"],
-        "demo": ""
-    },
     "power_sequencer.fade_add": {
         "name": "Fade Strips",
         "description": "Animate a strips opacity to zero. By default, the duration of the fade is 0.5 seconds.",
@@ -90,7 +84,7 @@
     },
     "power_sequencer.grab": {
         "name": "Auto select and grab",
-        "description": "Grab and move sequences. If you have no strips selected, it automatically finds the strip closest to the mouse and selects it",
+        "description": "Grab and move sequences. If you have no strips selected, it automatically finds the strip closest to the mouse and selects it. If you only select one or multiple crossfades, selects the handles on either side of the crossfades before moving sequences",
         "shortcuts": ["G"],
         "demo": ""
     },
