@@ -44,7 +44,12 @@
     "power_sequencer.concatenate_strips": {
         "name": "Concatenate Strips",
         "description": "Concatenates selected strips in a channel (removes the gap between them) If a single strip is selected, either the next strip in the channel will be concatenated, or all strips in the channel will be concatenated depending on which shortcut is used.",
-        "shortcuts": ["C; Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected", "Shift C;Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected"],
+        "shortcuts": [
+            "C; Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected",
+            "Shift C; Concatenate all strips in selected channels",
+            "Alt C; Concatenate selected strips in channel towards the right, or concatenate and select the previous strip in the channel if only 1 strip selected",
+            "Shift Alt C; Concatenate all strips in channel towards the right"
+        ],
         "demo": "https://i.imgur.com/YyEL8YP.gif"
     },
     "power_sequencer.copy_selected_sequences": {

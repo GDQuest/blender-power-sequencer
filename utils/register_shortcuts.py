@@ -61,6 +61,12 @@ def register_shortcuts():
     set_keymap_property(kmi.properties, 'concatenate_all', False)
     kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True)
     set_keymap_property(kmi.properties, 'concatenate_all', True)
+    kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', alt=True)
+    set_keymap_property(kmi.properties, 'concatenate_all', False)
+    set_keymap_property(kmi.properties, 'direction', 'right')
+    kmi = km.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True, alt=True)
+    set_keymap_property(kmi.properties, 'concatenate_all', True)
+    set_keymap_property(kmi.properties, 'direction', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'C', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', False)
