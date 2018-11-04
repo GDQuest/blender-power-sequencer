@@ -72,6 +72,10 @@ def register_shortcuts():
     set_keymap_property(kmi.properties, 'delete_selection', False)
     kmi = km.keymap_items.new('power_sequencer.copy_selected_sequences', 'X', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', True)
+    # Override the built-in duplicate_move operator
+    kmi = km.keymap_items.new('power_sequencer.duplicate_move', 'D', 'PRESS', shift=True)
+    kmi = km.keymap_items.new('power_sequencer.duplicate_move', 'D', 'PRESS')
+
 
     kmi = km.keymap_items.new('power_sequencer.scenes_cycle', 'TAB', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
