@@ -1,6 +1,5 @@
 import bpy
 from .utils.global_settings import SequenceTypes
-from .utils.find_closest_strip import find_closest_strip
 
 
 class GrabSequencesHandles(bpy.types.Operator):
