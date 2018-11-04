@@ -16,7 +16,8 @@ class GrabSequencesHandles(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     always_find_closest = bpy.props.BoolProperty(name="Always find closest", default=False)
-    frame, channel = -1, -1
+    frame = bpy.props.IntProperty(name="Frame", default=-1, options={'HIDDEN'})
+    channel = bpy.props.IntProperty(name="Channel", default=-1, options={'HIDDEN'})
 
     @classmethod
     def poll(cls, context):

@@ -58,6 +58,7 @@ The proxy render script got serious love in this version.
 - Auto crossfades (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>) now work in a **single channel by default**, as in every other professional video editing program
   - You can also **add multiple crossfades** at a time, e.g. to create an image slideshow with fades between each picture
   - This makes it a lot easier to export Blender edits to Davinci Resolve, Premiere, or Final Cut with the [EDL export add-on](https://github.com/tin2tin/ExportEDL)
+- Grab closest cut (<kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>G</kbd>) now supports linked strips! It's the fastest way to select and transform the strips' handles on either side of a cut.
 - Delete direct now automatically **deletes the strip under the mouse cursor** if there's nothing selected.
 - **Swap strips vertically**: You can now conveniently change the order of effects or linked strips, e.g. picture overlays
 - Smartly remove strips: if you press X but don't have anything selected, Power Sequencer will find and delete the strips under the mouse cursor for you!
