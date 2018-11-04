@@ -228,7 +228,7 @@
     the channel will be
     concatenated depending on which
     shortcut is used.">Concatenate Strips</a></td>
-            <td width=222px><a name="top_Grab_Sequence_Handle" href="#Grab_Sequence_Handle" title="Extends the sequence based on
+            <td width=222px><a name="top_Grab_Sequence_Handles" href="#Grab_Sequence_Handles" title="Extends the sequence based on
     the mouse position. If the
     cursor is to the right of the
     sequence's middle, it moves the
@@ -508,7 +508,7 @@
     </td>
         </tr>
     </table>
-        <h3><a name="Grab_Sequence_Handle" href="#top_Grab_Sequence_Handle">Grab Sequence Handle</a></h3>
+        <h3><a name="Grab_Sequence_Handles" href="#top_Grab_Sequence_Handles">Grab Sequence Handle</a></h3>
     <p>Extends the sequence based on the mouse position. If the cursor is to the right of the sequence's middle, it moves the right handle. If it's on the left side, it moves the left handle.</p>
 
     <table>

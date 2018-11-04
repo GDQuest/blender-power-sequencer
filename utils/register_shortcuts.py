@@ -78,7 +78,7 @@ def register_shortcuts():
 
     kmi = km.keymap_items.new('power_sequencer.grab', 'G', 'PRESS')
     kmi = km.keymap_items.new('power_sequencer.grab_closest_cut', 'G', 'PRESS', shift=True, alt=True)
-    kmi = km.keymap_items.new('power_sequencer.grab_sequence_handle', 'G', 'PRESS', shift=True)
+    kmi = km.keymap_items.new('power_sequencer.grab_sequence_handles', 'G', 'PRESS', shift=True)
 
     kmi = km.keymap_items.new('power_sequencer.import_local_footage', 'I', 'PRESS', shift=True, ctrl=True)
     set_keymap_property(kmi.properties, 'keep_audio', True)

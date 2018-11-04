@@ -86,6 +86,14 @@ def register():
     handlers_register()
     print("Registered {} with {} modules".format(bl_info["name"], len(
         modules)))
+    wm = bpy.context.window_manager
+    km = wm.keyconfigs.active.keymaps['Sequencer']
+    print(len( km.keymap_items ))
+    for kmi in km.keymap_items:
+        for idname in idnames:
+            if kmi.idname == 'sequencer.cut':
+                kmi.active = action == 'REGISTER'
+                print(idname)
 
 
 def unregister():

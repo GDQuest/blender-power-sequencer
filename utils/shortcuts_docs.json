@@ -94,7 +94,7 @@
         "shortcuts": ["Shift Alt G;Grab closest handle or cut"],
         "demo": ""
     },
-    "power_sequencer.grab_sequence_handle": {
+    "power_sequencer.grab_sequence_handles": {
         "name": "Grab Sequence Handle",
         "description": "Extends the sequence based on the mouse position. If the cursor is to the right of the sequence's middle, it moves the right handle. If it's on the left side, it moves the left handle.",
         "shortcuts": ["Shift G; Grab sequence handles"],
