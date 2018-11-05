@@ -24,16 +24,9 @@ class CopySelectedSequences(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        bpy.context.scene.sequence_editor
-        return context.scene.sequence_editor is not None
+        return context.selected_sequences
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
-
-        if len(selection) == 0:
-            self.report({'INFO'}, "Please select at least one strip")
-            return {'CANCELLED'}
-
         cursor_start_frame = bpy.context.scene.frame_current
         sequencer = bpy.ops.sequencer
 
@@ -44,7 +37,7 @@ class CopySelectedSequences(bpy.types.Operator):
         scene.use_audio_scrub = False
         context.space_data.proxy_render_size = 'NONE'
 
-        first_sequence = min(selection, key=attrgetter('frame_final_start'))
+        first_sequence = min(context.selection, key=attrgetter('frame_final_start'))
         bpy.context.scene.frame_current = first_sequence.frame_final_start
         sequencer.copy()
         bpy.context.scene.frame_current = cursor_start_frame
@@ -55,9 +48,9 @@ class CopySelectedSequences(bpy.types.Operator):
         if self.delete_selection:
             sequencer.delete()
 
-        plural_string = 's' if len(selection) != 1 else ''
+        plural_string = 's' if len(context.selection) != 1 else ''
         action_verb = 'Cut' if self.delete_selection else 'Copied'
         report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(
-            action_verb, str(len(selection)), plural_string)
+            action_verb, str(len(context.selection)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
