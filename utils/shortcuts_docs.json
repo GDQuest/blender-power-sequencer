@@ -166,6 +166,12 @@
         "shortcuts": ["Ctrl K; Smart snap"],
         "demo": ""
     },
+    "power_sequencer.trim_three_point_edit": {
+        "name": "Three Point Edit",
+        "description": "Trim the closest strip under the mouse cursor in or out",
+        "shortcuts": ["I; Trim In, O; Trim Out"],
+        "demo": ""
+    },
     "power_sequencer.snap_selection_to_cursor": {
         "name": "Snap Selection to Cursor",
         "description": "Snap selected strips to cursor",

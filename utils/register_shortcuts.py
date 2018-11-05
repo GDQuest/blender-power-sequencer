@@ -107,10 +107,15 @@ def register_shortcuts():
     kmi = km.keymap_items.new('power_sequencer.ripple_delete', 'X', 'PRESS', shift=True)
     kmi = km.keymap_items.new('power_sequencer.save_direct', 'S', 'PRESS', ctrl=True)
 
+    # Keyboard trimming
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', alt=True)
     set_keymap_property(kmi.properties, 'side', 'right')
     kmi = km.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'side', 'left')
+    kmi = km.keymap_items.new('power_sequencer.trim_three_point_edit', 'I', 'PRESS')
+    set_keymap_property(kmi.properties, 'side', 'left')
+    kmi = km.keymap_items.new('power_sequencer.trim_three_point_edit', 'O', 'PRESS')
+    set_keymap_property(kmi.properties, 'side', 'right')
 
     kmi = km.keymap_items.new('power_sequencer.snap_selection_to_cursor', 'S', 'PRESS', alt=True)
 
