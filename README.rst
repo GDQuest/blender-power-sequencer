@@ -19,17 +19,18 @@
     <p>I built Power Sequencer to help us edit videos as fast as possible. The
     add-on is getting better month after month, and it's yours for Free.</p>
 
-    <h2>Contributing</h2>
 
-    <p>This add-on is a living, open project, and we'd be glad to welcome new
-    contributors! We need people to:</p>
+    <h2>Become a Contributor 😄</h2>
 
+    <p>See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/). We also pledge to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/), like many Free Software projects.</p>
+    <p>All contributors are welcome! We need people to:</p>
     <ul>
-    <li>Code new features</li>
-    <li>Improve existing features</li>
-    <li>Help solidify the code</li>
-    <li>Write mini-tutorials on the <a href="https://github.com/GDquest/Blender-power-sequencer-docs/">docs repository</a></li>
+      <li>Code new features</li>
+      <li>Improve existing features</li>
+      <li>Help solidify the code</li>
+      <li>Write mini-tutorials on the [docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/)</li>
     </ul>
+    <p>Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues)</p>
 
     <h2>Installation</h2>
 
