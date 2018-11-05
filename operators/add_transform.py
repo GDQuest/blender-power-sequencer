@@ -16,7 +16,11 @@ class AddTransform(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        try:
+            next((s for s in context.selected_sequences if s.type in ('IMAGE', 'MOVIE')))
+            return True
+        except StopIteration:
+            return False
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
