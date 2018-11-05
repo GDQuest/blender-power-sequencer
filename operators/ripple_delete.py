@@ -1,5 +1,6 @@
 import bpy
 from operator import attrgetter
+from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.get_frame_range import get_frame_range
 
@@ -12,7 +13,13 @@ class RippleDelete(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.sequences
+
+    def invoke(self, context, event):
+        frame, channel = get_mouse_frame_and_channel(event)
+        if not context.selected_sequences:
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
+        return self.execute(context)
 
     def execute(self, context):
         scene = bpy.context.scene
