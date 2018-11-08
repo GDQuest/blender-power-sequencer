@@ -9,15 +9,12 @@ class CutStripsUnderCursor(bpy.types.Operator):
                       'excludes locked strips.')
     bl_options = {'REGISTER', 'UNDO'}
 
-    frame = bpy.props.IntProperty(name="Frame")
-    channel = bpy.props.IntProperty(name="Channel")
-
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.sequences) > 0
 
     def execute(self, context):
-        bpy.ops.power_sequencer.select_strips_under_cursor()
-        return bpy.ops.sequencer.cut(frame=context.scene.frame_current,
-                                     type='SOFT')
+        (context.selected_sequences
+         or bpy.ops.power_sequencer.select_strips_under_cursor())
+        return bpy.ops.sequencer.cut(frame=context.scene.frame_current)
 
