@@ -16,45 +16,31 @@ class GrabClosestCut(bpy.types.Operator):
     bl_description = "Grab the handles that form the closest cut"
     bl_options = {'REGISTER', 'UNDO'}
 
+    select_linked = bpy.props.BoolProperty(
+        name="Select Linked",
+        description="Select strips that are linked in time",
+        default=True)
+
     @classmethod
     def poll(cls, context):
-        return context is not None
+        return len(bpy.context.sequences) > 0
 
     def invoke(self, context, event):
-        if not bpy.context.sequences:
-            return {'CANCELLED'}
-
         sequencer = bpy.ops.sequencer
 
         mouse_x, mouse_y = event.mouse_region_x, event.mouse_region_y
         frame, channel = self.find_cut_closest_to_mouse(mouse_x, mouse_y)
 
-        matching_sequences = []
-        for s in bpy.context.sequences:
-            if not s.channel == channel:
-                continue
-            if abs(s.frame_final_start - frame) <= 1 or abs(
-                    s.frame_final_end - frame) <= 1:
-                matching_sequences.append(s)
-        matching_count = len(matching_sequences)
-
+        matching_strips = [
+            s for s in bpy.context.sequences
+            if abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1
+        ]
+        if not self.select_linked:
+            matching_strips = [s for s in matching_strips if s.channel == channel]
         sequencer.select_all(action='DESELECT')
-        if matching_count != 2:
-            return bpy.ops.power_sequencer.grab_sequence_handle()
-            # sequence = matching_sequences[0]
-            # sequence.select = True
-            # if abs(sequence.frame_final_start - frame) <= 1:
-            #     sequence.select_left_handle = True
-            # elif abs(sequence.frame_final_end - frame) <= 1:
-            #     sequence.select_right_handle = True
-
-        sorted_sequences = sorted(matching_sequences,
-                                  key=attrgetter('frame_final_start'))
-        for s in matching_sequences:
+        for s in matching_strips:
             s.select = True
-        sorted_sequences[0].select_right_handle = True
-        sorted_sequences[1].select_left_handle = True
-        return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
+        return bpy.ops.power_sequencer.grab_sequence_handles(frame=frame)
 
     def find_cut_closest_to_mouse(self, mouse_x, mouse_y):
         """
@@ -69,15 +55,15 @@ class GrabClosestCut(bpy.types.Operator):
 
         for s in bpy.context.sequences:
             channel_offset = s.channel + 0.5
-            start_x, start_y = view2d.view_to_region(
-                s.frame_final_start, channel_offset)
-            end_x, end_y = view2d.view_to_region(
-                s.frame_final_start, channel_offset)
+            start_x, start_y = view2d.view_to_region(s.frame_final_start,
+                                                     channel_offset)
+            end_x, end_y = view2d.view_to_region(s.frame_final_start,
+                                                 channel_offset)
 
-            distance_to_start = calculate_distance(
-                start_x, start_y, mouse_x, mouse_y)
-            distance_to_end = calculate_distance(
-                end_x, end_y, mouse_x, mouse_y)
+            distance_to_start = calculate_distance(start_x, start_y, mouse_x,
+                                                   mouse_y)
+            distance_to_end = calculate_distance(end_x, end_y, mouse_x,
+                                                 mouse_y)
 
             if distance_to_start < distance_to_closest_cut:
                 closest_cut = (start_x, start_y)

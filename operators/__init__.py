@@ -14,6 +14,7 @@ from .decrease_playback_speed import DecreasePlaybackSpeed
 from .delete_direct import DeleteDirect
 from .deselect_all_left_or_right import DeselectAllStripsLeftOrRight
 from .deselect_handles_and_grab import DeselectHandlesAndGrab
+from .duplicate_move import DuplicateMove
 from .fade_add import FadeAdd
 from .fade_clear import FadeClear
 from .grab_closest_handle_or_cut import GrabClosestCut

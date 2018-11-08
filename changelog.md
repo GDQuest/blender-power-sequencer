@@ -28,7 +28,7 @@ Thanks to @aditiapratama and @libreartist, we now have a nice **toolbar menu**! 
 ### 🎥🕺 New features ###
 
 - **Remove crossfade**: Remove crossfades in a clean way, as you'd expect! If you select one or more transition effects like Crossfade or Wipe, pressing <kbd>X</kbd> will now bring the sequences back together to form a precise cut.
-- **Remove Gaps and ignore locked strips**: Blender's default tool to remove gap isn't very smart. We had to code our own to create the next feature...
+- **Remove Gaps and ignore locked strips**: Blender's default tool to remove gap isn't very smart. We had to code our own to create the feature below...
 - **Cut with the mouse, without touching locked strips**: edit to music with the add-on's fast mouse-based tools! Lock your audio strip and you're good to go 😃
 - **Select related strips**: find and select effects related to the selection, to then cut, copy or duplicate a strip with everything that should come with it.
 - **Space strips based on mouse position**: this is bound to the <kbd>=</kbd> key by default
@@ -58,12 +58,15 @@ The proxy render script got serious love in this version.
 - Auto crossfades (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>) now work in a **single channel by default**, as in every other professional video editing program
   - You can also **add multiple crossfades** at a time, e.g. to create an image slideshow with fades between each picture
   - This makes it a lot easier to export Blender edits to Davinci Resolve, Premiere, or Final Cut with the [EDL export add-on](https://github.com/tin2tin/ExportEDL)
+- Grab closest cut (<kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>G</kbd>) now supports linked strips! It's the fastest way to select and transform the strips' handles on either side of a cut.
 - Delete direct now automatically **deletes the strip under the mouse cursor** if there's nothing selected.
 - **Swap strips vertically**: You can now conveniently change the order of effects or linked strips, e.g. picture overlays
 - Smartly remove strips: if you press X but don't have anything selected, Power Sequencer will find and delete the strips under the mouse cursor for you!
 - Jump in time with <kbd>Shift</kbd> <kbd>➡</kbd> and <kbd>Shift</kbd> <kbd>⬅</kbd>: It's consistent with <kbd>⬅</kbd> and <kbd>➡</kbd> to move 1 frame on the timeline. This new tool works in seconds so the jump will be the same regardless of your project's framerate!
 - **Concatenate in multiple channels at a time**, and concatenate linked strips! The concatenate tool got a rewrite to make better decisions based on your selection
+- **Concatenate towards the right**: Press <kbd>Alt</kbd> <kbd>C</kbd> and <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>C</kbd> to respectively concatenate the previous strip towards the next one, or concatenate all strips before the selected towards the right.
 - **Auto-selection**: If you don't have anything selected, Power Sequencer will use the strip under the cursor for concatenate, delete, and grab operators, saving your extra keystrokes and time 😄
+- **Edit crossfades with the grab tool**: grab became smarter. If you only select cross effects, it G will select the handles on either side of the crossfade instead of trying to move it directly.
 
 #### Improvements to the source code ####
 

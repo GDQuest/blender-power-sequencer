@@ -61,11 +61,21 @@ def register_shortcuts():
     set_keymap_property(kmi.properties, 'concatenate_all', False)
     kmi = kms.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True)
     set_keymap_property(kmi.properties, 'concatenate_all', True)
+    kmi = kms.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', alt=True)
+    set_keymap_property(kmi.properties, 'concatenate_all', False)
+    set_keymap_property(kmi.properties, 'direction', 'right')
+    kmi = kms.keymap_items.new('power_sequencer.concatenate_strips', 'C', 'PRESS', shift=True, alt=True)
+    set_keymap_property(kmi.properties, 'concatenate_all', True)
+    set_keymap_property(kmi.properties, 'direction', 'right')
 
     kmi = kms.keymap_items.new('power_sequencer.copy_selected_sequences', 'C', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', False)
     kmi = kms.keymap_items.new('power_sequencer.copy_selected_sequences', 'X', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'delete_selection', True)
+    # Override the built-in duplicate_move operator
+    kmi = kms.keymap_items.new('power_sequencer.duplicate_move', 'D', 'PRESS', shift=True)
+    kmi = kms.keymap_items.new('power_sequencer.duplicate_move', 'D', 'PRESS')
+
 
     kmi = kms.keymap_items.new('power_sequencer.scenes_cycle', 'TAB', 'PRESS', shift=True)
     kmi = kms.keymap_items.new('power_sequencer.decrease_playback_speed', 'LEFT_BRACKET', 'PRESS')
@@ -73,7 +83,7 @@ def register_shortcuts():
 
     kmi = kms.keymap_items.new('power_sequencer.grab', 'G', 'PRESS')
     kmi = kms.keymap_items.new('power_sequencer.grab_closest_cut', 'G', 'PRESS', shift=True, alt=True)
-    kmi = kms.keymap_items.new('power_sequencer.grab_sequence_handle', 'G', 'PRESS', shift=True)
+    kmi = kms.keymap_items.new('power_sequencer.grab_sequence_handles', 'G', 'PRESS', shift=True)
 
     kmi = kms.keymap_items.new('power_sequencer.import_local_footage', 'I', 'PRESS', shift=True, ctrl=True)
     set_keymap_property(kmi.properties, 'keep_audio', True)
@@ -98,10 +108,15 @@ def register_shortcuts():
     kmi = kms.keymap_items.new('power_sequencer.ripple_delete', 'X', 'PRESS', shift=True)
     kmi = kms.keymap_items.new('power_sequencer.save_direct', 'S', 'PRESS', ctrl=True)
 
+    # Keyboard trimming
     kmi = kms.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', alt=True)
     set_keymap_property(kmi.properties, 'side', 'right')
     kmi = kms.keymap_items.new('power_sequencer.smart_snap', 'K', 'PRESS', ctrl=True)
     set_keymap_property(kmi.properties, 'side', 'left')
+    kmi = kms.keymap_items.new('power_sequencer.trim_three_point_edit', 'I', 'PRESS')
+    set_keymap_property(kmi.properties, 'side', 'left')
+    kmi = kms.keymap_items.new('power_sequencer.trim_three_point_edit', 'O', 'PRESS')
+    set_keymap_property(kmi.properties, 'side', 'right')
 
     kmi = kms.keymap_items.new('power_sequencer.snap_selection_to_cursor', 'S', 'PRESS', alt=True)
 

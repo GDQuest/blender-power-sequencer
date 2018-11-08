@@ -1,6 +1,5 @@
 import bpy
 from operator import attrgetter
-from .utils.find_closest_strip import find_closest_strip
 
 
 class SwapStrips(bpy.types.Operator):

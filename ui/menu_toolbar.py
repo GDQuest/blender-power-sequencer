@@ -109,7 +109,7 @@ class PowerSequencer_MT_grab(bpy.types.Menu):
         layout = self.layout
         layout.operator("power_sequencer.grab")
         layout.operator("power_sequencer.grab_closest_cut")
-        layout.operator("power_sequencer.grab_sequence_handle")
+        layout.operator("power_sequencer.grab_sequence_handles")
 
 
 class PowerSequencer_MT_snap(bpy.types.Menu):

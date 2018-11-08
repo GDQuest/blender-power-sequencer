@@ -19,17 +19,18 @@
     <p>I built Power Sequencer to help us edit videos as fast as possible. The
     add-on is getting better month after month, and it's yours for Free.</p>
 
-    <h2>Contributing</h2>
 
-    <p>This add-on is a living, open project, and we'd be glad to welcome new
-    contributors! We need people to:</p>
+    <h2>Become a Contributor 😄</h2>
 
+    <p>See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/). We also pledge to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/), like many Free Software projects.</p>
+    <p>All contributors are welcome! We need people to:</p>
     <ul>
-    <li>Code new features</li>
-    <li>Improve existing features</li>
-    <li>Help solidify the code</li>
-    <li>Write mini-tutorials on the <a href="https://github.com/GDquest/Blender-power-sequencer-docs/">docs repository</a></li>
+      <li>Code new features</li>
+      <li>Improve existing features</li>
+      <li>Help solidify the code</li>
+      <li>Write mini-tutorials on the [docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/)</li>
     </ul>
+    <p>Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues)</p>
 
     <h2>Installation</h2>
 
@@ -228,7 +229,7 @@
     the channel will be
     concatenated depending on which
     shortcut is used.">Concatenate Strips</a></td>
-            <td width=222px><a name="top_Grab_Sequence_Handle" href="#Grab_Sequence_Handle" title="Extends the sequence based on
+            <td width=222px><a name="top_Grab_Sequence_Handles" href="#Grab_Sequence_Handles" title="Extends the sequence based on
     the mouse position. If the
     cursor is to the right of the
     sequence's middle, it moves the
@@ -508,7 +509,7 @@
     </td>
         </tr>
     </table>
-        <h3><a name="Grab_Sequence_Handle" href="#top_Grab_Sequence_Handle">Grab Sequence Handle</a></h3>
+        <h3><a name="Grab_Sequence_Handles" href="#top_Grab_Sequence_Handles">Grab Sequence Handle</a></h3>
     <p>Extends the sequence based on the mouse position. If the cursor is to the right of the sequence's middle, it moves the right handle. If it's on the left side, it moves the left handle.</p>
 
     <table>

@@ -82,7 +82,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
             # bpy.ops.anim.change_frame(frame_to_remove_gap)
             bpy.context.scene.frame_current = frame_to_remove_gap
-            sequencer.gap_remove()
+            bpy.ops.power_sequencer.remove_gaps()
             bpy.context.scene.frame_current = trim_start
         return {'FINISHED'}
 

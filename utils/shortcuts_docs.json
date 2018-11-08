@@ -44,7 +44,12 @@
     "power_sequencer.concatenate_strips": {
         "name": "Concatenate Strips",
         "description": "Concatenates selected strips in a channel (removes the gap between them) If a single strip is selected, either the next strip in the channel will be concatenated, or all strips in the channel will be concatenated depending on which shortcut is used.",
-        "shortcuts": ["C; Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected", "Shift C;Concatenate selected strips in channel, or concatenate all strips in channel if only 1 strip selected"],
+        "shortcuts": [
+            "C; Concatenate selected strips in channel, or concatenate & select next strip in channel if only 1 strip selected",
+            "Shift C; Concatenate all strips in selected channels",
+            "Alt C; Concatenate selected strips in channel towards the right, or concatenate and select the previous strip in the channel if only 1 strip selected",
+            "Shift Alt C; Concatenate all strips in channel towards the right"
+        ],
         "demo": "https://i.imgur.com/YyEL8YP.gif"
     },
     "power_sequencer.copy_selected_sequences": {
@@ -71,12 +76,6 @@
         "shortcuts": ["X; Delete direct", "DEL; Delete direct"],
         "demo": ""
     },
-    "power_sequencer.crossfade_edit": {
-        "name": "Edit Crossfade",
-        "description": "Selects the handles of both inputs of a crossfade strip's input and calls the grab operator. Allows you to quickly change the location of a fade transition between two strips.",
-        "shortcuts": ["Alt C; Edit Crossfade"],
-        "demo": ""
-    },
     "power_sequencer.fade_add": {
         "name": "Fade Strips",
         "description": "Animate a strips opacity to zero. By default, the duration of the fade is 0.5 seconds.",
@@ -85,7 +84,7 @@
     },
     "power_sequencer.grab": {
         "name": "Auto select and grab",
-        "description": "Grab and move sequences. If you have no strips selected, it automatically finds the strip closest to the mouse and selects it",
+        "description": "Grab and move sequences. If you have no strips selected, it automatically finds the strip closest to the mouse and selects it. If you only select one or multiple crossfades, selects the handles on either side of the crossfades before moving sequences",
         "shortcuts": ["G"],
         "demo": ""
     },
@@ -95,7 +94,7 @@
         "shortcuts": ["Shift Alt G;Grab closest handle or cut"],
         "demo": ""
     },
-    "power_sequencer.grab_sequence_handle": {
+    "power_sequencer.grab_sequence_handles": {
         "name": "Grab Sequence Handle",
         "description": "Extends the sequence based on the mouse position. If the cursor is to the right of the sequence's middle, it moves the right handle. If it's on the left side, it moves the left handle.",
         "shortcuts": ["Shift G; Grab sequence handles"],
@@ -165,6 +164,12 @@
         "name": "Smart Snap",
         "description": "Trims, extends and snaps selected strips to cursor",
         "shortcuts": ["Ctrl K; Smart snap"],
+        "demo": ""
+    },
+    "power_sequencer.trim_three_point_edit": {
+        "name": "Three Point Edit",
+        "description": "Trim the closest strip under the mouse cursor in or out",
+        "shortcuts": ["I; Trim In, O; Trim Out"],
         "demo": ""
     },
     "power_sequencer.snap_selection_to_cursor": {

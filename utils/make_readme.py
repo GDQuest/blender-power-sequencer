@@ -186,13 +186,16 @@ add-on is getting better month after month, and it's yours for Free.
 
 ## Contributing ##
 
-This add-on is a living, open project, and we'd be glad to welcome new
-contributors! We need people to:
+See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/). We also pledge to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/), like many Free Software projects.
+
+All contributors are welcome! We need people to:
 
 - Code new features
 - Improve existing features
 - Help solidify the code
 - Write mini-tutorials on the [docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/)
+
+Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues)
 
 ## Installation ##
 

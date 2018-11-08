@@ -18,7 +18,7 @@ class Media:
     def __init__(self, path_source, options):
         self.path_source = path_source
         self.proxy_command = []
-        self.path_proxy = ''
+        self.paths_proxies = {} # {size: path}
         self.options = options
 
     @classmethod
@@ -33,7 +33,8 @@ class Media:
         Create a BL_proxy folder relative to the file,
         where the final proxy will be stored
         """
-        proxy_folder = os.path.split(self.path_proxy)[0]
+        for size_option in self.paths_proxies:
+            proxy_folder = os.path.split(self.paths_proxies[size_option])[0]
         if not os.path.isdir(proxy_folder):
             os.makedirs(proxy_folder)
 
@@ -59,20 +60,21 @@ class Video(Media):
     def __init__(self, path_source, options):
         super().__init__(path_source, options)
 
-        self.path_proxy = self.get_path_proxy(self.path_source)
+        self.paths_proxies = self.get_paths_proxies(self.path_source)
         self.frame_count = get_frame_count(self.path_source)
-        self.proxy_command = self.get_proxy_command(self.path_source,
-                                                    self.path_proxy)
+        self.proxy_command = self.get_proxy_command(self.path_source, self.paths_proxies)
 
-    def get_path_proxy(self, path):
+    def get_paths_proxies(self, path_src):
         """
-        Returns path the proxy file should be located
+        Returns a dict of { size: output_path } where the proxy files should be rendered to
         """
-        folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", file_name,
-                            "proxy_{}.avi".format(self.options["size"]))
+        folder, file_name = os.path.split(path_src)
+        export_paths = {}
+        for size in self.options["sizes"]:
+            export_paths[str(size)] = os.path.join(folder, "BL_proxy", file_name, "proxy_{}.avi".format(size))
+        return export_paths
 
-    def get_proxy_command(self, path_source, path_proxy):
+    def get_proxy_command(self, path_source, paths_proxies):
         """
         Returns the ffmpeg command to generate a proxy file with the command line
         See this post to understand all the options below:
@@ -82,20 +84,25 @@ class Video(Media):
         encoding_speed_value = self.options['encoding_speed']['value']
         crf_key = self.options['constant_rate_factor']['key']
         crf_value = self.options['constant_rate_factor']['value']
-        ffmpeg_command = [
-            "ffmpeg",
-            "-i", path_source,
-            "-pix_fmt", "yuv420p",
-            "-c:v", self.options["codec"],
-            crf_key, crf_value,
-            "-g", "1",
-            encoding_speed_key, encoding_speed_value,
-            "-vf", "colormatrix=bt601:bt709",
-            "-filter:v", "scale=iw*{size}:ih*{size}".format(size=self.options["size"]/100),
-            "-sn", "-an", "-v", "quiet", "-stats", "-y"]
+
+        # TODO: build one stem command with 3 outputs
+        ffmpeg_command = ["ffmpeg", "-i", path_source, "-v", "quiet", "-stats", "-y"]
         if self.options['format'] == 'webm':
             ffmpeg_command += ["-threads", str(multiprocessing.cpu_count())]
-        ffmpeg_command.append(path_proxy)
+
+        for size_option in paths_proxies:
+            output = [
+                "-pix_fmt", "yuv420p",
+                "-c:v", self.options["codec"],
+                crf_key, crf_value,
+                "-g", "1",
+                encoding_speed_key, encoding_speed_value,
+                "-vf", "colormatrix=bt601:bt709",
+                "-vf", "scale=iw*{size}:ih*{size}".format(size=float(size_option) / 100),
+                "-sn", "-an",
+                paths_proxies[size_option]
+            ]
+            ffmpeg_command += output
         return ffmpeg_command
 
     def render_proxy_file(self):
@@ -125,34 +132,39 @@ class Image(Media):
 
     def __init__(self, path_source, options):
         super().__init__(path_source, options)
-        self.path_proxy = self.get_path_proxy(self.path_source)
+        self.paths_proxies = self.get_paths_proxies(self.path_source)
         self.proxy_command = self.get_proxy_command(self.path_source,
-                                                    self.path_proxy)
+                                                    self.paths_proxies)
 
-    def get_path_proxy(self, path):
+    def get_paths_proxies(self, path):
         """
         takes in path to file, returns path the proxy file should be located
         """
         folder, file_name = os.path.split(path)
-        return os.path.join(folder, "BL_proxy", "images",
-                            str(self.options["size"]), file_name + "_proxy.jpg")
+        path_list = []
+        for size_option in self.options["sizes"]:
+            path = os.path.join(folder, "BL_proxy", "images", size_option, file_name + "_proxy.jpg")
+            path_list.append(path)
+        return path_list
 
-    def get_proxy_command(self, path_source, path_proxy):
+    def get_proxy_command(self, path_source, paths_proxies):
         """
         takes in path to file, returns the command for generating the proxy
         """
-        proxy_cmd = [
-            "ffmpeg",
-            "-i",
-            path_source,
-            "-v",
-            "quiet",
-            "-stats",
-            "-f",
-            "apng",
-            "-filter:v",
-            "scale=iw*{size}:ih*{size}".format(size=self.options["size"]/100),
-            "-y",
-            path_proxy,
-        ]
+        commands = []
+        for path in paths_proxies:
+            proxy_cmd = [
+                "ffmpeg",
+                "-i",
+                path_source,
+                "-v",
+                "quiet",
+                "-stats",
+                "-f",
+                "apng",
+                "-filter:v",
+                "scale=iw*{size}:ih*{size}".format(size=self.options["sizes"]/100),
+                "-y",
+                paths_proxies,
+            ]
         return proxy_cmd
