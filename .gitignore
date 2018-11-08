@@ -1,9 +1,12 @@
+*.pyc
 __pycache__
 */__pycache__
 /.vscode
 /_references
 /power-sequencer_updater
 /test-projects
+/utils/shortcuts_docs.json
+/scripts/ShortcutsDocs/shortcuts_docs.json
 
 _addon_linker.py
 readme_tools

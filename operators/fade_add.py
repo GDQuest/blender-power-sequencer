@@ -1,21 +1,25 @@
 import bpy
+
 from .utils.global_settings import SequenceTypes
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 # TODO: Use a handler to auto move the fades with extend
 # and the strips' handles
 class FadeAdd(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/XoUM2vw.gif)
-
-    Animate a strips opacity to zero. By default, the duration of the
-    fade is 0.5 seconds.
+    Animate a strips opacity to zero. By default, the duration of the fade is 0.5 seconds
     """
-    bl_idname = "power_sequencer.fade_add"
-    bl_label = "Fade Strips"
-    bl_description = "Fade left, right or both sides of all selected strips in the VSE"
-
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/XoUM2vw.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Alt F; Fade Right', 'Ctrl F; Fade Left', 'F; Fade Both']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     fade_duration = bpy.props.FloatProperty(
@@ -58,7 +62,9 @@ class FadeAdd(bpy.types.Operator):
         fade_sequence_count = 0
         for s in selection:
 
-            max_value = s.volume if s.type in SequenceTypes.SOUND else s.blend_alpha
+            max_value = (s.volume
+                         if s.type in SequenceTypes.SOUND else
+                         s.blend_alpha)
             if not max_value:
                 max_value = 1.0
 
@@ -83,7 +89,9 @@ class FadeAdd(bpy.types.Operator):
                 fade_fcurve = fcurves.new(
                     data_path=s.path_from_id(fade_curve_type))
 
-            min_length = self.fade_length * 2 if self.fade_type == 'both' else self.fade_length
+            min_length = (self.fade_length * 2
+                          if self.fade_type == 'both' else
+                          self.fade_length)
             if not s.frame_final_duration > min_length:
                 continue
 
@@ -120,7 +128,9 @@ class FadeAdd(bpy.types.Operator):
             raise AttributeError('Missing sequence parameter')
 
         fade_fcurve = None
-        fade_type = 'volume' if sequence.type in SequenceTypes.SOUND else 'blend_alpha'
+        fade_type = ('volume'
+                     if sequence.type in SequenceTypes.SOUND else
+                     'blend_alpha')
         for fc in fcurves:
             if (fc.data_path == 'sequence_editor.sequences_all["' +
                     sequence.name + '"].' + fade_type):
@@ -140,3 +150,4 @@ class FadeAdd(bpy.types.Operator):
         fade_fcurve = self.fade_find_fcurve(sequence)[0]
         if fade_fcurve:
             fcurves.remove(fade_fcurve)
+

@@ -1,15 +1,27 @@
 """
-Find the two closest cuts, trims and deletes all strips above in the range but leaves some margin. Removes the newly formed gap.
+Find the two closest cuts, trims and deletes all strips above in the range but leaves some
+margin. Removes the newly formed gap.
 """
 import bpy
 from math import floor
+
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class TrimToSurroundingCuts(bpy.types.Operator):
-    bl_idname = "power_sequencer.trim_to_surrounding_cuts"
-    bl_label = "Trim To Surrounding Cuts"
-    bl_description = "Trim to surrounding cuts"
+    """
+    Trim to surrounding cuts
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Shift Alt LEFTMOUSE; Trim to surrounding cuts']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     margin = bpy.props.FloatProperty(
@@ -35,7 +47,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         # Convert mouse position to frame, channel
         x, y = context.region.view2d.region_to_view(
             x=event.mouse_region_x, y=event.mouse_region_y)
-        frame, _ = round(x), floor(y)
+        frame, = round(x), floor(y)
 
         left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(
             frame)
@@ -45,8 +57,8 @@ class TrimToSurroundingCuts(bpy.types.Operator):
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
             self.report({'WARNING'},
-                        "The trim margin is larger than the gap \n Use snap trim or reduce the margin"
-                        )
+                        ("The trim margin is larger than the gap\n"
+                         "Use snap trim or reduce the margin"))
             return {'CANCELLED'}
 
         strips_to_delete, strips_to_trim = self.find_strips_in_range(
@@ -92,13 +104,15 @@ class TrimToSurroundingCuts(bpy.types.Operator):
                              sequences=None,
                              find_overlapping=True):
         """
-        Returns strips which start and end within a certain frame range, or that overlap a certain frame range
+        Returns strips which start and end within a certain frame range, or that overlap a
+        certain frame range
         Args:
         - start_frame, the start of the frame range
         - end_frame, the end of the frame range
         - sequences (optional): only work with these sequences.
         If it doesn't receive any, the function works with all the sequences in the current context
-        - find_overlapping (optional): find and return a list of strips that overlap the frame range
+        - find_overlapping (optional): find and return a list of strips that overlap the
+          frame range
 
         Returns a tuple of two lists:
         [0], strips entirely in the frame range
@@ -122,7 +136,8 @@ class TrimToSurroundingCuts(bpy.types.Operator):
 
     def find_closest_surrounding_cuts(self, frame=0):
         """
-        Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts surrounding a frame
+        Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts
+        surrounding a frame
         Args:
         - frame, find the closest cuts that surround this frame
         """
@@ -147,3 +162,4 @@ class TrimToSurroundingCuts(bpy.types.Operator):
                distance_to_start < distance_to_end_cut_frame:
                 end_cut_frame = s.frame_final_start
         return start_cut_frame, end_cut_frame
+

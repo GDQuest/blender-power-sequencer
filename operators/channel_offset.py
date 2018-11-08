@@ -1,11 +1,23 @@
 import bpy
 from operator import attrgetter
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class ChannelOffset(bpy.types.Operator):
-    bl_idname = 'power_sequencer.channel_offset'
-    bl_label = 'Channel Offset'
-    bl_description = 'Move selected strips up or down a channel'
+    """
+    Move selected strip to the nearest open channel above/down
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Alt UP_ARROW; Move to open channel above',
+                      'Alt DOWN_ARROW; Move to open channel above']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     direction = bpy.props.EnumProperty(
@@ -35,3 +47,4 @@ class ChannelOffset(bpy.types.Operator):
                 if (s.channel > 1):
                     s.channel -= 1
         return {'FINISHED'}
+

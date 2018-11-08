@@ -1,8 +1,12 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
+
 class AlignAudios(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/xkBUzDj.gif)
+    *brief* Align two similar audios
+
 
     Attempt alignment between the selected audio strip to the active
     audio strip. The better the correlation, the better the result.
@@ -14,9 +18,15 @@ class AlignAudios(bpy.types.Operator):
     longer to align. To mitigate this issue, analysis will be limited to
     the first 15 minutes of audio at most.
     """
-    bl_idname = "power_sequencer.align_audios"
-    bl_label = "Align Audios"
-    bl_description = "Align two similar audios"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/xkBUzDj.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -71,3 +81,4 @@ class AlignAudios(bpy.types.Operator):
         self.report({"INFO"}, "Alignment score: " + str(round(score, 1)))
 
         return {'FINISHED'}
+

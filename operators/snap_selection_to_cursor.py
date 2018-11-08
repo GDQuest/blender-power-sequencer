@@ -1,13 +1,22 @@
 import bpy
 from operator import attrgetter
-from .utils.global_settings import SequenceTypes
+
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class SnapSelectionToCursor(bpy.types.Operator):
-    """Snap selected strips to the cursor, but as a block"""
-    bl_idname = "power_sequencer.snap_selection_to_cursor"
-    bl_label = "Snap Selection To Cursor"
-    bl_description = "Snap selected strips to the cursor as a block"
+    """
+    Snap selected strips to the cursor as a block
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Alt S; Snap selection to cursor']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -19,8 +28,9 @@ class SnapSelectionToCursor(bpy.types.Operator):
             bpy.context.selected_sequences,
             key=attrgetter('frame_final_start'))
         time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
-        
+
         bpy.ops.power_sequencer.select_related_strips()
         bpy.ops.transform.seq_slide(value=(-time_move, 0))
-        
+
         return {'FINISHED'}
+

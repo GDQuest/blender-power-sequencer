@@ -1,13 +1,21 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class SetTimelineRange(bpy.types.Operator):
     """
     Set the timeline start and end frame using the time cursor
     """
-    bl_idname = "power_sequencer.set_timeline_range"
-    bl_label = "Set Timeline Range"
-    bl_description = "Set timeline start and end frame using the time cursor"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     adjust = bpy.props.EnumProperty(
@@ -27,3 +35,4 @@ class SetTimelineRange(bpy.types.Operator):
         elif self.adjust == 'end':
             scene.frame_end = scene.frame_current - 1
         return {'FINISHED'}
+

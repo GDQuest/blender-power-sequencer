@@ -1,24 +1,30 @@
 import bpy
 from operator import attrgetter
+
 from .utils.find_sequences_after import find_sequences_after
 from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-# TODO: update docstrings
 class CrossfadeAdd(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/ZyEd0jD.gif)
+    *brief* Adds cross fade between selected sequence and the closest sequence to its right
 
-    For each selected strip, finds the next sequence in the channel,
-    optionally moves it next to the first strip, and adds
-    a gamma cross effect between them.
-    Currently works with MOVIE, IMAGE and META strips.
+
+    Based on the active strip, finds the closest next sequence of a similar type, moves it
+    so it overlaps the active strip, and adds a gamma cross effect between them. Works with
+    MOVIE, IMAGE and META strips
     """
-    bl_idname = "power_sequencer.crossfade_add"
-    bl_label = "Add Crossfade"
-    bl_description = ("Adds cross fade between selected sequence and the"
-                      " closest sequence to its right")
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl Alt C; Add Crossfade']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
     crossfade_duration = bpy.props.FloatProperty(

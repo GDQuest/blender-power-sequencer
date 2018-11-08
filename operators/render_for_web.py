@@ -2,11 +2,22 @@ import bpy
 import os
 from bpy.props import BoolProperty, EnumProperty
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class RenderForWeb(bpy.types.Operator):
-    bl_idname = "power_sequencer.render_for_web"
-    bl_label = "Render For Web"
-    bl_description = "Pick a rendering preset and let Blender name and export the video for you. Replaces strips with proxies if necessary."
+    """
+    Render video with good settings for web upload
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Alt F12; Render for web']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER"}
 
     preset = EnumProperty(
@@ -87,3 +98,4 @@ class RenderForWeb(bpy.types.Operator):
                 {'INFO'},
                 'Render settings set to the {!s} preset'.format(self.preset))
         return {"FINISHED"}
+

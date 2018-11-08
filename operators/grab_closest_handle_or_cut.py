@@ -5,15 +5,28 @@ Hover near a cut and use this operator to slide it.
 import bpy
 
 from math import floor
-from operator import attrgetter
 
 from .utils.calculate_distance import calculate_distance
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class GrabClosestCut(bpy.types.Operator):
-    bl_idname = "power_sequencer.grab_closest_cut"
-    bl_label = "Grab Closest Cut"
-    bl_description = "Grab the handles that form the closest cut"
+    """
+    *brief* Grab the handles that form the closest cut
+
+
+    Selects and grabs the strip handle or cut closest to the mouse cursor.
+    Hover near a cut and fire this tool to slide it.
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Shift Alt G;Grab closest handle or cut']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     select_linked = bpy.props.BoolProperty(
@@ -31,12 +44,12 @@ class GrabClosestCut(bpy.types.Operator):
         mouse_x, mouse_y = event.mouse_region_x, event.mouse_region_y
         frame, channel = self.find_cut_closest_to_mouse(mouse_x, mouse_y)
 
-        matching_strips = [
-            s for s in bpy.context.sequences
-            if abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1
-        ]
+        matching_strips = [s for s in bpy.context.sequences
+                           if (abs(s.frame_final_start - frame) <= 1
+                               or abs(s.frame_final_end - frame) <= 1)]
         if not self.select_linked:
-            matching_strips = [s for s in matching_strips if s.channel == channel]
+            matching_strips = [s for s in matching_strips
+                               if s.channel == channel]
         sequencer.select_all(action='DESELECT')
         for s in matching_strips:
             s.select = True
@@ -44,9 +57,9 @@ class GrabClosestCut(bpy.types.Operator):
 
     def find_cut_closest_to_mouse(self, mouse_x, mouse_y):
         """
-        takes the mouse's coordinates in the sequencer area and returns the two strips
-        who share the cut closest to the mouse
-        Use it to find the handle(s) to select with the grab on the fly operator
+        Takes the mouse's coordinates in the sequencer area and returns the two
+        strips who share the cut closest to the mouse. Use it to find the
+        handle(s) to select with the grab on the fly operator
         """
         view2d = bpy.context.region.view2d
 
@@ -77,3 +90,4 @@ class GrabClosestCut(bpy.types.Operator):
         frame, channel = round(closest_cut_local_coords[0]), floor(
             closest_cut_local_coords[1])
         return frame, channel
+

@@ -1,14 +1,21 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class DeselectHandlesAndGrab(bpy.types.Operator):
     """
-    Deselect the handles of all selected strips and call the
-    Sequence Slide operator
+    Deselect the handles of all selected strips and call the Sequence Slide operator
     """
-    bl_idname = 'power_sequencer.deselect_handles_and_grab'
-    bl_label = 'Deselect Handles And Grab'
-    bl_description = "Deselect the handles of all selected strips and call the Sequence Slide operator"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -23,3 +30,4 @@ class DeselectHandlesAndGrab(bpy.types.Operator):
 
         bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
         return {'FINISHED'}
+

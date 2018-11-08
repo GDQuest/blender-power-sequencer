@@ -6,19 +6,30 @@ from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 from .utils.get_frame_range import get_frame_range
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class MouseTrim(bpy.types.Operator):
     """
+    *brief* Trim strip from a start to an end frame
+
+
     Trims a frame range or a selection from a start to an end frame.
     If there's no precise time range, auto trims based on the closest cut
 
     Args:
     - frame_start and frame_end (int) define the frame range to trim
     """
-    bl_idname = "power_sequencer.mouse_trim"
-    bl_label = "Mouse Trim Strips"
-    bl_description = "Trim strip from a start to an end frame"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl Alt RIGHTMOUSE; Trim strip, keep gap',
+                      'Ctrl Alt Shift RIGHTMOUSE; Trim strip, remove gap']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(
@@ -73,7 +84,9 @@ class MouseTrim(bpy.types.Operator):
 
             selection_start, selection_end = get_frame_range(to_select)
             self.frame_start = frame
-            self.frame_end = selection_end if abs(frame - selection_end) <= abs(frame - selection_start) else selection_start
+            self.frame_end = (selection_end
+                              if abs(frame - selection_end) <= abs(frame - selection_start) else
+                              selection_start)
 
         self.to_select = [s for s in to_select if not s.lock]
         trim_strips(self.frame_start, self.frame_end,
@@ -85,3 +98,4 @@ class MouseTrim(bpy.types.Operator):
         else:
             bpy.context.scene.frame_current = self.frame_start if self.frame_start else frame
         return {'FINISHED'}
+

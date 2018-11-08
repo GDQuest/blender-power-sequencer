@@ -1,17 +1,28 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class AddTransform(bpy.types.Operator):
     """
+    *brief* Add transform effect to selected image and movie strips. Auto centers images
+
+
     For each strip in the selection:
 
-    - Filters the selection down to image and movie strips
-    - Centers the pivot point of image strips.
-    - Adds a transform effect and sets it to ALPHA_OVER
+    * Filters the selection down to image and movie strips
+    * Centers the pivot point of image strips
+    * Adds a transform effect and sets it to ALPHA_OVER
     """
-    bl_idname = 'power_sequencer.add_transform'
-    bl_label = 'Add Transform'
-    bl_description = "Add transform effect to selected image and movie strips. Auto centers images"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['T; Add Transform']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -80,3 +91,4 @@ class AddTransform(bpy.types.Operator):
         self.report({"INFO"}, "Successfully processed " + str(len(selection)) +
                     " image sequences")
         return {'FINISHED'}
+

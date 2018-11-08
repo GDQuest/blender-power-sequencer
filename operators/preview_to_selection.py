@@ -1,18 +1,27 @@
 import bpy
+
 from .utils.get_frame_range import get_frame_range
 from .utils.set_preview_range import set_preview_range
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class PreviewToSelection(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/EV1sUrn.gif)
-    
-    Sets the scene frame start to the earliest frame start of selected 
-    sequences and the scene frame end to the last frame of selected sequences.
+    *brief* Sets the timeline preview range to that of the selected sequences
+
+
+    Sets the scene frame start to the earliest frame start of selected sequences and the scene
+    frame end to the last frame of selected sequences.
     """
-    bl_idname = "power_sequencer.preview_to_selection"
-    bl_label = "Preview To Selection"
-    bl_description = "Sets the timeline preview range to that of the selected sequences."
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/EV1sUrn.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl Alt P; Preview to selection']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -32,3 +41,4 @@ class PreviewToSelection(bpy.types.Operator):
 
         set_preview_range(frame_start, frame_end - 1)
         return {'FINISHED'}
+

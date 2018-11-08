@@ -8,19 +8,29 @@ from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 
 from .utils.draw import draw_line, draw_arrow_head
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class MouseCut(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/wVvX4ex.gif)
-    With this function you can quickly cut and remove a section of
-    strips while keeping or collapsing the remaining gap.
+    *brief* Fast strip cutting based on mouse position
+
+
+    With this function you can quickly cut and remove a section of strips while keeping or
+    collapsing the remaining gap.
 
     A [video demo](https://youtu.be/GiLmDhmMVAM?t=1m35s) is available.
     """
-    bl_idname = "power_sequencer.mouse_cut"
-    bl_label = "Mouse Cut"
-    bl_description = "Fast strip cutting based on mouse position"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/wVvX4ex.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl LEFTMOUSE; Cut on mousemove, keep gap',
+                      'Ctrl Shift LEFTMOUSE; Cut on mousemove, remove gap']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     select_mode = EnumProperty(

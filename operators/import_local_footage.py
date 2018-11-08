@@ -4,25 +4,35 @@ import json
 from bpy.props import BoolProperty, IntProperty
 
 from .utils.global_settings import Extensions
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class ImportLocalFootage(bpy.types.Operator):
-    bl_idname = "power_sequencer.import_local_footage"
-    bl_label = "Import Local Footage"
-    bl_description = "Import video and audio from the project folder to VSE strips"
+    """
+    Import video and audio from the project folder to VSE strips
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl Shift I; Import Local Footage']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     SEQUENCER_AREA = None
     import_all = BoolProperty(
         name="Always Reimport",
-        description="If true, always import all local files to new strips. \
-                    If False, only import new files (check if footage has \
-                    already been imported to the VSE).",
+        description=("If true, always import all local files to new strips."
+                     " If False, only import new files (check if footage has"
+                     " already been imported to the VSE)."),
         default=False)
     keep_audio = BoolProperty(
         name="Keep audio from video files",
-        description="If False, the audio that comes with video files \
-                     will not be imported",
+        description=("If False, the audio that comes with video files will"
+                     " not be imported"),
         default=True)
 
     img_length = IntProperty(
@@ -50,6 +60,7 @@ class ImportLocalFootage(bpy.types.Operator):
                 {'ERROR_INVALID_INPUT'},
                 'You need to save your project first. Import cancelled.')
             return {'CANCELLED'}
+
         sequencer = bpy.ops.sequencer
         context = bpy.context
 
@@ -76,7 +87,8 @@ class ImportLocalFootage(bpy.types.Operator):
         imported_videos_have_audio = False
 
         self.warnings = []
-        self.start_fps, self.start_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
+        self.start_fps, self.start_fps_base = (context.scene.render.fps,
+                                               context.scene.render.fps_base)
         if 'audio' in files_to_import.keys():
             imported = self.import_audio(
                 project_directory, files_to_import['audio'], import_channel)
@@ -99,7 +111,8 @@ class ImportLocalFootage(bpy.types.Operator):
         bpy.data.texts['POWER_SEQUENCER_IMPORTS'].from_string(
             json.dumps(local_footage_files))
 
-        self.new_fps, self.new_fps_base = bpy.context.scene.render.fps, bpy.context.scene.render.fps_base
+        self.new_fps, self.new_fps_base = (context.scene.render.fps,
+                                           context.scene.render.fps_base)
 
         if imported_videos_have_audio:
             sequencer.select_all(action='DESELECT')
@@ -108,9 +121,8 @@ class ImportLocalFootage(bpy.types.Operator):
             sequencer.meta_make()
             sequencer.meta_toggle()
 
-            videos_in_meta = [
-                s for s in bpy.context.selected_sequences if s.type == 'MOVIE'
-            ]
+            videos_in_meta = [s for s in context.selected_sequences
+                              if s.type == 'MOVIE']
             for s in videos_in_meta:
                 s.channel += 2
             for s in imported_video_sequences:
@@ -147,7 +159,8 @@ class ImportLocalFootage(bpy.types.Operator):
 
     def draw(self, context):
         start_framerate, new_framerate = 0, 0
-        if self.new_fps != self.start_fps or self.new_fps_base != self.start_fps_base:
+        if self.new_fps != self.start_fps \
+           or self.new_fps_base != self.start_fps_base:
             start_framerate = round(self.start_fps / self.start_fps_base, 2)
             new_framerate = round(self.new_fps / self.new_fps_base, 2)
 
@@ -175,7 +188,8 @@ class ImportLocalFootage(bpy.types.Operator):
 
     def get_sequencer_area(self):
         """
-        Finds and returns the sequencer area to use as a context override in some operators
+        Finds and returns the sequencer area to use as a context override in
+        some operators
         """
         SEQUENCER_AREA = None
         for window in bpy.context.window_manager.windows:
@@ -193,13 +207,18 @@ class ImportLocalFootage(bpy.types.Operator):
     def find_local_footage_files(self, project_directory, folders_to_import,
                                  file_extensions):
         """
-        Walks through a folder relative to the project directory and returns a list of filepaths that match the extensions.
+        Walks through a folder relative to the project directory and returns
+        a list of filepaths that match the extensions.
 
         Args:
-            - project_directory, the absolute path to the folder that contains the .blend file
-            - folders_to_import, a list of folder names to look into, relative to the project_directory
-            - file_extensions is a dict of tuples of extensions with the form "*.ext".
-        Use the Extensions helper class in .functions.global_settings. It gives default extensions to check the files against.
+            - project_directory, the absolute path to the folder that contains
+              the .blend file
+            - folders_to_import, a list of folder names to look into, relative
+              to the project_directory
+            - file_extensions is a dict of tuples of extensions with the
+              form "*.ext".
+        Use the Extensions helper class in .functions.global_settings. It
+        gives default extensions to check the files against.
 
         Returns a dict with the form {
             'video': [relative_path_1, relative_path_2],
@@ -275,12 +294,15 @@ class ImportLocalFootage(bpy.types.Operator):
         Imports a list of files using movie_strip_add
         Checks if the scene's framerate changes after importing the strips
         and if the video and audio strips' lengths are different,
-        in which case it means the framerate is different from the Blender project
+        in which case it means the framerate is different from the Blender
+        project
 
         Returns the list of imported sequences and
         an optional warning message if strips don't follow the project's fps
         """
-        video_import_channel = import_channel + 1 if self.keep_audio else import_channel
+        video_import_channel = (import_channel + 1
+                                if self.keep_audio else
+                                import_channel)
         import_frame = bpy.context.scene.frame_current
 
         imported_sequences, warnings = [], []
@@ -313,7 +335,8 @@ class ImportLocalFootage(bpy.types.Operator):
             if strips_duration_difference == 1:
                 audio_strip.frame_final_end = video_strip.frame_final_end
             # TODO: defer warnings to the end of the operator's code
-            # Return a tuple of video, audio strip so you can compare them later
+            # Return a tuple of video, audio strip so you can compare them
+            # later
             elif strips_duration_difference > 1:
                 warnings.append(bpy.path.basename(video_strip.filepath))
         return imported_sequences, warnings
@@ -353,3 +376,4 @@ class ImportLocalFootage(bpy.types.Operator):
             import_frame += self.img_length + self.img_padding
             new_sequences.extend(bpy.context.selected_sequences)
         return new_sequences
+

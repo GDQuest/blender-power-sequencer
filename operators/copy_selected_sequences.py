@@ -1,20 +1,29 @@
 import bpy
 from operator import attrgetter
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class CopySelectedSequences(bpy.types.Operator):
-
     """
-    ![Demo](https://i.imgur.com/w6z1Jb1.gif)
+    *brief* Copy/cut strips without offset from current time indicator
+
 
     Copies the selected sequences without frame offset and optionally
     deletes the selection to give a cut to clipboard effect. This
     operator overrides the default Blender copy method which includes
     cursor offset when pasting, which is atypical of copy/paste methods.
     """
-    bl_idname = "power_sequencer.copy_selected_sequences"
-    bl_label = "Copy Selected Sequences"
-    bl_description = "Copy/cut strips without offset from current time indicator"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/w6z1Jb1.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': ['Ctrl C; Copy selected strips',
+                      'Ctrl X; Cut selected strips']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     delete_selection = bpy.props.BoolProperty(
@@ -37,7 +46,8 @@ class CopySelectedSequences(bpy.types.Operator):
         scene.use_audio_scrub = False
         context.space_data.proxy_render_size = 'NONE'
 
-        first_sequence = min(context.selection, key=attrgetter('frame_final_start'))
+        first_sequence = min(context.selection,
+                             key=attrgetter('frame_final_start'))
         bpy.context.scene.frame_current = first_sequence.frame_final_start
         sequencer.copy()
         bpy.context.scene.frame_current = cursor_start_frame
@@ -54,3 +64,4 @@ class CopySelectedSequences(bpy.types.Operator):
             action_verb, str(len(context.selection)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
+

@@ -1,11 +1,23 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MarkersCreateFromSelectedStrips(bpy.types.Operator):
-    bl_idname = "power_sequencer.markers_create_from_selected"
-    bl_label = "Markers from Selected Strips"
-    bl_description = "Create one marker at the start on each selected strip, \
-            based on its name. Use it to copy markers as timecodes."
+    """
+    *brief* Create one marker at the start on each selected strip, based on its name.
+
+    Use it to copy markers as timecodes.
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
 
     @classmethod
     def poll(cls, context):
@@ -27,3 +39,4 @@ class MarkersCreateFromSelectedStrips(bpy.types.Operator):
             bpy.ops.marker.move(frames=gap)
             new_marker.select = False
         return {'FINISHED'}
+

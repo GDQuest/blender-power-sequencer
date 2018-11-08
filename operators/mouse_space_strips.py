@@ -1,16 +1,27 @@
 import bpy
 import operator
+
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MouseSpaceStrips(bpy.types.Operator):
     """
-    Offsets all strips to the right of the mouse cursor by a given duration.
+    *brief* Offsets all strips to the right of the mouse cursor by a given duration
+
+
     Default shortcut: <kbd>=</kbd>
     """
-    bl_idname = 'power_sequencer.mouse_space_strips'
-    bl_label = "Space strips after mouse"
-    bl_description = "Offsets all strips to the right of the mouse cursor by a given duration"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     gap_to_insert = bpy.props.FloatProperty(

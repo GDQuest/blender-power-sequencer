@@ -3,12 +3,22 @@ import operator
 import math
 from .utils import pyperclip
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class CopyMarkersAsTimecodes(bpy.types.Operator):
-    bl_idname = "power_sequencer.markers_as_timecode"
-    bl_label = "Markers as Timecodes"
-    bl_description = "Formats and copies all the markers as \
-        timecodes to put in a Youtube video's description"
+    """
+    Formats and copies all the markers as timecodes to put in a Youtube video's description
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': []
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
 
     @classmethod
     def poll(cls, context):
@@ -21,7 +31,8 @@ class CopyMarkersAsTimecodes(bpy.types.Operator):
             self.report({'INFO'}, "No markers found")
             return {'CANCELLED'}
 
-        sorted_markers = sorted(context.scene.timeline_markers, key=operator.attrgetter('frame'))
+        sorted_markers = sorted(context.scene.timeline_markers,
+                                key=operator.attrgetter('frame'))
 
         markers_as_timecodes = ""
         for marker in sorted_markers:
@@ -35,3 +46,4 @@ class CopyMarkersAsTimecodes(bpy.types.Operator):
 
         pyperclip.copy(markers_as_timecodes)
         return {'FINISHED'}
+

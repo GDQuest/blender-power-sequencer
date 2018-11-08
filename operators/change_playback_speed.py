@@ -1,15 +1,24 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class ChangePlaybackSpeed(bpy.types.Operator):
     """
-    Change the playback_speed property using an operator property.
-    Used with keymaps
+    Change the playback_speed property using an operator property. Used with keymaps
     """
-    bl_idname = "power_sequencer.change_playback_speed"
-    bl_label = "Change Playback Speed"
-    bl_description = "Change the playback speed"
-
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': ['ONE; Speed to 1x',
+                      'TWO; Speed to 1.33x',
+                      'THREE; Speed to 1.66x',
+                      'FOUR; Speed to 2x']
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER"}
 
     speed = bpy.props.EnumProperty(
@@ -27,3 +36,4 @@ class ChangePlaybackSpeed(bpy.types.Operator):
     def execute(self, context):
         bpy.context.scene.power_sequencer.playback_speed = self.speed
         return {"FINISHED"}
+
