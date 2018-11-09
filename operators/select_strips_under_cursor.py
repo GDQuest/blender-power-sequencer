@@ -7,19 +7,24 @@ class SelectStripsUnderCursor(bpy.types.Operator):
     bl_description = "Selects the strips that are currently under the time cursor"
     bl_options = {'REGISTER', 'UNDO'}
 
+    locked = bpy.props.BoolProperty(name='Locked')
+
     @classmethod
     def poll(cls, context):
         return len(context.sequences) > 0
-    
+
     def execute(self, context):
+        bpy.ops.sequencer.select_all(action='DESELECT')
         current_frame = context.scene.frame_current
         sequences_to_select = []
         for s in context.sequences:
-            if s.frame_final_start <= current_frame and s.frame_final_end >= current_frame:
+            if s.frame_final_start <= current_frame \
+               and s.frame_final_end >= current_frame \
+               and not s.lock or self.locked:
                 sequences_to_select.append(s)
         if not sequences_to_select:
             return {'CANCELLED'}
         for s in sequences_to_select:
             s.select = True
         return {'FINISHED'}
-        
+

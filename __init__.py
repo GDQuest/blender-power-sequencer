@@ -69,6 +69,7 @@ addon_keymaps = []
 
 
 def register():
+    global addon_keymaps
     addon_updater_ops.register(bl_info)
 
     try:
@@ -76,8 +77,8 @@ def register():
     except:
         traceback.print_exc()
 
-    keymap = register_shortcuts()
-    addon_keymaps.append(keymap)
+    keymaps = register_shortcuts()
+    addon_keymaps += keymaps
     print(addon_keymaps)
 
     bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(
@@ -89,6 +90,7 @@ def register():
 
 
 def unregister():
+    global addon_keymaps
     addon_updater_ops.unregister()
 
     wm = bpy.context.window_manager
