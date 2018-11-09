@@ -9,6 +9,7 @@ from .copy_selected_sequences import CopySelectedSequences
 from .crossfade_add import CrossfadeAdd
 from .crossfade_edit import CrossfadeEdit
 from .crossfade_remove import CrossfadeRemove
+from .cut_strips_under_cursor import CutStripsUnderCursor
 from .decrease_playback_speed import DecreasePlaybackSpeed
 from .delete_direct import DeleteDirect
 from .deselect_all_left_or_right import DeselectAllStripsLeftOrRight
@@ -18,7 +19,7 @@ from .fade_add import FadeAdd
 from .fade_clear import FadeClear
 from .grab_closest_handle_or_cut import GrabClosestCut
 from .grab import Grab
-from .grab_sequences_handles import GrabSequenceHandles
+from .grab_sequence_handles import GrabSequenceHandles
 from .import_local_footage import ImportLocalFootage
 from .increase_playback_speed import IncreasePlaybackSpeed
 from .jump_time_offset import JumpTimeOffset
