@@ -17,7 +17,12 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Shift Alt LEFTMOUSE; Trim to surrounding cuts']
+        'shortcuts': [
+            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'shift': True, 'alt': True},
+             {},
+             'Trim to Surrounding Cuts')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

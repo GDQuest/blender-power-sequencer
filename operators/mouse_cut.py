@@ -25,8 +25,15 @@ class MouseCut(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/wVvX4ex.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl LEFTMOUSE; Cut on mousemove, keep gap',
-                      'Ctrl Shift LEFTMOUSE; Cut on mousemove, remove gap']
+        'shortcuts': [
+            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True},
+             {'remove_gaps': False},
+             'Cut on mousemove, keep gap'),
+            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
+             {'remove_gaps': True},
+             'Cut on mousemove, remove gap'),
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

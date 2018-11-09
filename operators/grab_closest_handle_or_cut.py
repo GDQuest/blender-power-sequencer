@@ -22,7 +22,12 @@ class GrabClosestCut(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Shift Alt G;Grab closest handle or cut']
+        'shortcuts': [
+            ({'type': 'G', 'value': 'PRESS', 'shift': True, 'alt': True},
+             {},
+             'Grab closest handle or cut')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

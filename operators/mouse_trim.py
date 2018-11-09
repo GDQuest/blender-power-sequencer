@@ -24,8 +24,15 @@ class MouseTrim(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Alt RIGHTMOUSE; Trim strip, keep gap',
-                      'Ctrl Alt Shift RIGHTMOUSE; Trim strip, remove gap']
+        'shortcuts': [
+            ({'type': 'SELECTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True},
+             {'select_mode': 'smart'},
+             'Trim strip, keep gap'),
+            ({'type': 'SELECTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True, 'shift': True},
+             {'select_mode': 'cursor'},
+             'Trim strip, remove gap')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

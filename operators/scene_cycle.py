@@ -11,7 +11,10 @@ class SceneCycle(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/7zhq8Tg.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Shift TAB; Cycle scenes']
+        'shortcuts': [
+            ({'type': 'TAB', 'value': 'PRESS', 'shift': True}, {}, 'Cycle Scenes')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

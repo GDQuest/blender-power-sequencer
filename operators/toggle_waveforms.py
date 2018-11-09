@@ -15,7 +15,10 @@ class ToggleWaveforms(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/HJ5ryhv.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt W; Toggle waveforms']
+        'shortcuts': [
+            ({'type': 'W', 'value': 'PRESS', 'alt': True}, {}, 'Toggle Waveforms')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']
@@ -49,10 +52,12 @@ class ToggleWaveforms(bpy.types.Operator):
         show_waveform = None
         if self.mode == 'auto':
             from operator import attrgetter
-            show_waveform = not sorted(sequences, key=attrgetter('frame_final_start'))[0].show_waveform
+            show_waveform = not sorted(sequences,
+                                       key=attrgetter('frame_final_start'))[0].show_waveform
         else:
             show_waveform = True if self.mode == 'on' else False
 
         for s in sequences:
             s.show_waveform = show_waveform
         return {'FINISHED'}
+

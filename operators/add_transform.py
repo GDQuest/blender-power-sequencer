@@ -18,7 +18,10 @@ class AddTransform(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['T; Add Transform']
+        'shortcuts': [
+            ({'type': 'T', 'value': 'PRESS'}, {}, 'Add Transform')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

@@ -17,7 +17,10 @@ class MouseSpaceStrips(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': []
+        'shortcuts': [
+            ({'type': 'EQUAL', 'value': 'PRESS'}, {}, '')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']
@@ -47,3 +50,4 @@ class MouseSpaceStrips(bpy.types.Operator):
         for s in sorted_strips:
             s.frame_start += gap_frames
         return {'FINISHED'}
+

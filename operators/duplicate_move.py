@@ -13,7 +13,11 @@ class DuplicateMove(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': []
+        'shortcuts': [
+            ({'type': 'D', 'value': 'PRESS'}, {}, 'Duplicate Move'),
+            ({'type': 'D', 'value': 'PRESS', 'shift': True}, {}, 'Duplicate Move')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

@@ -17,7 +17,10 @@ class CrossfadeEdit(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/rCmLhg6.gif',
         'description': doc_description(__doc__),
-        'shortcuts': []
+        'shortcuts': [
+            ({'type': 'C', 'value': 'PRESS', 'alt': True}, {}, 'Edit Crossfade')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

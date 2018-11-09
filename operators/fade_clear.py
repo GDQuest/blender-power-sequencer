@@ -11,7 +11,10 @@ class FadeClear(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Alt F; Clear fades']
+        'shortcuts': [
+            ({'type': 'F', 'value': 'PRESS', 'alt': True, 'ctrl': True}, {}, 'Clear Fades')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

@@ -12,7 +12,11 @@ class DeleteDirect(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['X; Delete direct', 'DEL; Delete direct']
+        'shortcuts': [
+            ({'type': 'X', 'value': 'PRESS'}, {}, 'Delete Direct'),
+            ({'type': 'DEL', 'value': 'PRESS'}, {}, 'Delete Direct')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

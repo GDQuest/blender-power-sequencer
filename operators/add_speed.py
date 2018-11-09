@@ -18,7 +18,10 @@ class AddSpeed(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/ZyEd0jD.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Alt C; Add Crossfade']
+        'shortcuts': [
+            ({'type': 'PLUS', 'value': 'PRESS', 'shift': True}, {}, 'Add Speed')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

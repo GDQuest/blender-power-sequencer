@@ -13,7 +13,14 @@ class RenderForWeb(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt F12; Render for web']
+        'shortcuts': [
+            ({'type': 'F12', 'value': 'PRESS', 'alt': True},
+             {'preset': 'youtube',
+              'name_pattern': 'scene',
+              'auto_render': True},
+             'Render for Web')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

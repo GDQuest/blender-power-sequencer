@@ -11,10 +11,13 @@ class ChangePlaybackSpeed(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['ONE; Speed to 1x',
-                      'TWO; Speed to 1.33x',
-                      'THREE; Speed to 1.66x',
-                      'FOUR; Speed to 2x']
+        'shortcuts': [
+            ({'type': 'ONE', 'value': 'PRESS'}, {'speed': 'normal'}, 'Speed to 1x'),
+            ({'type': 'TWO', 'value': 'PRESS'}, {'speed': 'fast'}, 'Speed to 1.33x'),
+            ({'type': 'THREE', 'value': 'PRESS'}, {'speed': 'faster'}, 'Speed to 1.66x'),
+            ({'type': 'FOUR', 'value': 'PRESS'}, {'speed': 'double'}, 'Speed to 2x'),
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

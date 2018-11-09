@@ -15,7 +15,12 @@ class ImportLocalFootage(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Shift I; Import Local Footage']
+        'shortcuts': [
+            ({'type': 'I', 'value': 'PRESS', 'ctrl': True},
+             {'keep_audio': True},
+             'Import Local Footage')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

@@ -15,7 +15,12 @@ class FadeAdd(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/XoUM2vw.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt F; Fade Right', 'Ctrl F; Fade Left', 'F; Fade Both']
+        'shortcuts': [
+            ({'type': 'F', 'value': 'PRESS', 'alt': True}, {'fade_type': 'right'}, 'Fade Right'),
+            ({'type': 'F', 'value': 'PRESS', 'ctrl': True}, {'fade_type': 'left'}, 'Fade Left'),
+            ({'type': 'F', 'value': 'PRESS'}, {'fade_type': 'both'}, 'Fade Both')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

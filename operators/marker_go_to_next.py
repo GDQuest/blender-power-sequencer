@@ -1,6 +1,6 @@
 import bpy
-from .utils.find_neighboring_markers import find_neighboring_markers
 
+from .utils.find_neighboring_markers import find_neighboring_markers
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
@@ -12,7 +12,8 @@ class MarkerGoToNext(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': []
+        'shortcuts': [],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

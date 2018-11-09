@@ -20,7 +20,10 @@ class CrossfadeAdd(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/ZyEd0jD.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Alt C; Add Crossfade']
+        'shortcuts': [
+            ({'type': 'C', 'value': 'PRESS', 'ctrl': True, 'alt': True}, {}, 'Add Crossfade')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

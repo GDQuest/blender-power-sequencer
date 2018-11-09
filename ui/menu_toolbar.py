@@ -66,7 +66,7 @@ class PowerSequencer_MT_strips_speed (bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         layout.operator("power_sequencer.add_speed")
-        layout.operator("power_sequencer.unspeed")
+        layout.operator("power_sequencer.speed_remove_effect")
 
 
 class PowerSequencer_MT_strips_fades (bpy.types.Menu):
@@ -98,7 +98,7 @@ class PowerSequencer_MT_deselect(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.deselect_all_left_or_right")
+        layout.operator("power_sequencer.deselect_all_strips_left_or_right")
         layout.operator("power_sequencer.deselect_handles_and_grab")
 
 
@@ -153,7 +153,7 @@ class PowerSequencer_MT_markers(bpy.types.Menu):
         layout.separator()
 
         layout.operator("power_sequencer.go_to_next_marker", icon='TRIA_RIGHT_BAR')
-        layout.operator("power_sequencer.markers_as_timecode")
+        layout.operator("power_sequencer.copy_markers_as_timecodes")
         layout.operator("power_sequencer.snap_marker_to_cursor")
         layout.operator("power_sequencer.set_preview_between_markers")
         layout.operator("power_sequencer.markers_snap_matching_strips", icon='NLA')

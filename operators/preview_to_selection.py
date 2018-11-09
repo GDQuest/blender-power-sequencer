@@ -17,7 +17,12 @@ class PreviewToSelection(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/EV1sUrn.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl Alt P; Preview to selection']
+        'shortcuts': [
+            ({'type': 'P', 'value': 'PRESS', 'ctrl': True, 'alt': True},
+             {},
+             'Preview To Selection')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

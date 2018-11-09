@@ -11,7 +11,11 @@ class SmartSnap(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl K; Smart snap']
+        'shortcuts': [
+            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'right'}, 'Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'left'}, 'Smart Snap Left')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

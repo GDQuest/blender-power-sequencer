@@ -19,7 +19,15 @@ class JumpTimeOffset(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': []
+        'shortcuts': [
+            ({'type': 'RIGHT_ARROW', 'value': 'PRESS', 'shift': True},
+             {'direction': 'forward'},
+             'Jump Forward'),
+            ({'type': 'LEFT_ARROW', 'value': 'PRESS', 'shift': True},
+             {'direction': 'backward'},
+             'Jump Backward')
+        ],
+        'keymap': 'Frames'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

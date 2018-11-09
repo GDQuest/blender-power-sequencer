@@ -11,7 +11,15 @@ class ToggleSelectedMute(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['H;Mute or unmute selected strip']
+        'shortcuts': [
+            ({'type': 'H', 'value': 'PRESS'},
+             {'use_unselected': False},
+             'Mute or Unmute Selected Strips'),
+            ({'type': 'H', 'value': 'PRESS', 'alt': True},
+             {'use_unselected': True},
+             'Mute or Unmute Selected Strips')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

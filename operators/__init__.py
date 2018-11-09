@@ -68,8 +68,11 @@ doc = {
     'sequencer.refresh_all': {
         'name': 'Refresh All',
         'description': '',
-        'shortcuts': ['Shift R; Refresh All'],
-        'demo': ''
+        'shortcuts': [
+            ({'type': 'R', 'value': 'PRESS', 'shift': True}, {}, 'Refresh All')
+        ],
+        'demo': '',
+        'keymap': 'Sequencer'
     }
 }
 

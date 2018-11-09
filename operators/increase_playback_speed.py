@@ -23,7 +23,10 @@ class IncreasePlaybackSpeed(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['RIGHT_BRACKET; Increase playback speed']
+        'shortcuts': [
+            ({'type': 'RIGHT_BRACKET', 'value': 'PRESS'}, {}, 'Increase playback speed')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

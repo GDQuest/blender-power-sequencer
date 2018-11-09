@@ -18,8 +18,15 @@ class CopySelectedSequences(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/w6z1Jb1.gif',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl C; Copy selected strips',
-                      'Ctrl X; Cut selected strips']
+        'shortcuts': [
+            ({'type': 'C', 'value': 'PRESS', 'ctrl': True},
+             {'delete_selection': False},
+             'Copy Selected Strips'),
+            ({'type': 'X', 'value': 'PRESS', 'ctrl': True},
+             {'delete_selection': True},
+             'Cut Selected Strips')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

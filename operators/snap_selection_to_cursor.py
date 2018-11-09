@@ -12,7 +12,10 @@ class SnapSelectionToCursor(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt S; Snap selection to cursor']
+        'shortcuts': [
+            ({'type': 'S', 'value': 'PRESS', 'alt': True}, {}, 'Snap selection to cursor')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

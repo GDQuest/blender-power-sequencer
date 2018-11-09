@@ -11,10 +11,8 @@ def find_sequences_before(strip):
     """
     Returns a list of sequences that are before the strip in the current context
     """
-    return [
-        s for s in bpy.context.sequences
-        if s.frame_final_end <= strip.frame_final_start
-    ]
+    return [s for s in bpy.context.sequences
+            if s.frame_final_end <= strip.frame_final_start]
 
 
 class ConcatenateStrips(bpy.types.Operator):
@@ -29,16 +27,26 @@ class ConcatenateStrips(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/YyEL8YP.gif',
         'description': doc_description(__doc__),
-        'shortcuts': [('C; Concatenate selected strips in channel, or'
-                       ' concatenate & select next strip in channel if only'
-                       ' 1 strip selected'),
-                      'Shift C; Concatenate all strips in selected channels',
-                      ('Alt C; Concatenate selected strips in channel'
-                       ' towards the right, or concatenate and select'
-                       ' the previous strip in the channel if only 1'
-                       ' strip selected'),
-                      ('Shift Alt C; Concatenate all strips in channel'
-                       ' towards the right')]
+        'shortcuts': [
+            ({'type': 'C', 'value': 'PRESS'},
+             {'concatenate_all': False},
+             ('Concatenate selected strips in channel, or'
+              ' concatenate & select next strip in channel if only'
+              ' 1 strip selected')),
+            ({'type': 'C', 'value': 'PRESS', 'shift': True},
+             {'concatenate_all': True},
+             'Concatenate all strips in selected channels'),
+            ({'type': 'C', 'value': 'PRESS', 'alt': True},
+             {'concatenate_all': False, 'direction': 'right'},
+             ('Concatenate selected strips in channel'
+              ' towards the right, or concatenate and select'
+              ' the previous strip in the channel if only 1'
+              ' strip selected')),
+            ({'type': 'C', 'value': 'PRESS', 'shift': True, 'alt': True},
+             {'concatenate_all': True, 'direction': 'right'},
+             'Shift Alt C; Concatenate all strips in channel towards the right')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

@@ -23,7 +23,10 @@ class DecreasePlaybackSpeed(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['LEFT_BRACKET; Decrease Playback Speed']
+        'shortcuts': [
+            ({'type': 'LEFT_BRACKET', 'value': 'PRESS'}, {}, 'Decrease Playback Speed')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

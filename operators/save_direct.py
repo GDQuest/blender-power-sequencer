@@ -11,7 +11,10 @@ class SaveDirect(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Ctrl S; Save direct']
+        'shortcuts': [
+            ({'type': 'S', 'value': 'PRESS', 'ctrl': True}, {}, 'Direct Save')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

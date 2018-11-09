@@ -12,8 +12,15 @@ class ChannelOffset(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt UP_ARROW; Move to open channel above',
-                      'Alt DOWN_ARROW; Move to open channel above']
+        'shortcuts': [
+            ({'type': 'UP_ARROW', 'value': 'PRESS', 'alt': True},
+             {'direction': 'up'},
+             'Move to Open Channel Above'),
+            ({'type': 'DOWN_ARROW', 'value': 'PRESS', 'alt': True},
+             {'direction': 'down'},
+             'Move to Open Channel Below')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']

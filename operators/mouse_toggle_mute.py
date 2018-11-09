@@ -14,7 +14,10 @@ class MouseToggleMute(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': ['Alt LEFTMOUSE; Mouse toggle mute']
+        'shortcuts': [
+            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'alt': True}, {}, 'Mouse Toggle Mute')
+        ],
+        'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']
@@ -43,3 +46,4 @@ class MouseToggleMute(bpy.types.Operator):
         for s in to_select:
             s.mute = not s.mute
         return {"FINISHED"}
+
