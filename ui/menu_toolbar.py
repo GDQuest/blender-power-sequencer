@@ -96,6 +96,7 @@ class PowerSequencer_MT_select(bpy.types.Menu):
         
         layout.separator()
         
+        layout.operator('powersequencer.select_channel')
         layout.operator('power_sequencer.select_playing')
         layout.operator('power_sequencer.select_left_right')
         layout.operator('power_sequencer.select_handles')
