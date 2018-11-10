@@ -2,7 +2,7 @@ import bpy
 
 ### Select Operator for shorcut settings
 class SelectByChannel(bpy.types.Operator):
-    bl_idname = "power_sequencer.select_channel"
+    bl_idname = "powersequencer.select_channel"
     bl_label = "Select Channel"
     bl_description = "Select or Deselect entire VSE channel"
     bl_options = {"REGISTER", "UNDO"}
@@ -20,7 +20,7 @@ class SelectByChannel(bpy.types.Operator):
     
 ### Selection menu
 class SelectByChannelMenu(bpy.types.Operator):
-    bl_idname = "power_sequencer.select_channel_menu"
+    bl_idname = "powersequencer.select_channel_menu"
     bl_label = "Select Channel"
     bl_description = "Select or Deselect entire VSE channel"
     bl_options = {"REGISTER", "UNDO"}
