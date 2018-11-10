@@ -9,6 +9,7 @@ from . import addon_updater_ops
 class ProxyPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
     video_export_path = StringProperty(
+        subtype="DIR_PATH",
         name="Video render folder",
         description="Relative folder to save videos rendered with the add-on",
         default="")
