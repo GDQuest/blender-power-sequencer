@@ -18,36 +18,6 @@ class SelectByChannel(bpy.types.Operator):
         FuncSelectByChannel(self.add, self.channel)
         return {"FINISHED"}
     
-### Selection menu
-class SelectByChannelMenu(bpy.types.Operator):
-    bl_idname = "powersequencer.select_channel_menu"
-    bl_label = "Select Channel"
-    bl_description = "Select or Deselect entire VSE channel"
-    bl_options = {"REGISTER", "UNDO"}
-    
-    add=bpy.props.BoolProperty()
-    channel=bpy.props.IntProperty(min=1, max=32)
-
-    @classmethod
-    def poll(cls, context):
-        return bpy.context.area.type=='SEQUENCE_EDITOR' and bpy.context.scene.sequence_editor is not None
-    
-    def invoke(self, context, event):
-        wm = context.window_manager
-        return wm.invoke_props_dialog(self, width=300, height=100)
-    
-    def check(self, context):
-        return True
-    
-    def draw(self, context):
-        layout = self.layout
-        layout.prop(self, 'add')
-        layout.prop(self, 'channel')
-
-    def execute(self, context):
-        FuncSelectByChannel(self.add, self.channel)
-        return {"FINISHED"}
-    
 # select by channel function
 def FuncSelectByChannel(add, channel):
     scn=bpy.context.scene
