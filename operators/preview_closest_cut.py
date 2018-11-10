@@ -1,18 +1,31 @@
 import bpy
+
 from .utils.get_frame_range import get_frame_range
 from .utils.set_preview_range import set_preview_range
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class PreviewClosestCut(bpy.types.Operator):
     """
-    Finds the closest cut to the time cursor and
-    sets the preview to a small range around that frame.
-    If the preview matches the range, resets to the full timeline
+    *brief* Toggle preview around the closest cut, based on time cursor
+
+
+    Finds the closest cut to the time cursor and sets the preview to a small range around that
+    frame. If the preview matches the range, resets to the full timeline
     """
-    bl_idname = 'power_sequencer.preview_closest_cut'
-    bl_label = "Preview Closest Cut"
-    bl_description = "Toggle preview around the closest cut, based on time cursor"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'P', 'value': 'PRESS', 'shift': True}, {}, 'Preview Last Cut')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     duration = bpy.props.FloatProperty(
@@ -29,14 +42,14 @@ class PreviewClosestCut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.sequences) > 0
+        return len(context.sequences) > 0
 
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
 
-        preview_center = self.find_closest_cut_frame(context) \
-                        if not self.cut_frame_override \
-                        else self.cut_frame_override
+        preview_center = (self.find_closest_cut_frame(context)
+                          if not self.cut_frame_override else
+                          self.cut_frame_override)
 
         duration_frame = convert_duration_to_frames(self.duration)
         start = preview_center - duration_frame / 2
@@ -60,3 +73,4 @@ class PreviewClosestCut(bpy.types.Operator):
                     last_distance = distance_to_cut
                     closest_cut_frame = cut_frame
         return closest_cut_frame
+

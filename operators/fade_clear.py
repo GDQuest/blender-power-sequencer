@@ -1,24 +1,33 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class FadeClear(bpy.types.Operator):
     """
-    For each selected strip, set opacity to 1.0 and remove any
-    opacity-keyframes.
+    Set strip opacity to 1.0 and remove all opacity-keyframes
     """
-    bl_idname = "power_sequencer.fade_clear"
-    bl_label = "Clear Fades"
-    bl_description = "Set selected strips' opacity to 1.0 and remove opacity keyframes"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'F', 'value': 'PRESS', 'alt': True, 'ctrl': True}, {}, 'Clear Fades')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
     def poll(cls, context):
-        return context.scene.sequence_editor and len(context.selected_sequences) > 0
+        return (context.scene.sequence_editor
+                and len(context.selected_sequences) > 0)
 
     def execute(self, context):
-        sequence_editor = context.scene.sequence_editor
         selected = context.selected_sequences
-        fc = context.scene.animation_data.action.fcurves
         fcurves = context.scene.animation_data.action.fcurves
 
         for strip in selected:
@@ -29,3 +38,4 @@ class FadeClear(bpy.types.Operator):
                 if strip == eval(curve.data_path.replace('.blend_alpha', '')):
                     fcurves.remove(curve)
         return {'FINISHED'}
+

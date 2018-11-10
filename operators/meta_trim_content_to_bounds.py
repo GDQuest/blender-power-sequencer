@@ -1,11 +1,23 @@
 import bpy
 from .utils.global_settings import SequenceTypes
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MetaTrimContentToBounds(bpy.types.Operator):
-    bl_idname = "power_sequencer.meta_trim_content_to_bounds"
-    bl_label = "Meta Trim Content to Bounds"
-    bl_description = "Deletes and trims the strips inside selected meta-strips to the meta strip's bounds"
+    """
+    Deletes and trims the strips inside selected meta-strips to the meta strip's bounds
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -36,3 +48,4 @@ class MetaTrimContentToBounds(bpy.types.Operator):
             s.select = True
         bpy.ops.sequencer.delete()
         return {'FINISHED'}
+

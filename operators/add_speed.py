@@ -1,20 +1,31 @@
 import bpy
-from operator import attrgetter
+
 from .utils.global_settings import SequenceTypes
 from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.find_linked_sequences import find_linked
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class AddSpeed(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/lheIZzA.gif)
+    *brief* Add 2x speed, set frame end, wrap both into META
 
-    Add 2x speed to strip and set it's frame end accordingly.
-    Wraps both the strip and the speed modifier into a META strip.
+
+    Add 2x speed to strip and set it's frame end  accordingly.  Wraps both the strip and the speed
+    modifier into a META strip.
     """
-    bl_idname = "power_sequencer.add_speed"
-    bl_label = "Add Speed"
-    bl_description = "Add 2x speed, set frame end, wrap both into META"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'PLUS', 'value': 'PRESS', 'shift': True}, {}, 'Add Speed')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
     speed_factor = bpy.props.IntProperty(
@@ -58,9 +69,9 @@ class AddSpeed(bpy.types.Operator):
                 if s.type in SequenceTypes.EFFECT:
                     self.report(
                         {"ERROR_INVALID_INPUT"},
-                        "Can't speed up individual sequences if effect strips \
-                    are selected. Please only select VIDEO or META strips. \
-                    Operation cancelled")
+                        ("Can't speed up individual sequences if effect strips"
+                         " are selected. Please only select VIDEO or META strips."
+                         " Operation cancelled"))
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
@@ -107,3 +118,4 @@ class AddSpeed(bpy.types.Operator):
         self.report({"INFO"}, "Successfully processed " +
                     str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}
+

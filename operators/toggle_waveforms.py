@@ -1,17 +1,28 @@
 import bpy
+
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class ToggleWaveforms(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/HJ5ryhv.gif)
-    
-    Toggle drawing of waveforms for selected strips or for all audio 
-    strips if no selection is active.
+    *brief* Toggle audio waveforms
+
+    Toggle drawing of waveforms for selected strips or for all audio strips if no selection
+    is active.
     """
-    bl_idname = 'power_sequencer.toggle_waveforms'
-    bl_label = 'Toggle Waveforms'
-    bl_description = "Toggle audio waveforms"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/HJ5ryhv.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'W', 'value': 'PRESS', 'alt': True}, {}, 'Toggle Waveforms')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     mode = bpy.props.EnumProperty(
@@ -41,10 +52,12 @@ class ToggleWaveforms(bpy.types.Operator):
         show_waveform = None
         if self.mode == 'auto':
             from operator import attrgetter
-            show_waveform = not sorted(sequences, key=attrgetter('frame_final_start'))[0].show_waveform
+            show_waveform = not sorted(sequences,
+                                       key=attrgetter('frame_final_start'))[0].show_waveform
         else:
             show_waveform = True if self.mode == 'on' else False
 
         for s in sequences:
             s.show_waveform = show_waveform
         return {'FINISHED'}
+

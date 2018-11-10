@@ -1,13 +1,27 @@
 """Toggle mute a sequence as you click on it"""
 import bpy
 from math import floor
+
 from .utils.find_strips_mouse import find_strips_mouse
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class MouseToggleMute(bpy.types.Operator):
-    bl_idname = "power_sequencer.mouse_toggle_mute"
-    bl_label = "Mouse Toggle Mute"
-    bl_description = "Toggle mute status of clicked strips"
+    """
+    Toggle mute a sequence as you click on it
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'alt': True}, {}, 'Mouse Toggle Mute')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -32,3 +46,4 @@ class MouseToggleMute(bpy.types.Operator):
         for s in to_select:
             s.mute = not s.mute
         return {"FINISHED"}
+

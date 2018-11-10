@@ -1,16 +1,28 @@
 import bpy
 import operator
+
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class MakeStillImage(bpy.types.Operator):
     """
-    Converts image under the cursor to a still image, to create
-    a pause effect in the video, using the active sequence
+    *brief* Make still image from active strip
+
+
+    Converts image under the cursor to a still image, to create a pause effect in the video,
+    using the active sequence
     """
-    bl_idname = "power_sequencer.make_still_image"
-    bl_label = "Make Still Image"
-    bl_description = "Make still image from active strip"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     gap_to_duration = bpy.props.BoolProperty(
@@ -52,15 +64,16 @@ class MakeStillImage(bpy.types.Operator):
             scene.frame_current = start_frame + 1
 
         if self.gap_to_duration:
-            strips = sorted(scene.sequence_editor.sequences, key=operator.attrgetter('frame_final_start'))
+            strips = sorted(scene.sequence_editor.sequences,
+                            key=operator.attrgetter('frame_final_start'))
 
             for s in strips:
-                if s.frame_final_start > active.frame_final_start and s.channel == active.channel:
+                if s.frame_final_start > active.frame_final_start \
+                   and s.channel == active.channel:
                     next = s
                     break
 
             offset = next.frame_final_start - active.frame_final_end
-
 
         active.select = True
         source_blend_type = active.blend_type
@@ -71,7 +84,7 @@ class MakeStillImage(bpy.types.Operator):
         transform.seq_slide(value=(-offset, 0))
 
         if not self.gap_to_duration:
-            sequencer.gap_insert(frames = offset)
+            sequencer.gap_insert(frames=offset)
 
         sequencer.meta_make()
         active = scene.sequence_editor.active_strip
@@ -86,3 +99,4 @@ class MakeStillImage(bpy.types.Operator):
         active.select_right_handle = False
         active.select_left_handle = False
         return {"FINISHED"}
+

@@ -1,16 +1,27 @@
 import bpy
-from operator import attrgetter
+
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class SelectRelatedStrips(bpy.types.Operator):
     """
-    Find and select effects related to the selection,
-    but also inputs of selected effects. This helps to then copy
-    or duplicate strips with all attached effects.
+    *brief* Find and select all strips related to the selection
+
+
+    Find and select effects related to the selection, but also inputs of selected effects.
+    This helps to then copy or duplicate strips with all attached effects.
     """
-    bl_idname = 'power_sequencer.select_related_strips'
-    bl_label = 'Select Related Strips'
-    bl_description = "Find and select all strips related to the selection"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     find_all = bpy.props.BoolProperty(

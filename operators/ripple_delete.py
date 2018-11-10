@@ -1,14 +1,28 @@
 import bpy
 from operator import attrgetter
+
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.get_frame_range import get_frame_range
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class RippleDelete(bpy.types.Operator):
-    bl_idname = 'power_sequencer.ripple_delete'
-    bl_label = 'Ripple Delete'
-    bl_description = 'Delete the selected sequences and remove gaps'
+    """
+    Delete selected strips and collapse remaining gaps
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'X', 'value': 'PRESS', 'shift': True}, {}, 'Ripple Delete')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -91,3 +105,4 @@ class RippleDelete(bpy.types.Operator):
             bpy.context.scene.use_audio_scrub = audio_scrub
 
         return {'FINISHED'}
+

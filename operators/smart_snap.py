@@ -1,13 +1,25 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class SmartSnap(bpy.types.Operator):
     """
     Trims, extends and snaps selected strips to cursor
     """
-    bl_idname = "power_sequencer.smart_snap"
-    bl_label = "Smart Snap Strip Handles"
-    bl_description = "Trims, extends, and snaps selected strips to cursor"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'right'}, 'Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'left'}, 'Smart Snap Left')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     side = bpy.props.EnumProperty(
@@ -53,3 +65,4 @@ class SmartSnap(bpy.types.Operator):
                 s.select = False
             if handle_side:
                 bpy.ops.sequencer.select_handles(side=handle_side)
+

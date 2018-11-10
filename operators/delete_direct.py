@@ -1,13 +1,26 @@
 import bpy
-from .utils.global_settings import SequenceTypes
+
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class DeleteDirect(bpy.types.Operator):
-    """Deletes without prompting for confirmation"""
-    bl_idname = "power_sequencer.delete_direct"
-    bl_label = "Delete Direct"
-    bl_description = "Delete without confirmation"
+    """
+    Delete without confirmation. Replaces default Blender setting
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'X', 'value': 'PRESS'}, {}, 'Delete Direct'),
+            ({'type': 'DEL', 'value': 'PRESS'}, {}, 'Delete Direct')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -17,7 +30,8 @@ class DeleteDirect(bpy.types.Operator):
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(event)
         if not context.selected_sequences:
-            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame,
+                                                            channel=channel)
         return self.execute(context)
 
     def execute(self, context):
@@ -30,3 +44,4 @@ class DeleteDirect(bpy.types.Operator):
         report_message += 's' if len(selection) > 1 else ''
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
+

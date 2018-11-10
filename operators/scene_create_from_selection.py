@@ -1,13 +1,27 @@
 import bpy
 from operator import attrgetter
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
+
 class SceneCreateFromSelection(bpy.types.Operator):
     """
-    Convert selected strips in a scene strip
+    *brief* Convert selected strips into a scene strip
+
+
+    Create a scene from the selected sequences, copying the current scene's settings, and
+    replace the selection with the newly created scene as a strip
     """
-    bl_idname = 'power_sequencer.scene_create_from_selection'
-    bl_label = 'Scene Create From Selection'
-    bl_description = "Create a scene from the selected sequences, copying the current scene's settings, and replace the selection with the newly created scene as a strip"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     move_to_first_frame = bpy.props.BoolProperty(
@@ -15,6 +29,7 @@ class SceneCreateFromSelection(bpy.types.Operator):
         description="The strips will start at frame 1 on the new scene",
         default=True
     )
+
     @classmethod
     def poll(cls, context):
         return len(context.selected_sequences) > 0
@@ -23,7 +38,8 @@ class SceneCreateFromSelection(bpy.types.Operator):
         start_scene_name = context.scene.name
 
         selection = bpy.context.selected_sequences
-        selection_start_frame = min(selection, key=attrgetter('frame_final_start')).frame_final_start
+        selection_start_frame = min(selection,
+                                    key=attrgetter('frame_final_start')).frame_final_start
         selection_start_channel = min(selection, key=attrgetter('channel')).channel
 
         # Create new scene for the scene strip
@@ -45,7 +61,10 @@ class SceneCreateFromSelection(bpy.types.Operator):
         bpy.context.screen.scene = bpy.data.scenes[start_scene_name]
 
         bpy.ops.power_sequencer.delete_direct()
-        bpy.ops.sequencer.scene_strip_add(frame_start=selection_start_frame, channel=selection_start_channel, scene=new_scene_name)
+        bpy.ops.sequencer.scene_strip_add(frame_start=selection_start_frame,
+                                          channel=selection_start_channel,
+                                          scene=new_scene_name)
         scene_strip = bpy.context.selected_sequences[0]
         scene_strip.use_sequence = True
         return {'FINISHED'}
+

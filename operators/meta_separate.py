@@ -1,10 +1,22 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MetaSeparateAndTrim(bpy.types.Operator):
-    bl_idname = "power_sequencer.meta_separate"
-    bl_label = "UnMeta and Trim"
-    bl_description = "UnMeta all selected meta strips and trim their content"
+    """
+    UnMeta all selected meta strips and trim their content
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     trim_content = bpy.props.BoolProperty(
@@ -32,3 +44,4 @@ class MetaSeparateAndTrim(bpy.types.Operator):
         for m in meta_strips:
             bpy.context.scene.sequence_editor.active_strip = m
             bpy.ops.sequencer.meta_separate()
+

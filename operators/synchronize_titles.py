@@ -1,16 +1,27 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 # TODO: rewrite to sync strips to corresponding identifiers instead
 # See https://github.com/GDquest/Blender-power-sequencer/issues/55
 class SynchronizeTitles(bpy.types.Operator):
     """
-    Snap the selected image or text strips to the corresponding title 
-    marker. The marker and strip names have to start with TITLE-001
+    *brief* Snap the selected image or text strips to the corresponding title marker
+
+
+    The marker and strip names have to start with TITLE-001
     """
-    bl_idname = 'power_sequencer.synchronize_titles'
-    bl_label = 'Synchronize Titles'
-    bl_description = "Snap the selected image or text strips to the corresponding title marker"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     TITLE_REGEX = r'^TITLE-?([0-9]+)-?'
@@ -82,3 +93,4 @@ class SynchronizeTitles(bpy.types.Operator):
         markers = bpy.context.scene.timeline_markers
         markers = (m for m in markers if regex.match(m.name))
         return markers
+

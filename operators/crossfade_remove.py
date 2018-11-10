@@ -1,32 +1,45 @@
 import bpy
 from operator import attrgetter
+
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class CrossfadeRemove(bpy.types.Operator):
     """
-    Delete a crossfade strip and moves the handles of the input
-    strips to form a cut again
+    Delete a crossfade strip and moves the handles of the input strips to form a cut again
     """
-    bl_idname = "power_sequencer.crossfade_remove"
-    bl_label = "Remove Crossfade"
-    bl_description = "Delete a crossfade strip and moves the handles of the input strips to form a cut again"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
     sequences_override = []
 
     @classmethod
     def poll(cls, context):
-        return len([s for s in context.selected_sequences if s.type in SequenceTypes.TRANSITION]) > 0
+        return len([s for s in context.selected_sequences
+                    if s.type in SequenceTypes.TRANSITION]) > 0
 
     def execute(self, context):
-        to_process = self.sequences_override if self.sequences_override else bpy.context.selected_sequences
-        sequences = [s for s in to_process if s.type in SequenceTypes.TRANSITION]
+        to_process = (self.sequences_override
+                      if self.sequences_override else
+                      bpy.context.selected_sequences)
+        sequences = [s for s in to_process
+                     if s.type in SequenceTypes.TRANSITION]
         if not sequences:
             return {'FINISHED'}
         bpy.ops.sequencer.select_all(action='DESELECT')
         for sequence in sequences:
-            effect_middle_frame = round((sequence.frame_final_start + sequence.frame_final_end) / 2)
+            effect_middle_frame = round((sequence.frame_final_start
+                                         + sequence.frame_final_end) / 2)
 
             inputs = [sequence.input_1, sequence.input_2]
             strip_1 = min(inputs, key=attrgetter('frame_final_end'))
@@ -38,3 +51,4 @@ class CrossfadeRemove(bpy.types.Operator):
             sequence.select = True
             bpy.ops.sequencer.delete()
         return {'FINISHED'}
+

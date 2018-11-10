@@ -1,13 +1,26 @@
 import bpy
-from math import floor
 
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class TrimThreePointEdit(bpy.types.Operator):
-    bl_idname = 'power_sequencer.trim_three_point_edit'
-    bl_label = 'Three Point edit'
-    bl_description = "Trim the closest strip under the mouse cursor in or out"
+    """
+    Trim the closest strip under the mouse cursor in or out
+    """
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'I', 'value': 'PRESS'}, {'side': 'left'}, 'Trim In'),
+            ({'type': 'O', 'value': 'PRESS'}, {'side': 'right'}, 'Trim Out')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     side = bpy.props.EnumProperty(
@@ -37,3 +50,4 @@ class TrimThreePointEdit(bpy.types.Operator):
             return {'CANCELLED'}
         bpy.ops.power_sequencer.smart_snap(side=self.side)
         return {'FINISHED'}
+

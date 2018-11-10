@@ -1,18 +1,30 @@
 import bpy
+
 from .utils.global_settings import SequenceTypes
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class CrossfadeEdit(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/rCmLhg6.gif)
+    *brief* Adjust the location of the crossfade between 2 strips
+
 
     Selects the handles of both inputs of a crossfade strip's input and
     calls the grab operator. Allows you to quickly change the location
     of a fade transition between two strips.
     """
-    bl_idname = "power_sequencer.crossfade_edit"
-    bl_label = "Edit Crossfade"
-    bl_description = "Adjust the location of the crossfade between 2 strips"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/rCmLhg6.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'C', 'value': 'PRESS', 'alt': True}, {}, 'Edit Crossfade')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     crossfade_types = ['CROSS', 'GAMMA_CROSS']
@@ -62,3 +74,4 @@ class CrossfadeEdit(bpy.types.Operator):
             if e.type not in self.crossfade_types:
                 continue
             return e
+

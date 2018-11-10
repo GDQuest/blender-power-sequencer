@@ -1,8 +1,13 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class IncreasePlaybackSpeed(bpy.types.Operator):
     """
+    *brief* Increase playback speed up to triple
+
+
     Playback speed may be set to any of the following speeds:
 
     * Normal (1x)
@@ -14,9 +19,18 @@ class IncreasePlaybackSpeed(bpy.types.Operator):
     Activating this operator will increase playback speed through each
     of these steps until maximum speed is reached.
     """
-    bl_idname = "power_sequencer.increase_playback_speed"
-    bl_label = "Increase Playback Speed"
-    bl_description = "Increase playback speed up to triple"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'RIGHT_BRACKET', 'value': 'PRESS'}, {}, 'Increase playback speed')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
 
     def execute(self, context):
         scene = context.scene
@@ -33,3 +47,4 @@ class IncreasePlaybackSpeed(bpy.types.Operator):
         scene.power_sequencer.playback_speed = new_speed
 
         return {"FINISHED"}
+

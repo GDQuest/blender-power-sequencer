@@ -1,13 +1,22 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MarkerDeleteDirect(bpy.types.Operator):
     """
-    Delete selected markers instantly, skipping the default confirmation prompt
+    Delete selected markers instantly skipping the default confirmation prompt
     """
-    bl_idname = 'power_sequencer.marker_delete_direct'
-    bl_label = 'Delete Markers Instantly'
-    bl_description = 'Delete selected markers without asking for confirmation'
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -22,3 +31,4 @@ class MarkerDeleteDirect(bpy.types.Operator):
             markers.remove(m)
         self.report({'INFO'}, "Deleted %s markers." % len(selected_markers))
         return {'FINISHED'}
+

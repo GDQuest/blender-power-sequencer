@@ -1,13 +1,22 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class MarkersSnapMatchingStrips(bpy.types.Operator):
     """
     Snap selected strips to markers with the same name
     """
-    bl_idname = 'power_sequencer.markers_snap_matching_strips'
-    bl_label = 'Markers Snap Matching Strips'
-    bl_description = 'Snap selected strips to markers with the same name'
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -22,3 +31,4 @@ class MarkersSnapMatchingStrips(bpy.types.Operator):
                 if marker.name in strip.name:
                     strip.frame_start = marker.frame - strip.frame_offset_start
         return {'FINISHED'}
+

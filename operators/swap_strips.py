@@ -1,18 +1,28 @@
 import bpy
 from operator import attrgetter
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class SwapStrips(bpy.types.Operator):
     """
-    Swaps the 2 strips between them.
-    Places the first strip in the channel and starting frame (frame_final_start) of the second strip,
-    and places the second strip in the channel and starting frame (frame_final_end)
-    of the first strip.
-    If there is no space for the swap, it does nothing.
+    *brief* Swaps the 2 strips between them.
+
+
+    Places the first strip in the channel and starting frame (frame_final_start) of the second
+    strip, and places the second strip in the channel and starting frame (frame_final_end) of
+    the first strip.  If there is no space for the swap, it does nothing.
     """
-    bl_idname = "power_sequencer.swap_strips"
-    bl_label = "Swap Strips"
-    bl_description = "Swaps 2 strips between them"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
     direction = bpy.props.EnumProperty(
@@ -52,35 +62,34 @@ class SwapStrips(bpy.types.Operator):
         s1_start_2 = strip_1.frame_final_start
         s2_start_2 = strip_2.frame_final_start
 
-        group_1 = {s:s.channel for s in context.sequences \
-                if s.frame_final_start == s1_start_2 and s != strip_1}
-        group_2 = {s:s.channel for s in context.sequences \
-                if s.frame_final_start == s2_start_2 and s != strip_2}
+        group_1 = {s: s.channel for s in context.sequences
+                   if s.frame_final_start == s1_start_2 and s != strip_1}
+        group_2 = {s: s.channel for s in context.sequences
+                   if s.frame_final_start == s2_start_2 and s != strip_2}
 
         strip_2.select = False
-        bpy.ops.transform.seq_slide(value=(s2_start - \
-                strip_1.frame_final_start, s2_channel - strip_1.channel))
+        bpy.ops.transform.seq_slide(value=(s2_start - strip_1.frame_final_start,
+                                           s2_channel - strip_1.channel))
 
         bpy.ops.sequencer.select_all(action='DESELECT')
         strip_2.select = True
-        bpy.ops.transform.seq_slide(value=(s1_start - \
-                strip_2.frame_final_start, s1_channel - strip_2.channel))
+        bpy.ops.transform.seq_slide(value=(s1_start - strip_2.frame_final_start,
+                                           s1_channel - strip_2.channel))
 
-        if not self.fits(strip_1, group_1, s2_start, s1_channel, s2_channel, \
-                context) or not self.fits(strip_2, group_2, s1_start, \
-                s2_channel, s1_channel, context):
+        if not self.fits(strip_1, group_1, s2_start, s1_channel, s2_channel, context) \
+           or not self.fits(strip_2, group_2, s1_start, s2_channel, s1_channel, context):
             self.reconstruct(strip_1, s1_channel, group_1, context)
             self.reconstruct(strip_2, s2_channel, group_2, context)
 
             bpy.ops.sequencer.select_all(action='DESELECT')
             strip_1.select = True
-            bpy.ops.transform.seq_slide(value=(s1_start - \
-                    strip_1.frame_final_start, s1_channel - strip_1.channel))
+            bpy.ops.transform.seq_slide(value=(s1_start - strip_1.frame_final_start,
+                                               s1_channel - strip_1.channel))
 
             bpy.ops.sequencer.select_all(action='DESELECT')
             strip_2.select = True
-            bpy.ops.transform.seq_slide(value=(s2_start - \
-                    strip_2.frame_final_start, s2_channel - strip_2.channel))
+            bpy.ops.transform.seq_slide(value=(s2_start - strip_2.frame_final_start,
+                                               s2_channel - strip_2.channel))
 
             bpy.ops.sequencer.select_all(action='DESELECT')
             strip_1.select = True
@@ -118,8 +127,7 @@ class SwapStrips(bpy.types.Operator):
         Args:
         - strip: The strip to move.
         """
-        end_frame = max(context.sequences, key=attrgetter('frame_final_end'))\
-                .frame_final_end
+        end_frame = max(context.sequences, key=attrgetter('frame_final_end')).frame_final_end
         self.move_to_frame(strip, end_frame, context)
 
     def fits(self, strip, group, frame, init_channel, target_channel, context):
@@ -175,8 +183,8 @@ class SwapStrips(bpy.types.Operator):
                  If no strip is found, returns None.
         """
         strips_in_range = (s for s in bpy.context.sequences
-                     if strip.frame_final_start <= s.frame_final_start
-                     and s.frame_final_end <= strip.frame_final_end)
+                           if strip.frame_final_start <= s.frame_final_start
+                           and s.frame_final_end <= strip.frame_final_end)
         if direction == "up":
             strips_above = [s for s in strips_in_range if s.channel > strip.channel]
             if not strips_above:
@@ -202,3 +210,4 @@ class SwapStrips(bpy.types.Operator):
             effect_strip.channel -= 1
             other_strip.channel = effect_strip_channel
             effect_strip.channel = other_strip_channel
+

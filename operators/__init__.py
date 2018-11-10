@@ -19,7 +19,7 @@ from .fade_add import FadeAdd
 from .fade_clear import FadeClear
 from .grab_closest_handle_or_cut import GrabClosestCut
 from .grab import Grab
-from .grab_sequences_handles import GrabSequencesHandles
+from .grab_sequence_handles import GrabSequenceHandles
 from .import_local_footage import ImportLocalFootage
 from .increase_playback_speed import IncreasePlaybackSpeed
 from .jump_time_offset import JumpTimeOffset
@@ -63,4 +63,16 @@ from .toggle_selected_mute import ToggleSelectedMute
 from .toggle_waveforms import ToggleWaveforms
 from .trim_three_point_edit import TrimThreePointEdit
 from .trim_to_surrounding_cuts import TrimToSurroundingCuts
+
+doc = {
+    'sequencer.refresh_all': {
+        'name': 'Refresh All',
+        'description': '',
+        'shortcuts': [
+            ({'type': 'R', 'value': 'PRESS', 'shift': True}, {}, 'Refresh All')
+        ],
+        'demo': '',
+        'keymap': 'Sequencer'
+    }
+}
 

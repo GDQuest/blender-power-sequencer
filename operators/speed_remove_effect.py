@@ -1,15 +1,26 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class Unspeed(bpy.types.Operator):
     """
-    This is the opposite of power_sequencer's "Add Speed" operator.
-    It seeks out and removes the speed modifier inside a meta and
-    ungroups all the remaining strips within.
+    *brief* Removes speed from META, un-groups META
+
+
+    This is the opposite of power_sequencer's "Add Speed" operator.  It seeks out and removes
+    the speed modifier inside a meta and ungroups all the remaining strips within.
     """
-    bl_idname = "power_sequencer.unspeed"
-    bl_label = "Remove Speed"
-    bl_description = "Removes speed from META, un-groups META"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': '',
+        'description': doc_description(__doc__),
+        'shortcuts': [],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
     @classmethod

@@ -1,15 +1,24 @@
 import bpy
 
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
 
 class SceneCycle(bpy.types.Operator):
     """
-    ![Demo](https://i.imgur.com/7zhq8Tg.gif)
-
-    Cycle through scenes.
+    Cycle through scenes
     """
-    bl_idname = "power_sequencer.scenes_cycle"
-    bl_label = "Cycle Scenes"
-    bl_description = "Cycle through scenes"
+    doc = {
+        'name': doc_name(__qualname__),
+        'demo': 'https://i.imgur.com/7zhq8Tg.gif',
+        'description': doc_description(__doc__),
+        'shortcuts': [
+            ({'type': 'TAB', 'value': 'PRESS', 'shift': True}, {}, 'Cycle Scenes')
+        ],
+        'keymap': 'Sequencer'
+    }
+    bl_idname = doc_idname(doc['name'])
+    bl_label = doc['name']
+    bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     @classmethod
@@ -28,3 +37,4 @@ class SceneCycle(bpy.types.Operator):
                 bpy.context.screen.scene = scenes[(index + 1) % scene_count]
                 break
         return {'FINISHED'}
+
