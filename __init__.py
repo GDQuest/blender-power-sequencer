@@ -79,28 +79,26 @@ def register():
 
     keymaps = register_shortcuts()
     addon_keymaps += keymaps
-    print(addon_keymaps)
 
     bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(
         type=PowerSequencerProperties)
 
     handlers_register()
-    print("Registered {} with {} modules".format(bl_info["name"], len(
-        modules)))
+    print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
 
 
 def unregister():
     global addon_keymaps
     addon_updater_ops.unregister()
 
-    wm = bpy.context.window_manager
-    for km in addon_keymaps:
-        wm.keyconfigs.addon.keymaps.remove(km)
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()
 
+    handlers_unregister()
     try:
         bpy.utils.unregister_module(__name__)
     except:
         traceback.print_exc()
-
-    handlers_unregister()
     print("Unregistered {}".format(bl_info["name"]))
+
