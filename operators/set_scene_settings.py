@@ -2,7 +2,7 @@ import bpy
 
 ### set scene settings in one operator
 class SetSceneScene(bpy.types.Operator):
-    bl_idname = "powersequencer.set_scene_settings"
+    bl_idname = "power_sequencer.set_scene_settings"
     bl_label = "Set Scene Settings"
     bl_description = "Set Settings for Current Scene"
     bl_options = {"REGISTER", "UNDO"}
