@@ -63,6 +63,14 @@ from .toggle_selected_mute import ToggleSelectedMute
 from .toggle_waveforms import ToggleWaveforms
 from .trim_three_point_edit import TrimThreePointEdit
 from .trim_to_surrounding_cuts import TrimToSurroundingCuts
+from .export_sequence import ExportSequence
+from .go_to_in_out_selection import GoToInOut
+from .move_selected_strip import MoveSelectedClips
+from .select_by_channel import SelectByChannel
+from .select_handles import SelectHandles
+from .select_left_right_from_active import SelectLeftRight
+from .select_playing import SelectPlaying
+from .set_scene_settings import SetSceneScene
 
 doc = {
     'sequencer.refresh_all': {
