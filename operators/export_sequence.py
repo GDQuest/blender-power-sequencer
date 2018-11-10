@@ -3,7 +3,7 @@ import bpy
 from bpy_extras.io_utils import ExportHelper
 
 class ExportSequence(bpy.types.Operator, ExportHelper):
-    bl_idname = "powersequencer.export_sequence"
+    bl_idname = "power_sequencer.export_sequence"
     bl_label = "Export Sequence"
     bl_description = "Export current Sequence"
     filename_ext = ""
