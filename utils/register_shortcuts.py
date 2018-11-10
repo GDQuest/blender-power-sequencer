@@ -38,11 +38,11 @@ def register_shortcuts():
     wm = bpy.context.window_manager
     for name, group in os:
         km = wm.keyconfigs.addon.keymaps.new(name=name, space_type=keymaps_meta[name])
-        kms.append(km)
         for bl_idname, d in group:
             for s in d['shortcuts']:
                 kmi = km.keymap_items.new(bl_idname, **s[0])
                 for pn, pv in s[1].items():
                     set_keymap_property(kmi.properties, pn, pv)
+                kms.append((km, kmi))
     return kms
 
