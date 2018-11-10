@@ -92,6 +92,10 @@ class PowerSequencer_MT_select(bpy.types.Menu):
 
         layout.menu("PowerSequencer_MT_grab", icon='HAND')
         layout.menu("PowerSequencer_MT_snap", icon='SNAP_ON')
+        
+        layout.separator()
+        
+        layout.operator('power_sequencer.select_playing_menu')
 
 
 class PowerSequencer_MT_deselect(bpy.types.Menu):
