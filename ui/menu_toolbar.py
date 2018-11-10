@@ -11,6 +11,7 @@ class PowerSequencerMenuToolbar(bpy.types.Menu):
         layout.operator("power_sequencer.synchronize_titles", icon='SORTALPHA')
         layout.operator("power_sequencer.set_timeline_range", icon='ARROW_LEFTRIGHT')
         layout.operator("power_sequencer.scene_cycle", icon='SCENE')
+        layout.operator('power_sequencer.go_to_in_out')
 
         layout.separator()
 
@@ -95,10 +96,10 @@ class PowerSequencer_MT_select(bpy.types.Menu):
         
         layout.separator()
         
-        layout.operator('power_sequencer.select_playing_menu')
-        layout.operator('power_sequencer.select_left_right_menu')
-        layout.operator('power_sequencer.select_handles_menu')
-
+        layout.operator('power_sequencer.select_playing')
+        layout.operator('power_sequencer.select_left_right')
+        layout.operator('power_sequencer.select_handles')
+  
 
 class PowerSequencer_MT_deselect(bpy.types.Menu):
     bl_label = "Deselect"
