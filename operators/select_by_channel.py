@@ -1,27 +1,28 @@
 import bpy
 
-class BlenderEditSelectChannel(bpy.types.Operator):
-    bl_idname = "blenderedit.select_channel"
+### Select Operator for shorcut settings
+class SelectByChannel(bpy.types.Operator):
+    bl_idname = "power_sequencer.select_channel"
     bl_label = "Select Channel"
-    bl_description = ""
+    bl_description = "Select or Deselect entire VSE channel"
     bl_options = {"REGISTER", "UNDO"}
     
-    add=bpy.props.BoolProperty()
-    channel=bpy.props.IntProperty(min=1, max=32)
+    add=bpy.props.BoolProperty(description="Add to current Selection")
+    channel=bpy.props.IntProperty(min=1, max=32, description="Channel to Select")
 
     @classmethod
     def poll(cls, context):
         return bpy.context.area.type=='SEQUENCE_EDITOR' and bpy.context.scene.sequence_editor is not None
     
     def execute(self, context):
-        SelectByChannel(self.add, self.channel)
+        FuncSelectByChannel(self.add, self.channel)
         return {"FINISHED"}
     
-# select by channel menu
-class BlenderEditSelectChannelMenu(bpy.types.Operator):
-    bl_idname = "blenderedit.select_channel_menu"
+### Selection menu
+class SelectByChannelMenu(bpy.types.Operator):
+    bl_idname = "power_sequencer.select_channel_menu"
     bl_label = "Select Channel"
-    bl_description = ""
+    bl_description = "Select or Deselect entire VSE channel"
     bl_options = {"REGISTER", "UNDO"}
     
     add=bpy.props.BoolProperty()
@@ -44,11 +45,11 @@ class BlenderEditSelectChannelMenu(bpy.types.Operator):
         layout.prop(self, 'channel')
 
     def execute(self, context):
-        SelectByChannel(self.add, self.channel)
+        FuncSelectByChannel(self.add, self.channel)
         return {"FINISHED"}
     
 # select by channel function
-def SelectByChannel(add, channel):
+def FuncSelectByChannel(add, channel):
     scn=bpy.context.scene
     channelstrip=[]
     chk=0
