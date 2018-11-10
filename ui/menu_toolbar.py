@@ -7,6 +7,7 @@ class PowerSequencerMenuToolbar(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
+        layout.operator("power_sequencer.set_scene_settings")
         layout.operator("power_sequencer.synchronize_titles", icon='SORTALPHA')
         layout.operator("power_sequencer.set_timeline_range", icon='ARROW_LEFTRIGHT')
         layout.operator("power_sequencer.scene_cycle", icon='SCENE')
