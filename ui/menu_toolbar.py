@@ -174,6 +174,7 @@ class PowerSequencer_MT_render(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         layout.operator("power_sequencer.render_for_web")
+        layout.operator("power_sequencer.export_sequence")
 
 
 class PowerSequencer_MT_file(bpy.types.Menu):
