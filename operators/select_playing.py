@@ -2,7 +2,7 @@ import bpy
 
 # select playing
 class SelectPlaying(bpy.types.Operator):
-    bl_idname = "powersequencer.select_playing"
+    bl_idname = "power_sequencer.select_playing"
     bl_label = "Select Playing Clips"
     bl_description = ""
     bl_options = {"REGISTER", "UNDO"}
@@ -19,7 +19,7 @@ class SelectPlaying(bpy.types.Operator):
     
 # select playing Menu
 class SelectPlayingMenu(bpy.types.Operator):
-    bl_idname = "powersequencer.select_playing_menu"
+    bl_idname = "power_sequencer.select_playing_menu"
     bl_label = "Select Playing Clips Menu"
     bl_description = ""
     bl_options = {"REGISTER", "UNDO"}
