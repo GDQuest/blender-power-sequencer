@@ -53,7 +53,7 @@ class CopySelectedSequences(bpy.types.Operator):
         scene.use_audio_scrub = False
         context.space_data.proxy_render_size = 'NONE'
 
-        first_sequence = min(context.selected_strips,
+        first_sequence = min(context.selected_sequences,
                              key=attrgetter('frame_final_start'))
         bpy.context.scene.frame_current = first_sequence.frame_final_start
         sequencer.copy()
@@ -65,9 +65,9 @@ class CopySelectedSequences(bpy.types.Operator):
         if self.delete_selection:
             sequencer.delete()
 
-        plural_string = 's' if len(context.selected_strips) != 1 else ''
+        plural_string = 's' if len(context.selected_sequences) != 1 else ''
         action_verb = 'Cut' if self.delete_selection else 'Copied'
         report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(
-            action_verb, str(len(context.selected_strips)), plural_string)
+            action_verb, str(len(context.selected_sequences)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
