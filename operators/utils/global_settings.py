@@ -1,7 +1,3 @@
-from enum import Enum
-import bpy
-
-
 class ProjectSettings():
     RESOLUTION_X = 1920
     RESOLUTION_Y = 1080
@@ -36,7 +32,9 @@ class Extensions():
     """
     Tuples of file types for checks when importing files
     Attributes:
-        DICT: A dictionary of file types. Each key (IMG, AUDIO, VIDEO, PSD) contains a set of strings that represent a file name with a wildcard and extension ("*.ext"). To use with the glob builtin module.
+        DICT: A dictionary of file types. Each key (IMG, AUDIO, VIDEO, PSD) contains a set
+        of strings that represent a file name with a wildcard and extension ("*.ext"). To
+        use with the glob builtin module.
     """
     DICT = {
         "IMG": ("*.png", "*.jpg", "*.jpeg"),

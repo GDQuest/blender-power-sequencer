@@ -18,3 +18,4 @@ def is_ffmpeg_available():
 
     except OSError:
         return False
+

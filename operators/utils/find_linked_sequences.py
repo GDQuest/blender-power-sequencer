@@ -1,10 +1,9 @@
-import bpy
 from .get_frame_range import get_frame_range
 from .global_settings import SequenceTypes
 from .is_in_range import is_in_range
 
 
-def find_linked(sequences):
+def find_linked(context, sequences, selected_sequences):
     """
     Takes a list of sequences and returns a list of all the sequences
     and effects that are linked in time
@@ -14,8 +13,8 @@ def find_linked(sequences):
 
     Returns a list of all the linked sequences, but not the sequences passed to the function
     """
-    start, end = get_frame_range(sequences)
-    sequences_in_range = [s for s in bpy.context.sequences if is_in_range(s, start, end)]
+    start, end = get_frame_range(context, sequences, selected_sequences)
+    sequences_in_range = [s for s in sequences if is_in_range(context, s, start, end)]
     effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
     selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
 
@@ -45,3 +44,4 @@ def find_linked(sequences):
                 linked_sequences.append(e.input_2)
 
     return linked_sequences
+

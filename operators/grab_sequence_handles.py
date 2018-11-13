@@ -45,13 +45,13 @@ class GrabSequenceHandles(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         if self.always_find_closest or not selection:
             if self.frame == -1:
                 return {'CANCELLED'}
             bpy.ops.power_sequencer.select_closest_to_mouse(
                 frame=self.frame, channel=self.channel)
-            for s in bpy.context.selected_sequences:
+            for s in context.selected_sequences:
                 self.select_closest_handle(s)
         else:
             bpy.ops.sequencer.select_all(action='DESELECT')

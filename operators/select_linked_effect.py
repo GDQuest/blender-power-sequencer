@@ -25,7 +25,7 @@ class SelectLinkedEffect(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        for s in find_linked(bpy.context.selected_sequences):
+        for s in find_linked(context, context.sequences, context.selected_sequences):
             s.select = True
         return {'FINISHED'}
 

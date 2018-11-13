@@ -1,6 +1,7 @@
 from operator import attrgetter
 
-def slice_selection(sequences):
+
+def slice_selection(context, sequences):
     """
     Takes a list of sequences and breaks it down
     into multiple lists of connected sequences
@@ -39,3 +40,4 @@ def slice_selection(sequences):
             broken_selection.append(temp_list)
         index += 1
     return broken_selection
+

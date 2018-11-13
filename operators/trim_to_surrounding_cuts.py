@@ -44,7 +44,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         return context is not None
 
     def invoke(self, context, event):
-        if not bpy.context.sequences:
+        if not context.sequences:
             return {'CANCELLED'}
 
         sequencer = bpy.ops.sequencer
@@ -54,8 +54,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             x=event.mouse_region_x, y=event.mouse_region_y)
         frame, = round(x), floor(y)
 
-        left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(
-            frame)
+        left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(context, frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
         margin_frame = convert_duration_to_frames(self.margin)
@@ -67,7 +66,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
             return {'CANCELLED'}
 
         strips_to_delete, strips_to_trim = self.find_strips_in_range(
-            left_cut_frame, right_cut_frame)
+            context, left_cut_frame, right_cut_frame)
         trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
 
         # print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
@@ -81,7 +80,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
                 s.select = True
                 sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
                 sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
-                strips_to_delete.append(bpy.context.selected_sequences[0])
+                strips_to_delete.append(context.selected_sequences[0])
                 continue
 
             if s.frame_final_start < trim_end and s.frame_final_end > trim_end:
@@ -98,12 +97,13 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         if self.remove_gaps:
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
             # bpy.ops.anim.change_frame(frame_to_remove_gap)
-            bpy.context.scene.frame_current = frame_to_remove_gap
+            context.scene.frame_current = frame_to_remove_gap
             bpy.ops.power_sequencer.remove_gaps()
-            bpy.context.scene.frame_current = trim_start
+            context.scene.frame_current = trim_start
         return {'FINISHED'}
 
     def find_strips_in_range(self,
+                             context,
                              start_frame,
                              end_frame,
                              sequences=None,
@@ -126,7 +126,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         strips_in_range = []
         strips_overlapping_range = []
         if not sequences:
-            sequences = bpy.context.sequences
+            sequences = context.sequences
         for s in sequences:
             if start_frame <= s.frame_final_start <= end_frame:
                 if start_frame <= s.frame_final_end <= end_frame:
@@ -139,7 +139,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
                 strips_overlapping_range.append(s)
         return strips_in_range, strips_overlapping_range
 
-    def find_closest_surrounding_cuts(self, frame=0):
+    def find_closest_surrounding_cuts(self, context, frame=0):
         """
         Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts
         surrounding a frame
@@ -147,7 +147,7 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         - frame, find the closest cuts that surround this frame
         """
         start_cut_frame, end_cut_frame = 1000000, 1000000
-        for s in bpy.context.sequences:
+        for s in context.sequences:
             distance_to_start = abs(frame - s.frame_final_start)
             distance_to_end = abs(frame - s.frame_final_end)
 

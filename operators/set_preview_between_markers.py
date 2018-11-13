@@ -25,13 +25,13 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        if not bpy.context.scene.timeline_markers:
+        if not context.scene.timeline_markers:
             self.report({"ERROR_INVALID_INPUT"},
                         "There are no markers. Operation cancelled.")
             return {"CANCELLED"}
 
-        frame = bpy.context.scene.frame_current
-        previous_marker, next_marker = find_neighboring_markers(frame)
+        frame = context.scene.frame_current
+        previous_marker, next_marker = find_neighboring_markers(context, frame)
 
         if not (previous_marker and next_marker):
             self.report({"ERROR_INVALID_INPUT"},
@@ -44,10 +44,10 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
         else:
             from operator import attrgetter
             frame_end = max(
-                bpy.context.scene.sequence_editor.sequences,
+                context.scene.sequence_editor.sequences,
                 key=attrgetter('frame_final_end')).frame_final_end
 
         from .utils.sequences import set_preview_range
-        set_preview_range(frame_start, frame_end)
+        set_preview_range(context, frame_start, frame_end)
         return {'FINISHED'}
 

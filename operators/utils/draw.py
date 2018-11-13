@@ -19,9 +19,9 @@ def draw_arrow_head(center, size, points_right=True):
     """
     direction = 1 if points_right else -1
 
-    point_upper = Vector([ center.x - size.x/2 * direction, center.y + size.y/2 ])
-    point_tip = Vector([ center.x + size.x/2 * direction, center.y ])
-    point_lower = Vector([ center.x - size.x/2 * direction, center.y - size.y/2 ])
+    point_upper = Vector([center.x - size.x/2 * direction, center.y + size.y/2])
+    point_tip = Vector([center.x + size.x/2 * direction, center.y])
+    point_lower = Vector([center.x - size.x/2 * direction, center.y - size.y/2])
 
     draw_line(point_upper, point_tip)
     draw_line(point_tip, point_lower)
@@ -50,3 +50,4 @@ def draw_arrow_head(center, size, points_right=True):
 #     bgl.glVertex2f(start_x, start_y)
 #     bgl.glVertex2f(end_x, end_y)
 #     bgl.glEnd()
+

@@ -7,11 +7,11 @@ from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-def find_sequences_before(strip):
+def find_sequences_before(context, strip):
     """
     Returns a list of sequences that are before the strip in the current context
     """
-    return [s for s in bpy.context.sequences
+    return [s for s in context.sequences
             if s.frame_final_end <= strip.frame_final_start]
 
 
@@ -73,7 +73,7 @@ class ConcatenateStrips(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        frame, channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
             bpy.ops.power_sequencer.select_closest_to_mouse(
                 frame=frame, channel=channel)
@@ -89,10 +89,10 @@ class ConcatenateStrips(bpy.types.Operator):
         if len(channels) == len(selection):
             for s in selection:
                 if self.direction == 'right':
-                    in_channel = [strip for strip in find_sequences_before(s)
+                    in_channel = [strip for strip in find_sequences_before(context, s)
                                   if strip.channel == s.channel]
                 else:
-                    in_channel = [strip for strip in find_sequences_after(s)
+                    in_channel = [strip for strip in find_sequences_after(context, s)
                                   if strip.channel == s.channel]
                 in_channel.append(s)
                 to_concatenate = [strip for strip in in_channel

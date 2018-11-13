@@ -1,7 +1,4 @@
-import bpy
-
-
-def find_strips_mouse(frame, channel, select_linked=False):
+def find_strips_mouse(context, frame, channel, select_linked=False):
     """
     Finds a list of sequences to select based on the mouse position
     or using the time cursor.
@@ -14,9 +11,10 @@ def find_strips_mouse(frame, channel, select_linked=False):
     Returns the sequence(s) under the mouse cursor as a list
     Returns an empty list if nothing found
     """
-    sequences = [s for s in bpy.context.sequences if not s.lock and s.channel == channel]
+    sequences = [s for s in context.sequences if not s.lock and s.channel == channel]
     try:
-        under_mouse = [next(s for s in sequences if s.frame_final_start <= frame <= s.frame_final_end)]
+        under_mouse = [next(s for s in sequences
+                            if s.frame_final_start <= frame <= s.frame_final_end)]
     except StopIteration:
         return []
 
@@ -27,3 +25,4 @@ def find_strips_mouse(frame, channel, select_linked=False):
         return under_mouse.append(linked_strips)
     else:
         return under_mouse
+

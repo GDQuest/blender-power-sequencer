@@ -39,7 +39,7 @@ class ChannelOffset(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         if not selection:
             return {'CANCELLED'}
 

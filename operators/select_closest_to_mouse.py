@@ -29,12 +29,12 @@ class SelectClosestToMouse(bpy.types.Operator):
         return True
 
     def invoke(self, context, event):
-        self.frame, self.channel = get_mouse_frame_and_channel(event)
+        self.frame, self.channel = get_mouse_frame_and_channel(context, event)
         return self.execute(context)
 
     def execute(self, context):
         try:
-            strip = find_strips_mouse(self.frame, self.channel)[0]
+            strip = find_strips_mouse(context, self.frame, self.channel)[0]
             strip.select = True
         except Exception:
             return {"CANCELLED"}

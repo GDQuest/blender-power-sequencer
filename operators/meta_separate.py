@@ -36,12 +36,12 @@ class MetaSeparateAndTrim(bpy.types.Operator):
         meta_strips = [s for s in context.selected_sequences if s.type == 'META']
         if self.trim_content:
             bpy.ops.power_sequencer.meta_trim_content_to_bounds()
-        self.separate(meta_strips)
+        self.separate(context, meta_strips)
         return {'FINISHED'}
 
-    def separate(self, meta_strips):
+    def separate(self, context, meta_strips):
         bpy.ops.sequencer.select_all(action='DESELECT')
         for m in meta_strips:
-            bpy.context.scene.sequence_editor.active_strip = m
+            context.scene.sequence_editor.active_strip = m
             bpy.ops.sequencer.meta_separate()
 

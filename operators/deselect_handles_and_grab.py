@@ -24,7 +24,7 @@ class DeselectHandlesAndGrab(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        for s in bpy.context.selected_sequences:
+        for s in context.selected_sequences:
             s.select_left_handle = False
             s.select_right_handle = False
             s.select = True

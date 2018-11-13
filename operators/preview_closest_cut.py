@@ -58,8 +58,8 @@ class PreviewClosestCut(bpy.types.Operator):
             return {'CANCELLED'}
 
         if scene.frame_preview_start == start and scene.frame_preview_end == end:
-            start, end = get_frame_range(context.sequences)
-        set_preview_range(start, end)
+            start, end = get_frame_range(context, context.sequences)
+        set_preview_range(context, start, end)
         return {'FINISHED'}
 
     def find_closest_cut_frame(self, context):

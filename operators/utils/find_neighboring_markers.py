@@ -1,9 +1,6 @@
-import bpy
-
-
-def find_neighboring_markers(frame=None):
+def find_neighboring_markers(context, frame=None):
     """Returns a tuple containing the closest marker to the left and to the right of the frame"""
-    markers = bpy.context.scene.timeline_markers
+    markers = context.scene.timeline_markers
 
     if not (frame and markers):
         return None, None
@@ -19,3 +16,4 @@ def find_neighboring_markers(frame=None):
             break
 
     return previous_marker, next_marker
+
