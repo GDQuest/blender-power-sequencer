@@ -35,7 +35,7 @@ class SwapStrips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_sequences) in range(1, 3)
+        return (context.selected_sequences and len(context.selected_sequences) in range(1, 3))
 
     def execute(self, context):
         strip_1 = context.selected_sequences[0]

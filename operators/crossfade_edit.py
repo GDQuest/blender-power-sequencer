@@ -31,9 +31,9 @@ class CrossfadeEdit(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        has_active = context.scene.sequence_editor.active_strip
-        has_selection = len(context.selected_sequences) > 0
-        return has_active or has_selection
+        return (context.scene.sequence_editor
+                and context.scene.sequence_editor.active_strip
+                and len(context.selected_sequences) > 0)
 
     def execute(self, context):
         active = context.scene.sequence_editor.active_strip

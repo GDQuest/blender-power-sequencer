@@ -32,7 +32,7 @@ class DeselectAllStripsLeftOrRight(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_sequences) > 0
+        return (context.selected_sequences and len(context.selected_sequences) > 0)
 
     def invoke(self, context, event):
         frame_current = context.scene.frame_current

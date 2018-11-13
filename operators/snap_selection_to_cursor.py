@@ -24,7 +24,7 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.selected_sequences) > 0
+        return (context.selected_sequences and len(context.selected_sequences) > 0)
 
     def execute(self, context):
         selection = sorted(

@@ -45,7 +45,8 @@ class PowerSequencer_MT_strips(bpy.types.Menu):
 
         layout.menu("PowerSequencer_MT_strips_speed", icon='TIME')
         layout.operator("power_sequencer.concatenate_strips", icon='CONSTRAINT')
-        layout.operator("power_sequencer.fade_strips", icon='IMAGE_RGB_ALPHA')
+        # XXX: no `fade_strips` oeprator - did this split in fade_add and fade_clear?
+        # layout.operator("power_sequencer.fade_strips", icon='IMAGE_RGB_ALPHA')
         layout.operator("power_sequencer.swap_strips", icon='ARROW_LEFTRIGHT')
         layout.operator("power_sequencer.toggle_selected_mute", icon='MUTE_IPO_ON')
         layout.operator("power_sequencer.channel_offset", icon='AUTOMERGE_ON')
@@ -66,7 +67,7 @@ class PowerSequencer_MT_strips_speed (bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         layout.operator("power_sequencer.add_speed")
-        layout.operator("power_sequencer.speed_remove_effect")
+        layout.operator("power_sequencer.unspeed")
 
 
 class PowerSequencer_MT_strips_fades (bpy.types.Menu):
@@ -152,9 +153,9 @@ class PowerSequencer_MT_markers(bpy.types.Menu):
 
         layout.separator()
 
-        layout.operator("power_sequencer.go_to_next_marker", icon='TRIA_RIGHT_BAR')
+        layout.operator("power_sequencer.marker_go_to_next", icon='TRIA_RIGHT_BAR')
         layout.operator("power_sequencer.copy_markers_as_timecodes")
-        layout.operator("power_sequencer.snap_marker_to_cursor")
+        layout.operator("power_sequencer.marker_snap_to_cursor")
         layout.operator("power_sequencer.set_preview_between_markers")
         layout.operator("power_sequencer.markers_snap_matching_strips", icon='NLA')
 
@@ -165,7 +166,7 @@ class PowerSequencer_MT_marker_delete(bpy.types.Menu):
     def draw(self, context):
         layout = self.layout
         layout.operator("power_sequencer.marker_delete_closest")
-        layout.operator("power_sequencer.markers_delete_direct")
+        layout.operator("power_sequencer.marker_delete_direct")
 
 
 class PowerSequencer_MT_render(bpy.types.Menu):
@@ -184,7 +185,8 @@ class PowerSequencer_MT_file(bpy.types.Menu):
         layout.operator("power_sequencer.open_project_directory", icon='FILE_FOLDER')
         layout.operator("power_sequencer.save_direct", icon='FILE_TICK')
         layout.operator("power_sequencer.import_local_footage", icon='FILE_MOVIE')
-        layout.operator("power_sequencer.set_video_proxies", icon='EXTERNAL_DATA')
+        # XXX: there's no `set_video_proxies` operator
+        # layout.operator("power_sequencer.set_video_proxies", icon='EXTERNAL_DATA')
 
 
 class PowerSequencer_MT_trim(bpy.types.Menu):
@@ -215,7 +217,7 @@ class PowerSequencer_MT_preview(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.preview_last_cut")
+        layout.operator("power_sequencer.preview_closest_cut")
         layout.operator("power_sequencer.preview_to_selection")
 
 

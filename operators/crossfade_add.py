@@ -47,7 +47,7 @@ class CrossfadeAdd(bpy.types.Operator):
             next(s for s in context.sequences if s.type not in
                  SequenceTypes.TRANSITION + SequenceTypes.SOUND)
             return True
-        except StopIteration:
+        except (StopIteration, TypeError):
             return False
 
     def execute(self, context):
