@@ -1,36 +1,20 @@
 import bpy
 from operator import attrgetter
 
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-
 
 class CopySelectedSequences(bpy.types.Operator):
-    """
-    *brief* Copy/cut strips without offset from current time indicator
 
+    """
+    ![Demo](https://i.imgur.com/w6z1Jb1.gif)
 
     Copies the selected sequences without frame offset and optionally
     deletes the selection to give a cut to clipboard effect. This
     operator overrides the default Blender copy method which includes
     cursor offset when pasting, which is atypical of copy/paste methods.
     """
-    doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/w6z1Jb1.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'C', 'value': 'PRESS', 'ctrl': True},
-             {'delete_selection': False},
-             'Copy Selected Strips'),
-            ({'type': 'X', 'value': 'PRESS', 'ctrl': True},
-             {'delete_selection': True},
-             'Cut Selected Strips')
-        ],
-        'keymap': 'Sequencer'
-    }
-    bl_idname = doc_idname(doc['name'])
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_idname = "power_sequencer.copy_selected_sequences"
+    bl_label = "Copy Selected Sequences"
+    bl_description = "Copy/cut strips without offset from current time indicator"
     bl_options = {'REGISTER', 'UNDO'}
 
     delete_selection = bpy.props.BoolProperty(
@@ -53,8 +37,7 @@ class CopySelectedSequences(bpy.types.Operator):
         scene.use_audio_scrub = False
         context.space_data.proxy_render_size = 'NONE'
 
-        first_sequence = min(context.selection,
-                             key=attrgetter('frame_final_start'))
+        first_sequence = min(context.selected_sequences, key=attrgetter('frame_final_start'))
         bpy.context.scene.frame_current = first_sequence.frame_final_start
         sequencer.copy()
         bpy.context.scene.frame_current = cursor_start_frame
@@ -65,10 +48,9 @@ class CopySelectedSequences(bpy.types.Operator):
         if self.delete_selection:
             sequencer.delete()
 
-        plural_string = 's' if len(context.selection) != 1 else ''
+        plural_string = 's' if len(context.selected_sequences) > 1 else ''
         action_verb = 'Cut' if self.delete_selection else 'Copied'
         report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(
-            action_verb, str(len(context.selection)), plural_string)
+            action_verb, str(len(context.selected_sequences)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
-
