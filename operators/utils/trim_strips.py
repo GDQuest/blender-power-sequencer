@@ -4,7 +4,8 @@ Trims strips in the timeline between the start and end frame. The caller must pa
 import bpy
 
 
-def trim_strips(start_frame, end_frame, select_mode,
+def trim_strips(context,
+                start_frame, end_frame, select_mode,
                 strips_to_trim=[], strips_to_delete=[]):
     trim_start = min(start_frame, end_frame)
     trim_end = max(start_frame, end_frame)
@@ -16,7 +17,7 @@ def trim_strips(start_frame, end_frame, select_mode,
             s.select = True
             bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
             bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
-            strips_to_delete.append(bpy.context.selected_sequences[0])
+            strips_to_delete.append(context.selected_sequences[0])
             continue
         elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
             s.frame_final_start = trim_end
@@ -29,3 +30,4 @@ def trim_strips(start_frame, end_frame, select_mode,
             s.select = True
         bpy.ops.sequencer.delete()
     return {'FINISHED'}
+

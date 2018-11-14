@@ -36,12 +36,10 @@ class ToggleSelectedMute(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
 
         if self.use_unselected:
-            selection = [
-                s for s in bpy.context.sequences if s not in selection
-            ]
+            selection = [s for s in context.sequences if s not in selection]
 
         if not selection:
             self.report({"WARNING"}, "No sequences to toggle muted")

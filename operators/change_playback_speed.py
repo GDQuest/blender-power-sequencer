@@ -37,6 +37,6 @@ class ChangePlaybackSpeed(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        bpy.context.scene.power_sequencer.playback_speed = self.speed
+        context.scene.power_sequencer.playback_speed = self.speed
         return {"FINISHED"}
 

@@ -52,7 +52,7 @@ class JumpTimeOffset(bpy.types.Operator):
     def execute(self, context):
         direction = 1 if self.direction == 'forward' else -1
         context.scene.frame_current += (
-            convert_duration_to_frames(self.duration)
+            convert_duration_to_frames(context, self.duration)
             * direction
         )
         return {'FINISHED'}

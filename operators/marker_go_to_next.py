@@ -31,13 +31,13 @@ class MarkerGoToNext(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        if not bpy.context.scene.timeline_markers:
+        if not context.scene.timeline_markers:
             self.report({"ERROR_INVALID_INPUT"},
                         "There are no markers. Operation cancelled.")
             return {"CANCELLED"}
 
-        frame = bpy.context.scene.frame_current
-        previous_marker, next_marker = find_neighboring_markers(frame)
+        frame = context.scene.frame_current
+        previous_marker, next_marker = find_neighboring_markers(context, frame)
 
         if not previous_marker \
            and self.target_marker == 'left' \

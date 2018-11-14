@@ -38,7 +38,7 @@ class MouseToggleMute(bpy.types.Operator):
 
         # Strip selection
         sequencer.select_all(action='DESELECT')
-        to_select = find_strips_mouse(frame, channel)
+        to_select = find_strips_mouse(context, frame, channel)
 
         if not to_select:
             return {"CANCELLED"}

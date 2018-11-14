@@ -37,16 +37,16 @@ class TrimThreePointEdit(bpy.types.Operator):
         return context.sequences
 
     def invoke(self, context, event):
-        frame, channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(context, event)
         bpy.ops.sequencer.select_all(action='DESELECT')
         bpy.ops.power_sequencer.select_closest_to_mouse(
             frame=frame, channel=channel)
-        if not bpy.context.selected_sequences:
+        if not context.selected_sequences:
             bpy.ops.power_sequencer.select_strips_under_cursor()
         return self.execute(context)
 
     def execute(self, context):
-        if not bpy.context.selected_sequences:
+        if not context.selected_sequences:
             return {'CANCELLED'}
         bpy.ops.power_sequencer.smart_snap(side=self.side)
         return {'FINISHED'}

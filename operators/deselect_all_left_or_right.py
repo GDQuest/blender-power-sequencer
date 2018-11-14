@@ -32,14 +32,14 @@ class DeselectAllStripsLeftOrRight(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.context.selected_sequences) > 0
+        return len(context.selected_sequences) > 0
 
     def invoke(self, context, event):
         frame_current = context.scene.frame_current
         frame_mouse = context.region.view2d.region_to_view(
                 event.mouse_region_x, 1)[0]
 
-        for s in bpy.context.sequences:
+        for s in context.sequences:
             if frame_mouse < frame_current or self.side == "left":
                 if s.frame_final_end < frame_current:
                     self.deselect(s)

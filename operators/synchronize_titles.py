@@ -31,8 +31,8 @@ class SynchronizeTitles(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        markers = bpy.context.scene.timeline_markers
-        selection = bpy.context.selected_sequences
+        markers = context.scene.timeline_markers
+        selection = context.selected_sequences
 
         if not markers and selection:
             if not markers:
@@ -42,7 +42,7 @@ class SynchronizeTitles(bpy.types.Operator):
                             "No sequences selected, operation cancelled.")
             return {"CANCELLED"}
 
-        title_markers = self.find_markers(self.TITLE_REGEX)
+        title_markers = self.find_markers(context, self.TITLE_REGEX)
         if not title_markers:
             self.report({"INFO"},
                         "No title markers found, operation cancelled.")
@@ -81,7 +81,7 @@ class SynchronizeTitles(bpy.types.Operator):
                     break
         return return_list
 
-    def find_markers(self, regex):
+    def find_markers(self, context, regex):
         """Finds and returns all markers using REGEX
         Args:
             - regex, the re match pattern to use"""
@@ -90,7 +90,7 @@ class SynchronizeTitles(bpy.types.Operator):
 
         import re
         regex = re.compile(regex)
-        markers = bpy.context.scene.timeline_markers
+        markers = context.scene.timeline_markers
         markers = (m for m in markers if regex.match(m.name))
         return markers
 

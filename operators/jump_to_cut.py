@@ -36,7 +36,7 @@ class JumpToCut(bpy.types.Operator):
 
     def execute(self, context):
         jump_to_frame = None
-        frame_current = bpy.context.scene.frame_current
+        frame_current = context.scene.frame_current
         sorted_sequences = sorted(context.sequences,
                                   key=attrgetter('frame_final_start'))
         if self.direction == 'forward':
@@ -57,6 +57,6 @@ class JumpToCut(bpy.types.Operator):
                 break
 
         if jump_to_frame:
-            bpy.context.scene.frame_current = max(1, jump_to_frame)
+            context.scene.frame_current = max(1, jump_to_frame)
         return {'FINISHED'}
 

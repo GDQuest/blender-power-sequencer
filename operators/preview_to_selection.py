@@ -34,16 +34,19 @@ class PreviewToSelection(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scene = bpy.context.scene
-        selection = bpy.context.selected_sequences
+        scene = context.scene
+        selection = context.selected_sequences
         if not selection:
             return {'CANCELLED'}
         frame_start, frame_end = get_frame_range(
-            sequences=bpy.context.selected_sequences, get_from_start=False)
+            context,
+            sequences=context.selected_sequences,
+            get_from_start=False
+        )
 
         if scene.frame_start == frame_start and scene.frame_end == frame_end:
-            frame_start, frame_end = get_frame_range(get_from_start=True)
+            frame_start, frame_end = get_frame_range(context, get_from_start=True)
 
-        set_preview_range(frame_start, frame_end - 1)
+        set_preview_range(context, frame_start, frame_end - 1)
         return {'FINISHED'}
 

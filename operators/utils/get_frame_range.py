@@ -1,8 +1,7 @@
-import bpy
 from operator import attrgetter
 
 
-def get_frame_range(sequences, get_from_start=False):
+def get_frame_range(context, sequences, get_from_start=False):
     """
     Returns a tuple with the minimum and maximum frames of the
     list of passed sequences.
@@ -13,9 +12,10 @@ def get_frame_range(sequences, get_from_start=False):
         this boolean is True
     """
     if not sequences:
-        scene = bpy.context.scene
+        scene = context.scene
         return scene.frame_start, scene.frame_end
 
     start = 1 if get_from_start else min(sequences, key=attrgetter('frame_final_start')).frame_final_start
     end = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
     return start, end
+

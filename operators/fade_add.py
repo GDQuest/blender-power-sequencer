@@ -47,7 +47,7 @@ class FadeAdd(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
         self.fade_length = convert_duration_to_frames(self.fade_duration)
 
         # Because of the way blender updates opacity, it's best if the
@@ -60,7 +60,7 @@ class FadeAdd(bpy.types.Operator):
         last_frame = all_strips[-1].frame_final_end
         scene.frame_current = last_frame + 1
 
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         if not selection:
             return {"CANCELLED"}
 
@@ -81,15 +81,15 @@ class FadeAdd(bpy.types.Operator):
                 scene.animation_data.action = action
 
             # Create fade
-            fcurves = bpy.context.scene.animation_data.action.fcurves
+            fcurves = context.scene.animation_data.action.fcurves
 
-            self.fade_clear(s)
+            self.fade_clear(context, s)
             frame_start, frame_end = s.frame_final_start, s.frame_final_end
 
             # fade_in_frames = (frame_start, frame_start + self.fade_length)
             # fade_out_frames = (frame_end - self.fade_length, frame_end)
 
-            fade_fcurve, fade_curve_type = self.fade_find_fcurve(s)
+            fade_fcurve, fade_curve_type = self.fade_find_fcurve(context, s)
             if fade_fcurve is None:
                 fade_fcurve = fcurves.new(
                     data_path=s.path_from_id(fade_curve_type))
@@ -121,14 +121,14 @@ class FadeAdd(bpy.types.Operator):
             fade_sequence_count))
         return {"FINISHED"}
 
-    def fade_find_fcurve(self, sequence=None):
+    def fade_find_fcurve(self, context, sequence=None):
         """
         Checks if there's a fade animation on a single sequence
         If the right fcurve is found,
         volume for audio sequences and blend_alpha for other sequences,
         Returns a tuple of (fade_fcurve, fade_type)
         """
-        fcurves = bpy.context.scene.animation_data.action.fcurves
+        fcurves = context.scene.animation_data.action.fcurves
         if not sequence:
             raise AttributeError('Missing sequence parameter')
 
@@ -143,7 +143,7 @@ class FadeAdd(bpy.types.Operator):
                 break
         return fade_fcurve, fade_type
 
-    def fade_clear(self, sequence=None):
+    def fade_clear(self, context, sequence=None):
         """
         Deletes all keyframes in the blend_alpha
         or volume fcurve of the provided sequence
@@ -151,8 +151,8 @@ class FadeAdd(bpy.types.Operator):
         if not sequence:
             raise AttributeError('Missing sequence parameter')
 
-        fcurves = bpy.context.scene.animation_data.action.fcurves
-        fade_fcurve = self.fade_find_fcurve(sequence)[0]
+        fcurves = context.scene.animation_data.action.fcurves
+        fade_fcurve = self.fade_find_fcurve(context, sequence)[0]
         if fade_fcurve:
             fcurves.remove(fade_fcurve)
 

@@ -73,8 +73,7 @@ class MouseTrim(bpy.types.Operator):
                 x=event.mouse_region_x, y=event.mouse_region_y)
             frame, channel = round(x), floor(y)
 
-            mouse_clicked_strip = find_strips_mouse(frame, channel,
-                                                    self.select_linked)
+            mouse_clicked_strip = find_strips_mouse(context, frame, channel, self.select_linked)
             if self.select_mode == 'smart' and mouse_clicked_strip:
                 self.select_mode = 'mouse'
             else:
@@ -85,24 +84,25 @@ class MouseTrim(bpy.types.Operator):
                     return {'CANCELLED'}
                 to_select.extend(mouse_clicked_strip)
             if self.select_mode == 'cursor':
-                for s in bpy.context.sequences:
+                for s in context.sequences:
                     if s.frame_final_start <= frame <= s.frame_final_end:
                         to_select.append(s)
 
-            selection_start, selection_end = get_frame_range(to_select)
+            selection_start, selection_end = get_frame_range(context, to_select)
             self.frame_start = frame
             self.frame_end = (selection_end
                               if abs(frame - selection_end) <= abs(frame - selection_start) else
                               selection_start)
 
         self.to_select = [s for s in to_select if not s.lock]
-        trim_strips(self.frame_start, self.frame_end,
+        trim_strips(context,
+                    self.frame_start, self.frame_end,
                     self.select_mode, self.to_select)
 
         if self.remove_gaps and self.select_mode == 'cursor':
-            bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
+            context.scene.frame_current = min(self.frame_start, self.frame_end)
             bpy.ops.power_sequencer.remove_gaps()
         else:
-            bpy.context.scene.frame_current = self.frame_start if self.frame_start else frame
+            context.scene.frame_current = self.frame_start if self.frame_start else frame
         return {'FINISHED'}
 

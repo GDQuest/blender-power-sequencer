@@ -54,7 +54,7 @@ class CrossfadeAdd(bpy.types.Operator):
         sorted_selection = sorted(context.selected_sequences,
                                   key=attrgetter('frame_final_start'))
         for selected_strip in sorted_selection:
-            next_in_channel = [s for s in find_sequences_after(selected_strip)
+            next_in_channel = [s for s in find_sequences_after(context, selected_strip)
                                if s.channel == selected_strip.channel]
             if not next_in_channel:
                 continue
@@ -76,13 +76,13 @@ class CrossfadeAdd(bpy.types.Operator):
                 next_sequence.frame_final_start += crossfade_length / 2
                 selected_strip.frame_final_end -= crossfade_length / 2
 
-            self.apply_crossfade(selected_strip, next_sequence)
+            self.apply_crossfade(context, selected_strip, next_sequence)
         return {"FINISHED"}
 
-    def apply_crossfade(self, strip_from, strip_to):
+    def apply_crossfade(self, context, strip_from, strip_to):
         bpy.ops.sequencer.select_all(action='DESELECT')
         strip_from.select = True
         strip_to.select = True
-        bpy.context.scene.sequence_editor.active_strip = strip_to
+        context.scene.sequence_editor.active_strip = strip_to
         bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
 

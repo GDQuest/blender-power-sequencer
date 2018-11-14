@@ -26,14 +26,14 @@ class MetaResizeToContent(bpy.types.Operator):
     @classmethod
     def poll(cls, context):
         try:
-            meta = next(s for s in bpy.context.selected_sequences if s.type == 'META')
+            next(s for s in context.selected_sequences if s.type == 'META')
         except StopIteration:
             return False
         return True
 
     def execute(self, context):
-        selected_meta_strips = (s for s in bpy.context.selected_sequences if s.type == 'META')
+        selected_meta_strips = (s for s in context.selected_sequences if s.type == 'META')
         for s in selected_meta_strips:
-            s.frame_final_start, s.frame_final_end = get_frame_range(s.sequences)
+            s.frame_final_start, s.frame_final_end = get_frame_range(context, s.sequences)
         return {'FINISHED'}
 

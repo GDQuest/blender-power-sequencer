@@ -24,7 +24,7 @@ class MarkerSnapToCursor(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        markers = bpy.context.scene.timeline_markers
+        markers = context.scene.timeline_markers
 
         selected_markers = []
         for marker in markers:
@@ -39,6 +39,6 @@ class MarkerSnapToCursor(bpy.types.Operator):
                 "You can only snap 1 marker at a time. Operation cancelled.")
             return {'CANCELLED'}
 
-        selected_markers[0].frame = bpy.context.scene.frame_current
+        selected_markers[0].frame = context.scene.frame_current
         return {'FINISHED'}
 

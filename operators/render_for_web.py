@@ -68,9 +68,9 @@ class RenderForWeb(bpy.types.Operator):
         addon_directory = os.path.dirname(script_file)
 
         # audio
-        if bpy.context.scene.render.ffmpeg.audio_codec == 'NONE':
-            bpy.context.scene.render.ffmpeg.audio_codec = 'AAC'
-            bpy.context.scene.render.ffmpeg.audio_bitrate = 192
+        if context.scene.render.ffmpeg.audio_codec == 'NONE':
+            context.scene.render.ffmpeg.audio_codec = 'AAC'
+            context.scene.render.ffmpeg.audio_bitrate = 192
 
         # video
         if self.preset == 'youtube':
@@ -89,9 +89,9 @@ class RenderForWeb(bpy.types.Operator):
         elif self.name_pattern == 'folder':
             exported_file_name = dirname(path).rsplit(sep="\\", maxsplit=1)[-1]
         elif self.name_pattern == 'scene':
-            exported_file_name = bpy.context.scene.name
+            exported_file_name = context.scene.name
 
-        bpy.context.scene.render.filepath = "//" + exported_file_name + '.mp4'
+        context.scene.render.filepath = "//" + exported_file_name + '.mp4'
 
         if self.auto_render:
             bpy.ops.render.render(

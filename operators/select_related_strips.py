@@ -26,7 +26,8 @@ class SelectRelatedStrips(bpy.types.Operator):
 
     find_all = bpy.props.BoolProperty(
         name="Find All",
-        description="Find all related strips recursively so that you can copy the selection without getting an error from Blender",
+        description=("Find all related strips recursively so that you can copy the selection"
+                     " without getting an error from Blender"),
         default=True
     )
 
@@ -43,7 +44,7 @@ class SelectRelatedStrips(bpy.types.Operator):
             related_strips = []
             # Only select direct neighbours and attached effects
             effects = [s for s in context.sequences
-                    if s.type in SequenceTypes.EFFECT]
+                       if s.type in SequenceTypes.EFFECT]
             found_effects = self.find_related_effects(context.selected_sequences, effects)
             related_strips.extend(found_effects)
             while len(found_effects) > 0:
@@ -81,7 +82,7 @@ class SelectRelatedStrips(bpy.types.Operator):
         Returns: A list with all the neighbours of the strip and sometimes
                  neighbours of neighbours and so on.
         """
-        #Respects initial selection
+        # Respects initial selection
         init_selected_strips = [s for s in context.selected_sequences]
 
         neighbours = []
@@ -119,3 +120,4 @@ class SelectRelatedStrips(bpy.types.Operator):
                 except Exception:
                     continue
         return found
+

@@ -110,15 +110,17 @@ class MouseCut(bpy.types.Operator):
         # Reverse keymaps if the user selects with the left mouse button
         self.select_mouse = 'RIGHTMOUSE'
         self.action_mouse = 'LEFTMOUSE'
-        if bpy.context.user_preferences.inputs.select_mouse == 'LEFT':
+        if context.user_preferences.inputs.select_mouse == 'LEFT':
             self.select_mouse = 'LEFTMOUSE'
             self.action_mouse = 'RIGHTMOUSE'
 
-        bpy.context.scene.frame_current = self.frame_start
+        context.scene.frame_current = self.frame_start
 
         # Drawing
         self.mouse_vec_start = Vector([event.mouse_region_x, event.mouse_region_y])
-        self.initially_clicked_strips = find_strips_mouse(self.frame_start, self.channel_start, select_linked=self.select_linked)
+        self.initially_clicked_strips = find_strips_mouse(
+            context, self.frame_start, self.channel_start, select_linked=self.select_linked
+        )
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
@@ -130,35 +132,40 @@ class MouseCut(bpy.types.Operator):
 
         elif event.type == self.action_mouse and event.value == 'RELEASE':
             if self.handle_cut_trim_line:
-                bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
+                bpy.types.SpaceSequenceEditor.draw_handler_remove(
+                    self.handle_cut_trim_line, 'WINDOW'
+                )
 
             self.select_mode = 'cursor' if event.shift else 'smart'
 
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
             if (self.use_pen_tablet and cursor_distance <= self.threshold_trim_distance) \
                or self.frame_start == self.frame_end:
-                to_select = self.find_strips_to_cut()
+                to_select = self.find_strips_to_cut(context)
                 bpy.ops.sequencer.select_all(action='DESELECT')
                 for s in to_select:
                     s.select = True
-                self.cut_strips_or_gap(self.frame_start)
+                self.cut_strips_or_gap(context, self.frame_start)
             else:
-                to_select, to_delete = self.find_strips_to_trim()
-                trim_strips(self.frame_start, self.frame_end, self.select_mode,
+                to_select, to_delete = self.find_strips_to_trim(context)
+                trim_strips(context,
+                            self.frame_start, self.frame_end, self.select_mode,
                             to_select, to_delete)
 
                 if self.remove_gaps and self.select_mode == 'cursor':
-                    bpy.context.scene.frame_current = min(self.frame_start, self.frame_end)
+                    context.scene.frame_current = min(self.frame_start, self.frame_end)
                     bpy.ops.power_sequencer.remove_gaps()
                 else:
-                    bpy.context.scene.frame_current = self.frame_end
+                    context.scene.frame_current = self.frame_end
             return {'FINISHED'}
 
         elif event.type == 'MOUSEMOVE':
             if self.handle_cut_trim_line:
-                bpy.types.SpaceSequenceEditor.draw_handler_remove(self.handle_cut_trim_line, 'WINDOW')
+                bpy.types.SpaceSequenceEditor.draw_handler_remove(
+                    self.handle_cut_trim_line, 'WINDOW'
+                )
 
-            to_select, to_delete = self.find_strips_to_trim()
+            to_select, to_delete = self.find_strips_to_trim(context)
             self.target_strips = to_select
             self.target_strips.extend(to_delete)
 
@@ -173,7 +180,7 @@ class MouseCut(bpy.types.Operator):
             else:
                 draw_end_x = event.mouse_region_x
 
-            args = (self,
+            args = (self, context,
                     Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]),
                     Vector([round(draw_end_x), self.mouse_vec_start.y]),
                     event.shift)
@@ -183,12 +190,12 @@ class MouseCut(bpy.types.Operator):
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
             self.frame_end, self.end_channel = round(x), floor(y)
-            bpy.context.scene.frame_current = self.frame_end
+            context.scene.frame_current = self.frame_end
             return {'PASS_THROUGH'}
 
         return {'RUNNING_MODAL'}
 
-    def find_strips_to_cut(self):
+    def find_strips_to_cut(self, context):
         """
         Finds and Returns a list of strips to cut
         """
@@ -196,31 +203,31 @@ class MouseCut(bpy.types.Operator):
         overlapping_strips = []
         if self.select_mode == 'smart':
             overlapping_strips = find_strips_mouse(
-                self.frame_start, self.channel_start, self.select_linked)
+                context, self.frame_start, self.channel_start, self.select_linked)
             to_select.extend(overlapping_strips)
 
         if self.select_mode == 'cursor' or (not overlapping_strips and
                                             self.select_mode == 'smart'):
-            for s in bpy.context.sequences:
+            for s in context.sequences:
                 if s.lock:
                     continue
                 if s.frame_final_start <= self.frame_start <= s.frame_final_end:
                     to_select.append(s)
         return to_select
 
-    def cut_strips_or_gap(self, frame_cut):
-        if self.cut_gaps and len(bpy.context.selected_sequences) == 0:
+    def cut_strips_or_gap(self, context, frame_cut):
+        if self.cut_gaps and len(context.selected_sequences) == 0:
             bpy.ops.power_sequencer.remove_gaps()
         else:
-            frame_current = bpy.context.scene.frame_current
-            bpy.context.scene.frame_current = frame_cut
+            frame_current = context.scene.frame_current
+            context.scene.frame_current = frame_cut
             bpy.ops.sequencer.cut(
-                frame=bpy.context.scene.frame_current,
+                frame=context.scene.frame_current,
                 type='SOFT',
                 side='BOTH')
-            bpy.context.scene.frame_current = frame_current
+            context.scene.frame_current = frame_current
 
-    def find_strips_to_trim(self):
+    def find_strips_to_trim(self, context):
         """
         Finds and Returns two lists of strips to trim and strips to delete
         """
@@ -234,7 +241,7 @@ class MouseCut(bpy.types.Operator):
 
         if self.select_mode == 'cursor' or (not self.initially_clicked_strips and
                                             self.select_mode == 'smart'):
-            for s in bpy.context.sequences:
+            for s in context.sequences:
                 if s.lock:
                     continue
 
@@ -247,17 +254,17 @@ class MouseCut(bpy.types.Operator):
         return to_select, to_delete
 
 
-def draw_cut_trim(self, start, end, shift_is_pressed):
+def draw_cut_trim(self, context, start, end, shift_is_pressed):
     # find channel Y coordinates
     channel_tops = [start.y]
     channel_bottoms = [start.y]
     for strip in self.target_strips:
-        bottom = bpy.context.region.view2d.view_to_region(0, floor(strip.channel))[1]
+        bottom = context.region.view2d.view_to_region(0, floor(strip.channel))[1]
         if bottom == 12000:
             bottom = 0
         channel_bottoms.append(bottom)
 
-        top = bpy.context.region.view2d.view_to_region(0, floor(strip.channel) + 1)[1]
+        top = context.region.view2d.view_to_region(0, floor(strip.channel) + 1)[1]
         if top == 12000:
             top = 0
         channel_tops.append(top)
@@ -293,3 +300,4 @@ def draw_cut_trim(self, start, end, shift_is_pressed):
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
     bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
+

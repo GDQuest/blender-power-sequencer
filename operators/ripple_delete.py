@@ -30,15 +30,15 @@ class RippleDelete(bpy.types.Operator):
         return context.sequences
 
     def invoke(self, context, event):
-        frame, channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
             bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
         sequencer = bpy.ops.sequencer
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
 
         if not selection:
             return {'CANCELLED'}
@@ -49,18 +49,18 @@ class RippleDelete(bpy.types.Operator):
 
         channels = set((s.channel for s in selection))
 
-        audio_scrub = bpy.context.scene.use_audio_scrub
+        audio_scrub = context.scene.use_audio_scrub
         if audio_scrub:
-            bpy.context.scene.use_audio_scrub = False
+            context.scene.use_audio_scrub = False
 
         # If only 1 block of strips, we store linked strips
-        selection_blocks = slice_selection(selection)
+        selection_blocks = slice_selection(context, selection)
 
         surrounding_strips = []
         is_single_channel = len(selection_blocks) == 1 and len(channels) == 1
         if is_single_channel:
             bpy.ops.sequencer.select_linked()
-            for s in bpy.context.selected_sequences:
+            for s in context.selected_sequences:
                 if s not in selection:
                     surrounding_strips.append(s)
             sequencer.select_all(action='DESELECT')
@@ -72,13 +72,13 @@ class RippleDelete(bpy.types.Operator):
                 sequencer.select_all(action='DESELECT')
                 for s in block:
                     s.select = True
-                selection_start, _ = get_frame_range(block)
+                selection_start, _ = get_frame_range(context, block)
                 sequencer.delete()
 
                 scene.frame_current = selection_start
                 bpy.ops.power_sequencer.remove_gaps()
             # auto move cursor back
-            if bpy.context.screen.is_animation_playing and len(
+            if context.screen.is_animation_playing and len(
                     selection_blocks) == 1:
                 sequences = selection_blocks[0]
                 start_frame = min(
@@ -102,7 +102,7 @@ class RippleDelete(bpy.types.Operator):
         report_message += 's' if selection_length > 1 else ''
         self.report({'INFO'}, report_message)
         if audio_scrub:
-            bpy.context.scene.use_audio_scrub = audio_scrub
+            context.scene.use_audio_scrub = audio_scrub
 
         return {'FINISHED'}
 
