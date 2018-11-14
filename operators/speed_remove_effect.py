@@ -25,12 +25,14 @@ class Unspeed(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        scene = context.scene
-        active_strip = scene.sequence_editor.active_strip
-        if not (scene.sequence_editor and active_strip):
-            return False
-        result = active_strip.select and active_strip.type == 'META'
-        result = result and [s for s in active_strip.sequences if s.type == 'SPEED']
+        result = False
+        try:
+            scene = context.scene
+            active_strip = scene.sequence_editor.active_strip
+            result = active_strip.select and active_strip.type == 'META'
+            result = result and [s for s in active_strip.sequences if s.type == 'SPEED']
+        except AttributeError:
+            pass
         return result
 
     def execute(self, context):

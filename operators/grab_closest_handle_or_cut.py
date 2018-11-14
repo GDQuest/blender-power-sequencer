@@ -41,7 +41,7 @@ class GrabClosestCut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return (context.sequences and len(context.sequences) > 0)
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer

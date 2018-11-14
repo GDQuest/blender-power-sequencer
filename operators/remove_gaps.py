@@ -34,7 +34,7 @@ class RemoveGaps(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return (context.sequences and len(context.sequences) > 0)
 
     def execute(self, context):
         frame_start = (self.frame_start_override

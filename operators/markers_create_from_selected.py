@@ -22,7 +22,7 @@ class MarkersCreateFromSelectedStrips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.selected_sequences) > 0
+        return (context.selected_sequences and len(context.selected_sequences) > 0)
 
     def execute(self, context):
         cursor_frame_start = context.scene.frame_current

@@ -25,7 +25,7 @@ class DeleteDirect(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return (context.sequences and len(context.sequences) > 0)
 
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)

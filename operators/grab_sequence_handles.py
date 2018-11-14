@@ -36,7 +36,7 @@ class GrabSequenceHandles(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return (context.sequences and len(context.sequences) > 0)
 
     def invoke(self, context, event):
         self.frame, self.channel = context.region.view2d.region_to_view(

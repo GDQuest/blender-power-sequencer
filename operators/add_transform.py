@@ -33,7 +33,7 @@ class AddTransform(bpy.types.Operator):
         try:
             next((s for s in context.selected_sequences if s.type in ('IMAGE', 'MOVIE')))
             return True
-        except StopIteration:
+        except (StopIteration, TypeError):
             return False
 
     def execute(self, context):
