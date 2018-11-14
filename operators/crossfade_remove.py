@@ -32,7 +32,7 @@ class CrossfadeRemove(bpy.types.Operator):
     def execute(self, context):
         to_process = (self.sequences_override
                       if self.sequences_override else
-                      bpy.context.selected_sequences)
+                      context.selected_sequences)
         sequences = [s for s in to_process
                      if s.type in SequenceTypes.TRANSITION]
         if not sequences:

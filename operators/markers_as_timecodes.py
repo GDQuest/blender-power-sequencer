@@ -1,6 +1,6 @@
 import bpy
-import operator
-import math
+import datetime as dt
+import operator as op
 from .utils import pyperclip
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
@@ -32,19 +32,15 @@ class CopyMarkersAsTimecodes(bpy.types.Operator):
             self.report({'INFO'}, "No markers found")
             return {'CANCELLED'}
 
-        sorted_markers = sorted(context.scene.timeline_markers,
-                                key=operator.attrgetter('frame'))
+        sorted_markers = sorted(context.scene.timeline_markers, key=op.attrgetter('frame'))
 
-        markers_as_timecodes = ""
+        markers_as_timecodes = []
         for marker in sorted_markers:
             framerate = render.fps / render.fps_base
-            time_in_seconds = marker.frame / framerate
-            minutes = math.floor(time_in_seconds / 60.0)
-            seconds = math.floor(time_in_seconds % 60.0)
+            time = (dt.datetime(year=1, month=1, day=1)
+                    + dt.timedelta(seconds=marker.frame/framerate))
+            markers_as_timecodes.append(time.strftime('%H:%M:%S {}'.format(marker.name)))
 
-            string = "{:02d}:{:02d} {}".format(minutes, seconds, marker.name)
-            markers_as_timecodes += string + "\n"
-
-        pyperclip.copy(markers_as_timecodes)
+        pyperclip.copy('\n'.join(markers_as_timecodes))
         return {'FINISHED'}
 

@@ -38,7 +38,7 @@ class CrossfadeEdit(bpy.types.Operator):
     def execute(self, context):
         active = context.scene.sequence_editor.active_strip
         if active.type not in self.crossfade_types:
-            effect = self.find_cross_effect(active)
+            effect = self.find_cross_effect(context, active)
             if not effect:
                 return {"CANCELLED"}
             active = context.scene.sequence_editor.active_strip = effect
@@ -61,7 +61,7 @@ class CrossfadeEdit(bpy.types.Operator):
         if sequence.type not in SequenceTypes.VIDEO + SequenceTypes.IMAGE:
             return
 
-        effect_sequences = (s for s in bpy.context.sequences
+        effect_sequences = (s for s in context.sequences
                             if s.type in SequenceTypes.EFFECT)
         found_effect_strips = []
         for s in effect_sequences:

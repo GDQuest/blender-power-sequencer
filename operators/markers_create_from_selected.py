@@ -25,14 +25,14 @@ class MarkersCreateFromSelectedStrips(bpy.types.Operator):
         return (context.selected_sequences and len(context.selected_sequences) > 0)
 
     def execute(self, context):
-        cursor_frame_start = bpy.context.scene.frame_current
+        cursor_frame_start = context.scene.frame_current
 
         for m in context.scene.timeline_markers:
             m.select = False
 
         for s in context.selected_sequences:
             bpy.ops.marker.add()
-            new_marker = bpy.context.scene.timeline_markers[-1]
+            new_marker = context.scene.timeline_markers[-1]
 
             new_marker.select = True
             bpy.ops.marker.rename(name=s.name)

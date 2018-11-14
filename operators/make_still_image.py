@@ -39,7 +39,7 @@ class MakeStillImage(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
         active = scene.sequence_editor.active_strip
         sequencer = bpy.ops.sequencer
         transform = bpy.ops.transform

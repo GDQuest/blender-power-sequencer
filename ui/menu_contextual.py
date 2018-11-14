@@ -15,15 +15,15 @@ class PowerSequencerMenuContextual(bpy.types.Menu):
                 'wm.save_as_mainfile', icon='SAVE_AS', text='Save as')
             return
 
-        if not bpy.context.sequences:
+        if not context.sequences:
             layout.operator(
                 'power_sequencer.import_local_footage',
                 icon='SEQUENCE',
                 text='Import local footage')
             return
 
-        selection = bpy.context.selected_sequences
-        active_strip = bpy.context.scene.sequence_editor.active_strip
+        selection = context.selected_sequences
+        active_strip = context.scene.sequence_editor.active_strip
         types = set([s.type for s in selection])
 
         if active_strip.type == 'GAMMA_CROSS':
@@ -76,3 +76,4 @@ class PowerSequencerMenuContextual(bpy.types.Menu):
             'power_sequencer.render_video',
             icon='RENDER_ANIMATION',
             text='Render video for the web')
+

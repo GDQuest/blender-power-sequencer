@@ -49,6 +49,7 @@ from .save_direct import SaveDirect
 from .scene_create_from_selection import SceneCreateFromSelection
 from .scene_cycle import SceneCycle
 from .select_closest_to_mouse import SelectClosestToMouse
+from .select_linked_strips import SelectLinkedStrips
 from .select_linked_effect import SelectLinkedEffect
 from .select_related_strips import SelectRelatedStrips
 from .select_strips_under_cursor import SelectStripsUnderCursor

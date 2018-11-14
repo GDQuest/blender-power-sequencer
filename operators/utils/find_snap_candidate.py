@@ -1,11 +1,9 @@
-import bpy
-
-def find_snap_candidate(frame=0):
+def find_snap_candidate(context, frame=0):
     """
     Finds and returns the best frame snap candidate around the frame
     """
     closest_cut_frame = 1000000
-    for s in bpy.context.sequences:
+    for s in context.sequences:
         start_to_frame = frame - s.frame_final_start
         end_to_frame = frame - s.frame_final_end
         distance_to_start = abs(start_to_frame)
@@ -20,3 +18,4 @@ def find_snap_candidate(frame=0):
         if abs(frame - snap_candidate) < abs(frame - closest_cut_frame):
             closest_cut_frame = snap_candidate
     return closest_cut_frame
+

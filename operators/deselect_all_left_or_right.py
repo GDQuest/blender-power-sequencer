@@ -39,7 +39,7 @@ class DeselectAllStripsLeftOrRight(bpy.types.Operator):
         frame_mouse = context.region.view2d.region_to_view(
                 event.mouse_region_x, 1)[0]
 
-        for s in bpy.context.sequences:
+        for s in context.sequences:
             if frame_mouse < frame_current or self.side == "left":
                 if s.frame_final_end < frame_current:
                     self.deselect(s)

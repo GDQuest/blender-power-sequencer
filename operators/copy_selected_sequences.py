@@ -43,21 +43,21 @@ class CopySelectedSequences(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-        cursor_start_frame = bpy.context.scene.frame_current
+        cursor_start_frame = context.scene.frame_current
         sequencer = bpy.ops.sequencer
 
         # Deactivate audio playback and video preview
-        scene = bpy.context.scene
+        scene = context.scene
         initial_audio_setting = scene.use_audio_scrub
         initial_proxy_size = context.space_data.proxy_render_size
         scene.use_audio_scrub = False
         context.space_data.proxy_render_size = 'NONE'
 
-        first_sequence = min(context.selection,
+        first_sequence = min(context.selected_sequences,
                              key=attrgetter('frame_final_start'))
-        bpy.context.scene.frame_current = first_sequence.frame_final_start
+        context.scene.frame_current = first_sequence.frame_final_start
         sequencer.copy()
-        bpy.context.scene.frame_current = cursor_start_frame
+        context.scene.frame_current = cursor_start_frame
 
         scene.use_audio_scrub = initial_audio_setting
         context.space_data.proxy_render_size = initial_proxy_size
@@ -65,10 +65,9 @@ class CopySelectedSequences(bpy.types.Operator):
         if self.delete_selection:
             sequencer.delete()
 
-        plural_string = 's' if len(context.selection) != 1 else ''
+        plural_string = 's' if len(context.selected_sequences) != 1 else ''
         action_verb = 'Cut' if self.delete_selection else 'Copied'
         report_message = '{!s} {!s} sequence{!s} to the clipboard.'.format(
-            action_verb, str(len(context.selection)), plural_string)
+            action_verb, str(len(context.selected_sequences)), plural_string)
         self.report({'INFO'}, report_message)
         return {"FINISHED"}
-

@@ -30,7 +30,7 @@ class SetTimelineRange(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
         if self.adjust == 'start':
             scene.frame_start = scene.frame_current
         elif self.adjust == 'end':

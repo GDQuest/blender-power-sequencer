@@ -38,10 +38,10 @@ class AddTransform(bpy.types.Operator):
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-        sequence_editor = bpy.context.scene.sequence_editor
-        render = bpy.context.scene.render
+        sequence_editor = context.scene.sequence_editor
+        render = context.scene.render
 
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         selection = [s for s in selection if s.type in ('IMAGE', 'MOVIE')]
         if not selection:
             self.report({"ERROR_INVALID_INPUT"},

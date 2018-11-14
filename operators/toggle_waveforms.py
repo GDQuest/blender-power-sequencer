@@ -39,9 +39,9 @@ class ToggleWaveforms(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         if not selection:
-            selection = bpy.context.sequences
+            selection = context.sequences
 
         sequences = [s for s in selection if s.type in SequenceTypes.SOUND]
 

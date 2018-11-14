@@ -28,9 +28,9 @@ class SnapSelectionToCursor(bpy.types.Operator):
 
     def execute(self, context):
         selection = sorted(
-            bpy.context.selected_sequences,
+            context.selected_sequences,
             key=attrgetter('frame_final_start'))
-        time_move = selection[0].frame_final_start - bpy.context.scene.frame_current
+        time_move = selection[0].frame_final_start - context.scene.frame_current
 
         bpy.ops.power_sequencer.select_related_strips()
         bpy.ops.transform.seq_slide(value=(-time_move, 0))

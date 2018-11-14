@@ -40,7 +40,7 @@ class SwapStrips(bpy.types.Operator):
     def execute(self, context):
         strip_1 = context.selected_sequences[0]
         if len(context.selected_sequences) == 1:
-            strip_2 = self.find_closest_strip_vertical(strip_1, self.direction)
+            strip_2 = self.find_closest_strip_vertical(context, strip_1, self.direction)
         else:
             strip_2 = context.selected_sequences[1]
         if not strip_2 or strip_1.lock or strip_2.lock:
@@ -174,7 +174,7 @@ class SwapStrips(bpy.types.Operator):
                     u.channel += 1
             s.channel = channel
 
-    def find_closest_strip_vertical(self, strip, direction):
+    def find_closest_strip_vertical(self, context, strip, direction):
         """
         Finds the closest strip to a given strip in a specific direction.
         Args:
@@ -182,7 +182,7 @@ class SwapStrips(bpy.types.Operator):
         Returns: The closest strip to the given strip, in the proper direction.
                  If no strip is found, returns None.
         """
-        strips_in_range = (s for s in bpy.context.sequences
+        strips_in_range = (s for s in context.sequences
                            if strip.frame_final_start <= s.frame_final_start
                            and s.frame_final_end <= strip.frame_final_end)
         if direction == "up":

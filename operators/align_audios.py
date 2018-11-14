@@ -35,7 +35,7 @@ class AlignAudios(bpy.types.Operator):
         scene = context.scene
         if scene.sequence_editor and scene.sequence_editor.active_strip:
             active = scene.sequence_editor.active_strip
-            selected = bpy.context.selected_sequences
+            selected = context.selected_sequences
 
             if len(selected) == 2 and active in selected:
                 selected.pop(selected.index(active))
@@ -64,7 +64,7 @@ class AlignAudios(bpy.types.Operator):
         active = scene.sequence_editor.active_strip
         active_filepath = bpy.path.abspath(active.sound.filepath)
 
-        selected = bpy.context.selected_sequences
+        selected = context.selected_sequences
         selected.pop(selected.index(active))
 
         align_strip = selected[0]

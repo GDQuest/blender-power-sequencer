@@ -44,13 +44,13 @@ class AddSpeed(bpy.types.Operator):
 
     def execute(self, context):
         sequencer = bpy.ops.sequencer
-        scene = bpy.context.scene
+        scene = context.scene
         active = scene.sequence_editor.active_strip
 
         # Select linked sequences
-        for s in find_linked(bpy.context.selected_sequences):
+        for s in find_linked(context, context.sequences, context.selected_sequences):
             s.select = True
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
 
         video_sequences = [
             s for s in selection if s.type in SequenceTypes.VIDEO
@@ -75,7 +75,7 @@ class AddSpeed(bpy.types.Operator):
                     return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
-            selection_blocks = slice_selection(selection)
+            selection_blocks = slice_selection(context, selection)
 
         for block in selection_blocks:
             # start, end = 0, 0
@@ -95,7 +95,7 @@ class AddSpeed(bpy.types.Operator):
                 active = scene.sequence_editor.active_strip
             # Add speed effect
             sequencer.effect_strip_add(type='SPEED')
-            effect_strip = bpy.context.scene.sequence_editor.active_strip
+            effect_strip = context.scene.sequence_editor.active_strip
             effect_strip.use_default_fade = False
             effect_strip.speed_factor = self.speed_factor
 
@@ -113,8 +113,10 @@ class AddSpeed(bpy.types.Operator):
 
             effect_strip.select = True
             sequencer.meta_make()
-            bpy.context.selected_sequences[
-                0].name = source_name + " " + str(self.speed_factor) + 'x'
+            context.selected_sequences[0].name = (source_name
+                                                  + " "
+                                                  + str(self.speed_factor)
+                                                  + 'x')
         self.report({"INFO"}, "Successfully processed " +
                     str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}

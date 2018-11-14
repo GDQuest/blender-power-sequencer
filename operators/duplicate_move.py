@@ -26,10 +26,10 @@ class DuplicateMove(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return bpy.context.sequences
+        return context.sequences
 
     def invoke(self, context, event):
-        frame, channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
             bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame,
                                                             channel=channel)

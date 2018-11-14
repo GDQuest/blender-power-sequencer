@@ -49,9 +49,9 @@ class RemoveGaps(bpy.types.Operator):
                                 or s.frame_final_end > frame_start]
         if not sequences_to_process:
             return {'CANCELLED'}
-        sequence_blocks = slice_selection(sequences_to_process)
+        sequence_blocks = slice_selection(context, sequences_to_process)
 
-        first_gap_frame = self.find_first_gap_frame(sequence_blocks[0], frame_start)
+        first_gap_frame = self.find_first_gap_frame(context, sequence_blocks[0], frame_start)
         if first_gap_frame is None:
             return {'FINISHED'}
 
@@ -60,11 +60,11 @@ class RemoveGaps(bpy.types.Operator):
         blocks_after_gap = (sequence_blocks[1:]
                             if first_block_start <= first_gap_frame else
                             sequence_blocks)
-        self.remove_gaps(blocks_after_gap, first_gap_frame)
+        self.remove_gaps(context, blocks_after_gap, first_gap_frame)
         return {'FINISHED'}
 
-    def find_first_gap_frame(self, sorted_sequences, frame_start):
-        strips_before_start = [s for s in bpy.context.sequences if s.frame_final_end <= frame_start]
+    def find_first_gap_frame(self, context, sorted_sequences, frame_start):
+        strips_before_start = [s for s in context.sequences if s.frame_final_end <= frame_start]
 
         end_frame_before_gap = 0
         if strips_before_start:
@@ -80,7 +80,7 @@ class RemoveGaps(bpy.types.Operator):
         else:
             return strips_end
 
-    def remove_gaps(self, sequence_blocks, gap_frame_start):
+    def remove_gaps(self, context, sequence_blocks, gap_frame_start):
         for block in sequence_blocks:
             gap_size = block[0].frame_final_start - gap_frame_start
             if gap_size < 1:
@@ -89,13 +89,13 @@ class RemoveGaps(bpy.types.Operator):
             for s in block:
                 s.select = True
             bpy.ops.transform.seq_slide(value=(-gap_size, 0.0))
-            self.move_markers(gap_frame_start, gap_size)
+            self.move_markers(context, gap_frame_start, gap_size)
             if not self.all:
                 break
             gap_frame_start = block[-1].frame_final_end
 
-    def move_markers(self, gap_frame_start, gap_size):
-        markers = (m for m in bpy.context.scene.timeline_markers if m.frame > gap_frame_start)
+    def move_markers(self, context, gap_frame_start, gap_size):
+        markers = (m for m in context.scene.timeline_markers if m.frame > gap_frame_start)
         for m in markers:
             m.frame -= min({gap_size, m.frame - gap_frame_start})
 

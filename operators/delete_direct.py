@@ -28,14 +28,14 @@ class DeleteDirect(bpy.types.Operator):
         return (context.sequences and len(context.sequences) > 0)
 
     def invoke(self, context, event):
-        frame, channel = get_mouse_frame_and_channel(event)
+        frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
             bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame,
                                                             channel=channel)
         return self.execute(context)
 
     def execute(self, context):
-        selection = bpy.context.selected_sequences
+        selection = context.selected_sequences
         if bpy.ops.power_sequencer.crossfade_remove.poll():
             bpy.ops.power_sequencer.crossfade_remove()
         bpy.ops.sequencer.delete()
