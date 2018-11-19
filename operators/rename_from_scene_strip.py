@@ -28,16 +28,20 @@ class RenameStripScene(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.sequence_editor.active_strip.type == 'SCENE'
+        is_all_scene = True
+
+        for sequence in context.selected_sequences:
+            if not sequence.type == 'SCENE':
+                is_all_scene = False
+        return is_all_scene
 
     def invoke(self, context, event):
         window_manager = context.window_manager
         return window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
-        strip = context.scene.sequence_editor.active_strip
-        strip_scene = strip.scene
 
-        strip.name = self.new_name
-        strip_scene.name = strip.name
+        for strip in context.selected_sequences:
+            strip.name = self.new_name
+            strip.scene.name = strip.name
         return {'FINISHED'}
