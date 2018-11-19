@@ -33,7 +33,7 @@ class RenameStripScene(bpy.types.Operator):
         for sequence in context.selected_sequences:
             if not sequence.type == 'SCENE':
                 is_all_scene = False
-        return is_all_scene
+        return is_all_scene and context.selected_sequences != None
 
     def invoke(self, context, event):
         window_manager = context.window_manager
