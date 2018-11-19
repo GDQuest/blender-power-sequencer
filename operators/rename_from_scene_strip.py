@@ -15,13 +15,7 @@ class RenameStripScene(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
-    }
+
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
