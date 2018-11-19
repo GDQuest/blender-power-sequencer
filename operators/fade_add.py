@@ -48,7 +48,7 @@ class FadeAdd(bpy.types.Operator):
 
     def execute(self, context):
         scene = context.scene
-        self.fade_length = convert_duration_to_frames(self.fade_duration)
+        self.fade_length = convert_duration_to_frames(context, self.fade_duration)
 
         # Because of the way blender updates opacity, it's best if the
         # CTI is not on any strip while adding these keyframes.
@@ -155,4 +155,3 @@ class FadeAdd(bpy.types.Operator):
         fade_fcurve = self.fade_find_fcurve(context, sequence)[0]
         if fade_fcurve:
             fcurves.remove(fade_fcurve)
-

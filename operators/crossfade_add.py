@@ -71,6 +71,7 @@ class CrossfadeAdd(bpy.types.Operator):
             if next_sequence.frame_final_start == \
                selected_strip.frame_final_end:
                 crossfade_length = convert_duration_to_frames(
+                    context,
                     self.crossfade_duration
                 )
                 next_sequence.frame_final_start += crossfade_length / 2
@@ -85,4 +86,3 @@ class CrossfadeAdd(bpy.types.Operator):
         strip_to.select = True
         context.scene.sequence_editor.active_strip = strip_to
         bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
-

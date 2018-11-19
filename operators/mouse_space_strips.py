@@ -37,7 +37,7 @@ class MouseSpaceStrips(bpy.types.Operator):
         return len(context.sequences) > 0
 
     def invoke(self, context, event):
-        gap_frames = convert_duration_to_frames(self.gap_to_insert)
+        gap_frames = convert_duration_to_frames(context, self.gap_to_insert)
         strips_to_space = []
         frame, _ = get_mouse_frame_and_channel(context, event)
 
@@ -50,4 +50,3 @@ class MouseSpaceStrips(bpy.types.Operator):
         for s in sorted_strips:
             s.frame_start += gap_frames
         return {'FINISHED'}
-

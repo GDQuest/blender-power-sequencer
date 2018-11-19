@@ -50,14 +50,14 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
 
         # Convert mouse position to frame, channel
-        x, y = context.region.view2d.region_to_view(
-            x=event.mouse_region_x, y=event.mouse_region_y)
-        frame, = round(x), floor(y)
+        x = context.region.view2d.region_to_view(
+            x=event.mouse_region_x, y=event.mouse_region_y)[0]
+        frame = round(x)
 
         left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(context, frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
-        margin_frame = convert_duration_to_frames(self.margin)
+        margin_frame = convert_duration_to_frames(context, self.margin)
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
             self.report({'WARNING'},
@@ -167,4 +167,3 @@ class TrimToSurroundingCuts(bpy.types.Operator):
                distance_to_start < distance_to_end_cut_frame:
                 end_cut_frame = s.frame_final_start
         return start_cut_frame, end_cut_frame
-

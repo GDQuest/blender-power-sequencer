@@ -51,7 +51,7 @@ class PreviewClosestCut(bpy.types.Operator):
                           if not self.cut_frame_override else
                           self.cut_frame_override)
 
-        duration_frame = convert_duration_to_frames(self.duration)
+        duration_frame = convert_duration_to_frames(context, self.duration)
         start = preview_center - duration_frame / 2
         end = preview_center + duration_frame / 2
         if not (preview_center > 1 and start > 1):
@@ -73,4 +73,3 @@ class PreviewClosestCut(bpy.types.Operator):
                     last_distance = distance_to_cut
                     closest_cut_frame = cut_frame
         return closest_cut_frame
-
