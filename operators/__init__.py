@@ -43,6 +43,7 @@ from .open_project_directory import OpenProjectDirectory
 from .preview_closest_cut import PreviewClosestCut
 from .preview_to_selection import PreviewToSelection
 from .remove_gaps import RemoveGaps
+from .rename_from_scene_strip import RenameStripScene
 from .render_for_web import RenderForWeb
 from .ripple_delete import RippleDelete
 from .save_direct import SaveDirect
@@ -75,4 +76,3 @@ doc = {
         'keymap': 'Sequencer'
     }
 }
-
