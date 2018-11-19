@@ -4,7 +4,6 @@ import operator
 from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
-
 class MakeStillImage(bpy.types.Operator):
     """
     *brief* Make still image from active strip
@@ -25,21 +24,22 @@ class MakeStillImage(bpy.types.Operator):
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    gap_to_duration = bpy.props.BoolProperty(
-        name="Gap as length",
-        description="Use the gap between two strips as the duration",
-        default=True)
     strip_duration = bpy.props.IntProperty(
         name="Strip length",
-        description="Length of the new strip in frames",
-        default=30)
+        description="Length of the new strip in frames, if 0 it will use the gap as its length",
+        default=0,
+        min = 0)
 
     @classmethod
     def poll(cls, context):
         return True
 
+    def invoke(self, context, event):
+        window_manager = context.window_manager
+        return window_manager.invoke_props_dialog(self)
+
     def execute(self, context):
-        scene = bpy.context.scene
+        scene = context.scene
         active = scene.sequence_editor.active_strip
         sequencer = bpy.ops.sequencer
         transform = bpy.ops.transform
@@ -63,7 +63,7 @@ class MakeStillImage(bpy.types.Operator):
         if start_frame == active.frame_final_start:
             scene.frame_current = start_frame + 1
 
-        if self.gap_to_duration:
+        if self.strip_duration < 1:
             strips = sorted(scene.sequence_editor.sequences,
                             key=operator.attrgetter('frame_final_start'))
 
@@ -83,9 +83,6 @@ class MakeStillImage(bpy.types.Operator):
             frame=scene.frame_current + offset + 1, type='SOFT', side='LEFT')
         transform.seq_slide(value=(-offset, 0))
 
-        if not self.gap_to_duration:
-            sequencer.gap_insert(frames=offset)
-
         sequencer.meta_make()
         active = scene.sequence_editor.active_strip
         active.name = 'Still image'
@@ -99,4 +96,3 @@ class MakeStillImage(bpy.types.Operator):
         active.select_right_handle = False
         active.select_left_handle = False
         return {"FINISHED"}
-
