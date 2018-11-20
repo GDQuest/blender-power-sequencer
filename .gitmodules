@@ -1,3 +1,6 @@
 [submodule "scripts/BPSRender"]
 	path = scripts/BPSRender
 	url = https://gitlab.com/razcore/BPSRender.git
+[submodule "scripts/BPSProxy"]
+	path = scripts/BPSProxy
+	url = https://gitlab.com/razcore/bpsproxy.git
