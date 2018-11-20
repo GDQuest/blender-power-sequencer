@@ -10,7 +10,9 @@ class OpenSceneStrip(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': [],
+        'shortcuts': [
+        ({'type': 'E', 'value': 'PRESS', 'alt': True, 'ctrl': True}, {}, 'Open Strip Scene')
+        ],
         'keymap': 'Sequencer'
     }
 
