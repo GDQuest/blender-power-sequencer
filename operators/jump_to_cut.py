@@ -21,7 +21,7 @@ class JumpToCut(bpy.types.Operator):
              {'direction': 'forward'},
              'Jump to next cut or keyframe'),
             ({'type': 'DOWN', 'value': 'PRESS'},
-             {'direction': 'forward'},
+             {'direction': 'backward'},
              'Jump to previous cut or keyframe'),
         ],
         'keymap': 'Sequencer'
