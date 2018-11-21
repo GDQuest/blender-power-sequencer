@@ -16,7 +16,14 @@ class JumpToCut(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': [],
+        'shortcuts': [
+            ({'type': 'UP', 'value': 'PRESS'},
+             {'direction': 'forward'},
+             'Jump to next cut or keyframe'),
+            ({'type': 'DOWN', 'value': 'PRESS'},
+             {'direction': 'backward'},
+             'Jump to previous cut or keyframe'),
+        ],
         'keymap': 'Frames'
     }
     bl_idname = doc_idname(doc['name'])
@@ -39,6 +46,13 @@ class JumpToCut(bpy.types.Operator):
         frame_current = context.scene.frame_current
         sorted_sequences = sorted(context.sequences,
                                   key=attrgetter('frame_final_start'))
+
+        fcurves = []
+
+        if context.scene.animation_data.action:
+            fcurves = context.scene.animation_data.action.fcurves
+
+
         if self.direction == 'forward':
             for s in sorted_sequences:
                 if s.frame_final_end <= frame_current:
@@ -46,6 +60,12 @@ class JumpToCut(bpy.types.Operator):
                 jump_to_frame = (s.frame_final_end
                                  if s.frame_final_start <= frame_current else
                                  s.frame_final_start)
+                for f in fcurves:
+                    for k in f.keyframe_points:
+                        frame = k.co[0]
+                        if frame <= context.scene.frame_current:
+                            continue
+                        jump_to_frame = min(jump_to_frame, frame)
                 break
         if self.direction == 'backward':
             for s in reversed(sorted_sequences):
@@ -54,9 +74,14 @@ class JumpToCut(bpy.types.Operator):
                 jump_to_frame = (s.frame_final_start
                                  if s.frame_final_end >= frame_current else
                                  s.frame_final_end)
+                for f in fcurves:
+                    for k in f.keyframe_points:
+                        frame = k.co[0]
+                        if frame >= context.scene.frame_current:
+                            continue
+                        jump_to_frame = max(jump_to_frame, frame)
                 break
 
         if jump_to_frame:
             context.scene.frame_current = max(1, jump_to_frame)
         return {'FINISHED'}
-
