@@ -24,7 +24,7 @@ class JumpToCut(bpy.types.Operator):
              {'direction': 'backward'},
              'Jump to previous cut or keyframe'),
         ],
-        'keymap': 'Sequencer'
+        'keymap': 'Frames'
     }
     bl_idname = doc_idname(doc['name'])
     bl_label = doc['name']
