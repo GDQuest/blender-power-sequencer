@@ -17,10 +17,10 @@ class JumpToCut(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'UP', 'value': 'PRESS'},
+            ({'type': 'UP_ARROW', 'value': 'PRESS'},
              {'direction': 'forward'},
              'Jump to next cut or keyframe'),
-            ({'type': 'DOWN', 'value': 'PRESS'},
+            ({'type': 'DOWN_ARROW', 'value': 'PRESS'},
              {'direction': 'backward'},
              'Jump to previous cut or keyframe'),
         ],
