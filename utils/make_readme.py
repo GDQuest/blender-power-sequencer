@@ -1,8 +1,9 @@
 import math
+import os
 import json
 from markdown2 import markdown
 
-SHORTCUTS_JSON_FILE = "./shortcuts_docs.json"
+SHORTCUTS_JSON_FILE = "../scripts/ShortcutsDocs/shortcuts_docs.json"
 
 def make_toc_label(label, description):
     """
@@ -104,13 +105,9 @@ def make_shortcuts_table(op_dict):
     Make a table showing all the keyboard shortcuts, their functions,
     and a demo for a given operator
     """
-    shortcuts = []
+    shortcuts = op_dict['shortcuts']
     functions = []
     demo = op_dict['demo']
-
-    for i in range(len(op_dict['shortcuts'])):
-        shortcuts.append(op_dict['shortcuts'][i].split(';')[0].strip())
-        functions.append(op_dict['shortcuts'][i].split(';')[1].strip())
 
     for i in range(len(shortcuts)):
         hotkeys = shortcuts[i].split(' ')
@@ -175,25 +172,20 @@ def make_readme():
 """
 
     intro = markdown("""
-I've made [hundreds of tutorials](http://youtube.com/c/gdquest) over the
-years. After working with popular professional programs like Vegas and
-Resolve, I now **work exclusively with Blender**. It does have some
-limitations, but it's the most stable and versatile tool you'll find out
-there.
-
-I built Power Sequencer to help us edit videos as fast as possible. The
-add-on is getting better month after month, and it's yours for Free.
+    Power Sequencer brings smart new editing features to edit faster with Blender's Video Sequence Editor. It is completely Free and Open Source.
 
 ## Contributing ##
-
-See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/). We also pledge to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/), like many Free Software projects.
 
 All contributors are welcome! We need people to:
 
 - Code new features
 - Improve existing features
 - Help solidify the code
-- Write mini-tutorials on the [docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/)
+- Write mini-tutorials
+
+You can come and chat with us on [GDquest's Discord server](https://discordapp.com/invite/87NNb3Z)!
+
+See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/) to get started contributing. We also have a [Code of Conduct](http://gdquest.com/open-source/code-of-conduct/) based on the GNU Kind Communication Guidelines.
 
 Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues)
 
@@ -211,11 +203,13 @@ Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power
 6. Save User Settings so the addon remains active every time you open
    Blender
 
-## Usage ##
-The docs are in progress. Until the dedicated website is ready, you can
-find them on the [power-sequencer-docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/).
-There's also a growing list of [Free video tutorials](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI)
-on Youtube (*14 videos at the time of writing*).
+## Learn Power Sequencer ##
+
+Watch our growing list of [Free video
+tutorials](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI)
+on Youtube!
+
+You can also find all the features and shortcuts on the [Power Sequencer Docs](http://gdquest.com/blender/power-sequencer/docs/)
 
 ## Other add-ons
 
@@ -234,17 +228,22 @@ it so now it's super slick!
 """.strip(), extras=['cuddled_lists'])
 
     operator_info = {}
-    with open(SHORTCUTS_JSON_FILE, "r") as json_file:
+    this_folder = os.path.split(__file__)[0]
+    json_path = os.path.abspath(os.path.join(this_folder, SHORTCUTS_JSON_FILE))
+    assert os.path.exists(json_path)
+    with open(json_path, "r") as json_file:
         operator_info = json.load(json_file)
     if operator_info == {}:
         return
 
-    toc_title = "<h2>Operators</h2>"
+    # TODO: add support for the new shortcuts json format
+    # TODO: try to use markdown directly instead of html
+    # toc_title = "<h2>Operators</h2>"
+    # table_of_contents = make_toc(operator_info)
+    # operator_segments = make_operator_segments(operator_info)
+    # html = '\n'.join([title, intro, toc_title, table_of_contents, operator_segments])
 
-    table_of_contents = make_toc(operator_info)
-    operator_segments = make_operator_segments(operator_info)
-
-    html = '\n'.join([title, intro, toc_title, table_of_contents, operator_segments])
+    html = '\n'.join([title, intro])
     lines = html.split('\n')
     for i in range(len(lines)):
         lines[i] = '    ' + lines[i]

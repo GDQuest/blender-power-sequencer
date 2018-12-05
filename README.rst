@@ -1,6 +1,5 @@
 .. raw:: html
 
-
     <h1 align="center">
       Blender Power Sequencer</br>
       <small>The Free add-on for content creators</small>
@@ -10,27 +9,24 @@
       <img src="https://i.imgur.com/LbxKduw.png" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
     </p>
 
-    <p>I've made <a href="http://youtube.com/c/gdquest">hundreds of tutorials</a> over the
-    years. After working with popular professional programs like Vegas and
-    Resolve, I now <strong>work exclusively with Blender</strong>. It does have some
-    limitations, but it's the most stable and versatile tool you'll find out
-    there.</p>
+    <p>Power Sequencer brings smart new editing features to edit faster with Blender's Video Sequence Editor. It is completely Free and Open Source.</p>
 
-    <p>I built Power Sequencer to help us edit videos as fast as possible. The
-    add-on is getting better month after month, and it's yours for Free.</p>
+    <h2>Contributing</h2>
 
-
-    <h2>Become a Contributor 😄</h2>
-
-    <p>See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/). We also pledge to the [Contributor Covenant Code of Conduct](https://www.contributor-covenant.org/), like many Free Software projects.</p>
     <p>All contributors are welcome! We need people to:</p>
+
     <ul>
-      <li>Code new features</li>
-      <li>Improve existing features</li>
-      <li>Help solidify the code</li>
-      <li>Write mini-tutorials on the [docs repository](https://github.com/GDquest/Blender-power-sequencer-docs/)</li>
+    <li>Code new features</li>
+    <li>Improve existing features</li>
+    <li>Help solidify the code</li>
+    <li>Write mini-tutorials</li>
     </ul>
-    <p>Join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues)</p>
+
+    <p>You can come and chat with us on <a href="https://discordapp.com/invite/87NNb3Z">GDquest's Discord server</a>!</p>
+
+    <p>See our <a href="http://gdquest.com/open-source/contributing-guidelines/">Contributor's Guidelines</a> to get started contributing. We also have a <a href="http://gdquest.com/open-source/code-of-conduct/">Code of Conduct</a> based on the GNU Kind Communication Guidelines.</p>
+
+    <p>Join the discussion in the <a href="https://github.com/GDquest/Blender-power-sequencer/issues">issues tab</a></p>
 
     <h2>Installation</h2>
 
@@ -48,12 +44,13 @@
     Blender</li>
     </ol>
 
-    <h2>Usage</h2>
+    <h2>Learn Power Sequencer</h2>
 
-    <p>The docs are in progress. Until the dedicated website is ready, you can
-    find them on the <a href="https://github.com/GDquest/Blender-power-sequencer-docs/">power-sequencer-docs repository</a>.
-    There's also a growing list of <a href="https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI">Free video tutorials</a>
-    on Youtube (<em>14 videos at the time of writing</em>).</p>
+    <p>Watch our growing list of <a href="https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI">Free video
+    tutorials</a>
+    on Youtube!</p>
+
+    <p>You can also find all the features and shortcuts on the <a href="http://gdquest.com/blender/power-sequencer/docs/">Power Sequencer Docs</a></p>
 
     <h2>Other add-ons</h2>
 
@@ -71,6 +68,7 @@
     <li><a href="https://github.com/doakey3">Daniel Oakey</a></li>
     <li><a href="https://twitter.com/NathanGDquest"> Nathan Lovato </a></li>
     </ul>
+
 
     <h2>Operators</h2>
     <table>
