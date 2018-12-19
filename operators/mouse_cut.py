@@ -125,12 +125,10 @@ class MouseCut(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def modal(self, context, event):
-        # if event.type in {'LEFTMOUSE', 'RIGHTMOUSE'}:
-        #     print('type: {!s}, value: {!s}'.format(event.type, event.value))
         if event.type in {'ESC'}:
             return {'CANCELLED'}
-
-        elif event.type == self.action_mouse and event.value == 'RELEASE':
+        # On mouse release, confirming the action
+        if event.type == self.action_mouse and event.value == 'RELEASE':
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(
                     self.handle_cut_trim_line, 'WINDOW'
@@ -139,6 +137,7 @@ class MouseCut(bpy.types.Operator):
             self.select_mode = 'cursor' if event.shift else 'smart'
 
             cursor_distance = abs(event.mouse_region_x - self.mouse_start_x)
+            # Cut
             if (self.use_pen_tablet and cursor_distance <= self.threshold_trim_distance) \
                or self.frame_start == self.frame_end:
                 to_select = self.find_strips_to_cut(context)
@@ -146,6 +145,7 @@ class MouseCut(bpy.types.Operator):
                 for s in to_select:
                     s.select = True
                 self.cut_strips_or_gap(context, self.frame_start)
+            # Trim
             else:
                 to_select, to_delete = self.find_strips_to_trim(context)
                 trim_strips(context,
@@ -158,7 +158,6 @@ class MouseCut(bpy.types.Operator):
                 else:
                     context.scene.frame_current = self.frame_end
             return {'FINISHED'}
-
         elif event.type == 'MOUSEMOVE':
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(
@@ -180,6 +179,7 @@ class MouseCut(bpy.types.Operator):
             else:
                 draw_end_x = event.mouse_region_x
 
+            # Drawing
             args = (self, context,
                     Vector([self.mouse_vec_start.x, self.mouse_vec_start.y]),
                     Vector([round(draw_end_x), self.mouse_vec_start.y]),
@@ -187,12 +187,12 @@ class MouseCut(bpy.types.Operator):
             self.handle_cut_trim_line = bpy.types.SpaceSequenceEditor.draw_handler_add(
                 draw_cut_trim, args, 'WINDOW', 'POST_PIXEL')
 
+            # Update the time cursor's position based on the mouse position
             x, y = context.region.view2d.region_to_view(
                 x=event.mouse_region_x, y=event.mouse_region_y)
             self.frame_end, self.end_channel = round(x), floor(y)
             context.scene.frame_current = self.frame_end
             return {'PASS_THROUGH'}
-
         return {'RUNNING_MODAL'}
 
     def find_strips_to_cut(self, context):
@@ -300,4 +300,3 @@ def draw_cut_trim(self, context, start, end, shift_is_pressed):
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
     bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
-
