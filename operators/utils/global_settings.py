@@ -23,7 +23,7 @@ class SequenceTypes():
     TRANSITION = ('CROSS', 'GAMMA_CROSS', 'WIPE')
     SOUND = ('SOUND',)
     IMAGE = ('IMAGE',)
-    TRANSITIONABLE = VIDEO + IMAGE
+    TRANSITIONABLE = VIDEO + IMAGE + ('MULTICAM',)
     CONCATENATE = VIDEO + SOUND + IMAGE
 
 
@@ -48,4 +48,3 @@ class SearchMode():
     NEXT = 1
     CHANNEL = 2
     ALL = 3
-
