@@ -53,6 +53,7 @@ class CrossfadeAdd(bpy.types.Operator):
     def execute(self, context):
         sorted_selection = sorted(context.selected_sequences,
                                   key=attrgetter('frame_final_start'))
+        # Try to add a crossfade for each selected strip
         for selected_strip in sorted_selection:
             next_in_channel = [s for s in find_sequences_after(context, selected_strip)
                                if s.channel == selected_strip.channel]
@@ -60,8 +61,11 @@ class CrossfadeAdd(bpy.types.Operator):
                 continue
             next_transitionable = (s for s in next_in_channel
                                    if s.type in SequenceTypes.TRANSITIONABLE)
-            next_sequence = min(next_transitionable,
-                                key=attrgetter('frame_final_start'))
+            try:
+                next_sequence = min(next_transitionable,
+                                    key=attrgetter('frame_final_start'))
+            except ValueError:
+                continue
 
             if self.auto_move_strip:
                 frame_offset = (next_sequence.frame_final_start -
