@@ -1,6 +1,8 @@
 import bpy
 from operator import attrgetter
 
+from .utils.global_settings import SequenceTypes
+
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.get_frame_range import get_frame_range
@@ -94,6 +96,8 @@ class RippleDelete(bpy.types.Operator):
         # Concatenate
         if is_single_channel:
             for s in surrounding_strips:
+                if s.type in SequenceTypes.TRANSITION:
+                    continue
                 s.select = True
             bpy.ops.power_sequencer.concatenate_strips()
 
@@ -105,4 +109,3 @@ class RippleDelete(bpy.types.Operator):
             context.scene.use_audio_scrub = audio_scrub
 
         return {'FINISHED'}
-
