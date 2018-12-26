@@ -1,14 +1,14 @@
 # Changelog! What's new in the Add-On
 
-## Power Sequencer 1.2 (👷🏽 Work in Progress) ##
+## Power Sequencer 1.2 ##
 
-*These are the features and fixes we added lately, and that'll be in the next major update.*
+<!-- *These are the features and fixes we added lately, and that'll be in the next major update.* -->
 
-You can test them by going to the Blender preferences, add-ons tab, Power Sequencer, and by clicking `Install latest master / old version`. You can go back to the stable version with the same button.
+<!-- You can test them by going to the Blender preferences, add-ons tab, Power Sequencer, and by clicking `Install latest master / old version`. You can go back to the stable version with the same button. -->
 
-![Power Sequencer switch to master branch](https://i.imgur.com/LusqIxy.png)
+<!-- ![Power Sequencer switch to master branch](https://i.imgur.com/LusqIxy.png) -->
 
-⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
+<!-- ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛 -->
 
 ### 📘 Free Tutorials ###
 
@@ -16,6 +16,7 @@ Learn to use BPSrender from the command line! We still need people to tell us th
 
 - [Fast Blender VSE render with BPSrender](https://www.youtube.com/watch?v=LJQptYvXAnw)
 - [Precise and Fast selections with Blender's Sequencer](https://www.youtube.com/watch?v=ewwFVsNCBNg)
+- [BPSProxies: create proxies fast with FFMPEG](https://youtu.be/oFLo7IHfGB0)
 
 *Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`*
 
