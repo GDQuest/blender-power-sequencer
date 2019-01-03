@@ -39,7 +39,7 @@ class JumpToCut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return context.sequences is not None and len(context.sequences) > 0
 
     def execute(self, context):
         jump_to_frame = None
