@@ -167,7 +167,7 @@ def make_readme():
 </h1>
 
 <p align='center'>
-  <img src="https://i.imgur.com/LbxKduw.png" alt="Power Sequencer logo, with the add-on's name and strips cut in two" />
+  <img src="assets/image/logo_vers.jpg" alt="Power Sequencer logo, with the add-on's name and strips cut in two" width="800" />
 </p>
 """
 
