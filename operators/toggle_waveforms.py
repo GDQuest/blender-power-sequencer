@@ -13,7 +13,7 @@ class ToggleWaveforms(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/HJ5ryhv.gif',
+        'demo': 'assets/image/demo/toggle_waveforms.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'W', 'value': 'PRESS', 'alt': True}, {}, 'Toggle Waveforms')

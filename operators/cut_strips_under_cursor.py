@@ -11,7 +11,7 @@ class CutStripsUnderCursor(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
+        'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'K', 'value': 'PRESS'}, {}, 'Cut All Strips Under Cursor')

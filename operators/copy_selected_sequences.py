@@ -16,7 +16,7 @@ class CopySelectedSequences(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/w6z1Jb1.gif',
+        'demo': 'assets/image/demo/copy_selected_sequences.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'C', 'value': 'PRESS', 'ctrl': True},

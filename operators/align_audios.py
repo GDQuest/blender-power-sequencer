@@ -20,7 +20,7 @@ class AlignAudios(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/xkBUzDj.gif',
+        'demo': 'assets/image/demo/align_audios.gif',
         'description': doc_description(__doc__),
         'shortcuts': [],
         'keymap': 'Sequencer'

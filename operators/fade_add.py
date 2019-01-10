@@ -13,7 +13,7 @@ class FadeAdd(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/XoUM2vw.gif',
+        'demo': 'assets/image/demo/fade_add.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'F', 'value': 'PRESS', 'alt': True}, {'fade_type': 'right'}, 'Fade Right'),

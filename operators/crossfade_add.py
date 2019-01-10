@@ -18,7 +18,7 @@ class CrossfadeAdd(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
+        'demo': 'assets/image/demo/crossfade_add.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'C', 'value': 'PRESS', 'ctrl': True, 'alt': True}, {}, 'Add Crossfade')

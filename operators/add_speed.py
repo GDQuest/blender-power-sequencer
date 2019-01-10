@@ -16,7 +16,7 @@ class AddSpeed(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
+        'demo': 'assets/image/demo/add_speed.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'PLUS', 'value': 'PRESS', 'shift': True}, {}, 'Add Speed')

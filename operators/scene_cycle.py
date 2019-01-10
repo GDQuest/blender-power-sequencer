@@ -9,7 +9,7 @@ class SceneCycle(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/7zhq8Tg.gif',
+        'demo': 'assets/image/demo/scene_cycle.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'TAB', 'value': 'PRESS', 'shift': True}, {}, 'Cycle Scenes')

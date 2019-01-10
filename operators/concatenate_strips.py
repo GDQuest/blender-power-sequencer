@@ -25,7 +25,7 @@ class ConcatenateStrips(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/YyEL8YP.gif',
+        'demo': 'assets/image/demo/concatenate_strips.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'C', 'value': 'PRESS'},

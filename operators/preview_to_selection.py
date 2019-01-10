@@ -15,7 +15,7 @@ class PreviewToSelection(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/EV1sUrn.gif',
+        'demo': 'assets/image/demo/preview_to_selection.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'P', 'value': 'PRESS', 'ctrl': True, 'alt': True},

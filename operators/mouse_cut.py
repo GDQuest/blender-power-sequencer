@@ -23,7 +23,7 @@ class MouseCut(bpy.types.Operator):
     """
     doc = {
         'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/wVvX4ex.gif',
+        'demo': 'assets/image/demo/mouse_cut.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True},
