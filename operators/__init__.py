@@ -17,6 +17,7 @@ from .deselect_handles_and_grab import DeselectHandlesAndGrab
 from .duplicate_move import DuplicateMove
 from .fade_add import FadeAdd
 from .fade_clear import FadeClear
+from .generate_proxies import GenerateProxies
 from .grab_closest_handle_or_cut import GrabClosestCut
 from .grab import Grab
 from .grab_sequence_handles import GrabSequenceHandles
