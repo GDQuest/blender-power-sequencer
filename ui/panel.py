@@ -1,5 +1,20 @@
 import bpy
+from bpy.props import StringProperty, EnumProperty
 
+bpy.types.Scene.video_directory = StringProperty(
+        name = "Video Path",
+        subtype="DIR_PATH"
+)
+#bpy.types.Scene.proxy_sizes = 
+bpy.types.Scene.proxy_preset = EnumProperty(
+        name = "Preset",
+        description = "Select the preset that you want to use",
+        items = [
+           ("bpproxy_webm", "webm", "YouTube preset"),
+           ("bpproxy_mp4", "mp4", "mp4 preset"),
+           ("bpproxy_nvenc", "nvenc", "nvenc preset"),
+        ]
+)
 
 class Panel(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
@@ -8,6 +23,11 @@ class Panel(bpy.types.Panel):
     bl_label = "Power Sequencer"
     bl_idname = "power_sequencer.panel"
     # bl_options = {"DEFAULT_CLOSED"}
+
+    def __init__(self, *args, **kwargs):
+        #initSceneProperties(bpy.context.scene)
+        for a in args:
+            print(a)
 
     @classmethod
     def poll(cls, context):
@@ -53,6 +73,12 @@ class Panel(bpy.types.Panel):
         elif scene.power_sequencer.active_tab == "Render":
             row = box.row()
             row.operator('power_sequencer.generate_proxies')
+            row2 = box.row()
+            row2.prop(scene, 'proxy_preset')
+            #row2 = box.row()
+            #row2.prop(scene, 'proxy_sizes')
+            row3 = box.row()
+            row3.prop(scene, 'video_directory')
 
         elif scene.power_sequencer.active_tab == "Modifier":
             row = box.row()
