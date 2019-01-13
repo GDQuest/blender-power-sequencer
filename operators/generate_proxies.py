@@ -43,19 +43,27 @@ class GenerateProxies(bpy.types.Operator):
 
         video_directory_path = bpy.path.abspath(context.scene.video_directory)
 
-        # TODO: check if bpsproxy is installed
-        # subprocess.call([
-        #     'bpsproxy',
-        #     video_directory_path
-        # ])
+        sizes = []
+        bpsproxy_command = ['bpsproxy', video_directory_path]
 
-        # TODO:
-        # if checkbox is ticked
-        # then SpaceSequenceEditor.proxy_render_sixe =
-        print(bpy.context.space_data)
-        print(bpy.context.space_data.proxy_render_size)
-        bpy.ops.sequencer.enable_proxies(proxy_25=True)
-        print(bpy.context.space_data.proxy_render_size)
+        if context.scene.proxy_25:
+            sizes.append("25")
+        if context.scene.proxy_50:
+            sizes.append("50")
+        if context.scene.proxy_100:
+            sizes.append("100")        
+        if len(sizes) > 0:
+            bpsproxy_command.extend(['-s', *sizes])
+        if context.scene.proxy_preset:
+            bpsproxy_command.extend(['-p', context.scene.proxy_preset])
+        # debug print
+        print(bpsproxy_command)
+
+        # TODO: check if bpsproxy is installed
+
+        subprocess.call(bpsproxy_command)
+        
+        # TODO: check for command completion rate
         
         # for sequence in context.selected_sequences:
         #     if sequence.type == "MOVIE":

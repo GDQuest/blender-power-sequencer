@@ -1,20 +1,33 @@
 import bpy
-from bpy.props import StringProperty, EnumProperty
+from bpy.props import StringProperty, EnumProperty, BoolProperty
+
 
 bpy.types.Scene.video_directory = StringProperty(
         name = "Video Path",
         subtype="DIR_PATH"
 )
-#bpy.types.Scene.proxy_sizes = 
+bpy.types.Scene.proxy_25 = BoolProperty(
+    name = "25%",
+    description = "Build 25% proxy",
+)
+bpy.types.Scene.proxy_50 = BoolProperty(
+    name="50%",
+    description="Build 50% proxy",
+)
+bpy.types.Scene.proxy_100 = BoolProperty(
+    name="100%",
+    description="Build 100% proxy",
+)
 bpy.types.Scene.proxy_preset = EnumProperty(
         name = "Preset",
         description = "Select the preset that you want to use",
         items = [
-           ("bpproxy_webm", "webm", "YouTube preset"),
-           ("bpproxy_mp4", "mp4", "mp4 preset"),
-           ("bpproxy_nvenc", "nvenc", "nvenc preset"),
+            ("webm", "webm", "YouTube preset"),
+            ("mp4", "mp4", "mp4 preset"),
+            ("nvenc", "nvenc", "nvenc preset"),
         ]
 )
+
 
 class Panel(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
@@ -74,11 +87,13 @@ class Panel(bpy.types.Panel):
             row = box.row()
             row.operator('power_sequencer.generate_proxies')
             row2 = box.row()
-            row2.prop(scene, 'proxy_preset')
-            #row2 = box.row()
-            #row2.prop(scene, 'proxy_sizes')
+            row2.prop(scene, 'proxy_25')
+            row2.prop(scene, 'proxy_50')
+            row2.prop(scene, 'proxy_100')
             row3 = box.row()
             row3.prop(scene, 'video_directory')
+            row4 = box.row()
+            row4.prop(scene, 'proxy_preset')
 
         elif scene.power_sequencer.active_tab == "Modifier":
             row = box.row()
