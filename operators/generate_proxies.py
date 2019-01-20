@@ -34,7 +34,6 @@ class GenerateProxies(bpy.types.Operator):
         return len(context.selected_sequences) > 0
 
     def execute(self, context):
-        # TODO: I need to check this
         if not bpy.data.is_saved:
             self.report(
                 {'ERROR_INVALID_INPUT'},
@@ -43,8 +42,10 @@ class GenerateProxies(bpy.types.Operator):
 
         video_directory_path = bpy.path.abspath(context.scene.video_directory)
 
-        sizes = []
+        # TODO: check if bpsproxy is installed
+        subprocess.call(["printenv", "PATH"])
         bpsproxy_command = ['bpsproxy', video_directory_path]
+        sizes = []
 
         if context.scene.proxy_25:
             sizes.append("25")
@@ -56,22 +57,15 @@ class GenerateProxies(bpy.types.Operator):
             bpsproxy_command.extend(['-s', *sizes])
         if context.scene.proxy_preset:
             bpsproxy_command.extend(['-p', context.scene.proxy_preset])
+
         # debug print
         print(bpsproxy_command)
 
-        # TODO: check if bpsproxy is installed
-
-        subprocess.call(bpsproxy_command)
+        # this line is waiting for the command to complete. We don't want this behaviour because
+        # it blocks the GUI
+        # subprocess.call(bpsproxy_command)
+        subprocess.Popen(bpsproxy_command)
         
         # TODO: check for command completion rate
         
-        # for sequence in context.selected_sequences:
-        #     if sequence.type == "MOVIE":
-        #         print(sequence)
-        #         print(sequence.filepath)
-        #         print("\n--------")
-
-        # sequencer = bpy.ops.sequencer
-        # project_directory = os.path.split(bpy.data.filepath)[0]
-
         return {'FINISHED'}
