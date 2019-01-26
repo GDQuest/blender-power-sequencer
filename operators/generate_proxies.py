@@ -1,7 +1,6 @@
 import bpy
 import os
 import subprocess
-import threading
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
