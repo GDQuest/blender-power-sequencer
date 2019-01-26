@@ -3,8 +3,8 @@ from bpy.props import StringProperty, EnumProperty, BoolProperty
 
 
 bpy.types.Scene.video_directory = StringProperty(
-        name = "Video Path",
-        subtype="DIR_PATH"
+    name = "Video Path",
+    subtype="DIR_PATH"
 )
 bpy.types.Scene.proxy_25 = BoolProperty(
     name = "25%",
@@ -19,13 +19,13 @@ bpy.types.Scene.proxy_100 = BoolProperty(
     description="Build 100% proxy",
 )
 bpy.types.Scene.proxy_preset = EnumProperty(
-        name = "Preset",
-        description = "Select the preset that you want to use",
-        items = [
-            ("webm", "webm", "YouTube preset"),
-            ("mp4", "mp4", "mp4 preset"),
-            ("nvenc", "nvenc", "nvenc preset"),
-        ]
+    name = "Preset",
+    description = "Select the preset that you want to use",
+    items = [
+        ("webm", "webm", "YouTube preset"),
+        ("mp4", "mp4", "mp4 preset"),
+        ("nvenc", "nvenc", "nvenc preset"),
+    ]
 )
 
 
