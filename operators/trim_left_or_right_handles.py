@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class SmartSnap(bpy.types.Operator):
+class TrimLeftOrRightHandles(bpy.types.Operator):
     """
     Trims, extends and snaps selected strips to cursor
     """
@@ -65,4 +65,3 @@ class SmartSnap(bpy.types.Operator):
                 s.select = False
             if handle_side:
                 bpy.ops.sequencer.select_handles(side=handle_side)
-

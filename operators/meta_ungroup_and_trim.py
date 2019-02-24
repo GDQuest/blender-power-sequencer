@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MetaSeparateAndTrim(bpy.types.Operator):
+class MetaUngroupAndTrim(bpy.types.Operator):
     """
     UnMeta all selected meta strips and trim their content
     """
@@ -44,4 +44,3 @@ class MetaSeparateAndTrim(bpy.types.Operator):
         for m in meta_strips:
             context.scene.sequence_editor.active_strip = m
             bpy.ops.sequencer.meta_separate()
-

@@ -32,7 +32,7 @@ class ImportLocalFootage(bpy.types.Operator):
         name="Always Reimport",
         description=("If true, always import all local files to new strips."
                      " If False, only import new files (check if footage has"
-                     " already been imported to the VSE)."),
+                     " already been imported to the VSE)"),
         default=False)
     keep_audio = BoolProperty(
         name="Keep audio from video files",
@@ -381,4 +381,3 @@ class ImportLocalFootage(bpy.types.Operator):
             import_frame += self.img_length + self.img_padding
             new_sequences.extend(context.selected_sequences)
         return new_sequences
-

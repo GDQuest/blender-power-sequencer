@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class DecreasePlaybackSpeed(bpy.types.Operator):
+class PlaybackSpeedDecrease(bpy.types.Operator):
     """
     *brief* Decrease playback speed incrementally down to normal
 
@@ -46,4 +46,3 @@ class DecreasePlaybackSpeed(bpy.types.Operator):
         scene.power_sequencer.playback_speed = new_speed
 
         return {"FINISHED"}
-

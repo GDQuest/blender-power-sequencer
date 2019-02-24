@@ -6,7 +6,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class MetaResizeToContent(bpy.types.Operator):
     """
-    *brief* Moves the handles of the selected metastrip so it fits its content.
+    *brief* Moves the handles of the selected metastrip so it fits its content
 
 
     Use it to trim a metastrip quickly
@@ -36,4 +36,3 @@ class MetaResizeToContent(bpy.types.Operator):
         for s in selected_meta_strips:
             s.frame_final_start, s.frame_final_end = get_frame_range(context, s.sequences)
         return {'FINISHED'}
-

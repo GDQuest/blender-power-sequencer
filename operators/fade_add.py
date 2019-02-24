@@ -37,7 +37,7 @@ class FadeAdd(bpy.types.Operator):
                ('left', 'Fade in', 'Fade in selected strips'),
                ('right', 'Fade out', 'Fade out selected strips')],
         name="Fade type",
-        description="Fade in, out, or both in and out. Default is both.",
+        description="Fade in, out, or both in and out. Default is both",
         default='both')
 
     current_frame = None

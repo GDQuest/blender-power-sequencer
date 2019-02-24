@@ -7,7 +7,7 @@ from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 class CutStripsUnderCursor(bpy.types.Operator):
     """
     Cuts all strips under cursor (without needing selection first), including mutted strips. It
-    excludes locked strips.
+    excludes locked strips
     """
     doc = {
         'name': doc_name(__qualname__),

@@ -6,7 +6,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class SwapStrips(bpy.types.Operator):
     """
-    *brief* Swaps the 2 strips between them.
+    *brief* Swaps the 2 strips between them
 
 
     Places the first strip in the channel and starting frame (frame_final_start) of the second
@@ -210,4 +210,3 @@ class SwapStrips(bpy.types.Operator):
             effect_strip.channel -= 1
             other_strip.channel = effect_strip_channel
             effect_strip.channel = other_strip_channel
-

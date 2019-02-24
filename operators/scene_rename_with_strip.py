@@ -4,9 +4,9 @@ import operator
 from bpy.props import StringProperty
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
-class RenameStripScene(bpy.types.Operator):
+class SceneRenameWithStrip(bpy.types.Operator):
     """
-    Rename a Scene Strip and its source scene.
+    Rename a Scene Strip and its source scene
     """
     doc = {
         'name': doc_name(__qualname__),

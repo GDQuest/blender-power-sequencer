@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class ChangePlaybackSpeed(bpy.types.Operator):
+class PlaybackSpeedSet(bpy.types.Operator):
     """
     Change the playback_speed property using an operator property. Used with keymaps
     """
@@ -39,4 +39,3 @@ class ChangePlaybackSpeed(bpy.types.Operator):
     def execute(self, context):
         context.scene.power_sequencer.playback_speed = self.speed
         return {"FINISHED"}
-

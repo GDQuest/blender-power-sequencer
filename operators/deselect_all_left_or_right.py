@@ -6,7 +6,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 class DeselectAllStripsLeftOrRight(bpy.types.Operator):
     """
     Deselects all the strips at the left or right of the time cursor, based on the position
-    of the mouse.
+    of the mouse
     """
     doc = {
         'name': doc_name(__qualname__),
@@ -52,4 +52,3 @@ class DeselectAllStripsLeftOrRight(bpy.types.Operator):
         strip.select = False
         strip.select_left_handle = False
         strip.select_right_handle = False
-

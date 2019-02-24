@@ -5,7 +5,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class MarkersCreateFromSelectedStrips(bpy.types.Operator):
     """
-    *brief* Create one marker at the start on each selected strip, based on its name.
+    *brief* Create one marker at the start on each selected strip, based on its name
 
     Use it to copy markers as timecodes.
     """
@@ -40,4 +40,3 @@ class MarkersCreateFromSelectedStrips(bpy.types.Operator):
             bpy.ops.marker.move(frames=gap)
             new_marker.select = False
         return {'FINISHED'}
-

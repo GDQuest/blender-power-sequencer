@@ -6,7 +6,7 @@ from .utils.find_linked_sequences import find_linked
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class AddSpeed(bpy.types.Operator):
+class SpeedUpMovieStrip(bpy.types.Operator):
     """
     *brief* Add 2x speed, set frame end, wrap both into META
 
@@ -120,4 +120,3 @@ class AddSpeed(bpy.types.Operator):
         self.report({"INFO"}, "Successfully processed " +
                     str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}
-

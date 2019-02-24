@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class IncreasePlaybackSpeed(bpy.types.Operator):
+class PlaybackSpeedIncrease(bpy.types.Operator):
     """
     *brief* Increase playback speed up to triple
 
@@ -47,4 +47,3 @@ class IncreasePlaybackSpeed(bpy.types.Operator):
         scene.power_sequencer.playback_speed = new_speed
 
         return {"FINISHED"}
-
