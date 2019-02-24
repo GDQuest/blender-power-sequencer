@@ -1,8 +1,23 @@
 import bpy
 import os
-import subprocess
+from multiprocessing import Process, Queue
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
+from bpsproxy.call import call
+
+
+# def something(clargs):
+#     tools = ['ffmpeg']
+#     try:
+#         checktools(tools)
+#         n, path_i = find_files(clargs.working_directory)
+#         kwargs = {'path_i': path_i,
+#                   'n': n}
+#         call_makedirs(C, clargs, **kwargs)
+#         call(C, clargs, cmds=get_commands_all(C, clargs, **kwargs), **kwargs)
+#     except ToolError as e:
+#         print(e)
 
 
 class GenerateProxies(bpy.types.Operator):
@@ -28,6 +43,8 @@ class GenerateProxies(bpy.types.Operator):
     videos_path = bpy.props.StringProperty()
 
     _timer = None
+    _queue = Queue()
+    _proxy_rendered = -1
     running = False
     fake_progress = 0
 
@@ -49,21 +66,12 @@ class GenerateProxies(bpy.types.Operator):
         wm.modal_handler_add(self)
         wm.progress_begin(0, 100)
         # start timer to trigger modal events
-        self._timer = wm.event_timer_add(0.25, context.window)
+        self._timer = wm.event_timer_add(0.02, context.window)
         # update Class variable to keep track of the state
         GenerateProxies.running = True
         return {'RUNNING_MODAL'}
 
     def run_bpsproxy(self, context):
-        # TODO: check if bpsproxy is installed
-        # eg: Blender does not take environment variable from 
-        # user configuration like .bashrcor .zshrc
-        # I have ~/.local/bin exported in my zshrc file and I can 
-        # use bpsproxy from the console but Blender doesn't,
-        # unless executed from the console.
-        # https://unix.stackexchange.com/questions/81243/how-do-i-set-the-path-or-other-environment-variables-so-that-x-apps-can-access-i
-        subprocess.call(["printenv", "PATH"])
-
         video_directory_path = bpy.path.abspath(context.scene.video_directory)
         bpsproxy_command = ['bpsproxy', video_directory_path]
         sizes = []
@@ -79,13 +87,40 @@ class GenerateProxies(bpy.types.Operator):
         if context.scene.proxy_preset:
             bpsproxy_command.extend(['-p', context.scene.proxy_preset])
 
-        subprocess.Popen(bpsproxy_command)
+        p = Process(target=self.generate_proxies, args=("test",))
+        p.start()
+        p.join()
 
         return {'FINISHED'}
 
+
+    def generate_proxies(self, args_tuple):
+        print(args_tuple)
+        import time
+        time.sleep(0.5)
+        self._queue.put(1)
+
+
     def modal(self, context, event):
+        """ This method is called continuosly when`execute` returns {"RUNNING_MODAL"}.
+        It's not called at all in other cases.
+        It stops being executed when it returns {"FINISHED"}
+        """
         if event.type == "TIMER":
+            print("TIMER")
             wm = context.window_manager
+            # check if bpsproxy rendered everything
+            try:
+                self._proxy_rendered = self._queue.get(block=False)
+            except Exception as e:
+                print(e)
+            # if value is greater than 0, bpsproxy process completed correctly
+            if self._proxy_rendered> 0:
+                print(self._proxy_rendered)
+                print("FINISHED!")
+            else:
+                print("PROXYYYY")
+
             if GenerateProxies.fake_progress < 100:
                 GenerateProxies.fake_progress += 1
                 wm.progress_update(GenerateProxies.fake_progress)
