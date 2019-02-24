@@ -89,7 +89,7 @@ class GenerateProxies(bpy.types.Operator):
 
         p = Process(target=self.generate_proxies, args=("test",))
         p.start()
-        p.join()
+        #p.join()
 
         return {'FINISHED'}
 
