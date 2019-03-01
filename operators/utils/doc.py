@@ -1,12 +1,18 @@
 import re
 
 
-def doc_idname(s, prefix='power_sequencer'):
-    return prefix + '.' + s.lower().replace(' ', '_')
+upper_match = lambda m: m.string
+
+
+def doc_idname(s):
+    out = '.'.join(map(str.lower, s.split('_OT_')))
+    return out
 
 
 def doc_name(s):
-    return ' '.join(re.findall('[A-Z][^A-Z]*', s))
+    out = s.split('_OT')[-1]
+    out = re.sub('_[a-z]', lambda m: m[0][1:].upper(), s)
+    return out
 
 
 def doc_brief(s):

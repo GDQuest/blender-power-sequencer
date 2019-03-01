@@ -6,7 +6,7 @@ from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MouseSpaceStrips(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_space_strips(bpy.types.Operator):
     """
     *brief* Offsets all strips to the right of the mouse cursor by a given duration
 
@@ -22,12 +22,12 @@ class MouseSpaceStrips(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    gap_to_insert = bpy.props.FloatProperty(
+    gap_to_insert: bpy.props.FloatProperty(
         name="Duration",
         description="The time offset to apply to the strips",
         default=1.0)

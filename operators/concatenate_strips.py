@@ -15,7 +15,7 @@ def find_sequences_before(context, strip):
             if s.frame_final_end <= strip.frame_final_start]
 
 
-class ConcatenateStrips(bpy.types.Operator):
+class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
     """
     *brief* Remove space between strips
 
@@ -48,17 +48,19 @@ class ConcatenateStrips(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    concatenate_all = bpy.props.BoolProperty(
+    frame, channel = -1, -1
+
+    concatenate_all: bpy.props.BoolProperty(
         name="Concatenate all strips in channel",
         description=("If only one strip selected, concatenate"
                      " the entire channel"),
         default=False)
-    direction = bpy.props.EnumProperty(
+    direction: bpy.props.EnumProperty(
         name="Direction",
         description=("Concatenate strips moving them back in time (default)"
                      " or forward in time"),
@@ -66,7 +68,6 @@ class ConcatenateStrips(bpy.types.Operator):
                ('right', "Right",
                 "Move strips forward in time, to the right")],
         default='left')
-    frame, channel = -1, -1
 
     @classmethod
     def poll(cls, context):

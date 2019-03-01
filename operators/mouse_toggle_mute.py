@@ -6,7 +6,7 @@ from .utils.find_strips_mouse import find_strips_mouse
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MouseToggleMute(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_toggle_mute(bpy.types.Operator):
     """
     Toggle mute a sequence as you click on it
     """
@@ -19,7 +19,7 @@ class MouseToggleMute(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}

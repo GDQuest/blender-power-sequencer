@@ -7,7 +7,7 @@ from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class CrossfadeAdd(bpy.types.Operator):
+class POWER_SEQUENCER_OT_crossfade_add(bpy.types.Operator):
     """
     *brief* Adds cross fade between selected sequence and the closest sequence to its right
 
@@ -25,17 +25,17 @@ class CrossfadeAdd(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
-    crossfade_duration = bpy.props.FloatProperty(
+    crossfade_duration: bpy.props.FloatProperty(
         name="Crossfade Duration",
         description="The duration of the crossfade",
         default=0.5,
         min=0)
-    auto_move_strip = bpy.props.BoolProperty(
+    auto_move_strip: bpy.props.BoolProperty(
         name="Auto Move Strip",
         description=("When true, moves the second strip so the crossfade"
                      " is of the length set in 'Crossfade Length'"),

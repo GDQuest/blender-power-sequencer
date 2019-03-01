@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class DeselectAllStripsLeftOrRight(bpy.types.Operator):
+class POWER_SEQUENCER_OT_deselect_all_strips_left_or_right(bpy.types.Operator):
     """
     Deselects all the strips at the left or right of the time cursor, based on the position
     of the mouse
@@ -15,12 +15,12 @@ class DeselectAllStripsLeftOrRight(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    side = bpy.props.EnumProperty(
+    side: bpy.props.EnumProperty(
         name="Side",
         description="The side to deselect",
         items=[("mouse", "Mouse position",

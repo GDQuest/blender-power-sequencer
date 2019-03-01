@@ -5,7 +5,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 # TODO: rewrite to sync strips to corresponding identifiers instead
 # See https://github.com/GDquest/Blender-power-sequencer/issues/55
-class SynchronizeTitles(bpy.types.Operator):
+class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
     """
     *brief* Snap the selected image or text strips to the corresponding title marker
 
@@ -19,7 +19,7 @@ class SynchronizeTitles(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}

@@ -3,7 +3,6 @@ from math import floor
 import bgl
 from mathutils import Vector
 
-from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 
@@ -11,7 +10,7 @@ from .utils.draw import draw_line, draw_arrow_head
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MouseCut(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
     """
     *brief* Fast strip cutting based on mouse position
 
@@ -35,12 +34,12 @@ class MouseCut(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    select_mode = EnumProperty(
+    select_mode: bpy.props.EnumProperty(
         items=[('mouse', 'Mouse',
                 'Only select the strip hovered by the mouse'),
                ('cursor', 'Time cursor',
@@ -50,29 +49,29 @@ class MouseCut(bpy.types.Operator):
         name="Selection mode",
         description="Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
-    select_linked = BoolProperty(
+    select_linked: bpy.props.BoolProperty(
         name="Use linked time",
         description="In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
-    remove_gaps = BoolProperty(
+    remove_gaps: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
-    cut_gaps = BoolProperty(
+    cut_gaps: bpy.props.BoolProperty(
         name="Cut gaps",
         description="If you click on a gap, remove it",
         default=True)
 
-    auto_move_cursor = BoolProperty(
+    auto_move_cursor: bpy.props.BoolProperty(
         name="Auto move cursor",
         description="When trimming the sequence, auto move the cursor if playback is active",
         default=True)
-    cursor_offset = IntProperty(
+    cursor_offset: bpy.props.IntProperty(
         name="Cursor trim offset",
         description="On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
         min=0)
-    threshold_trim_distance = IntProperty(
+    threshold_trim_distance: bpy.props.IntProperty(
         name="Tablet trim distance",
         description="If you use a pen tablet, the trim will only happen past this distance",
         default=6,

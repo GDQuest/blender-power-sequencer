@@ -6,7 +6,7 @@ from .utils.find_linked_sequences import find_linked
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class SpeedUpMovieStrip(bpy.types.Operator):
+class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
     """
     *brief* Add 2x speed, set frame end, wrap both into META
 
@@ -23,17 +23,17 @@ class SpeedUpMovieStrip(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
-    speed_factor = bpy.props.IntProperty(
+    speed_factor: bpy.props.IntProperty(
         name="Speed factor",
         description="How many times the footage gets sped up",
         default=2,
         min=0)
-    individual_sequences = bpy.props.BoolProperty(
+    individual_sequences: bpy.props.BoolProperty(
         name="Affect individual strips",
         description="Speed up every VIDEO strip individually",
         default=False)

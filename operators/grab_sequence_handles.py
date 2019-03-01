@@ -4,7 +4,7 @@ from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class GrabSequenceHandles(bpy.types.Operator):
+class POWER_SEQUENCER_OT_grab_sequence_handles(bpy.types.Operator):
     """
     *brief* Grabs the sequence's handle based on the mouse position
 
@@ -22,15 +22,15 @@ class GrabSequenceHandles(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    always_find_closest = bpy.props.BoolProperty(name="Always find closest",
+    always_find_closest: bpy.props.BoolProperty(name="Always find closest",
                                                  default=False)
-    frame = bpy.props.IntProperty(name="Frame", default=-1, options={'HIDDEN'})
-    channel = bpy.props.IntProperty(name="Channel",
+    frame: bpy.props.IntProperty(name="Frame", default=-1, options={'HIDDEN'})
+    channel: bpy.props.IntProperty(name="Channel",
                                     default=-1,
                                     options={'HIDDEN'})
 

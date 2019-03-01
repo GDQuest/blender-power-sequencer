@@ -4,7 +4,7 @@ from .utils.get_frame_range import get_frame_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MetaResizeToContent(bpy.types.Operator):
+class POWER_SEQUENCER_OT_meta_resize_to_content(bpy.types.Operator):
     """
     *brief* Moves the handles of the selected metastrip so it fits its content
 
@@ -18,7 +18,7 @@ class MetaResizeToContent(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}

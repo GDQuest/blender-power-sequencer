@@ -6,7 +6,7 @@ from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class PreviewClosestCut(bpy.types.Operator):
+class POWER_SEQUENCER_OT_preview_closest_cut(bpy.types.Operator):
     """
     *brief* Toggle preview around the closest cut, based on time cursor
 
@@ -23,17 +23,17 @@ class PreviewClosestCut(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    duration = bpy.props.FloatProperty(
+    duration: bpy.props.FloatProperty(
         name="Preview duration",
         description="Total duration of the preview, in seconds",
         default=1.0,
         min=0.1)
-    cut_frame_override = bpy.props.IntProperty(
+    cut_frame_override: bpy.props.IntProperty(
         name="Cut Frame Override",
         description="Force to preview around this frame",
         default=0,

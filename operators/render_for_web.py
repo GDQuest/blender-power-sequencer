@@ -1,11 +1,10 @@
 import bpy
 import os
-from bpy.props import BoolProperty, EnumProperty
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class RenderForWeb(bpy.types.Operator):
+class POWER_SEQUENCER_OT_render_for_web(bpy.types.Operator):
     """
     Render video with good settings for web upload
     """
@@ -22,12 +21,12 @@ class RenderForWeb(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER"}
 
-    preset = EnumProperty(
+    preset: bpy.props.EnumProperty(
         items=[(
             'youtube', 'youtube',
             'Full HD mp4 with AAC audio, following recommendations from Youtube'
@@ -37,7 +36,7 @@ class RenderForWeb(bpy.types.Operator):
         description='Preset to use ',
         default='youtube')
 
-    name_pattern = EnumProperty(
+    name_pattern: bpy.props.EnumProperty(
         items=[
             ('folder', 'Folder',
              'Use the folder\'s name as the exported file name'),
@@ -50,7 +49,7 @@ class RenderForWeb(bpy.types.Operator):
         description="Auto name the rendered video after...",
         default='blender')
 
-    auto_render = BoolProperty(
+    auto_render: bpy.props.BoolProperty(
         name="Auto render",
         description="Launch the render automatically",
         default=False)

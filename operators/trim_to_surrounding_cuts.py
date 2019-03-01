@@ -9,7 +9,7 @@ from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class TrimToSurroundingCuts(bpy.types.Operator):
+class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
     """
     Trim to surrounding cuts
     """
@@ -24,17 +24,17 @@ class TrimToSurroundingCuts(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    margin = bpy.props.FloatProperty(
+    margin: bpy.props.FloatProperty(
         name="Trim margin",
         description="Margin to leave on either sides of the trim in seconds",
         default=0.2,
         min=0)
-    remove_gaps = bpy.props.BoolProperty(
+    remove_gaps: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)

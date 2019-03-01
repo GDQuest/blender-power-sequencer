@@ -4,7 +4,7 @@ from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class CrossfadeEdit(bpy.types.Operator):
+class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
     """
     *brief* Adjust the location of the crossfade between 2 strips
 
@@ -22,7 +22,7 @@ class CrossfadeEdit(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}

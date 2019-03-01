@@ -4,7 +4,7 @@ from operator import attrgetter
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class SceneCreateFromSelection(bpy.types.Operator):
+class POWER_SEQUENCER_OT_scene_create_from_selection(bpy.types.Operator):
     """
     *brief* Convert selected strips into a scene strip
 
@@ -19,12 +19,12 @@ class SceneCreateFromSelection(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    move_to_first_frame = bpy.props.BoolProperty(
+    move_to_first_frame: bpy.props.BoolProperty(
         name="Move to First Frame",
         description="The strips will start at frame 1 on the new scene",
         default=True

@@ -60,7 +60,7 @@ updater.addon = "power_sequencer"
 
 
 # simple popup for prompting checking for update & allow to install if available
-class addon_updater_install_popup(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_install_popup(bpy.types.Operator):
 	"""Check and install update if available"""
 	bl_label = "Update {x} addon".format(x=updater.addon)
 	bl_idname = updater.addon+".updater_install_popup"
@@ -70,13 +70,13 @@ class addon_updater_install_popup(bpy.types.Operator):
 	# if true, run clean install - ie remove all files before adding new
 	# equivalent to deleting the addon and reinstalling, except the
 	# updater folder/backup folder remains
-	clean_install = bpy.props.BoolProperty(
+	clean_install: bpy.props.BoolProperty(
 		name="Clean install",
 		description="If enabled, completely clear the addon's folder before installing new update, creating a fresh install",
 		default=False,
 		options={'HIDDEN'}
 	)
-	ignore_enum = bpy.props.EnumProperty(
+	ignore_enum: bpy.props.EnumProperty(
 		name="Process update",
 		description="Decide to install, ignore, or defer new addon update",
 		items=[
@@ -149,7 +149,7 @@ class addon_updater_install_popup(bpy.types.Operator):
 			(update_ready, version, link) = updater.check_for_update(now=True)
 
 			# re-launch this dialog
-			atr = addon_updater_install_popup.bl_idname.split(".")
+			atr = POWER_SEQUENCER_OT_addon_updater_install_popup.bl_idname.split(".")
 			getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 		else:
 			if updater.verbose:print("Doing nothing, not ready for update")
@@ -157,7 +157,7 @@ class addon_updater_install_popup(bpy.types.Operator):
 
 
 # User preference check-now operator
-class addon_updater_check_now(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_check_now(bpy.types.Operator):
 	bl_label = "Check now for "+updater.addon+" update"
 	bl_idname = updater.addon+".updater_check_now"
 	bl_description = "Check now for an update to the {x} addon".format(
@@ -193,7 +193,7 @@ class addon_updater_check_now(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_update_now(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_update_now(bpy.types.Operator):
 	bl_label = "Update "+updater.addon+" addon now"
 	bl_idname = updater.addon+".updater_update_now"
 	bl_description = "Update to the latest version of the {x} addon".format(
@@ -203,7 +203,7 @@ class addon_updater_update_now(bpy.types.Operator):
 	# if true, run clean install - ie remove all files before adding new
 	# equivalent to deleting the addon and reinstalling, except the
 	# updater folder/backup folder remains
-	clean_install = bpy.props.BoolProperty(
+	clean_install: bpy.props.BoolProperty(
 		name="Clean install",
 		description="If enabled, completely clear the addon's folder before installing new update, creating a fresh install",
 		default=False,
@@ -231,12 +231,12 @@ class addon_updater_update_now(bpy.types.Operator):
 					if res==0: print("Updater returned successful")
 					else: print("Updater returned "+str(res)+", error occurred")
 			except:
-				atr = addon_updater_install_manually.bl_idname.split(".")
+				atr = POWER_SEQUENCER_OT_addon_updater_install_manually.bl_idname.split(".")
 				getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 		elif updater.update_ready == None:
 			(update_ready, version, link) = updater.check_for_update(now=True)
 			# re-launch this dialog
-			atr = addon_updater_install_popup.bl_idname.split(".")
+			atr = POWER_SEQUENCER_OT_addon_updater_install_popup.bl_idname.split(".")
 			getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 
 		elif updater.update_ready == False:
@@ -247,7 +247,7 @@ class addon_updater_update_now(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_update_target(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_update_target(bpy.types.Operator):
 	bl_label = updater.addon+" addon version target"
 	bl_idname = updater.addon+".updater_update_target"
 	bl_description = "Install a targeted version of the {x} addon".format(
@@ -266,7 +266,7 @@ class addon_updater_update_target(bpy.types.Operator):
 			i+=1
 		return ret
 
-	target = bpy.props.EnumProperty(
+	target: bpy.props.EnumProperty(
 		name="Target version",
 		description="Select the version to install",
 		items=target_version
@@ -275,7 +275,7 @@ class addon_updater_update_target(bpy.types.Operator):
 	# if true, run clean install - ie remove all files before adding new
 	# equivalent to deleting the addon and reinstalling, except the
 	# updater folder/backup folder remains
-	clean_install = bpy.props.BoolProperty(
+	clean_install: bpy.props.BoolProperty(
 		name="Clean install",
 		description="If enabled, completely clear the addon's folder before installing new update, creating a fresh install",
 		default=False,
@@ -323,14 +323,14 @@ class addon_updater_update_target(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_install_manually(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_install_manually(bpy.types.Operator):
 	"""As a fallback, direct the user to download the addon manually"""
 	bl_label = "Install update manually"
 	bl_idname = updater.addon+".updater_install_manually"
 	bl_description = "Proceed to manually install update"
 	bl_options = {'REGISTER', 'INTERNAL'}
 
-	error = bpy.props.StringProperty(
+	error: bpy.props.StringProperty(
 		name="Error Occurred",
 		default="",
 		options={'HIDDEN'}
@@ -385,14 +385,14 @@ class addon_updater_install_manually(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_updated_successful(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_updated_successful(bpy.types.Operator):
 	"""Addon in place, popup telling user it completed or what went wrong"""
 	bl_label = "Installation Report"
 	bl_idname = updater.addon+".updater_update_successful"
 	bl_description = "Update installation response"
 	bl_options = {'REGISTER', 'INTERNAL', 'UNDO'}
 
-	error = bpy.props.StringProperty(
+	error: bpy.props.StringProperty(
 		name="Error Occurred",
 		default="",
 		options={'HIDDEN'}
@@ -453,7 +453,7 @@ class addon_updater_updated_successful(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_restore_backup(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_restore_backup(bpy.types.Operator):
 	"""Restore addon from backup"""
 	bl_label = "Restore backup"
 	bl_idname = updater.addon+".updater_restore_backup"
@@ -475,7 +475,7 @@ class addon_updater_restore_backup(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_ignore(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_ignore(bpy.types.Operator):
 	"""Prevent future update notice popups"""
 	bl_label = "Ignore update"
 	bl_idname = updater.addon+".updater_ignore"
@@ -500,7 +500,7 @@ class addon_updater_ignore(bpy.types.Operator):
 		return {'FINISHED'}
 
 
-class addon_updater_end_background(bpy.types.Operator):
+class POWER_SEQUENCER_OT_addon_updater_end_background(bpy.types.Operator):
 	"""Stop checking for update in the background"""
 	bl_label = "End background check"
 	bl_idname = updater.addon+".end_background_check"
@@ -549,7 +549,7 @@ def updater_run_success_popup_handler(scene):
 	except:
 		pass
 
-	atr = addon_updater_updated_successful.bl_idname.split(".")
+	atr = POWER_SEQUENCER_OT_addon_updater_updated_successful.bl_idname.split(".")
 	getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 
 
@@ -586,7 +586,7 @@ def updater_run_install_popup_handler(scene):
 						updater.addon))
 			updater.json_reset_restore()
 			return
-	atr = addon_updater_install_popup.bl_idname.split(".")
+	atr = POWER_SEQUENCER_OT_addon_updater_install_popup.bl_idname.split(".")
 	getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 
 
@@ -625,14 +625,14 @@ def post_update_callback(res=None):
 		if updater.verbose: print("{} updater: Running post update callback".format(updater.addon))
 		#bpy.app.handlers.scene_update_post.append(updater_run_success_popup_handler)
 
-		atr = addon_updater_updated_successful.bl_idname.split(".")
+		atr = POWER_SEQUENCER_OT_addon_updater_updated_successful.bl_idname.split(".")
 		getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 		global ran_update_sucess_popup
 		ran_update_sucess_popup = True
 	else:
 		# some kind of error occured and it was unable to install,
 		# offer manual download instead
-		atr = addon_updater_updated_successful.bl_idname.split(".")
+		atr = POWER_SEQUENCER_OT_addon_updater_updated_successful.bl_idname.split(".")
 		getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT',error=res)
 	return
 
@@ -702,7 +702,7 @@ def check_for_update_nonthreaded(self, context):
 
 	(update_ready, version, link) = updater.check_for_update(now=False)
 	if update_ready == True:
-		atr = addon_updater_install_popup.bl_idname.split(".")
+		atr = POWER_SEQUENCER_OT_addon_updater_install_popup.bl_idname.split(".")
 		getattr(getattr(bpy.ops, atr[0]),atr[1])('INVOKE_DEFAULT')
 	else:
 		if updater.verbose: print("No update ready")
@@ -778,17 +778,17 @@ def update_notice_box_ui(self, context):
 
 	if updater.manual_only==False:
 		col.label("Update ready!",icon="ERROR")
-		col.operator(addon_updater_update_now.bl_idname,
+		col.operator(POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
 						"Update now", icon="LOOP_FORWARDS")
 		col.operator("wm.url_open", text="Open website").url = updater.website
 		#col.operator("wm.url_open",text="Direct download").url=updater.update_link
-		col.operator(addon_updater_install_manually.bl_idname, "Install manually")
+		col.operator(POWER_SEQUENCER_OT_addon_updater_install_manually.bl_idname, "Install manually")
 	else:
 		col.label("Update ready!",icon="ERROR")
 		#col.operator("wm.url_open",text="Direct download").url=updater.update_link
 		col.operator("wm.url_open", text="Get it now").url = \
 				updater.website
-	col.operator(addon_updater_ignore.bl_idname,icon="X")
+	col.operator(POWER_SEQUENCER_OT_addon_updater_ignore.bl_idname,icon="X")
 
 
 
@@ -848,27 +848,27 @@ def update_settings_ui(self, context):
 		split = subcol.split(align=True)
 		split.enabled = False
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						updater.error)
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						text = "", icon="FILE_REFRESH")
 
 	elif updater.update_ready == None and updater.async_checking == False:
 		col.scale_y = 2
-		col.operator(addon_updater_check_now.bl_idname)
+		col.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname)
 	elif updater.update_ready == None: # async is running
 		subcol = col.row(align=True)
 		subcol.scale_y = 1
 		split = subcol.split(align=True)
 		split.enabled = False
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						"Checking...")
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_end_background.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_end_background.bl_idname,
 						text = "", icon="X")
 
 	elif updater.include_branches==True and \
@@ -879,11 +879,11 @@ def update_settings_ui(self, context):
 		subcol.scale_y = 1
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_update_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
 					"Update directly to "+str(updater.include_branch_list[0]))
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						text = "", icon="FILE_REFRESH")
 
 	elif updater.update_ready==True and updater.manual_only==False:
@@ -891,11 +891,11 @@ def update_settings_ui(self, context):
 		subcol.scale_y = 1
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_update_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
 					"Update now to "+str(updater.update_version))
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						text = "", icon="FILE_REFRESH")
 
 	elif updater.update_ready==True and updater.manual_only==True:
@@ -908,11 +908,11 @@ def update_settings_ui(self, context):
 		split = subcol.split(align=True)
 		split.enabled = False
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						"Addon is up to date")
 		split = subcol.split(align=True)
 		split.scale_y = 2
-		split.operator(addon_updater_check_now.bl_idname,
+		split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname,
 						text = "", icon="FILE_REFRESH")
 
 	if updater.manual_only == False:
@@ -920,10 +920,10 @@ def update_settings_ui(self, context):
 		#col.operator(addon_updater_update_target.bl_idname,
 		if updater.include_branches == True and len(updater.include_branch_list)>0:
 			branch = updater.include_branch_list[0]
-			col.operator(addon_updater_update_target.bl_idname,
+			col.operator(POWER_SEQUENCER_OT_addon_updater_update_target.bl_idname,
 					"Install latest {} / old version".format(branch))
 		else:
-			col.operator(addon_updater_update_target.bl_idname,
+			col.operator(POWER_SEQUENCER_OT_addon_updater_update_target.bl_idname,
 					"Reinstall / install old version")
 		lastdate = "none found"
 		backuppath = os.path.join(updater.stage_path,"backup")
@@ -933,7 +933,7 @@ def update_settings_ui(self, context):
 			else:
 				lastdate = updater.json["backup_date"]
 		backuptext = "Restore addon backup ({})".format(lastdate)
-		col.operator(addon_updater_restore_backup.bl_idname, backuptext)
+		col.operator(POWER_SEQUENCER_OT_addon_updater_restore_backup.bl_idname, backuptext)
 
 	row = box.row()
 	row.scale_y = 0.7
@@ -1132,15 +1132,15 @@ def register(bl_info):
 	# The register line items for all operators/panels
 	# If using bpy.utils.register_module(__name__) to register elsewhere
 	# in the addon, delete these lines (also from unregister)
-	bpy.utils.register_class(addon_updater_install_popup)
-	bpy.utils.register_class(addon_updater_check_now)
-	bpy.utils.register_class(addon_updater_update_now)
-	bpy.utils.register_class(addon_updater_update_target)
-	bpy.utils.register_class(addon_updater_install_manually)
-	bpy.utils.register_class(addon_updater_updated_successful)
-	bpy.utils.register_class(addon_updater_restore_backup)
-	bpy.utils.register_class(addon_updater_ignore)
-	bpy.utils.register_class(addon_updater_end_background)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_install_popup)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_check_now)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_update_now)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_update_target)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_install_manually)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_updated_successful)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_restore_backup)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_ignore)
+	bpy.utils.register_class(POWER_SEQUENCER_OT_addon_updater_end_background)
 
 	# special situation: we just updated the addon, show a popup
 	# to tell the user it worked
@@ -1149,15 +1149,15 @@ def register(bl_info):
 
 
 def unregister():
-	bpy.utils.unregister_class(addon_updater_install_popup)
-	bpy.utils.unregister_class(addon_updater_check_now)
-	bpy.utils.unregister_class(addon_updater_update_now)
-	bpy.utils.unregister_class(addon_updater_update_target)
-	bpy.utils.unregister_class(addon_updater_install_manually)
-	bpy.utils.unregister_class(addon_updater_updated_successful)
-	bpy.utils.unregister_class(addon_updater_restore_backup)
-	bpy.utils.unregister_class(addon_updater_ignore)
-	bpy.utils.unregister_class(addon_updater_end_background)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_install_popup)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_check_now)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_update_now)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_update_target)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_install_manually)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_updated_successful)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_restore_backup)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_ignore)
+	bpy.utils.unregister_class(POWER_SEQUENCER_OT_addon_updater_end_background)
 
 	# clear global vars since they may persist if not restarting blender
 	updater.clear_state() # clear internal vars, avoids reloading oddities
