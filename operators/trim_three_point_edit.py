@@ -48,6 +48,5 @@ class POWER_SEQUENCER_OT_trim_three_point_edit(bpy.types.Operator):
     def execute(self, context):
         if not context.selected_sequences:
             return {'CANCELLED'}
-        bpy.ops.power_sequencer.smart_snap(side=self.side)
+        bpy.ops.power_sequencer.trim_left_or_right_handles(side=self.side)
         return {'FINISHED'}
-

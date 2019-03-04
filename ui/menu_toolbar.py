@@ -117,7 +117,7 @@ class POWER_SEQUENCER_MT_snap(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.smart_snap")
+        layout.operator("power_sequencer.trim_left_or_right_handles")
         layout.operator("power_sequencer.snap_selection_to_cursor")
 
 
