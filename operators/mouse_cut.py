@@ -25,10 +25,10 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         'demo': 'https://i.imgur.com/wVvX4ex.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True},
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True},
              {'remove_gaps': False},
              'Cut on mousemove, keep gap'),
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
              {'remove_gaps': True},
              'Cut on mousemove, remove gap'),
         ],
@@ -106,12 +106,12 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         self.frame_start, self.channel_start = round(frame_float), floor(channel_float)
         self.frame_end = self.frame_start
 
-        # Reverse keymaps if the user selects with the left mouse button
-        self.select_mouse = 'RIGHTMOUSE'
-        self.action_mouse = 'LEFTMOUSE'
-        if context.user_preferences.inputs.select_mouse == 'LEFT':
-            self.select_mouse = 'LEFTMOUSE'
-            self.action_mouse = 'RIGHTMOUSE'
+        # # Reverse keymaps if the user selects with the left mouse button
+        # self.select_mouse = 'RIGHTMOUSE'
+        # self.action_mouse = 'LEFTMOUSE'
+        # if context.preferences.inputs.select_mouse == 'LEFT':
+        #     self.select_mouse = 'LEFTMOUSE'
+        #     self.action_mouse = 'RIGHTMOUSE'
 
         context.scene.frame_current = self.frame_start
 

@@ -1,4 +1,4 @@
-from .initialize_properties import initialize_properties
+# from .initialize_properties import initialize_properties
 from .panel import POWER_SEQUENCER_PT_Panel
 from .change_panel_tab import POWER_SEQUENCER_OT_change_panel_tab
 from .menu_contextual import POWER_SEQUENCER_MT_contextual

@@ -15,7 +15,7 @@ class POWER_SEQUENCER_OT_mouse_toggle_mute(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'alt': True}, {}, 'Mouse Toggle Mute')
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'alt': True}, {}, 'Mouse Toggle Mute')
         ],
         'keymap': 'Sequencer'
     }

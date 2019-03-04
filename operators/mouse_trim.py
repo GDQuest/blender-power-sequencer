@@ -23,10 +23,10 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'SELECTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True},
+            ({'type': 'RIGHTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True},
              {'select_mode': 'smart'},
              'Trim strip, keep gap'),
-            ({'type': 'SELECTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True, 'shift': True},
+            ({'type': 'RIGHTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True, 'shift': True},
              {'select_mode': 'cursor'},
              'Trim strip, remove gap')
         ],

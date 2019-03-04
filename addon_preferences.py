@@ -2,13 +2,12 @@
 Add-on preferences and interface in the Blender preferences window.
 """
 import bpy
-from bpy.props import BoolProperty, IntProperty, EnumProperty, StringProperty
 from . import addon_updater_ops
 
 
-class ProxyPreferences(bpy.types.AddonPreferences):
+class PowerSequencerPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
-    video_export_path = StringProperty(
+    video_export_path = bpy.props.StringProperty(
         subtype="DIR_PATH",
         name="Video render folder",
         description="Relative folder to save videos rendered with the add-on",
@@ -55,3 +54,11 @@ class ProxyPreferences(bpy.types.AddonPreferences):
 
         # updater draw function
         addon_updater_ops.update_settings_ui(self, context)
+
+
+def register_preferences():
+    bpy.utils.register_class(PowerSequencerPreferences)
+
+
+def unregister_preferences():
+    bpy.utils.unregister_class(PowerSequencerPreferences)

@@ -19,22 +19,22 @@ Created by Nathan Lovato
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import bpy
-from .operators import classes
-# from .utils.register_shortcuts import register_shortcuts
-# from .handlers import handlers_register, handlers_unregister
 
-# register
-##################################
-# import traceback
-# from .operators import *
-# from . import addon_updater_ops
+from . import addon_updater_ops
+from .addon_preferences import register_preferences, unregister_preferences
+from .addon_properties import register_properties, unregister_properties
+from .operators import classes
+from .utils.register_shortcuts import register_shortcuts
+from .handlers import register_handlers, unregister_handlers
+from .utils import addon_auto_imports
+
 
 # load and reload submodules
 ##################################
-from .utils import addon_auto_imports
 modules = addon_auto_imports.setup_addon_modules(
     __path__, __name__, ignore_packages=[".utils", ".audiosync"], ignore_modules=["addon_updater"]
 )
+
 
 bl_info = {
     "name": "Power Sequencer",
@@ -50,58 +50,39 @@ bl_info = {
 }
 
 
-class PowerSequencerProperties(bpy.types.PropertyGroup):
-    playback_speed: bpy.props.EnumProperty(
-        items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
-               ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
-               ('triple', 'Triple (3x)', '')],
-        name='Playback speed',
-        default='normal')
-
-    frame_pre: bpy.props.IntProperty(
-        name='Frame before frame_change', default=0, min=0)
-
-    active_tab: bpy.props.StringProperty(
-        name="Active Tab",
-        description="The name of the active tab in the UI",
-        default="Sequencer"
-    )
-
-
 addon_keymaps = []
 
-register, unregister = bpy.utils.register_classes_factory(classes)
 
-# def register():
-#     global addon_keymaps
-#     addon_updater_ops.register(bl_info)
+def register():
+    global addon_keymaps
+    addon_updater_ops.register(bl_info)
 
-#     try:
-#         bpy.utils.register_module(__name__)
-#     except:
-#         traceback.print_exc()
+    register_preferences()
+    register_properties()
+    register_handlers()
 
-#     keymaps = register_shortcuts()
-#     addon_keymaps += keymaps
+    for c in classes:
+        bpy.utils.register_class(c)
 
-#     bpy.types.Scene.power_sequencer = bpy.props.PointerProperty(
-#         type=PowerSequencerProperties)
+    keymaps = register_shortcuts()
+    addon_keymaps += keymaps
 
-#     handlers_register()
-#     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
+    print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
 
 
-# def unregister():
-#     global addon_keymaps
-#     addon_updater_ops.unregister()
+def unregister():
+    global addon_keymaps
+    addon_updater_ops.unregister()
 
-#     for km, kmi in addon_keymaps:
-#         km.keymap_items.remove(kmi)
-#     addon_keymaps.clear()
+    for km, kmi in addon_keymaps:
+        km.keymap_items.remove(kmi)
+    addon_keymaps.clear()
 
-#     handlers_unregister()
-#     try:
-#         bpy.utils.unregister_module(__name__)
-#     except:
-#         traceback.print_exc()
-#     print("Unregistered {}".format(bl_info["name"]))
+    for c in classes:
+        bpy.utils.unregister_class(c)
+
+    unregister_preferences()
+    unregister_properties()
+    unregister_handlers()
+
+    print("Unregistered {}".format(bl_info["name"]))

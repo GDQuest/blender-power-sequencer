@@ -2,6 +2,7 @@ import bpy
 
 
 class POWER_SEQUENCER_MT_main(bpy.types.Menu):
+    bl_idname = "POWER_SEQUENCER_MT_main"
     bl_label = "Power Sequencer"
 
     def draw(self, context):

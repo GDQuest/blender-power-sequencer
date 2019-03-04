@@ -18,7 +18,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'shift': True, 'alt': True},
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'shift': True, 'alt': True},
              {},
              'Trim to Surrounding Cuts')
         ],
