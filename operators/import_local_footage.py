@@ -2,10 +2,11 @@ import os
 import bpy
 import json
 from operator import attrgetter
-from bpy.props import BoolProperty, IntProperty
+from bpy.props import BoolProperty, FloatProperty
 
 from .utils.global_settings import Extensions
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 
 class ImportLocalFootage(bpy.types.Operator):
@@ -41,19 +42,19 @@ class ImportLocalFootage(bpy.types.Operator):
                      " not be imported"),
         default=True)
 
-    img_length = IntProperty(
+    img_length = FloatProperty(
         name="Image strip length",
-        description="Controls the duration of the imported image strip",
-        default=96,
-        min=1)
-    img_padding = IntProperty(
+        description="Controls the duration of the imported image strip in seconds",
+        default=3.0,
+        min=1.0)
+    img_padding = FloatProperty(
         name="Image strip padding",
-        description="Padding added between imported image strips in frames",
-        default=24,
-        min=1)
+        description="Padding added between imported image strips in seconds",
+        default=1.0,
+        min=0.0)
 
-    start_fps, start_fps_base = None, None
-    new_fps, new_fps_base = None, None
+    start_fps, start_fps_base = -1, -1
+    new_fps, new_fps_base = -1, -1
     warnings = []
 
     @classmethod
@@ -330,6 +331,8 @@ class ImportLocalFootage(bpy.types.Operator):
 
     def import_img(self, context, project_directory, img_files):
         import_frame = context.scene.frame_current
+        strip_length = convert_duration_to_frames(context, self.img_length)
+        strip_padding = convert_duration_to_frames(context, self.img_padding)
         new_sequences = []
         for f in img_files:
             head, tail = os.path.split(f)
@@ -340,8 +343,8 @@ class ImportLocalFootage(bpy.types.Operator):
                 directory=img_directory,
                 files=img_file_dict,
                 frame_start=import_frame,
-                frame_end=import_frame + self.img_length)
-            import_frame += self.img_length + self.img_padding
+                frame_end=import_frame + strip_length)
+            import_frame += strip_length + strip_padding
             new_sequences.extend(context.selected_sequences)
         return new_sequences
 
