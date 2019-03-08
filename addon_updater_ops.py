@@ -104,27 +104,30 @@ class POWER_SEQUENCER_OT_addon_updater_install_popup(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         if updater.invalidupdater == True:
-            layout.label("Updater module error")
+            layout.label(text="Updater module error")
             return
         elif updater.update_ready == True:
             col = layout.column()
             col.scale_y = 0.7
-            col.label("Update {} ready!".format(str(updater.update_version)), icon="LOOP_FORWARDS")
-            col.label("Choose 'Update Now' & press OK to install, ", icon="BLANK1")
-            col.label("or click outside window to defer", icon="BLANK1")
+            col.label(
+                text="Update {} ready!".format(str(updater.update_version)),
+                icon="LOOP_FORWARDS"
+            )
+            col.label(text="Choose 'Update Now' & press OK to install, ", icon="BLANK1")
+            col.label(text="or click outside window to defer", icon="BLANK1")
             row = col.row()
             row.prop(self, "ignore_enum", expand=True)
             col.split()
         elif updater.update_ready == False:
             col = layout.column()
             col.scale_y = 0.7
-            col.label("No updates available")
-            col.label("Press okay to dismiss dialog")
+            col.label(text="No updates available")
+            col.label(text="Press okay to dismiss dialog")
             # add option to force install
         else:
             # case: updater.update_ready = None
             # we have not yet checked for the update
-            layout.label("Check for update now?")
+            layout.label(text="Check for update now?")
 
         # potentially in future, could have UI for 'check to select old version'
         # to revert back to.
@@ -305,11 +308,11 @@ class POWER_SEQUENCER_OT_addon_updater_update_target(bpy.types.Operator):
     def draw(self, context):
         layout = self.layout
         if updater.invalidupdater == True:
-            layout.label("Updater error")
+            layout.label(text="Updater error")
             return
-        split = layout.split(percentage=0.66)
+        split = layout.split(factor=0.66)
         subcol = split.column()
-        subcol.label("Select install version")
+        subcol.label(text="Select install version")
         subcol = split.column()
         subcol.prop(self, "target", text="")
 
@@ -351,22 +354,22 @@ class POWER_SEQUENCER_OT_addon_updater_install_manually(bpy.types.Operator):
         layout = self.layout
 
         if updater.invalidupdater == True:
-            layout.label("Updater error")
+            layout.label(text="Updater error")
             return
 
         # use a "failed flag"? it shows this label if the case failed.
         if self.error != "":
             col = layout.column()
             col.scale_y = 0.7
-            col.label("There was an issue trying to auto-install", icon="ERROR")
-            col.label("Press the download button below and install", icon="BLANK1")
-            col.label("the zip file like a normal addon.", icon="BLANK1")
+            col.label(text="There was an issue trying to auto-install", icon="ERROR")
+            col.label(text="Press the download button below and install", icon="BLANK1")
+            col.label(text="the zip file like a normal addon.", icon="BLANK1")
         else:
             col = layout.column()
             col.scale_y = 0.7
-            col.label("Install the addon manually")
-            col.label("Press the download button below and install")
-            col.label("the zip file like a normal addon.")
+            col.label(text="Install the addon manually")
+            col.label(text="Press the download button below and install")
+            col.label(text="the zip file like a normal addon.")
 
         # if check hasn't happened, i.e. accidentally called this menu
         # allow to check here
@@ -374,19 +377,17 @@ class POWER_SEQUENCER_OT_addon_updater_install_manually(bpy.types.Operator):
         row = layout.row()
 
         if updater.update_link != None:
-            row.operator("wm.url_open",text="Direct download").url=\
-              updater.update_link
+            row.operator("wm.url_open", text="Direct download").url = updater.update_link
         else:
             row.operator("wm.url_open", text="(failed to retrieve)")
             row.enabled = False
 
             if updater.website != None:
                 row = layout.row()
-                row.operator("wm.url_open",text="Open website").url=\
-                  updater.website
+                row.operator("wm.url_open", text="Open website").url = updater.website
             else:
                 row = layout.row()
-                row.label("See source website to download the update")
+                row.label(text="See source website to download the update")
 
     def execute(self, context):
 
@@ -409,14 +410,14 @@ class POWER_SEQUENCER_OT_addon_updater_updated_successful(bpy.types.Operator):
         layout = self.layout
 
         if updater.invalidupdater == True:
-            layout.label("Updater error")
+            layout.label(text="Updater error")
             return
 
         saved = updater.json
         if self.error != "":
             col = layout.column()
             col.scale_y = 0.7
-            col.label("Error occurred, did not install", icon="ERROR")
+            col.label(text="Error occurred, did not install", icon="ERROR")
             col.label(updater.error_msg, icon="BLANK1")
             rw = col.row()
             rw.scale_y = 2
@@ -431,28 +432,28 @@ class POWER_SEQUENCER_OT_addon_updater_updated_successful(bpy.types.Operator):
             if "just_restored" in saved and saved["just_restored"] == True:
                 col = layout.column()
                 col.scale_y = 0.7
-                col.label("Addon restored", icon="RECOVER_LAST")
-                col.label("Restart blender to reload.", icon="BLANK1")
+                col.label(text="Addon restored", icon="RECOVER_LAST")
+                col.label(text="Restart blender to reload.", icon="BLANK1")
                 updater.json_reset_restore()
             else:
                 col = layout.column()
                 col.scale_y = 0.7
-                col.label("Addon successfully installed", icon="FILE_TICK")
-                col.label("Restart blender to reload.", icon="BLANK1")
+                col.label(text="Addon successfully installed", icon="FILE_TICK")
+                col.label(text="Restart blender to reload.", icon="BLANK1")
 
         else:
             # reload addon, but still recommend they restart blender
             if "just_restored" in saved and saved["just_restored"] == True:
                 col = layout.column()
                 col.scale_y = 0.7
-                col.label("Addon restored", icon="RECOVER_LAST")
-                col.label("Consider restarting blender to fully reload.", icon="BLANK1")
+                col.label(text="Addon restored", icon="RECOVER_LAST")
+                col.label(text="Consider restarting blender to fully reload.", icon="BLANK1")
                 updater.json_reset_restore()
             else:
                 col = layout.column()
                 col.scale_y = 0.7
-                col.label("Addon successfully installed", icon="FILE_TICK")
-                col.label("Consider restarting blender to fully reload.", icon="BLANK1")
+                col.label(text="Addon successfully installed", icon="FILE_TICK")
+                col.label(text="Consider restarting blender to fully reload.", icon="BLANK1")
 
     def execut(self, context):
         return {'FINISHED'}
@@ -766,8 +767,8 @@ def update_notice_box_ui(self, context):
             box = layout.box()
             col = box.column()
             col.scale_y = 0.7
-            col.label("Restart blender", icon="ERROR")
-            col.label("to complete update")
+            col.label(text="Restart blender", icon="ERROR")
+            col.label(text="to complete update")
             return
 
     # if user pressed ignore, don't draw the box
@@ -782,20 +783,20 @@ def update_notice_box_ui(self, context):
     col = box.column(align=True)
 
     if updater.manual_only == False:
-        col.label("Update ready!", icon="ERROR")
+        col.label(text="Update ready!", icon="ERROR")
         col.operator(
             POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
-            "Update now",
+            text="Update now",
             icon="LOOP_FORWARDS"
         )
         col.operator("wm.url_open", text="Open website").url = updater.website
         #col.operator("wm.url_open",text="Direct download").url=updater.update_link
         col.operator(
             POWER_SEQUENCER_OT_addon_updater_install_manually.bl_idname,
-            "Install manually"
+            text="Install manually"
         )
     else:
-        col.label("Update ready!", icon="ERROR")
+        col.label(text="Update ready!", icon="ERROR")
         #col.operator("wm.url_open",text="Direct download").url=updater.update_link
         col.operator("wm.url_open", text="Get it now").url = \
           updater.website
@@ -812,31 +813,31 @@ def update_settings_ui(self, context):
 
     # in case of error importing updater
     if updater.invalidupdater == True:
-        box.label("Error initializing updater code:")
+        box.label(text="Error initializing updater code:")
         box.label(updater.error_msg)
         return
 
     settings = context.preferences.addons[__package__].preferences
 
     # auto-update settings
-    box.label("Updater Settings")
+    box.label(text="Updater Settings")
     row = box.row()
 
     # special case to tell user to restart blender, if set that way
     if updater.auto_reload_post_update == False:
         saved_state = updater.json
         if "just_updated" in saved_state and saved_state["just_updated"] == True:
-            row.label("Restart blender to complete update", icon="ERROR")
+            row.label(text="Restart blender to complete update", icon="ERROR")
             return
 
-    split = row.split(percentage=0.3)
+    split = row.split(factor=0.3)
     subcol = split.column()
     subcol.prop(settings, "auto_check_update")
     subcol = split.column()
 
     if settings.auto_check_update == False: subcol.enabled = False
     subrow = subcol.row()
-    subrow.label("Interval between checks")
+    subrow.label(text="Interval between checks")
     subrow = subcol.row(align=True)
     checkcol = subrow.column(align=True)
     checkcol.prop(settings, "updater_intrval_months")
@@ -857,7 +858,7 @@ def update_settings_ui(self, context):
         split = subcol.split(align=True)
         split.enabled = False
         split.scale_y = 2
-        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, updater.error)
+        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, text=updater.error)
         split = subcol.split(align=True)
         split.scale_y = 2
         split.operator(
@@ -875,7 +876,7 @@ def update_settings_ui(self, context):
         split = subcol.split(align=True)
         split.enabled = False
         split.scale_y = 2
-        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, "Checking...")
+        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, text="Checking...")
         split = subcol.split(align=True)
         split.scale_y = 2
         split.operator(
@@ -894,7 +895,7 @@ def update_settings_ui(self, context):
         split.scale_y = 2
         split.operator(
             POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
-            "Update directly to " + str(updater.include_branch_list[0])
+            text="Update directly to " + str(updater.include_branch_list[0])
         )
         split = subcol.split(align=True)
         split.scale_y = 2
@@ -911,7 +912,7 @@ def update_settings_ui(self, context):
         split.scale_y = 2
         split.operator(
             POWER_SEQUENCER_OT_addon_updater_update_now.bl_idname,
-            "Update now to " + str(updater.update_version)
+            text="Update now to " + str(updater.update_version)
         )
         split = subcol.split(align=True)
         split.scale_y = 2
@@ -925,7 +926,7 @@ def update_settings_ui(self, context):
         col.scale_y = 2
         col.operator(
             "wm.url_open",
-            "Download " + str(updater.update_version)
+            text="Download " + str(updater.update_version)
         ).url = updater.website
     else:  # i.e. that updater.update_ready == False
         subcol = col.row(align=True)
@@ -933,7 +934,7 @@ def update_settings_ui(self, context):
         split = subcol.split(align=True)
         split.enabled = False
         split.scale_y = 2
-        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, "Addon is up to date")
+        split.operator(POWER_SEQUENCER_OT_addon_updater_check_now.bl_idname, text="Addon is up to date")
         split = subcol.split(align=True)
         split.scale_y = 2
         split.operator(
@@ -949,12 +950,12 @@ def update_settings_ui(self, context):
             branch = updater.include_branch_list[0]
             col.operator(
                 POWER_SEQUENCER_OT_addon_updater_update_target.bl_idname,
-                "Install latest {} / old version".format(branch)
+                text="Install latest {} / old version".format(branch)
             )
         else:
             col.operator(
                 POWER_SEQUENCER_OT_addon_updater_update_target.bl_idname,
-                "Reinstall / install old version"
+                text="Reinstall / install old version"
             )
         lastdate = "none found"
         backuppath = os.path.join(updater.stage_path, "backup")
@@ -964,20 +965,20 @@ def update_settings_ui(self, context):
             else:
                 lastdate = updater.json["backup_date"]
         backuptext = "Restore addon backup ({})".format(lastdate)
-        col.operator(POWER_SEQUENCER_OT_addon_updater_restore_backup.bl_idname, backuptext)
+        col.operator(POWER_SEQUENCER_OT_addon_updater_restore_backup.bl_idname, text=backuptext)
 
     row = box.row()
     row.scale_y = 0.7
     lastcheck = updater.json["last_check"]
     if updater.error != None and updater.error_msg != None:
-        row.label(updater.error_msg)
+        row.label(text=updater.error_msg)
     elif movemosue == True:
-        row.label("Move mouse if button doesn't update")
+        row.label(text="Move mouse if button doesn't update")
     elif lastcheck != "" and lastcheck != None:
         lastcheck = lastcheck[0:lastcheck.index(".")]
-        row.label("Last update check: " + lastcheck)
+        row.label(text="Last update check: " + lastcheck)
     else:
-        row.label("Last update check: None")
+        row.label(text="Last update check: None")
 
 
 # a global function for tag skipping

@@ -41,10 +41,10 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
     def execute(self, context):
         strip = context.scene.sequence_editor.active_strip
         strip_scene = strip.scene
-        start_scene = context.screen.scene
+        start_scene = context.window.scene
 
-        self.merge_markers(strip_scene, start_scene)
-        self.merge_strips(strip_scene, start_scene)
+        self.merge_markers(context, strip_scene, start_scene)
+        self.merge_strips(context, strip_scene, start_scene)
 
         if not self.delete_scene:
             return {'FINISHED'}
@@ -52,26 +52,26 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
         bpy.ops.sequencer.select_all(action = 'DESELECT')
         strip.select = True
         bpy.ops.sequencer.delete()
-        context.screen.scene = strip_scene
+        context.window.scene = strip_scene
         bpy.ops.scene.delete()
-        context.screen.scene = start_scene
+        context.window.scene = start_scene
         self.report(type = {'WARNING'}, message = "All animations on source scene were lost")
 
         return {'FINISHED'}
 
-    def merge_strips(self, source_scene, target_scene):
-        bpy.context.screen.scene = source_scene
+    def merge_strips(self, context, source_scene, target_scene):
+        context.window.scene = source_scene
         bpy.ops.sequencer.select_all(action = 'SELECT')
         bpy.ops.sequencer.copy()
 
-        bpy.context.screen.scene = target_scene
-        current_frame = bpy.context.scene.frame_current
-        active = bpy.context.scene.sequence_editor.active_strip
-        bpy.context.scene.frame_current = active.frame_final_start
+        context.window.scene = target_scene
+        current_frame = context.scene.frame_current
+        active = context.scene.sequence_editor.active_strip
+        context.scene.frame_current = active.frame_final_start
         bpy.ops.sequencer.select_all(action = 'DESELECT')
         bpy.ops.sequencer.paste()
 
-        bpy.context.scene.frame_current = current_frame
+        context.scene.frame_current = current_frame
 
 
     def merge_markers(self, source_scene, target_scene):

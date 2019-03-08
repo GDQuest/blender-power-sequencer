@@ -27,6 +27,7 @@ from .operators import classes
 from .utils.register_shortcuts import register_shortcuts
 from .handlers import register_handlers, unregister_handlers
 from .utils import addon_auto_imports
+from .ui import register_ui, unregister_ui
 
 
 # load and reload submodules
@@ -40,7 +41,7 @@ bl_info = {
     "name": "Power Sequencer",
     "description": "Video editing tools for content creators",
     "author": "Nathan Lovato",
-    "version": (1, 2, 0),
+    "version": (1, 3, 0),
     "blender": (2, 80, 0),
     "location": "Sequencer",
     "tracker_url": "https://github.com/GDquest/Blender-power-sequencer/issues",
@@ -60,6 +61,7 @@ def register():
     register_preferences()
     register_properties()
     register_handlers()
+    register_ui()
 
     for c in classes:
         bpy.utils.register_class(c)
@@ -81,6 +83,7 @@ def unregister():
     for c in classes:
         bpy.utils.unregister_class(c)
 
+    unregister_ui()
     unregister_preferences()
     unregister_properties()
     unregister_handlers()

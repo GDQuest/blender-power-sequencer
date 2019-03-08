@@ -1,7 +1,7 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import addon_updater_ops
-from .ui import POWER_SEQUENCER_MT_main
+# from .ui import POWER_SEQUENCER_MT_main
 
 
 @persistent
@@ -53,12 +53,11 @@ def draw_playback_speed(self, context):
     layout = self.layout
     scene = context.scene
     layout.prop(scene.power_sequencer, 'playback_speed')
-    # layout.prop(bpy.ops.power_sequencer, 'playback_speed_set')
 
 
 def draw_ui_menu(self, context):
     layout = self.layout
-    layout.menu(POWER_SEQUENCER_MT_main.bl_idname)
+    layout.menu('POWER_SEQUENCER_MT_main')
 
 
 # Add-on updater

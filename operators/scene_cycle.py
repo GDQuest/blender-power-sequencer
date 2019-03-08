@@ -34,7 +34,7 @@ class POWER_SEQUENCER_OT_scene_cycle(bpy.types.Operator):
             bpy.ops.screen.animation_cancel(restore_frame=False)
         for index in range(scene_count):
             if context.scene == scenes[index]:
-                context.screen.scene = scenes[(index + 1) % scene_count]
+                context.window.scene = scenes[(index + 1) % scene_count]
                 break
         return {'FINISHED'}
 
