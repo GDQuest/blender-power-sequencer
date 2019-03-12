@@ -13,7 +13,7 @@ bpy.context.scene.render.ffmpeg.format = "MPEG4"
 bpy.context.scene.render.ffmpeg.codec = "H264"
 
 bpy.context.scene.render.ffmpeg.constant_rate_factor = 'PERC_LOSSLESS'
-bpy.context.scene.render.ffmpeg.ffmpeg_preset = 'MEDIUM'
+bpy.context.scene.render.ffmpeg.ffmpeg_preset = 'GOOD'
 
 
 is_ntsc = (bpy.context.scene.render.fps != 25)
