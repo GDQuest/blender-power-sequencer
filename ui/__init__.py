@@ -24,7 +24,7 @@ from .menu_toolbar import (
     POWER_SEQUENCER_MT_crossfade
 )
 
-classes = {
+classes = [
     POWER_SEQUENCER_PT_Panel,
     POWER_SEQUENCER_OT_change_panel_tab,
     POWER_SEQUENCER_MT_contextual,
@@ -47,6 +47,6 @@ classes = {
     POWER_SEQUENCER_MT_preview,
     POWER_SEQUENCER_MT_audio,
     POWER_SEQUENCER_MT_crossfade
-}
+]
 
 register_ui, unregister_ui = bpy.utils.register_classes_factory(classes)
