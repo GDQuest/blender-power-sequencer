@@ -2,9 +2,9 @@ import bpy
 from ..operators.utils.global_settings import SequenceTypes
 
 
-class PowerSequencerMenuContextual(bpy.types.Menu):
+class POWER_SEQUENCER_MT_contextual(bpy.types.Menu):
     bl_label = "Power Sequencer"
-    bl_idname = "SEQUENCER_MT_power_sequencer_menu"
+    # bl_idname = "SEQUENCER_MT_power_sequencer_menu"
 
     def draw(self, context):
         layout = self.layout

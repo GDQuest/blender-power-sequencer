@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class PlaybackSpeedSet(bpy.types.Operator):
+class POWER_SEQUENCER_OT_playback_speed_set(bpy.types.Operator):
     """
     Change the playback_speed property using an operator property. Used with keymaps
     """
@@ -19,12 +19,12 @@ class PlaybackSpeedSet(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER"}
 
-    speed = bpy.props.EnumProperty(
+    speed: bpy.props.EnumProperty(
         items=[('normal', 'Normal (1x)', ''), ('fast', 'Fast (1.33x)', ''),
                ('faster', 'Faster (1.66x)', ''), ('double', 'Double (2x)', ''),
                ('triple', 'Triple (3x)', '')],

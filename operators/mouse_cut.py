@@ -1,9 +1,10 @@
 import bpy
-from math import floor
 import bgl
+import gpu
+from gpu_extras.batch import batch_for_shader
+from math import floor
 from mathutils import Vector
 
-from bpy.props import BoolProperty, IntProperty, EnumProperty
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 
@@ -11,7 +12,10 @@ from .utils.draw import draw_line, draw_arrow_head
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MouseCut(bpy.types.Operator):
+SHADER = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+
+
+class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
     """
     *brief* Fast strip cutting based on mouse position
 
@@ -26,21 +30,21 @@ class MouseCut(bpy.types.Operator):
         'demo': 'https://i.imgur.com/wVvX4ex.gif',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True},
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True},
              {'remove_gaps': False},
              'Cut on mousemove, keep gap'),
-            ({'type': 'ACTIONMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
+            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
              {'remove_gaps': True},
              'Cut on mousemove, remove gap'),
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    select_mode = EnumProperty(
+    select_mode: bpy.props.EnumProperty(
         items=[('mouse', 'Mouse',
                 'Only select the strip hovered by the mouse'),
                ('cursor', 'Time cursor',
@@ -50,29 +54,29 @@ class MouseCut(bpy.types.Operator):
         name="Selection mode",
         description="Cut only the strip under the mouse or all strips under the time cursor",
         default='smart')
-    select_linked = BoolProperty(
+    select_linked: bpy.props.BoolProperty(
         name="Use linked time",
         description="In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
-    remove_gaps = BoolProperty(
+    remove_gaps: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
-    cut_gaps = BoolProperty(
+    cut_gaps: bpy.props.BoolProperty(
         name="Cut gaps",
         description="If you click on a gap, remove it",
         default=True)
 
-    auto_move_cursor = BoolProperty(
+    auto_move_cursor: bpy.props.BoolProperty(
         name="Auto move cursor",
         description="When trimming the sequence, auto move the cursor if playback is active",
         default=True)
-    cursor_offset = IntProperty(
+    cursor_offset: bpy.props.IntProperty(
         name="Cursor trim offset",
         description="On trim, during playback, offset the cursor to better see if the cut works",
         default=12,
         min=0)
-    threshold_trim_distance = IntProperty(
+    threshold_trim_distance: bpy.props.IntProperty(
         name="Tablet trim distance",
         description="If you use a pen tablet, the trim will only happen past this distance",
         default=6,
@@ -83,7 +87,6 @@ class MouseCut(bpy.types.Operator):
 
     frame_start, channel_start = 0, 0
     frame_end, end_channel = 0, 0
-    select_mouse, action_mouse = '', ''
     cut_mode = ''
     initially_clicked_strips = None
 
@@ -107,13 +110,6 @@ class MouseCut(bpy.types.Operator):
         self.frame_start, self.channel_start = round(frame_float), floor(channel_float)
         self.frame_end = self.frame_start
 
-        # Reverse keymaps if the user selects with the left mouse button
-        self.select_mouse = 'RIGHTMOUSE'
-        self.action_mouse = 'LEFTMOUSE'
-        if context.user_preferences.inputs.select_mouse == 'LEFT':
-            self.select_mouse = 'LEFTMOUSE'
-            self.action_mouse = 'RIGHTMOUSE'
-
         context.scene.frame_current = self.frame_start
 
         # Drawing
@@ -128,7 +124,7 @@ class MouseCut(bpy.types.Operator):
         if event.type in {'ESC'}:
             return {'CANCELLED'}
         # On mouse release, confirming the action
-        if event.type == self.action_mouse and event.value == 'RELEASE':
+        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(
                     self.handle_cut_trim_line, 'WINDOW'
@@ -277,26 +273,27 @@ def draw_cut_trim(self, context, start, end, shift_is_pressed):
 
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(2)
-    bgl.glPushMatrix()
 
-    bgl.glColor4f(1.0, 0.0, 1.0, 1.0)
+    # bgl.glPushMatrix()
+
+    # bgl.glColor(1.0, 0.0, 1.0, 1.0)
 
     # horizontal line
-    draw_line(start, end)
+    draw_line(SHADER, start, end)
 
     # vertical lines
-    draw_line(Vector([start.x, min_bottom]), Vector([start.x, max_top]))
-    draw_line(Vector([end.x, min_bottom]), Vector([end.x, max_top]))
+    draw_line(SHADER, Vector([start.x, min_bottom]), Vector([start.x, max_top]))
+    draw_line(SHADER, Vector([end.x, min_bottom]), Vector([end.x, max_top]))
 
     if shift_is_pressed:
         first_arrow_center = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
         second_arrow_center = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
         arrow_size = Vector([10, 20])
-        draw_arrow_head(first_arrow_center, arrow_size)
-        draw_arrow_head(second_arrow_center, arrow_size, points_right=False)
+        draw_arrow_head(SHADER, first_arrow_center, arrow_size)
+        draw_arrow_head(SHADER, second_arrow_center, arrow_size, points_right=False)
 
-    bgl.glPopMatrix()
+    # bgl.glPopMatrix()
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
-    bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
+    # bgl.glColor4f(0.0, 0.0, 0.0, 1.0)

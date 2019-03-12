@@ -1,10 +1,9 @@
 import bpy
 import operator
 
-from bpy.props import StringProperty
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
-class SceneRenameWithStrip(bpy.types.Operator):
+class POWER_SEQUENCER_OT_scene_rename_with_strip(bpy.types.Operator):
     """
     Rename a Scene Strip and its source scene
     """
@@ -16,12 +15,12 @@ class SceneRenameWithStrip(bpy.types.Operator):
         'keymap': 'Sequencer'
     }
 
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {"REGISTER", "UNDO"}
 
-    new_name = StringProperty(
+    new_name: bpy.props.StringProperty(
         name="Strip New Name",
         description="The name both the SceneStrip and its source Scene will take",
         default="")

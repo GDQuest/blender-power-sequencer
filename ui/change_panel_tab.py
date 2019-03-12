@@ -1,7 +1,7 @@
 import bpy
 
 
-class ChangePanelTab(bpy.types.Operator):
+class POWER_SEQUENCER_OT_change_panel_tab(bpy.types.Operator):
     """
     Change which Tab is active and which set of addon buttons are
     currently visible
@@ -10,7 +10,7 @@ class ChangePanelTab(bpy.types.Operator):
     bl_label = "Change Panel Tab"
     bl_description = "Change visibility of Power Sequencer operations"
 
-    active_tab = bpy.props.StringProperty()
+    active_tab: bpy.props.StringProperty()
 
     def execute(self, context):
         scene = context.scene

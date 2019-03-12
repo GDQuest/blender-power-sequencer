@@ -4,7 +4,7 @@ from .utils.find_neighboring_markers import find_neighboring_markers
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class MarkerGoToNext(bpy.types.Operator):
+class POWER_SEQUENCER_OT_marker_go_to_next(bpy.types.Operator):
     """
     Moves the time cursor to the next marker
     """
@@ -15,12 +15,12 @@ class MarkerGoToNext(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    target_marker = bpy.props.EnumProperty(
+    target_marker: bpy.props.EnumProperty(
         items=[('left', 'left', 'left'), ('right', 'right', 'right')],
         name='Target marker',
         description='Move to the closest marker to the left or to the right of the cursor',

@@ -4,7 +4,7 @@ from .utils.find_neighboring_markers import find_neighboring_markers
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class SetPreviewBetweenMarkers(bpy.types.Operator):
+class POWER_SEQUENCER_OT_set_preview_between_markers(bpy.types.Operator):
     """
     Set the timeline's preview range using the 2 markers closest to the time cursor
     """
@@ -15,7 +15,7 @@ class SetPreviewBetweenMarkers(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}

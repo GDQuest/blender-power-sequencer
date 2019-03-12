@@ -4,7 +4,7 @@ from operator import attrgetter
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class CopySelectedSequences(bpy.types.Operator):
+class POWER_SEQUENCER_OT_copy_selected_sequences(bpy.types.Operator):
     """
     *brief* Copy/cut strips without offset from current time indicator
 
@@ -28,12 +28,12 @@ class CopySelectedSequences(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    delete_selection = bpy.props.BoolProperty(
+    delete_selection: bpy.props.BoolProperty(
         name="Delete selection",
         description="Delete selected strips: acts like cut and paste",
         default=False)

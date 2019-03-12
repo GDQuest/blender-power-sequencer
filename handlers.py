@@ -1,7 +1,7 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import addon_updater_ops
-from .ui import PowerSequencerMenuToolbar
+# from .ui import POWER_SEQUENCER_MT_main
 
 
 @persistent
@@ -36,14 +36,14 @@ def playback_speed_post(scene):
     elif playback_speed == 'normal':
         pass
     elif playback_speed == 'fast' and scene.frame_current % 3 == 0:
-        scene.frame_current = scene.frame_current + 1 * frame_multipler
+        scene.frame_current = scene.frame_current + 1*frame_multipler
     elif playback_speed == 'faster' and scene.frame_current % 2 == 0:
-        scene.frame_current = scene.frame_current + 1 * frame_multipler
+        scene.frame_current = scene.frame_current + 1*frame_multipler
     elif playback_speed == 'double':
         # 2.5x -> skip 5 frames for 2. 2 then 3 then 2 etc.
-        scene.frame_current = scene.frame_current + 1 * frame_multipler
+        scene.frame_current = scene.frame_current + 1*frame_multipler
     elif playback_speed == 'triple':
-        scene.frame_current = scene.frame_current + 2 * frame_multipler
+        scene.frame_current = scene.frame_current + 2*frame_multipler
 
     # print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
     scene.power_sequencer.frame_pre = scene.frame_current
@@ -54,9 +54,11 @@ def draw_playback_speed(self, context):
     scene = context.scene
     layout.prop(scene.power_sequencer, 'playback_speed')
 
+
 def draw_ui_menu(self, context):
     layout = self.layout
-    layout.menu(PowerSequencerMenuToolbar.bl_idname)
+    layout.menu('POWER_SEQUENCER_MT_main')
+
 
 # Add-on updater
 def draw_check_for_update(self, context):
@@ -69,7 +71,7 @@ def draw_check_for_update(self, context):
     addon_updater_ops.check_for_update_background()
 
 
-def handlers_register():
+def register_handlers():
     # MENUS
     bpy.types.SEQUENCER_HT_header.append(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.append(draw_playback_speed)
@@ -89,7 +91,7 @@ def handlers_register():
     frame_change_post.append(playback_speed_post)
 
 
-def handlers_unregister():
+def unregister_handlers():
     # MENUS
     bpy.types.SEQUENCER_HT_header.remove(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.remove(draw_playback_speed)

@@ -5,7 +5,7 @@ from .utils.slice_contiguous_sequence_list import slice_selection
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class RemoveGaps(bpy.types.Operator):
+class POWER_SEQUENCER_OT_remove_gaps(bpy.types.Operator):
     """
     Remove gaps, starting from the first frame, with the ability to ignore locked strips
     """
@@ -16,16 +16,16 @@ class RemoveGaps(bpy.types.Operator):
         'shortcuts': [],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    ignore_locked = bpy.props.BoolProperty(
+    ignore_locked: bpy.props.BoolProperty(
         name="Ignore Locked Strips",
         description="Remove gaps without moving locked strips",
         default=True)
-    all = bpy.props.BoolProperty(
+    all: bpy.props.BoolProperty(
         name="Remove All",
         description="Remove all gaps starting from the time cursor",
         default=False)

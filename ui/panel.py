@@ -1,13 +1,12 @@
 import bpy
 
 
-class Panel(bpy.types.Panel):
+class POWER_SEQUENCER_PT_Panel(bpy.types.Panel):
     bl_space_type = "SEQUENCE_EDITOR"
     bl_region_type = "UI"
     bl_category = "Tools"
     bl_label = "Power Sequencer"
-    bl_idname = "power_sequencer.panel"
-    # bl_options = {"DEFAULT_CLOSED"}
+    bl_options = {"DEFAULT_CLOSED"}
 
     @classmethod
     def poll(cls, context):

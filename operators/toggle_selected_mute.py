@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class ToggleSelectedMute(bpy.types.Operator):
+class POWER_SEQUENCER_OT_toggle_selected_mute(bpy.types.Operator):
     """
     Mute or unmute selected sequences
     """
@@ -21,12 +21,12 @@ class ToggleSelectedMute(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    use_unselected = bpy.props.BoolProperty(
+    use_unselected: bpy.props.BoolProperty(
         name="Use unselected",
         description="Toggle non selected sequences",
         default=False)

@@ -1,15 +1,14 @@
-import os
 import bpy
+import os
 import json
 from operator import attrgetter
-from bpy.props import BoolProperty, FloatProperty
 
 from .utils.global_settings import Extensions
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 from .utils.convert_duration_to_frames import convert_duration_to_frames
 
 
-class ImportLocalFootage(bpy.types.Operator):
+class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
     """
     Import video and audio from the project folder to VSE strips
     """
@@ -24,30 +23,30 @@ class ImportLocalFootage(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
     SEQUENCER_AREA = None
-    import_all = BoolProperty(
+    import_all: bpy.props.BoolProperty(
         name="Always Reimport",
         description=("If true, always import all local files to new strips."
                      " If False, only import new files (check if footage has"
                      " already been imported to the VSE)"),
         default=False)
-    keep_audio = BoolProperty(
+    keep_audio: bpy.props.BoolProperty(
         name="Keep audio from video files",
         description=("If False, the audio that comes with video files will"
                      " not be imported"),
         default=True)
 
-    img_length = FloatProperty(
+    img_length: bpy.props.FloatProperty(
         name="Image strip length",
         description="Controls the duration of the imported image strip in seconds",
         default=3.0,
         min=1.0)
-    img_padding = FloatProperty(
+    img_padding: bpy.props.FloatProperty(
         name="Image strip padding",
         description="Padding added between imported image strips in seconds",
         default=1.0,
@@ -67,8 +66,6 @@ class ImportLocalFootage(bpy.types.Operator):
                 {'ERROR_INVALID_INPUT'},
                 'You need to save your project first. Import cancelled.')
             return {'CANCELLED'}
-
-        sequencer = bpy.ops.sequencer
 
         bpy.ops.screen.animation_cancel(restore_frame=True)
         self.SEQUENCER_AREA = self.get_sequencer_area(context)
@@ -193,7 +190,7 @@ class ImportLocalFootage(bpy.types.Operator):
               to the project_directory
             - file_extensions is a dict of tuples of extensions with the
               form "*.ext".
-        Use the Extensions helper class in .functions.global_settings. It
+        _use the _extensions helper class POWER_SEQUENCER_OTin .functions.global_settings. _it
         gives default extensions to check the files against.
 
         Returns a dict with the form {
@@ -360,8 +357,7 @@ class ImportLocalFootage(bpy.types.Operator):
         sequencer.meta_make()
         sequencer.meta_toggle()
 
-        videos_in_meta = [s for s in bpy.context.sequences
-                            if s.type == 'MOVIE']
+        videos_in_meta = [s for s in bpy.context.sequences if s.type == 'MOVIE']
         for s in videos_in_meta:
             s.channel += 2
         for s in sorted(sequences, key=attrgetter('channel')):

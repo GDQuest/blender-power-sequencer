@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class BorderSelect(bpy.types.Operator):
+class POWER_SEQUENCER_OT_border_select(bpy.types.Operator):
     """
     *brief* Wrapper around Blender's border select, deselects handles
 
@@ -20,12 +20,12 @@ class BorderSelect(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    extend = bpy.props.BoolProperty(
+    extend: bpy.props.BoolProperty(
         name="Extend the selection",
         description=("Extend the current selection if checked,"
                      " otherwise clear it"),

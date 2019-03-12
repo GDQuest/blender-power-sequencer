@@ -4,7 +4,7 @@ from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class TrimThreePointEdit(bpy.types.Operator):
+class POWER_SEQUENCER_OT_trim_three_point_edit(bpy.types.Operator):
     """
     Trim the closest strip under the mouse cursor in or out
     """
@@ -18,12 +18,12 @@ class TrimThreePointEdit(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
 
-    side = bpy.props.EnumProperty(
+    side: bpy.props.EnumProperty(
         items=[
             ('left', 'Left', 'Left side'),
             ('right', 'Right', 'Right side'),

@@ -5,7 +5,7 @@ from .utils.set_preview_range import set_preview_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class PreviewToSelection(bpy.types.Operator):
+class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
     """
     *brief* Sets the timeline preview range to that of the selected sequences
 
@@ -24,7 +24,7 @@ class PreviewToSelection(bpy.types.Operator):
         ],
         'keymap': 'Sequencer'
     }
-    bl_idname = doc_idname(doc['name'])
+    bl_idname = doc_idname(__qualname__)
     bl_label = doc['name']
     bl_description = doc_brief(doc['description'])
     bl_options = {'REGISTER', 'UNDO'}
