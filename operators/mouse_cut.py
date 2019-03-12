@@ -1,6 +1,8 @@
 import bpy
-from math import floor
 import bgl
+import gpu
+from gpu_extras.batch import batch_for_shader
+from math import floor
 from mathutils import Vector
 
 from .utils.find_strips_mouse import find_strips_mouse
@@ -8,6 +10,9 @@ from .utils.trim_strips import trim_strips
 
 from .utils.draw import draw_line, draw_arrow_head
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+
+
+SHADER = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
 
 
 class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
@@ -82,7 +87,6 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     frame_start, channel_start = 0, 0
     frame_end, end_channel = 0, 0
-    select_mouse, action_mouse = '', ''
     cut_mode = ''
     initially_clicked_strips = None
 
@@ -106,13 +110,6 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         self.frame_start, self.channel_start = round(frame_float), floor(channel_float)
         self.frame_end = self.frame_start
 
-        # # Reverse keymaps if the user selects with the left mouse button
-        # self.select_mouse = 'RIGHTMOUSE'
-        # self.action_mouse = 'LEFTMOUSE'
-        # if context.preferences.inputs.select_mouse == 'LEFT':
-        #     self.select_mouse = 'LEFTMOUSE'
-        #     self.action_mouse = 'RIGHTMOUSE'
-
         context.scene.frame_current = self.frame_start
 
         # Drawing
@@ -127,7 +124,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         if event.type in {'ESC'}:
             return {'CANCELLED'}
         # On mouse release, confirming the action
-        if event.type == self.action_mouse and event.value == 'RELEASE':
+        if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(
                     self.handle_cut_trim_line, 'WINDOW'
@@ -276,26 +273,27 @@ def draw_cut_trim(self, context, start, end, shift_is_pressed):
 
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(2)
-    bgl.glPushMatrix()
 
-    bgl.glColor4f(1.0, 0.0, 1.0, 1.0)
+    # bgl.glPushMatrix()
+
+    # bgl.glColor(1.0, 0.0, 1.0, 1.0)
 
     # horizontal line
-    draw_line(start, end)
+    draw_line(SHADER, start, end)
 
     # vertical lines
-    draw_line(Vector([start.x, min_bottom]), Vector([start.x, max_top]))
-    draw_line(Vector([end.x, min_bottom]), Vector([end.x, max_top]))
+    draw_line(SHADER, Vector([start.x, min_bottom]), Vector([start.x, max_top]))
+    draw_line(SHADER, Vector([end.x, min_bottom]), Vector([end.x, max_top]))
 
     if shift_is_pressed:
         first_arrow_center = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
         second_arrow_center = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
         arrow_size = Vector([10, 20])
-        draw_arrow_head(first_arrow_center, arrow_size)
-        draw_arrow_head(second_arrow_center, arrow_size, points_right=False)
+        draw_arrow_head(SHADER, first_arrow_center, arrow_size)
+        draw_arrow_head(SHADER, second_arrow_center, arrow_size, points_right=False)
 
-    bgl.glPopMatrix()
+    # bgl.glPopMatrix()
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
-    bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
+    # bgl.glColor4f(0.0, 0.0, 0.0, 1.0)
