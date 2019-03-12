@@ -1,14 +1,25 @@
 # Changelog! What's new in the Add-On
 
+## Power Sequencer 1.3: Blender 2.80 support ##
+
+*These are the features and fixes we added lately, and that'll be in the next major update.*
+
+⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
+
+### 🎥🕺 New features ###
+
+- Power Sequencer now works in **Blender 2.80**
+
+### Changes ###
+
+The code now follows the official Blender conventions for operator names etc. We also renamed some files and cleaned up some code to make it easier to browse and to maintain.
+
+### Support our work ###
+
+- [Follow GDquest](https://twitter.com/NathanGDquest) on Twitter
+- You can buy one of our [game creation courses](https://gumroad.com/gdquest) for you or one of your friends. They make for a great present and help us to keep going! ☺
+
 ## Power Sequencer 1.2 ##
-
-<!-- *These are the features and fixes we added lately, and that'll be in the next major update.* -->
-
-<!-- You can test them by going to the Blender preferences, add-ons tab, Power Sequencer, and by clicking `Install latest master / old version`. You can go back to the stable version with the same button. -->
-
-<!-- ![Power Sequencer switch to master branch](https://i.imgur.com/LusqIxy.png) -->
-
-<!-- ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛 -->
 
 ### 📘 Free Tutorials ###
 
@@ -88,11 +99,6 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - Fixed Concatenate not taking in account the selection if more than one strip is selected in a given channel
 - Fixed strips changing channels when using Snap Selection to Cursor
 
-### Support us and get better tools! ###
-
-- [Follow GDquest](https://twitter.com/NathanGDquest) on Twitter
-- Buy one of our [game creation courses](https://gumroad.com/gdquest) for you or one of your friends. They make for a great present! ☺
-- You can also [become our patron](https://www.patreon.com/gdquest) on Patreon 😊
 
 
 ## Power Sequencer 1.1: Faster edits 🎞✂ ##
