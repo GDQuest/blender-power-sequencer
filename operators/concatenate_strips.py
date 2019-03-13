@@ -131,8 +131,13 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
             to_concatenate = [second_strip]
 
         concatenate_start = first_strip.frame_final_end
+        last_gap = 0
         for s in to_concatenate:
             gap = s.frame_final_start - concatenate_start
+            if isinstance(s, bpy.types.EffectSequence):
+                concatenate_start = s.frame_final_end - last_gap
+                continue
+            last_gap = gap
             s.frame_start -= gap
             concatenate_start = s.frame_final_end
 
@@ -157,9 +162,14 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         print(to_concatenate)
 
         concatenate_start = last_strip.frame_final_start
+        last_gap = 0
         print(concatenate_start)
         for s in reversed(to_concatenate):
             gap = s.frame_final_end - concatenate_start
+            if isinstance(s, bpy.types.EffectSequence):
+                concatenate_start = s.frame_final_start - last_gap
+                continue
+            last_gap = gap
             s.frame_start -= gap
             concatenate_start = s.frame_final_start
 
