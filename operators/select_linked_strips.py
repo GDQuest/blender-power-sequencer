@@ -5,7 +5,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_select_linked_strips(bpy.types.Operator):
     """
-    Add/Remove linked strips near mouse poitner to/from selection without the need to
+    Add/Remove linked strips near mouse pointer to/from selection without the need to
     previously have clicked/manually selected
     """
     doc = {

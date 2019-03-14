@@ -136,7 +136,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 
 ### 🤕 Fixes ###
 
-**Restored the missing interface** code so you can call the contextual Power Sequencer menu again, nd find the power sequencer tab i the and menu. we need help to design the UI: we have a developer who wants to work on it, but we need a UX designer to guide him!
+**Restored the missing interface** code so you can call the contextual Power Sequencer menu again, and find the power sequencer tab in the menu. We need help to design the UI: we have a developer who wants to work on it, but we need a UX designer to guide him!
 
 Reply to [this issue](https://github.com/GDquest/Blender-power-sequencer/issues/90) and [that issue](https://github.com/GDquest/Blender-power-sequencer/issues/89) if you want to help us wit it 😄
 

@@ -29,7 +29,7 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
         * Compute the spectrum amplitude by windowing with a Hamming window
         * Filter the signal in the spectral domain with a triangular
         filter-bank, whose filters are approximatively linearly spaced on the
-        mel scale, and have equal bandwith in the mel scale
+        mel scale, and have equal bandwidth in the mel scale
         * Compute the DCT of the log-spectrum
 
     References
