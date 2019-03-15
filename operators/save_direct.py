@@ -5,7 +5,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_save_direct(bpy.types.Operator):
     """
-    Saves current file without prompting for confirmation. Overrides Blender deafult
+    Saves current file without prompting for confirmation. Overrides Blender default
     """
     doc = {
         'name': doc_name(__qualname__),
