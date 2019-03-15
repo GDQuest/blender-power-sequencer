@@ -35,7 +35,8 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
             for curve in fcurves:
                 if not curve.data_path.endswith("blend_alpha"):
                     continue
-                if strip == eval(curve.data_path.replace('.blend_alpha', '')):
+                # Ensure the fcurve corresponds to the selected strip
+                if strip == eval("bpy.context.scene." + curve.data_path.replace('.blend_alpha', '')):
                     fcurves.remove(curve)
         return {'FINISHED'}
 
