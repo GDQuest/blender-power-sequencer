@@ -10,6 +10,10 @@
 
 - Power Sequencer now works in **Blender 2.80**
 
+### Improvements ###
+
+- trim_left_or_right_handles.py: trims ripple through the channel if you keep <kbd>Shift</kbd> down when running the operator. E.g. <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>K</kbd>
+
 ### Changes ###
 
 The code now follows the official Blender conventions for operator names etc. We also renamed some files and cleaned up some code to make it easier to browse and to maintain.

@@ -1,12 +1,15 @@
+from operator import attrgetter
+
 import bpy
 
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from operator import attrgetter
+from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
 
 
 class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     """
-    Trims, extends and snaps selected strips to cursor
+    Trims or extends the handle closest to the time cursor for all selected strips.
+
+    If you keep the Shift key down, the edit will ripple through the timeline.
     """
     doc = {
         'name': doc_name(__qualname__),
@@ -31,11 +34,9 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         name="Snap side",
         description="Handle side to use for the snap",
         default='auto')
-
     ripple: bpy.props.BoolProperty(
         name="Ripple",
-        default=False
-    )
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -44,20 +45,22 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     def execute(self, context):
         frame_current = context.scene.frame_current
         to_ripple = self.select_strip_handle(context.selected_sequences, self.side, frame_current)
-        
+
         bpy.ops.sequencer.snap(frame=frame_current)
-        
+
         if self.ripple:
             for sequence_to_ripple in to_ripple:
                 sequence = sequence_to_ripple["sequence"]
                 original_frame = sequence_to_ripple["original_frame"]
-                gap = original_frame - sequence.frame_final_end if sequence_to_ripple["side"] == 'RIGHT' else sequence.frame_final_start - original_frame
-                self.ripple_sequences(sequence_to_ripple["sequence"], context, gap, sequence_to_ripple["side"])
-        
+                gap = original_frame - sequence.frame_final_end if \
+                      sequence_to_ripple["side"] == 'RIGHT' else \
+                      sequence.frame_final_start - original_frame
+                self.ripple_sequences(sequence_to_ripple["sequence"], context,
+                                      gap, sequence_to_ripple["side"])
+
         for sequence in context.selected_sequences:
             sequence.select_right_handle = False
             sequence.select_left_handle = False
-
         return {"FINISHED"}
 
     def select_strip_handle(self, sequences, side, frame):
@@ -94,8 +97,8 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         for s in ordered_sequences:
             if s.channel != sequence.channel:
                 continue
-            if s == sequence and side == 'LEFT':
-                s.frame_start -= gap
-                continue
-            if sequence.frame_final_end < s.frame_final_start:
-                s.frame_start -= gap
+            if s == sequence and side == 'LEFT' or sequence.frame_final_end < s.frame_final_start:
+                try:
+                    s.frame_start -= gap
+                except AttributeError:
+                    continue
