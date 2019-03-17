@@ -1,11 +1,12 @@
-import bpy
-import os
 import json
+import os
 from operator import attrgetter
 
-from .utils.global_settings import Extensions
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+import bpy
+
 from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
+from .utils.global_settings import Extensions
 
 
 class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
@@ -202,16 +203,15 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         local_footage_files = {}
         for f in folders_to_import:
             local_footage_files[f] = []
-            for root, dirs, files in os.walk(
-                    os.path.join(project_directory, f)):
+            for root, dirs, files in os.walk(os.path.join(project_directory, f)):
                 for ignore_pattern in ('BL_proxy', 'src'):
                     if ignore_pattern in dirs:
                         dirs.remove(ignore_pattern)
                 relative_file_paths = [
                     os.path.relpath(
                         os.path.join(root, name), start=project_directory)
-                    for name in sorted(files)
-                ]
+                        for name in sorted(files) if
+                        not name.startswith('.')]
                 local_footage_files[f].extend(relative_file_paths)
         return local_footage_files
 
