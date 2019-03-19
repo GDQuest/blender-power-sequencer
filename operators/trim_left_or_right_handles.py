@@ -10,16 +10,22 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     Trims or extends the handle closest to the time cursor for all selected strips.
 
     If you keep the Shift key down, the edit will ripple through the timeline.
+
+    By pressing A before K, the strips under the cursor are going to be auto selected.
     """
     doc = {
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'right', 'ripple': False}, 'Smart Snap Right'),
-            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'right', 'ripple': True}, 'Smart Snap Right With Ripple'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'left', 'ripple': False}, 'Smart Snap Left'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'left', 'ripple': True}, 'Smart Snap Left With Ripple')
+            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'right', 'ripple': False, 'auto_select': False}, 'Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'key_modifier': 'A'}, {'side': 'right', 'ripple': False, 'auto_select': True}, 'Auto Select Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'right', 'ripple': True, 'auto_select': False}, 'Smart Snap Right With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True, 'key_modifier': 'A'}, {'side': 'right', 'ripple': True, 'auto_select': True}, 'Auto Select Smart Snap Right With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'left', 'ripple': False, 'auto_select': False}, 'Smart Snap Left'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'key_modifier': 'A'}, {'side': 'left', 'ripple': False, 'auto_select': True}, 'Auto Select Smart Snap Left'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'left', 'ripple': True, 'auto_select': False}, 'Smart Snap Left With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True, 'key_modifier': 'A'}, {'side': 'left', 'ripple': True, 'auto_select': True}, 'Auto Select Smart Snap Left With Ripple'),
         ],
         'keymap': 'Sequencer'
     }
@@ -37,6 +43,9 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     ripple: bpy.props.BoolProperty(
         name="Ripple",
         default=False)
+    auto_select: bpy.props.BoolProperty(
+        name="Auto Select",
+        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -44,6 +53,10 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
 
     def execute(self, context):
         frame_current = context.scene.frame_current
+        if self.auto_select:
+            for sequence in context.sequences:
+                sequence.select=sequence.frame_final_start <= frame_current and sequence.frame_final_end >= frame_current
+
         to_ripple = self.select_strip_handle(context.selected_sequences, self.side, frame_current)
 
         bpy.ops.sequencer.snap(frame=frame_current)
