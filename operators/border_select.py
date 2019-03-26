@@ -5,8 +5,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_border_select(bpy.types.Operator):
     """
-    *brief* Wrapper around Blender's border select, deselects handles
-
+    *brief* Wrapper around Blender's border select, deselects handles and overrides selection
 
     Deselects the strips' handles before applying border select, so you don't
     have to deselect manually first.
@@ -16,7 +15,7 @@ class POWER_SEQUENCER_OT_border_select(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'B', 'value': 'PRESS', 'shift': True}, {}, 'Border Select')
+            ({'type': 'B', 'value': 'PRESS', 'alt': True}, {}, 'Border Select')
         ],
         'keymap': 'Sequencer'
     }
@@ -39,6 +38,6 @@ class POWER_SEQUENCER_OT_border_select(bpy.types.Operator):
         for s in context.selected_sequences:
             s.select_right_handle = False
             s.select_left_handle = False
-        bpy.ops.sequencer.select_border('INVOKE_DEFAULT', extend=self.extend)
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_box('INVOKE_DEFAULT')
         return {'FINISHED'}
-
