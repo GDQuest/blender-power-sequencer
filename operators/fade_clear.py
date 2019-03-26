@@ -1,6 +1,7 @@
 import bpy
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.global_settings import SequenceTypes
 
 
 class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
@@ -32,11 +33,11 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
 
         for strip in selected:
             strip.blend_alpha = 1.0
+            fade_type = 'volume' if strip.type in SequenceTypes.SOUND else 'blend_alpha'
             for curve in fcurves:
-                if not curve.data_path.endswith("blend_alpha"):
+                if not curve.data_path.endswith(fade_type):
                     continue
                 # Ensure the fcurve corresponds to the selected strip
-                if strip == eval("bpy.context.scene." + curve.data_path.replace('.blend_alpha', '')):
+                if strip == eval("bpy.context.scene." + curve.data_path.replace('.' + fade_type, '')):
                     fcurves.remove(curve)
         return {'FINISHED'}
-
