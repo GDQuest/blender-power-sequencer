@@ -4,9 +4,9 @@ import os
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class POWER_SEQUENCER_OT_render_for_web(bpy.types.Operator):
+class POWER_SEQUENCER_OT_render_apply_preset(bpy.types.Operator):
     """
-    Render video with good settings for web upload
+    Set rendering, and encoding settings, and the output filename based on a preset
     """
     doc = {
         'name': doc_name(__qualname__),
@@ -14,10 +14,8 @@ class POWER_SEQUENCER_OT_render_for_web(bpy.types.Operator):
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'F12', 'value': 'PRESS', 'alt': True},
-             {'preset': 'youtube',
-              'name_pattern': 'scene',
-              'auto_render': True},
-             'Render for Web')
+             {'preset': 'youtube'},
+             'Apply Youtube Render Preset')
         ],
         'keymap': 'Sequencer'
     }
@@ -43,16 +41,10 @@ class POWER_SEQUENCER_OT_render_for_web(bpy.types.Operator):
             ('blender', 'Blender file',
              'Use the project\'s .blend file name as the exported file name'),
             ('scene', 'Current scene',
-             'Use the scene\'s name as the exported file name')
-        ],
+             'Use the scene\'s name as the exported file name')],
         name="Filename",
         description="Auto name the rendered video after...",
         default='blender')
-
-    auto_render: bpy.props.BoolProperty(
-        name="Auto render",
-        description="Launch the render automatically",
-        default=False)
 
     @classmethod
     def poll(cls, context):
@@ -92,16 +84,7 @@ class POWER_SEQUENCER_OT_render_for_web(bpy.types.Operator):
 
         context.scene.render.filepath = "//" + exported_file_name + '.mp4'
 
-        if self.auto_render:
-            bpy.ops.render.render(
-                {
-                    'dict': "override"
-                }, 'INVOKE_DEFAULT', animation=True)
-            self.report({'INFO'}, 'Rendering {!s} with the {!s} preset'.format(
-                exported_file_name, self.preset))
-        else:
-            self.report(
-                {'INFO'},
-                'Render settings set to the {!s} preset'.format(self.preset))
+        self.report(
+            {'INFO'},
+            'Render settings set to the {!s} preset'.format(self.preset))
         return {"FINISHED"}
-

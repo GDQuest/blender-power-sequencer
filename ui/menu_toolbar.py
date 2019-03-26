@@ -161,7 +161,7 @@ class POWER_SEQUENCER_MT_render(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.render_for_web", text='Render for Web')
+        layout.operator("power_sequencer.render_apply_preset", text='Render for Web')
 
 
 class POWER_SEQUENCER_MT_file(bpy.types.Menu):

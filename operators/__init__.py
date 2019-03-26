@@ -44,7 +44,7 @@ from .preview_closest_cut import POWER_SEQUENCER_OT_preview_closest_cut
 from .preview_to_selection import POWER_SEQUENCER_OT_preview_to_selection
 from .remove_gaps import POWER_SEQUENCER_OT_remove_gaps
 from .scene_rename_with_strip import POWER_SEQUENCER_OT_scene_rename_with_strip
-from .render_for_web import POWER_SEQUENCER_OT_render_for_web
+from .render_apply_preset import POWER_SEQUENCER_OT_render_apply_preset
 from .ripple_delete import POWER_SEQUENCER_OT_ripple_delete
 from .save_direct import POWER_SEQUENCER_OT_save_direct
 from .scene_create_from_selection import POWER_SEQUENCER_OT_scene_create_from_selection
@@ -113,7 +113,7 @@ classes = [
     POWER_SEQUENCER_OT_preview_to_selection,
     POWER_SEQUENCER_OT_remove_gaps,
     POWER_SEQUENCER_OT_scene_rename_with_strip,
-    POWER_SEQUENCER_OT_render_for_web,
+    POWER_SEQUENCER_OT_render_apply_preset,
     POWER_SEQUENCER_OT_ripple_delete,
     POWER_SEQUENCER_OT_save_direct,
     POWER_SEQUENCER_OT_scene_create_from_selection,
