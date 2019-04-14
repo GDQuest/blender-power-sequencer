@@ -1,17 +1,16 @@
 import bpy
 from operator import attrgetter
 
-from .utils.global_settings import SequenceTypes
-
-from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
-from .utils.slice_contiguous_sequence_list import slice_selection
+from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
 from .utils.get_frame_range import get_frame_range
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.global_settings import SequenceTypes
+from .utils.slice_contiguous_sequence_list import slice_selection
 
 
 class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
     """
-    Delete selected strips and collapse remaining gaps
+    Delete selected strips and remove remaining gaps
     """
     doc = {
         'name': doc_name(__qualname__),
@@ -32,9 +31,12 @@ class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
         return context.sequences
 
     def invoke(self, context, event):
+        # Auto select if no strip selected
         frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
             bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
+        if not context.selected_sequences:
+            return {'CANCELLED'}
         return self.execute(context)
 
     def execute(self, context):
@@ -42,24 +44,16 @@ class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
         sequencer = bpy.ops.sequencer
         selection = context.selected_sequences
 
-        if not selection:
-            return {'CANCELLED'}
+        audio_scrub_active = context.scene.use_audio_scrub
+        context.scene.use_audio_scrub = False
 
-        selection_length = len(selection)
         cursor_start = scene.frame_current
         cursor_offset = 0
-
-        channels = set((s.channel for s in selection))
-
-        audio_scrub = context.scene.use_audio_scrub
-        if audio_scrub:
-            context.scene.use_audio_scrub = False
-
-        # If only 1 block of strips, we store linked strips
         selection_blocks = slice_selection(context, selection)
+        channels = set((s.channel for s in selection))
+        is_single_channel = len(selection_blocks) == 1 and len(channels) == 1
 
         surrounding_strips = []
-        is_single_channel = len(selection_blocks) == 1 and len(channels) == 1
         if is_single_channel:
             bpy.ops.sequencer.select_linked()
             for s in context.selected_sequences:
@@ -79,33 +73,17 @@ class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
 
                 scene.frame_current = selection_start
                 bpy.ops.power_sequencer.remove_gaps()
-            # auto move cursor back
-            if context.screen.is_animation_playing and len(
-                    selection_blocks) == 1:
-                sequences = selection_blocks[0]
-                start_frame = min(
-                    sequences,
-                    key=attrgetter('frame_final_start')).frame_final_start
-                end_frame = max(
-                    sequences,
-                    key=attrgetter('frame_final_end')).frame_final_end
-                delete_duration = end_frame - start_frame
-                if scene.frame_current > start_frame:
-                    cursor_offset = delete_duration
 
-        # Concatenate
+        # Concatenate if ripple delete in a single channel
         if is_single_channel:
             for s in surrounding_strips:
-                if s.type in SequenceTypes.TRANSITION:
-                    continue
                 s.select = True
             bpy.ops.power_sequencer.concatenate_strips()
 
-        scene.frame_current = cursor_start - cursor_offset
-        report_message = 'Deleted ' + str(selection_length) + ' sequence'
-        report_message += 's' if selection_length > 1 else ''
-        self.report({'INFO'}, report_message)
-        if audio_scrub:
-            context.scene.use_audio_scrub = audio_scrub
+        # scene.frame_current = cursor_start - cursor_offset
+        self.report({'INFO'},
+                    'Deleted ' + str(len(selection)) + ' sequence' + \
+                    's' if len(selection) > 1 else '')
 
+        context.scene.use_audio_scrub = audio_scrub_active
         return {'FINISHED'}
