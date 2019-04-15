@@ -12,7 +12,14 @@ class POWER_SEQUENCER_OT_deselect_all_strips_left_or_right(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': '',
         'description': doc_description(__doc__),
-        'shortcuts': [],
+        'shortcuts': [
+            ({'type': 'Q', 'value': 'PRESS', 'alt': True},
+             {'side': 'left'},
+             'Deselect all strips to the left of the time cursor'),
+            ({'type': 'E', 'value': 'PRESS', 'alt': True},
+             {'side': 'right'},
+             'Deselect all strips to the right of the time cursor')
+        ],
         'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(__qualname__)
@@ -40,10 +47,10 @@ class POWER_SEQUENCER_OT_deselect_all_strips_left_or_right(bpy.types.Operator):
                 event.mouse_region_x, 1)[0]
 
         for s in context.sequences:
-            if frame_mouse < frame_current or self.side == "left":
+            if self.side == "left" or frame_mouse < frame_current and self.side == "mouse":
                 if s.frame_final_end < frame_current:
                     self.deselect(s)
-            elif frame_mouse >= frame_current or self.side == "right":
+            elif self.side == "right" or frame_mouse >= frame_current and self.side == "mouse":
                 if s.frame_final_start >= frame_current:
                     self.deselect(s)
         return {'FINISHED'}
