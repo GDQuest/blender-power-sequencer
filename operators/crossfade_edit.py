@@ -17,9 +17,7 @@ class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
         'name': doc_name(__qualname__),
         'demo': 'https://i.imgur.com/rCmLhg6.gif',
         'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'C', 'value': 'PRESS', 'alt': True}, {}, 'Edit Crossfade')
-        ],
+        'shortcuts': [],
         'keymap': 'Sequencer'
     }
     bl_idname = doc_idname(__qualname__)

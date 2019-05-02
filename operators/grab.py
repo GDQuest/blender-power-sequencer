@@ -13,7 +13,7 @@ class POWER_SEQUENCER_OT_grab(bpy.types.Operator):
     Grab and move sequences. If you have no strips selected, it automatically
     finds the strip closest to the mouse and selects it. If you only select
     one or multiple crossfades, selects the handles on either side of the
-    crossfades before moving sequences
+    crossfades before moving sequences, using POWER_SEQUENCER_OT_crossfade_edit
     """
     doc = {
         'name': doc_name(__qualname__),
