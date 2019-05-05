@@ -29,12 +29,12 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'C', 'value': 'PRESS'},
-             {'concatenate_all': False},
+             {'concatenate_all': False, 'direction': 'left'},
              ('Concatenate selected strips in channel, or'
               ' concatenate & select next strip in channel if only'
               ' 1 strip selected')),
             ({'type': 'C', 'value': 'PRESS', 'shift': True},
-             {'concatenate_all': True},
+             {'concatenate_all': True, 'direction': 'left'},
              'Concatenate all strips in selected channels'),
             ({'type': 'C', 'value': 'PRESS', 'alt': True},
              {'concatenate_all': False, 'direction': 'right'},
