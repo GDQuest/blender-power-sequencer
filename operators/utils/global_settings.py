@@ -16,6 +16,9 @@ class ProjectSettings():
 
 
 class SequenceTypes():
+    """
+    Tuples of identifiers to check if a strip is of a certain type or type group
+    """
     VIDEO = ('MOVIE', 'MOVIECLIP', 'META', 'SCENE')
     EFFECT = ('CROSS', 'ADD', 'SUBTRACT', 'ALPHA_OVER', 'ALPHA_UNDER',
               'GAMMA_CROSS', 'MULTIPLY', 'OVER_DROP', 'WIPE', 'GLOW',
@@ -24,7 +27,9 @@ class SequenceTypes():
     SOUND = ('SOUND',)
     IMAGE = ('IMAGE',)
     TRANSITIONABLE = VIDEO + IMAGE + ('MULTICAM',)
-    CONCATENATE = VIDEO + SOUND + IMAGE
+    # Strips that can be cut. If most effect strips are linked to their inputs
+    # and shouldn't be cut, some can be edited directly
+    CUTABLE = VIDEO + SOUND + IMAGE + ('MULTICAM', 'COLOR', 'ADJUSTMENT')
 
 
 # TODO: Replace FileTypes with that

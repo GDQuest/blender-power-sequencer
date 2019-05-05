@@ -97,7 +97,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
                                   if strip.channel == s.channel]
                 in_channel.append(s)
                 to_concatenate = [strip for strip in in_channel
-                                  if strip.type in SequenceTypes.CONCATENATE]
+                                  if strip.type in SequenceTypes.CUTABLE]
 
                 if self.direction == 'right':
                     self.concatenate_right(to_concatenate, one_strip_only)

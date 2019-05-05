@@ -127,8 +127,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         if event.type == 'LEFTMOUSE' and event.value == 'RELEASE':
             if self.handle_cut_trim_line:
                 bpy.types.SpaceSequenceEditor.draw_handler_remove(
-                    self.handle_cut_trim_line, 'WINDOW'
-                )
+                    self.handle_cut_trim_line, 'WINDOW')
 
             self.select_mode = 'cursor' if event.shift else 'smart'
 

@@ -8,11 +8,15 @@ from .global_settings import SequenceTypes
 def trim_strips(context,
                 start_frame, end_frame, select_mode,
                 strips_to_trim=[], strips_to_delete=[]):
+    """
+    Remove the footage and audio between start_frame and end_frame.
+
+    """
     trim_start = min(start_frame, end_frame)
     trim_end = max(start_frame, end_frame)
-    # print('num of strips to del: {}'.format(len(strips_to_delete)))
 
-    strips_to_trim = [s for s in strips_to_trim if s.type in SequenceTypes.CONCATENATE]
+    strips_to_trim = [s for s in strips_to_trim if s.type in SequenceTypes.CUTABLE]
+
     for s in strips_to_trim:
         if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
             bpy.ops.sequencer.select_all(action='DESELECT')
