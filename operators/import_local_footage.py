@@ -18,7 +18,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'I', 'value': 'PRESS', 'ctrl': True},
+            ({'type': 'I', 'value': 'PRESS', 'ctrl': True, 'shift': True},
              {'keep_audio': True},
              'Import Local Footage')
         ],
