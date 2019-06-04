@@ -8,7 +8,7 @@ def slice_selection(context, sequences):
 
     Returns a list of lists of sequences,
     each list corresponding to a block of sequences
-    that are connected in time.
+    that are connected in time and sorted by frame_final_start
     """
     # Find when 2 sequences are not connected in time
     break_ids = [0]
