@@ -16,10 +16,10 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'right', 'ripple': False, 'auto_select': False}, 'Smart Snap Right'),
-            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'right', 'ripple': True, 'auto_select': False}, 'Smart Snap Right With Ripple'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'left', 'ripple': False, 'auto_select': False}, 'Smart Snap Left'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'left', 'ripple': True, 'auto_select': False}, 'Smart Snap Left With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'RIGHT', 'ripple': False, 'auto_select': False}, 'Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'RIGHT', 'ripple': True, 'auto_select': False}, 'Smart Snap Right With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'LEFT', 'ripple': False, 'auto_select': False}, 'Smart Snap Left'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'LEFT', 'ripple': True, 'auto_select': False}, 'Smart Snap Left With Ripple'),
         ],
         'keymap': 'Sequencer'
     }
@@ -29,11 +29,11 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     side: bpy.props.EnumProperty(
-        items=[('left', 'Left', 'Left side'), ('right', 'Right', 'Right side'),
-               ('auto', 'Auto', 'Use the side closest to the time cursor')],
+        items=[('LEFT', 'Left', 'Left side'),
+               ('RIGHT', 'Right', 'Right side'),],
         name="Snap side",
         description="Handle side to use for the snap",
-        default='auto')
+        default='LEFT')
     ripple: bpy.props.BoolProperty(
         name="Ripple",
         default=False)
@@ -49,7 +49,8 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
             for sequence in context.sequences:
                 sequence.select = sequence.frame_final_start <= frame_current and sequence.frame_final_end >= frame_current
 
-        to_ripple = self.select_strip_handle(context.selected_sequences, self.side, frame_current)
+        to_ripple = self.filter_and_select_strips_handle(context.selected_sequences, self.side, frame_current)
+
 
         bpy.ops.sequencer.snap(frame=frame_current)
 
@@ -68,9 +69,10 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
             sequence.select_left_handle = False
         return {"FINISHED"}
 
-    def select_strip_handle(self, sequences, side, frame):
+    def filter_and_select_strips_handle(self, sequences, side, frame):
         """
-        Select the left or right handles of the strips based on the frame number
+        Select the LEFT or RIGHT handles of the strips based on the frame number
+        Returns a list of strips to ripple with information about the ripple side
         """
         side = side.upper()
         to_ripple = []
@@ -81,13 +83,11 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
 
             handle_side = ''
             start, end = s.frame_final_start, s.frame_final_end
-            if side == 'AUTO' and start <= frame <= end:
-                handle_side = 'LEFT' if abs(
-                    frame - start) < s.frame_final_duration / 2 else 'RIGHT'
-            elif side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
+            if side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
                 handle_side = side
             else:
                 s.select = False
+
             if handle_side:
                 bpy.ops.sequencer.select_handles(side=handle_side)
                 original_frame = s.frame_final_end if handle_side == 'RIGHT' else s.frame_final_start
