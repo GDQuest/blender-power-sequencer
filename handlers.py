@@ -1,7 +1,6 @@
 import bpy
 from bpy.app.handlers import persistent
 from . import addon_updater_ops
-# from .ui import POWER_SEQUENCER_MT_main
 
 
 @persistent
@@ -13,9 +12,6 @@ def load_file_post(arg):
         scene.power_sequencer.frame_pre = bpy.context.scene.frame_current
 
 
-# TODO: if change speed with mouse, don't process
-# TODO: support going back in time with arrow keys and play
-# Options: wrap bpy.ops.screen.frame_offset etc.?
 @persistent
 def playback_speed_post(scene):
     """
@@ -27,25 +23,25 @@ def playback_speed_post(scene):
     if bpy.context.screen and not bpy.context.screen.is_animation_playing:
         return
 
-    scene = bpy.context.scene
     playback_speed = scene.power_sequencer.playback_speed
-    frame_multipler = 1
 
-    if scene.power_sequencer.frame_pre > scene.frame_current:
-        pass
-    elif playback_speed == 'normal':
-        pass
-    elif playback_speed == 'fast' and scene.frame_current % 3 == 0:
-        scene.frame_current = scene.frame_current + 1*frame_multipler
-    elif playback_speed == 'faster' and scene.frame_current % 2 == 0:
-        scene.frame_current = scene.frame_current + 1*frame_multipler
+    frame_start = scene.frame_current
+    frame_post = scene.frame_current
+
+    if playback_speed == 'fast' and frame_start % 3 == 0:
+        frame_post += 1
+    elif playback_speed == 'faster' and frame_start % 2 == 0:
+        frame_post += 1
     elif playback_speed == 'double':
         # 2.5x -> skip 5 frames for 2. 2 then 3 then 2 etc.
-        scene.frame_current = scene.frame_current + 1*frame_multipler
+        frame_post += 1
     elif playback_speed == 'triple':
-        scene.frame_current = scene.frame_current + 2*frame_multipler
+        frame_post += 2
 
-    # print('Pre {!s} / Post {!s}'.format(frame_pre, scene.frame_current))
+    if frame_start != frame_post:
+        bpy.ops.screen.animation_cancel(restore_frame=False)
+        scene.frame_current = frame_post
+        bpy.ops.screen.animation_play()
     scene.power_sequencer.frame_pre = scene.frame_current
 
 
