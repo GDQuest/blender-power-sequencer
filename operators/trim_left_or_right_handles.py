@@ -40,70 +40,29 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return len(context.sequences) > 0
 
     def execute(self, context):
         frame_current = context.scene.frame_current
 
-        if not context.selected_sequences:
-            for sequence in context.sequences:
-                sequence.select = sequence.frame_final_start <= frame_current and sequence.frame_final_end >= frame_current
-
-        to_ripple = self.filter_and_select_strips_handle(context.selected_sequences, self.side, frame_current)
-
+        sequences = context.selected_sequences if context.selected_sequences else context.sequences
+        for s in sequences:
+            s.select = s.frame_final_start <= frame_current and s.frame_final_end >= frame_current
+        sequences = [s for s in sequences if s.select]
+        for s in sequences:
+            if self.side == 'LEFT':
+                s.select_left_handle = True
+            if self.side == 'RIGHT':
+                s.select_right_handle = True
 
         bpy.ops.sequencer.snap(frame=frame_current)
 
-        if self.ripple:
-            for sequence_to_ripple in to_ripple:
-                sequence = sequence_to_ripple["sequence"]
-                original_frame = sequence_to_ripple["original_frame"]
-                gap = original_frame - sequence.frame_final_end if \
-                      sequence_to_ripple["side"] == 'RIGHT' else \
-                      sequence.frame_final_start - original_frame
-                self.ripple_sequences(sequence_to_ripple["sequence"], context,
-                                      gap, sequence_to_ripple["side"])
-
-        for sequence in context.selected_sequences:
-            sequence.select_right_handle = False
-            sequence.select_left_handle = False
-        return {"FINISHED"}
-
-    def filter_and_select_strips_handle(self, sequences, side, frame):
-        """
-        Select the LEFT or RIGHT handles of the strips based on the frame number
-        Returns a list of strips to ripple with information about the ripple side
-        """
-        side = side.upper()
-        to_ripple = []
-
         for s in sequences:
-            s.select_left_handle = False
             s.select_right_handle = False
+            s.select_left_handle = False
 
-            handle_side = ''
-            start, end = s.frame_final_start, s.frame_final_end
-            if side == 'LEFT' and frame < end or side == 'RIGHT' and frame > start:
-                handle_side = side
-            else:
-                s.select = False
-
-            if handle_side:
-                bpy.ops.sequencer.select_handles(side=handle_side)
-                original_frame = s.frame_final_end if handle_side == 'RIGHT' else s.frame_final_start
-                to_ripple.append({"side": handle_side, "original_frame": original_frame, "sequence": s})
-        return to_ripple
-
-    def ripple_sequences(self, sequence, context, gap, side):
-        """
-        Ripples edit sequences in the same channel of sequence moving them by gap
-        """
-        ordered_sequences = sorted(context.sequences, key=attrgetter('frame_final_start'))
-        for s in ordered_sequences:
-            if s.channel != sequence.channel:
-                continue
-            if s == sequence and side == 'LEFT' or sequence.frame_final_end < s.frame_final_start:
-                try:
-                    s.frame_start -= gap
-                except AttributeError:
-                    continue
+        # FIXME: quick hack
+        # Should use a function instead of the operator
+        if self.ripple:
+            bpy.ops.sequencer.gap_remove()
+        return {"FINISHED"}
