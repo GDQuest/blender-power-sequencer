@@ -45,24 +45,43 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     def execute(self, context):
         frame_current = context.scene.frame_current
 
+        # Only select sequences under the time cursor
         sequences = context.selected_sequences if context.selected_sequences else context.sequences
         for s in sequences:
             s.select = s.frame_final_start <= frame_current and s.frame_final_end >= frame_current
         sequences = [s for s in sequences if s.select]
+
         for s in sequences:
             if self.side == 'LEFT':
                 s.select_left_handle = True
             if self.side == 'RIGHT':
                 s.select_right_handle = True
 
-        bpy.ops.sequencer.snap(frame=frame_current)
+        ripple_frames, ripple_start_frame = 0, 0
+        if self.ripple and self.side == 'LEFT':
+            ripple_frames = frame_current - min(sequences, key=attrgetter('frame_final_start')).frame_final_start
+            ripple_start_frame = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
 
+        bpy.ops.sequencer.snap(frame=frame_current)
         for s in sequences:
             s.select_right_handle = False
             s.select_left_handle = False
 
-        # FIXME: quick hack
-        # Should use a function instead of the operator
-        if self.ripple:
-            bpy.ops.sequencer.gap_remove()
+        if self.ripple and sequences:
+            if self.side == 'RIGHT':
+                ripple_start_frame = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
+                bpy.ops.power_sequencer.remove_gaps(frame=ripple_start_frame)
+
+            else:
+                sequences_to_ripple = [s for s in context.sequences if s.frame_final_start > ripple_start_frame]
+                sequences_to_ripple = sorted(sequences_to_ripple, key=attrgetter('frame_final_start'))
+                for s in sequences_to_ripple:
+                    try:
+                        s.frame_start -= ripple_frames
+                    except Exception:
+                        pass
+                context.scene.frame_current = ripple_start_frame
+
         return {"FINISHED"}
+
+

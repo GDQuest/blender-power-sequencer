@@ -29,16 +29,19 @@ class POWER_SEQUENCER_OT_remove_gaps(bpy.types.Operator):
         name="Remove All",
         description="Remove all gaps starting from the time cursor",
         default=False)
+    frame = bpy.props.IntProperty(
+        name="Frame",
+        description="Frame to remove gaps from, defaults at the time cursor",
+        default=-1)
 
-    frame_start_override = -1
 
     @classmethod
     def poll(cls, context):
         return (context.sequences and len(context.sequences) > 0)
 
     def execute(self, context):
-        frame_start = (self.frame_start_override
-                       if self.frame_start_override > -1 else
+        frame_start = (self.frame
+                       if self.frame >= 0 else
                        context.scene.frame_current)
 
         sequences_to_process = ([s for s in context.sequences if not s.lock]
