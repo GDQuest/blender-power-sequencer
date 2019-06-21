@@ -50,6 +50,8 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         for s in sequences:
             s.select = s.frame_final_start <= frame_current and s.frame_final_end >= frame_current
         sequences = [s for s in sequences if s.select]
+        if not sequences:
+            return {'FINISHED'}
 
         for s in sequences:
             if self.side == 'LEFT':
