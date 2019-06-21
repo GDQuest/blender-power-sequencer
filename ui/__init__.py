@@ -1,6 +1,4 @@
 import bpy
-from .panel import POWER_SEQUENCER_PT_Panel
-from .change_panel_tab import POWER_SEQUENCER_OT_change_panel_tab
 from .menu_contextual import POWER_SEQUENCER_MT_contextual
 from .menu_toolbar import (
     POWER_SEQUENCER_MT_main,
@@ -25,8 +23,6 @@ from .menu_toolbar import (
 )
 
 classes = [
-    POWER_SEQUENCER_PT_Panel,
-    POWER_SEQUENCER_OT_change_panel_tab,
     POWER_SEQUENCER_MT_contextual,
     POWER_SEQUENCER_MT_main,
     POWER_SEQUENCER_MT_playback,
