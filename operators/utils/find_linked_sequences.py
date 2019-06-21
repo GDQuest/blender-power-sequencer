@@ -37,11 +37,14 @@ def find_linked(context, sequences, selected_sequences):
 
     # Find inputs of selected effects that are not selected
     for e in selected_effects:
-        if e.input_1 not in sequences:
-            linked_sequences.append(e.input_1)
-        if e.input_count == 2:
-            if e.input_2 not in sequences:
-                linked_sequences.append(e.input_2)
+        try:
+            if e.input_1 not in sequences:
+                linked_sequences.append(e.input_1)
+            if e.input_count == 2:
+                if e.input_2 not in sequences:
+                    linked_sequences.append(e.input_2)
+        except AttributeError:
+            continue
 
     return linked_sequences
 
