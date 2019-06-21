@@ -42,7 +42,7 @@ from .mouse_trim import POWER_SEQUENCER_OT_mouse_trim
 from .open_project_directory import POWER_SEQUENCER_OT_open_project_directory
 from .preview_closest_cut import POWER_SEQUENCER_OT_preview_closest_cut
 from .preview_to_selection import POWER_SEQUENCER_OT_preview_to_selection
-from .remove_gaps import POWER_SEQUENCER_OT_remove_gaps
+from .gap_remove import POWER_SEQUENCER_OT_gap_remove
 from .scene_rename_with_strip import POWER_SEQUENCER_OT_scene_rename_with_strip
 from .render_apply_preset import POWER_SEQUENCER_OT_render_apply_preset
 from .ripple_delete import POWER_SEQUENCER_OT_ripple_delete
@@ -111,7 +111,7 @@ classes = [
     POWER_SEQUENCER_OT_open_project_directory,
     POWER_SEQUENCER_OT_preview_closest_cut,
     POWER_SEQUENCER_OT_preview_to_selection,
-    POWER_SEQUENCER_OT_remove_gaps,
+    POWER_SEQUENCER_OT_gap_remove,
     POWER_SEQUENCER_OT_scene_rename_with_strip,
     POWER_SEQUENCER_OT_render_apply_preset,
     POWER_SEQUENCER_OT_ripple_delete,

@@ -34,7 +34,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         description="Margin to leave on either sides of the trim in seconds",
         default=0.2,
         min=0)
-    remove_gaps: bpy.props.BoolProperty(
+    gap_remove: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
@@ -94,11 +94,11 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             s.select = True
         sequencer.delete()
 
-        if self.remove_gaps:
+        if self.gap_remove:
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
             # bpy.ops.anim.change_frame(frame_to_remove_gap)
             context.scene.frame_current = frame_to_remove_gap
-            bpy.ops.power_sequencer.remove_gaps()
+            bpy.ops.power_sequencer.gap_remove()
             context.scene.frame_current = trim_start
         return {'FINISHED'}
 

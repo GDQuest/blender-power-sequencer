@@ -31,10 +31,10 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         'description': doc_description(__doc__),
         'shortcuts': [
             ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True},
-             {'remove_gaps': False},
+             {'gap_remove': False},
              'Cut on mousemove, keep gap'),
             ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'ctrl': True, 'shift': True},
-             {'remove_gaps': True},
+             {'gap_remove': True},
              'Cut on mousemove, remove gap'),
         ],
         'keymap': 'Sequencer'
@@ -58,7 +58,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         name="Use linked time",
         description="In mouse or smart mode, always cut linked strips if this is checked",
         default=False)
-    remove_gaps: bpy.props.BoolProperty(
+    gap_remove: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
@@ -147,9 +147,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
                             self.frame_start, self.frame_end, self.select_mode,
                             to_select, to_delete)
 
-                if self.remove_gaps and self.select_mode == 'cursor':
+                if self.gap_remove and self.select_mode == 'cursor':
                     context.scene.frame_current = min(self.frame_start, self.frame_end)
-                    bpy.ops.power_sequencer.remove_gaps()
+                    bpy.ops.power_sequencer.gap_remove()
                 else:
                     context.scene.frame_current = self.frame_end
             return {'FINISHED'}
@@ -212,7 +212,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     def cut_strips_or_gap(self, context, frame_cut):
         if self.cut_gaps and len(context.selected_sequences) == 0:
-            bpy.ops.power_sequencer.remove_gaps()
+            bpy.ops.power_sequencer.gap_remove()
         else:
             frame_current = context.scene.frame_current
             context.scene.frame_current = frame_cut

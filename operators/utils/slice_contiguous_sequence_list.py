@@ -11,6 +11,9 @@ def slice_selection(context, sequences):
     that are connected in time and sorted by frame_final_start
     """
     # Find when 2 sequences are not connected in time
+    if not sequences:
+        return []
+
     break_ids = [0]
     sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
     last_sequence = sorted_sequences[0]

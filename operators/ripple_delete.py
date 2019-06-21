@@ -81,7 +81,7 @@ class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
                 sequencer.delete()
 
                 scene.frame_current = selection_start
-                bpy.ops.power_sequencer.remove_gaps()
+                bpy.ops.power_sequencer.gap_remove()
 
         self.report({'INFO'},
                     'Deleted ' + str(len(selection)) + ' sequence' + \

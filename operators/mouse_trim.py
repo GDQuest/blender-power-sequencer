@@ -51,7 +51,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         name="Use linked time",
         description="If auto-select, cut linked strips if checked",
         default=False)
-    remove_gaps: bpy.props.BoolProperty(
+    gap_remove: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
         default=True)
@@ -98,9 +98,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                     self.frame_start, self.frame_end,
                     self.select_mode, self.to_select)
 
-        if self.remove_gaps and self.select_mode == 'cursor':
+        if self.gap_remove and self.select_mode == 'cursor':
             context.scene.frame_current = min(self.frame_start, self.frame_end)
-            bpy.ops.power_sequencer.remove_gaps()
+            bpy.ops.power_sequencer.gap_remove()
         else:
             context.scene.frame_current = self.frame_start if self.frame_start else frame
         return {'FINISHED'}
