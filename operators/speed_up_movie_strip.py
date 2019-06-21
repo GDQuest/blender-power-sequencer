@@ -1,4 +1,5 @@
 import bpy
+from math import ceil
 
 from .utils.global_settings import SequenceTypes
 from .utils.slice_contiguous_sequence_list import slice_selection
@@ -43,80 +44,57 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         return True
 
     def execute(self, context):
-        sequencer = bpy.ops.sequencer
-        scene = context.scene
-        active = scene.sequence_editor.active_strip
-
-        # Select linked sequences
-        for s in find_linked(context, context.sequences, context.selected_sequences):
-            s.select = True
-        selection = context.selected_sequences
-
-        video_sequences = [
-            s for s in selection if s.type in SequenceTypes.VIDEO
-        ]
+        sequences = context.selected_sequences + find_linked(context, context.sequences, context.selected_sequences)
+        video_sequences = [s for s in sequences if s.type in SequenceTypes.VIDEO]
 
         if not video_sequences:
-            self.report({
-                "ERROR_INVALID_INPUT"
-            }, "No Movie sequence or Metastrips selected. Operation cancelled")
-            return {"CANCELLED"}
+            self.report({"ERROR_INVALID_INPUT"},
+                        "No Movie sequence or Metastrips selected. Operation cancelled")
+            return {'FINISHED'}
 
-        # Slice the selection
         selection_blocks = []
         if self.individual_sequences:
-            for s in selection:
-                if s.type in SequenceTypes.EFFECT:
-                    self.report(
-                        {"ERROR_INVALID_INPUT"},
-                        ("Can't speed up individual sequences if effect strips"
-                         " are selected. Please only select VIDEO or META strips."
-                         " Operation cancelled"))
-                    return {'CANCELLED'}
             selection_blocks = [[s] for s in video_sequences]
         else:
-            selection_blocks = slice_selection(context, selection)
+            selection_blocks = slice_selection(context, sequences)
 
-        for block in selection_blocks:
-            # start, end = 0, 0
-            sequencer.select_all(action='DESELECT')
-            if len(block) == 1:
-                active = scene.sequence_editor.active_strip = block[0]
-                # TODO: Use the full source clip
-                # start = active.frame_final_start / self.speed_factor
-                # end = start + active.frame_final_duration / self.speed_factor
-                # active.frame_offset_start, active.frame_offset_end = 0, 0
-            else:
-                for s in block:
-                    s.select = True
-                # SELECT GROUPED ONLY AFFECTS ACTIVE STRIP
-                # bpy.ops.sequencer.select_grouped(type='EFFECT_LINK')
-                sequencer.meta_make()
-                active = scene.sequence_editor.active_strip
-            # Add speed effect
-            sequencer.effect_strip_add(type='SPEED')
-            effect_strip = context.scene.sequence_editor.active_strip
-            effect_strip.use_default_fade = False
-            effect_strip.speed_factor = self.speed_factor
+        for sequences in selection_blocks:
+            bpy.ops.sequencer.select_all(action='DESELECT')
+            self.speed_effect_add(context, sequences)
 
-            sequencer.select_all(action='DESELECT')
-            active.select_right_handle = True
-            active.select = True
-            scene.sequence_editor.active_strip = active
-            source_name = active.name
-
-            from math import ceil
-            size = ceil(
-                active.frame_final_duration / effect_strip.speed_factor)
-            endFrame = active.frame_final_start + size
-            sequencer.snap(frame=endFrame)
-
-            effect_strip.select = True
-            sequencer.meta_make()
-            context.selected_sequences[0].name = (source_name
-                                                  + " "
-                                                  + str(self.speed_factor)
-                                                  + 'x')
         self.report({"INFO"}, "Successfully processed " +
                     str(len(selection_blocks)) + " selection blocks")
         return {"FINISHED"}
+
+    def speed_effect_add(self, context, sequences=[]):
+        if not sequences:
+            return
+
+        sequence = None
+        if len(sequences) == 1:
+            sequence = context.scene.sequence_editor.active_strip = sequences[0]
+        else:
+            for s in sequences:
+                s.select = True
+            bpy.ops.sequencer.meta_make()
+            sequence = context.scene.sequence_editor.active_strip
+
+        bpy.ops.sequencer.effect_strip_add(type='SPEED')
+        speed_effect = context.scene.sequence_editor.active_strip
+        speed_effect.use_default_fade = False
+        speed_effect.speed_factor = self.speed_factor
+
+
+        size = ceil(sequence.frame_final_duration / speed_effect.speed_factor)
+        sequence.frame_final_end += size
+
+        context.scene.sequence_editor.active_strip = sequence
+        bpy.ops.sequencer.select_all(action='DESELECT')
+        sequence.select = True
+        speed_effect.select = True
+        bpy.ops.sequencer.meta_make()
+
+        context.selected_sequences[0].name = (sequence.name
+                                              + " "
+                                              + str(self.speed_factor)
+                                              + 'x')
