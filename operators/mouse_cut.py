@@ -12,7 +12,8 @@ from .utils.draw import draw_line, draw_arrow_head
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-SHADER = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+if not bpy.app.background:
+    SHADER = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
 
 
 class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
