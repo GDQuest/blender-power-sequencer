@@ -255,7 +255,7 @@
         </tr>
     </table>
         <h3><a name="Add_Speed" href="#top_Add_Speed">Add Speed</a></h3>
-    <p>Add 2x speed to strip and set it's frame end accordingly. Wraps both the strip and the speed modifier into a META strip.</p>
+    <p>Add 2x speed to strip and set its frame end accordingly. Wraps both the strip and the speed modifier into a META strip.</p>
 
     <table>
         <tr>

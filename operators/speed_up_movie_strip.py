@@ -8,10 +8,10 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
     """
-    *brief* Add 2x speed, set frame end, wrap both into META
+    *brief* Adds a speed effect to the  2x speed, set frame end, wrap both into META
 
 
-    Add 2x speed to strip and set it's frame end  accordingly.  Wraps both the strip and the speed
+    Add 2x speed to strip and set its frame end accordingly. Wraps both the strip and the speed
     modifier into a META strip.
     """
     doc = {
