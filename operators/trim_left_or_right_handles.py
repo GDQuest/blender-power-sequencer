@@ -57,9 +57,9 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
             if self.side == 'RIGHT':
                 s.select_right_handle = True
 
-        ripple_frames, ripple_start_frame = 0, 0
+        # If trimming from the left, we need to save the start frame before trimming
+        ripple_start_frame = 0
         if self.ripple and self.side == 'LEFT':
-            ripple_frames = frame_current - min(sequences, key=attrgetter('frame_final_start')).frame_final_start
             ripple_start_frame = min(sequences, key=attrgetter('frame_final_start')).frame_final_start
 
         bpy.ops.sequencer.snap(frame=frame_current)
@@ -70,17 +70,9 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         if self.ripple and sequences:
             if self.side == 'RIGHT':
                 ripple_start_frame = max(sequences, key=attrgetter('frame_final_end')).frame_final_end
-                bpy.ops.power_sequencer.remove_gaps(frame=ripple_start_frame)
-
+                bpy.ops.power_sequencer.gap_remove(frame=ripple_start_frame)
             else:
-                sequences_to_ripple = [s for s in context.sequences if s.frame_final_start > ripple_start_frame]
-                sequences_to_ripple = sorted(sequences_to_ripple, key=attrgetter('frame_final_start'))
-                for s in sequences_to_ripple:
-                    try:
-                        s.frame_start -= ripple_frames
-                    except Exception:
-                        pass
-                context.scene.frame_current = ripple_start_frame
+                bpy.ops.power_sequencer.gap_remove(frame=ripple_start_frame)
 
         return {"FINISHED"}
 
