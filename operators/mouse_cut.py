@@ -7,6 +7,7 @@ from mathutils import Vector
 
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
+from .utils.find_snap_candidate import find_snap_candidate
 
 from .utils.draw import draw_line, draw_arrow_head
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
@@ -128,12 +129,13 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         #         self.event_alt_released = True
 
         # Start and end trim
-        if event.type == 'LEFTMOUSE':
+        if event.type == 'LEFTMOUSE' or (event.type in ['RET', 'T'] and event.value == 'PRESS'):
             self.trim_apply(context, event)
             self.draw_stop()
             context.scene.use_audio_scrub = self.use_audio_scrub
             return {'FINISHED'}
 
+        # Update trim
         if event.type == 'MOUSEMOVE':
             if self.mouse_start_y < 0.0:
                 self.mouse_start_y = event.mouse_region_y
@@ -143,10 +145,6 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             self.trim_end = context.scene.frame_current
             self.draw_start(context, event)
             return {'PASS_THROUGH'}
-
-        if event.type in ['RET', 'T'] and event.value == 'PRESS':
-            self.draw_stop()
-            return {'FINISHED'}
 
         return {'RUNNING_MODAL'}
 
@@ -168,7 +166,13 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         self.is_trimming = False
 
     def update_time_cursor(self, context, event):
-        self.trim_end = get_frame_and_channel(event)[0]
+        frame = get_frame_and_channel(event)[0]
+
+        if event.ctrl:
+            self.trim_end = find_snap_candidate(context, frame)
+        else:
+            self.trim_end = get_frame_and_channel(event)[0]
+
         context.scene.frame_current = self.trim_end
 
     def draw_start(self, context, event):
