@@ -81,6 +81,8 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     draw_handler = None
 
+    use_audio_scrub = False
+
     event_shift_released = True
     event_alt_released = True
 
@@ -92,6 +94,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         if context.screen.is_animation_playing:
             bpy.ops.screen.animation_cancel(restore_frame=False)
 
+        self.use_audio_scrub = context.scene.use_audio_scrub
+        context.scene.use_audio_scrub = False
+
         self.update_time_cursor(context, event)
         self.trim_initialize(event)
         self.draw_start(context, event)
@@ -100,7 +105,10 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         return {'RUNNING_MODAL'}
 
     def modal(self, context, event):
+
         if event.type in {'ESC'}:
+            self.draw_stop()
+            context.scene.use_audio_scrub = self.use_audio_scrub
             return {'CANCELLED'}
 
         # # Toggle cursor select mode
@@ -123,6 +131,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         if event.type == 'LEFTMOUSE':
             self.trim_apply(context, event)
             self.draw_stop()
+            context.scene.use_audio_scrub = self.use_audio_scrub
             return {'FINISHED'}
 
         if event.type == 'MOUSEMOVE':
