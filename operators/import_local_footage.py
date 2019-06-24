@@ -72,19 +72,12 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         self.SEQUENCER_AREA = self.get_sequencer_area(context)
 
         project_directory = os.path.split(bpy.data.filepath)[0]
-        folders_to_import = [
-            f for f in os.listdir(project_directory)
-            if f in ('audio', 'img', 'video')
-        ]
-        local_footage_files = self.find_local_footage_files(
-            project_directory, folders_to_import, Extensions.DICT)
-        # print('Project dir: {!s},\nFolders found: {!s},\nLocal files: {!s}'.format(project_directory, folders_to_import, local_footage_files))
+        local_footage_files = self.find_local_footage_files(project_directory)
 
         files_to_import = self.find_new_files_to_import(local_footage_files)
         if not files_to_import:
             self.report({'INFO'}, "No new files to import found")
             return {'FINISHED'}
-        # print('Files to import: {!s}'.format(files_to_import))
 
         imported_sequences, imported_video_sequences = [], []
         self.start_fps, self.start_fps_base = (context.scene.render.fps,
@@ -156,7 +149,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
 
     def get_sequencer_area(self, context):
         """
-        Finds and returns the sequencer area to use as a context override in
+        Returns the sequencer area to use as a context override in
         some operators
         """
         SEQUENCER_AREA = None
@@ -172,42 +165,44 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
                 }
         return SEQUENCER_AREA
 
-    def find_local_footage_files(self, project_directory, folders_to_import,
-                                 file_extensions):
+    def find_local_footage_files(self, project_directory):
         """
         Walks through a folder relative to the project directory and returns
         a list of filepaths that match the extensions.
 
-        Args:
-            - project_directory, the absolute path to the folder that contains
-              the .blend file
-            - folders_to_import, a list of folder names to look into, relative
-              to the project_directory
-            - file_extensions is a dict of tuples of extensions with the
-              form "*.ext".
-        _use the _extensions helper class POWER_SEQUENCER_OTin .functions.global_settings. _it
-        gives default extensions to check the files against.
+        Args: - project_directory, the absolute path to the folder that
+        contains the .blend file Use the extensions helper class in
+        .functions.global_settings. It gives default extensions to check the
+        files against.
 
         Returns a dict with the form {
             'video': [relative_path_1, relative_path_2],
             'audio': [...],
-            ...
+            'img': []
         }
         """
-        local_footage_files = {}
-        for f in folders_to_import:
-            local_footage_files[f] = []
-            for root, dirs, files in os.walk(os.path.join(project_directory, f)):
+        files_dict = {}
+        for f in ('video', 'audio', 'img'):
+            files_dict[f] = []
+
+            path = os.path.join(project_directory, f)
+            if not os.path.exists(path):
+                continue
+
+            for root, dirs, files in os.walk(path):
                 for ignore_pattern in ('BL_proxy', 'src'):
                     if ignore_pattern in dirs:
                         dirs.remove(ignore_pattern)
-                relative_file_paths = [
-                    os.path.relpath(
-                        os.path.join(root, name), start=project_directory)
-                        for name in sorted(files) if
-                        not name.startswith('.')]
-                local_footage_files[f].extend(relative_file_paths)
-        return local_footage_files
+
+                for name in sorted(files):
+                    extension = os.path.splitext(name)[1].lower()
+                    if name.startswith('.') or not extension in Extensions.DICT[f]:
+                        continue
+                    file_path = os.path.join(root, name)
+                    path_relative = os.path.relpath(file_path, start=project_directory)
+                    files_dict[f].append(path_relative)
+
+        return files_dict
 
     def create_text_file(self, name):
         """

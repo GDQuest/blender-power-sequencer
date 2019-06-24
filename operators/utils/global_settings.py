@@ -32,7 +32,6 @@ class SequenceTypes():
     CUTABLE = VIDEO + SOUND + IMAGE + ('MULTICAM', 'COLOR', 'ADJUSTMENT')
 
 
-# TODO: Replace FileTypes with that
 class Extensions():
     """
     Tuples of file types for checks when importing files
@@ -42,10 +41,9 @@ class Extensions():
         use with the glob builtin module.
     """
     DICT = {
-        "IMG": ("*.png", "*.jpg", "*.jpeg"),
-        "AUDIO": ("*.wav", "*.mp3", "*.ogg"),
-        "VIDEO": ("*.mp4", "*.avi", "*.mts", "*.flv", "*.mkv", "*.mov"),
-        "PSD": ("*.psd")
+        "img": (".png", ".jpg", ".jpeg"),
+        "audio": (".wav", ".mp3", ".ogg"),
+        "video": (".mp4", ".avi", ".mts", ".flv", ".mkv", ".mov"),
     }
 
 
