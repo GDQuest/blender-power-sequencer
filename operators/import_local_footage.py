@@ -87,7 +87,6 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         # print('Files to import: {!s}'.format(files_to_import))
 
         imported_sequences, imported_video_sequences = [], []
-        imported_videos_have_audio = False
         self.start_fps, self.start_fps_base = (context.scene.render.fps,
                                                context.scene.render.fps_base)
         if 'audio' in files_to_import.keys():
@@ -100,8 +99,6 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
                 project_directory, files_to_import['video'])
             imported_sequences.extend(imported)
             imported_video_sequences.extend(imported)
-            if len(imported_video_sequences) > len(files_to_import['video']):
-                imported_videos_have_audio = True
         if 'img' in files_to_import.keys():
             imported = self.import_img(
                 context,
@@ -113,9 +110,6 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
 
         self.new_fps, self.new_fps_base = (context.scene.render.fps,
                                            context.scene.render.fps_base)
-
-        if imported_videos_have_audio:
-            self.invert_audio_and_video_channels(imported_video_sequences)
 
         for s in [s for s in imported_sequences if s.type == 'SOUND']:
             s.show_waveform = True
@@ -345,22 +339,3 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
             new_sequences.extend(context.selected_sequences)
         return new_sequences
 
-    def invert_audio_and_video_channels(self, sequences):
-        """
-        Wraps sequences in a meta strip to isolate them, moves the strips' channels,
-        and separate the meta strip
-        """
-        sequencer = bpy.ops.sequencer
-        sequencer.select_all(action='DESELECT')
-        for s in sequences:
-            s.select = True
-        sequencer.meta_make()
-        sequencer.meta_toggle()
-
-        videos_in_meta = [s for s in bpy.context.sequences if s.type == 'MOVIE']
-        for s in videos_in_meta:
-            s.channel += 2
-        for s in sorted(sequences, key=attrgetter('channel')):
-            s.channel -= 1
-        sequencer.meta_toggle()
-        sequencer.meta_separate()
