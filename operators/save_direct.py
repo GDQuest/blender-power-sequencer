@@ -23,7 +23,7 @@ class POWER_SEQUENCER_OT_save_direct(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene
 
     def execute(self, context):
         if bpy.data.is_saved:

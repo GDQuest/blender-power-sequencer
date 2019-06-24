@@ -40,7 +40,7 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
             if len(selected) == 2 and active in selected:
                 selected.pop(selected.index(active))
                 if selected[0].type == "SOUND" and active.type == "SOUND":
-                    return True
+                    return context.selected_sequences
         return False
 
     def execute(self, context):

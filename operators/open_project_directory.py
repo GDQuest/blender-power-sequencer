@@ -24,7 +24,7 @@ class POWER_SEQUENCER_OT_open_project_directory(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene
 
     def execute(self, context):
         path = os.path.split(bpy.data.filepath)[0]

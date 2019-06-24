@@ -48,7 +48,7 @@ class POWER_SEQUENCER_OT_render_apply_preset(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene
 
     def execute(self, context):
         if not bpy.data.is_saved:

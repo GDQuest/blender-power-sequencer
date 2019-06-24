@@ -22,7 +22,7 @@ class POWER_SEQUENCER_OT_set_preview_between_markers(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene.sequence_editor
 
     def invoke(self, context, event):
         if not context.scene.timeline_markers:

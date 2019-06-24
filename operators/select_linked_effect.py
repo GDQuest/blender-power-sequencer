@@ -22,7 +22,7 @@ class POWER_SEQUENCER_OT_select_linked_effect(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.selected_sequences
 
     def execute(self, context):
         for s in find_linked(context, context.sequences, context.selected_sequences):

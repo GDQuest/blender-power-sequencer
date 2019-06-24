@@ -21,7 +21,7 @@ class POWER_SEQUENCER_OT_marker_snap_to_cursor(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene.timeline_markers
 
     def execute(self, context):
         markers = context.scene.timeline_markers

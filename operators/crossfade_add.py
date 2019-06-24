@@ -46,7 +46,7 @@ class POWER_SEQUENCER_OT_crossfade_add(bpy.types.Operator):
         try:
             next(s for s in context.sequences if s.type not in
                  SequenceTypes.TRANSITION + SequenceTypes.SOUND)
-            return True
+            return context.selected_sequences
         except (StopIteration, TypeError):
             return False
 

@@ -23,7 +23,7 @@ class POWER_SEQUENCER_OT_copy_markers_as_timecodes(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene.timeline_markers
 
     def execute(self, context):
         render = context.scene.render

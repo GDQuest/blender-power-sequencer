@@ -28,7 +28,7 @@ class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene.sequence_editor
 
     def execute(self, context):
         markers = context.scene.timeline_markers

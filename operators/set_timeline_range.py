@@ -27,7 +27,7 @@ class POWER_SEQUENCER_OT_set_timeline_range(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene.sequence_editor
 
     def execute(self, context):
         scene = context.scene

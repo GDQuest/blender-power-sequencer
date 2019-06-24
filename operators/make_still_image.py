@@ -33,7 +33,7 @@ class POWER_SEQUENCER_OT_make_still_image(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.selected_sequences
 
     def invoke(self, context, event):
         window_manager = context.window_manager

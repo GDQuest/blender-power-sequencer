@@ -71,7 +71,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.sequences
 
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)

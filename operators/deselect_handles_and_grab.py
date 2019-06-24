@@ -21,7 +21,7 @@ class POWER_SEQUENCER_OT_deselect_handles_and_grab(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.selected_sequences
 
     def execute(self, context):
         for s in context.selected_sequences:

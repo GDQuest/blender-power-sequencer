@@ -150,7 +150,7 @@ class POWER_SEQUENCER_OT_swap_strips(bpy.types.Operator):
             if s.channel != group[s] + offset:
                 return False
 
-        return True
+        return context.selected_sequences
 
     def reconstruct(self, strip, init_channel, group, context):
         """

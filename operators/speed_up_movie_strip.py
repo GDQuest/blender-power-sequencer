@@ -40,7 +40,7 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.selected_sequences
 
     def execute(self, context):
         sequences = [s for s in context.selected_sequences if s.type in SequenceTypes.VIDEO]

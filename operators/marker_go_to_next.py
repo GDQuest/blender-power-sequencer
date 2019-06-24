@@ -28,7 +28,7 @@ class POWER_SEQUENCER_OT_marker_go_to_next(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.scene
 
     def execute(self, context):
         if not context.scene.timeline_markers:

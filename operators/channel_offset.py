@@ -36,7 +36,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return True
+        return context.selected_sequences
 
     def execute(self, context):
         selection = context.selected_sequences
