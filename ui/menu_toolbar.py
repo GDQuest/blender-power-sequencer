@@ -71,7 +71,7 @@ class POWER_SEQUENCER_MT_select(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.border_select", text='Border Select', icon='BORDERMOVE')
+
         layout.operator("power_sequencer.select_linked_effect", text='Select Linked Effect', icon='CONSTRAINT')
         layout.menu("POWER_SEQUENCER_MT_deselect", text='Deselect', icon='RESTRICT_SELECT_ON')
 

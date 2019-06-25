@@ -1,7 +1,6 @@
 from .speed_up_movie_strip import POWER_SEQUENCER_OT_speed_up_movie_strip
 from .add_transform import POWER_SEQUENCER_OT_add_transform
 from .align_audios import POWER_SEQUENCER_OT_align_audios
-from .border_select import POWER_SEQUENCER_OT_border_select
 from .playback_speed_set import POWER_SEQUENCER_OT_playback_speed_set
 from .channel_offset import POWER_SEQUENCER_OT_channel_offset
 from .concatenate_strips import POWER_SEQUENCER_OT_concatenate_strips
@@ -70,7 +69,7 @@ classes = [
     POWER_SEQUENCER_OT_speed_up_movie_strip,
     POWER_SEQUENCER_OT_add_transform,
     POWER_SEQUENCER_OT_align_audios,
-    POWER_SEQUENCER_OT_border_select,
+
     POWER_SEQUENCER_OT_playback_speed_set,
     POWER_SEQUENCER_OT_channel_offset,
     POWER_SEQUENCER_OT_concatenate_strips,
