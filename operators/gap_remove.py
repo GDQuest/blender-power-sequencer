@@ -94,7 +94,10 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
                 continue
 
             for s in block:
-                s.frame_start -= gap_size
+                try:
+                    s.frame_start -= gap_size
+                except AttributeError:
+                    continue
 
             self.move_markers(context, gap_frame, gap_size)
             if not self.all:
