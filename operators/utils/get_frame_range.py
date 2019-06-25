@@ -1,7 +1,7 @@
 from operator import attrgetter
 
 
-def get_frame_range(context, sequences, get_from_start=False):
+def get_frame_range(context, sequences=[], get_from_start=False):
     """
     Returns a tuple with the minimum and maximum frames of the
     list of passed sequences.

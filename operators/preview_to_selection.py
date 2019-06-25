@@ -35,9 +35,6 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
 
     def execute(self, context):
         scene = context.scene
-        selection = context.selected_sequences
-        if not selection:
-            return {'CANCELLED'}
         frame_start, frame_end = get_frame_range(
             context,
             sequences=context.selected_sequences,
@@ -45,7 +42,7 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
         )
 
         if scene.frame_start == frame_start and scene.frame_end == frame_end:
-            frame_start, frame_end = get_frame_range(context, get_from_start=True)
+            frame_start, frame_end = get_frame_range(context, sequences=[], get_from_start=True)
 
         set_preview_range(context, frame_start, frame_end - 1)
         return {'FINISHED'}
