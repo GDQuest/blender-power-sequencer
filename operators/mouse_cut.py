@@ -34,19 +34,19 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         'shortcuts': [
             ({'type': 'T', 'value': 'PRESS'},
              {'select_mode': 'contextual'},
-             {'remove_gaps': False},
+             {'gap_remove': False},
              'Trim using the mouse cursor'),
             ({'type': 'T', 'value': 'PRESS', 'alt': True},
              {'select_mode': 'contextual'},
-             {'remove_gaps': True},
+             {'gap_remove': True},
              'Trim using the mouse cursor and remove gaps'),
             ({'type': 'T', 'value': 'PRESS', 'shift': True},
              {'select_mode': 'cursor'},
-             {'remove_gaps': False},
+             {'gap_remove': False},
              'Trim in all channels'),
             ({'type': 'T', 'value': 'PRESS', 'shift': True, 'alt': True},
              {'select_mode': 'cursor'},
-             {'remove_gaps': True},
+             {'gap_remove': True},
              'Trim in all channels and remove gaps'),
         ],
         'keymap': 'Sequencer'
@@ -124,7 +124,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         # if event.type in ['LEFT_ALT', 'RIGHT_SHIFT']:
         #     if event.value == 'PRESS' and self.event_alt_released:
         #         self.event_alt_released = False
-        #         self.remove_gaps = not self.remove_gaps
+        #         self.gap_remove = not self.gap_remove
         #     elif event.value == 'RELEASE' and not self.event_alt_released:
         #         self.event_alt_released = True
 
@@ -194,7 +194,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
                      self.trim_end,
                      self.mouse_start_y,
                      target_strips,
-                     self.remove_gaps)
+                     self.gap_remove)
         self.draw_handler = bpy.types.SpaceSequenceEditor.draw_handler_add(
             draw, draw_args, 'WINDOW', 'POST_PIXEL')
 
@@ -221,9 +221,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         trim_strips(context,
                     self.trim_start, self.trim_end, self.select_mode,
                     to_select, to_delete)
-        if self.remove_gaps and self.select_mode == 'cursor':
+        if self.gap_remove and self.select_mode == 'cursor':
             context.scene.frame_current = min(self.trim_start, self.trim_end)
-            bpy.ops.power_sequencer.remove_gaps()
+            bpy.ops.power_sequencer.gap_remove()
         else:
             context.scene.frame_current = self.trim_end
 
