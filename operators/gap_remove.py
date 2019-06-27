@@ -29,7 +29,7 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
         name="Remove All",
         description="Remove all gaps starting from the time cursor",
         default=False)
-    frame = bpy.props.IntProperty(
+    frame: bpy.props.IntProperty(
         name="Frame",
         description="Frame to remove gaps from, defaults at the time cursor",
         default=-1)

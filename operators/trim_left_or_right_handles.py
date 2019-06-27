@@ -16,10 +16,10 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
         'demo': '',
         'description': doc_description(__doc__),
         'shortcuts': [
-            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'RIGHT', 'ripple': False, 'auto_select': False}, 'Smart Snap Right'),
-            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'RIGHT', 'ripple': True, 'auto_select': False}, 'Smart Snap Right With Ripple'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'LEFT', 'ripple': False, 'auto_select': False}, 'Smart Snap Left'),
-            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'LEFT', 'ripple': True, 'auto_select': False}, 'Smart Snap Left With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True}, {'side': 'RIGHT', 'ripple': False}, 'Smart Snap Right'),
+            ({'type': 'K', 'value': 'PRESS', 'alt': True, 'shift': True}, {'side': 'RIGHT', 'ripple': True}, 'Smart Snap Right With Ripple'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True}, {'side': 'LEFT', 'ripple': False}, 'Smart Snap Left'),
+            ({'type': 'K', 'value': 'PRESS', 'ctrl': True, 'shift': True}, {'side': 'LEFT', 'ripple': True}, 'Smart Snap Left With Ripple'),
         ],
         'keymap': 'Sequencer'
     }
