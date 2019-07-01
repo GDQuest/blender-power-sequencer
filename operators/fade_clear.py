@@ -6,7 +6,10 @@ from .utils.global_settings import SequenceTypes
 
 class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
     """
-    Set strip opacity to 1.0 and remove all opacity-keyframes
+    *brief* Removes fade animation from selected sequences.
+
+    Removes opacity or volume animation on selected sequences and resets the
+    property to a value of 1.0. Works on all types of sequences.
     """
     doc = {
         'name': doc_name(__qualname__),
@@ -24,20 +27,19 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return (context.scene.sequence_editor
-                and len(context.selected_sequences) > 0)
+        return len(context.selected_sequences) > 0
 
     def execute(self, context):
-        selected = context.selected_sequences
         fcurves = context.scene.animation_data.action.fcurves
 
-        for strip in selected:
-            strip.blend_alpha = 1.0
-            fade_type = 'volume' if strip.type in SequenceTypes.SOUND else 'blend_alpha'
+        for sequence in context.selected_sequences:
+            animated_property = 'volume' if hasattr(sequence, 'volume') else 'blend_alpha'
             for curve in fcurves:
-                if not curve.data_path.endswith(fade_type):
+                if not curve.data_path.endswith(animated_property):
                     continue
-                # Ensure the fcurve corresponds to the selected strip
-                if strip == eval("bpy.context.scene." + curve.data_path.replace('.' + fade_type, '')):
+                # Ensure the fcurve corresponds to the selected sequence
+                if sequence == eval("bpy.context.scene." + curve.data_path.replace('.' + animated_property, '')):
                     fcurves.remove(curve)
+                setattr(sequence, animated_property, 1.0)
+
         return {'FINISHED'}
