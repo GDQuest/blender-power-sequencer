@@ -80,7 +80,8 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
             fade_animation_create(fade_fcurve, fades)
             faded_sequences.append(sequence)
 
-        self.report({"INFO"}, "Added fade animation to {} sequences.".format(len(faded_sequences)))
+        sequence_string = "sequence" if len(faded_sequences) == 1 else "sequences"
+        self.report({"INFO"}, "Added fade animation to {} {}.".format(len(faded_sequences), sequence_string))
         return {"FINISHED"}
 
     def calculate_fade_duration(self, context, sequence):
