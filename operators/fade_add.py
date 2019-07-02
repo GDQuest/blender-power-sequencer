@@ -1,7 +1,7 @@
 import bpy
 from mathutils import Vector
+from math import floor
 
-from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
@@ -66,16 +66,20 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
             sequences = [s for s in sequences
                          if s.frame_final_start < context.scene.frame_current < s.frame_final_end]
 
+        max_duration = min(sequences, key=lambda s: s.frame_final_duration).frame_final_duration
+        max_duration = floor(max_duration / 2.0) if self.type == 'IN_OUT' else max_duration
+
         faded_sequences = []
         for sequence in sequences:
-            fade_duration = self.calculate_fade_duration(context, sequence)
-            if not self.is_long_enough(sequence, fade_duration):
+            duration = self.calculate_fade_duration(context, sequence)
+            duration = min(duration, max_duration)
+            if not self.is_long_enough(sequence, duration):
                 continue
 
             animated_property = 'volume' if hasattr(sequence, 'volume') else 'blend_alpha'
             fade_fcurve = fade_find_or_create_fcurve(context, sequence, animated_property)
             max_value = fade_calculate_max_value(sequence, fade_fcurve)
-            fades = self.calculate_fades(sequence, animated_property, fade_duration, max_value)
+            fades = self.calculate_fades(sequence, animated_property, duration, max_value)
             fade_animation_clear(context, fade_fcurve, fades)
             fade_animation_create(fade_fcurve, fades)
             faded_sequences.append(sequence)
@@ -86,32 +90,31 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
 
     def calculate_fade_duration(self, context, sequence):
         frame_current = context.scene.frame_current
-        fade_duration = 0.0
+        duration = 0.0
         if self.type == 'CURSOR_TO':
-            fade_duration = abs(frame_current - sequence.frame_final_start)
+            duration = abs(frame_current - sequence.frame_final_start)
         elif self.type == 'CURSOR_FROM':
-            fade_duration = abs(sequence.frame_final_end - frame_current)
+            duration = abs(sequence.frame_final_end - frame_current)
         else:
-            fade_duration = convert_duration_to_frames(context, self.duration_seconds)
-            print(fade_duration)
-        return fade_duration
+            duration = calculate_duration_frames(context, self.duration_seconds)
+        return duration
 
-    def is_long_enough(self, sequence, fade_duration=0.0):
-        minimum_duration = (fade_duration * 2
+    def is_long_enough(self, sequence, duration=0.0):
+        minimum_duration = (duration * 2
                             if self.type == 'IN_OUT' else
-                            fade_duration)
+                            duration)
         return sequence.frame_final_duration >= minimum_duration
 
-    def calculate_fades(self, sequence, animated_property, fade_duration, max_value):
+    def calculate_fades(self, sequence, animated_property, duration, max_value):
         """
         Returns a list of Fade objects
         """
         fades = []
         if self.type in ['IN', 'IN_OUT', 'CURSOR_TO']:
-            fade = Fade(sequence, 'IN', animated_property, fade_duration, max_value)
+            fade = Fade(sequence, 'IN', animated_property, duration, max_value)
             fades.append(fade)
         if self.type in ['OUT', 'IN_OUT', 'CURSOR_FROM']:
-            fade = Fade(sequence, 'OUT', animated_property, fade_duration, max_value)
+            fade = Fade(sequence, 'OUT', animated_property, duration, max_value)
             fades.append(fade)
         return fades
 
@@ -181,7 +184,7 @@ class Fade:
     """
     type = ''
     animated_property = ''
-    fade_duration = -1
+    duration = -1
     max_value = 1.0
     start, end = Vector((0, 0)), Vector((0, 0))
 
@@ -200,3 +203,7 @@ class Fade:
 
     def __repr__(self):
         return "Fade {}: {} to {}".format(self.type, self.start, self.end)
+
+
+def calculate_duration_frames(context, duration_seconds):
+    return round(duration_seconds * context.scene.render.fps / context.scene.render.fps_base)
