@@ -149,20 +149,29 @@ def fade_calculate_max_value(sequence, fade_fcurve):
 
 def fade_animation_clear(context, fade_fcurve, fades):
     """
-    Removes existing keyframes in the fades' time range
+    Removes existing keyframes in the fades' time range, in fast mode, without
+    updating the fcurve
     """
     keyframe_points = fade_fcurve.keyframe_points
     for keyframe in keyframe_points:
         frame = keyframe.co[0]
         for fade in fades:
             if fade.start.x < frame < fade.end.x:
-                keyframe_points.remove(keyframe)
+                keyframe_points.remove(keyframe, fast=True)
 
 
 def fade_animation_create(fade_fcurve, fades):
+    """
+    Inserts keyframes in the fade_fcurve in fast mode using the Fade objects.
+    Updates the fcurve after having inserted all keyframes to finish the animation.
+    """
+    keyframe_points = fade_fcurve.keyframe_points
     for fade in fades:
         for point in (fade.start, fade.end):
-            fade_fcurve.keyframe_points.insert(frame=point.x, value=point.y)
+            keyframe_points.insert(frame=point.x, value=point.y, options={'FAST'})
+    fade_fcurve.update()
+    # The graph editor and the audio waveforms only redraw upon "moving" a keyframe
+    keyframe_points[-1].co = keyframe_points[-1].co
 
 
 class Fade:
