@@ -78,8 +78,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
 
             animated_property = 'volume' if hasattr(sequence, 'volume') else 'blend_alpha'
             fade_fcurve = fade_find_or_create_fcurve(context, sequence, animated_property)
-            max_value = fade_calculate_max_value(sequence, fade_fcurve)
-            fades = self.calculate_fades(sequence, animated_property, duration, max_value)
+            fades = self.calculate_fades(sequence, fade_fcurve, animated_property, duration)
             fade_animation_clear(context, fade_fcurve, fades)
             fade_animation_create(fade_fcurve, fades)
             faded_sequences.append(sequence)
@@ -105,16 +104,16 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
                             duration)
         return sequence.frame_final_duration >= minimum_duration
 
-    def calculate_fades(self, sequence, animated_property, duration, max_value):
+    def calculate_fades(self, sequence, fade_fcurve, animated_property, duration):
         """
         Returns a list of Fade objects
         """
         fades = []
         if self.type in ['IN', 'IN_OUT', 'CURSOR_TO']:
-            fade = Fade(sequence, 'IN', animated_property, duration, max_value)
+            fade = Fade(sequence, fade_fcurve, 'IN', animated_property, duration)
             fades.append(fade)
         if self.type in ['OUT', 'IN_OUT', 'CURSOR_FROM']:
-            fade = Fade(sequence, 'OUT', animated_property, duration, max_value)
+            fade = Fade(sequence, fade_fcurve, 'OUT', animated_property, duration)
             fades.append(fade)
         return fades
 
@@ -137,20 +136,6 @@ def fade_find_or_create_fcurve(context, sequence, animated_property):
     return fade_fcurve
 
 
-def fade_calculate_max_value(sequence, fade_fcurve):
-    """
-    Returns the maximum Y coordinate the fade animation should use for a given sequence
-    """
-    property = fade_fcurve.data_path.rsplit('.', 1)[-1]
-    if not fade_fcurve.keyframe_points:
-        max_value = getattr(sequence, property, 1.0)
-    else:
-        highest_keyframe = max(fade_fcurve.keyframe_points, key=lambda k: k.co[1])
-        max_value = highest_keyframe.co[1]
-    max_value = max_value if max_value > 0.0 else 1.0
-    return max_value
-
-
 def fade_animation_clear(context, fade_fcurve, fades):
     """
     Removes existing keyframes in the fades' time range, in fast mode, without
@@ -158,10 +143,14 @@ def fade_animation_clear(context, fade_fcurve, fades):
     """
     keyframe_points = fade_fcurve.keyframe_points
     for keyframe in keyframe_points:
-        frame = keyframe.co[0]
         for fade in fades:
-            if fade.start.x < frame < fade.end.x:
-                keyframe_points.remove(keyframe, fast=True)
+            # The keyframe points list doesn't seem to always update as the
+            # operator re-runs Leading to trying to remove nonexistent keyframes
+            try:
+                if fade.start.x < keyframe.co[0] < fade.end.x:
+                        keyframe_points.remove(keyframe, fast=True)
+            except ReferenceError:
+                pass
 
 
 def fade_animation_create(fade_fcurve, fades):
@@ -188,18 +177,41 @@ class Fade:
     max_value = 1.0
     start, end = Vector((0, 0)), Vector((0, 0))
 
-    def __init__(self, sequence, type, animated_property, duration, max_value):
+    def __init__(self, sequence, fade_fcurve, type, animated_property, duration):
         self.type = type
         self.animated_property = animated_property
         self.duration = duration
-        self.max_value = max_value
+        self.max_value = self.calculate_max_value(sequence, fade_fcurve)
 
         if type == 'IN':
             self.start = Vector((sequence.frame_final_start, 0.0))
-            self.end = Vector((sequence.frame_final_start + self.duration, max_value))
+            self.end = Vector((sequence.frame_final_start + self.duration, self.max_value))
         elif type == 'OUT':
-            self.start = Vector((sequence.frame_final_end - self.duration, max_value))
+            self.start = Vector((sequence.frame_final_end - self.duration, self.max_value))
             self.end = Vector((sequence.frame_final_end, 0.0))
+
+    def calculate_max_value(self, sequence, fade_fcurve):
+        """
+        Returns the maximum Y coordinate the fade animation should use for a given sequence
+        Uses either the sequence's value for the animated property, or the next keyframe after the fade
+        """
+        max_value = 0.0
+
+        if not fade_fcurve.keyframe_points:
+            max_value = getattr(sequence, self.animated_property, 1.0)
+        else:
+            if self.type == 'IN':
+                fade_end = sequence.frame_final_start + self.duration
+                keyframes = (k for k in fade_fcurve.keyframe_points if k.co[0] >= fade_end)
+            if self.type == 'OUT':
+                fade_start = sequence.frame_final_end - self.duration
+                keyframes = (k for k in reversed(fade_fcurve.keyframe_points) if k.co[0] <= fade_start)
+            try:
+                max_value = next(keyframes).co[1]
+            except StopIteration:
+                pass
+
+        return max_value if max_value > 0.0 else 1.0
 
     def __repr__(self):
         return "Fade {}: {} to {}".format(self.type, self.start, self.end)
