@@ -37,7 +37,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
         name="Fade Duration",
         description="Duration of the fade in seconds",
         default=1.0,
-        min=0.0)
+        min=0.01)
     type: bpy.props.EnumProperty(
         items=[('IN_OUT', 'Fade in and out', 'Fade selected strips in and out'),
                ('IN', 'Fade in', 'Fade in selected strips'),
@@ -73,6 +73,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
         for sequence in sequences:
             duration = self.calculate_fade_duration(context, sequence)
             duration = min(duration, max_duration)
+
             if not self.is_long_enough(sequence, duration):
                 continue
 
@@ -96,7 +97,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
             duration = abs(sequence.frame_final_end - frame_current)
         else:
             duration = calculate_duration_frames(context, self.duration_seconds)
-        return duration
+        return max(1, duration)
 
     def is_long_enough(self, sequence, duration=0.0):
         minimum_duration = (duration * 2
