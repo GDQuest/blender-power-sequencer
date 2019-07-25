@@ -26,7 +26,8 @@ class SequenceTypes():
     TRANSITION = ('CROSS', 'GAMMA_CROSS', 'WIPE')
     SOUND = ('SOUND',)
     IMAGE = ('IMAGE',)
-    TRANSITIONABLE = VIDEO + IMAGE + ('MULTICAM',)
+    TRANSITIONABLE = VIDEO + IMAGE + ('MULTICAM', 'GAUSSIAN_BLUR', 'TRANSFORM',
+                                      'ADJUSTMENT', 'SPEED')
     # Strips that can be cut. If most effect strips are linked to their inputs
     # and shouldn't be cut, some can be edited directly
     CUTABLE = VIDEO + SOUND + IMAGE + ('MULTICAM', 'COLOR', 'ADJUSTMENT')

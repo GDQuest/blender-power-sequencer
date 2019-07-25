@@ -1,5 +1,4 @@
 import bpy
-from operator import attrgetter
 
 from .utils.find_sequences_after import find_sequences_after
 from .utils.convert_duration_to_frames import convert_duration_to_frames
@@ -43,50 +42,62 @@ class POWER_SEQUENCER_OT_crossfade_add(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        try:
-            next(s for s in context.sequences if s.type not in
-                 SequenceTypes.TRANSITION + SequenceTypes.SOUND)
-            return context.selected_sequences
-        except (StopIteration, TypeError):
-            return False
+        return context.selected_sequences
 
     def execute(self, context):
         sorted_selection = sorted(context.selected_sequences,
-                                  key=attrgetter('frame_final_start'))
-        # Try to add a crossfade for each selected strip
-        for selected_strip in sorted_selection:
-            next_in_channel = [s for s in find_sequences_after(context, selected_strip)
-                               if s.channel == selected_strip.channel]
-            if not next_in_channel:
-                continue
-            next_transitionable = (s for s in next_in_channel
-                                   if s.type in SequenceTypes.TRANSITIONABLE)
-            try:
-                next_sequence = min(next_transitionable,
-                                    key=attrgetter('frame_final_start'))
-            except ValueError:
-                continue
+                                  key=lambda s: s.frame_final_start)
+        for s in sorted_selection:
+            s_next = self.get_next_sequence_after(context, s)
+            s_to_offset = s_next if s_next.type not in SequenceTypes.EFFECT else s_next.input_1
 
             if self.auto_move_strip:
-                frame_offset = (next_sequence.frame_final_start -
-                                selected_strip.frame_final_end)
-                next_sequence.frame_start -= frame_offset
+                offset = (s_to_offset.frame_final_start - s.frame_final_end)
+                s_to_offset.frame_start -= offset
 
-            if next_sequence.frame_final_start == \
-               selected_strip.frame_final_end:
-                crossfade_length = convert_duration_to_frames(
-                    context,
-                    self.crossfade_duration
-                )
-                next_sequence.frame_final_start += crossfade_length / 2
-                selected_strip.frame_final_end -= crossfade_length / 2
+            if s_to_offset.frame_final_start == s.frame_final_end:
+                self.offset_sequence_handles(context, s, s_to_offset)
 
-            self.apply_crossfade(context, selected_strip, next_sequence)
+            self.apply_crossfade(context, s, s_next)
         return {"FINISHED"}
 
+    def get_next_sequence_after(self, context, sequence):
+        """
+        Returns the first sequence after `sequence` by frame_final_start
+        """
+        next_sequence = None
+        next_in_channel = [s for s in find_sequences_after(context, sequence)
+                           if s.channel == sequence.channel]
+        next_transitionable = (s for s in next_in_channel
+                               if s.type in SequenceTypes.TRANSITIONABLE)
+        try:
+            next_sequence = min(next_transitionable,
+                                key=lambda s: s.frame_final_start)
+        except ValueError:
+            pass
+        return next_sequence
+
     def apply_crossfade(self, context, strip_from, strip_to):
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        for s in bpy.context.selected_sequences:
+            s.select = False
         strip_from.select = True
         strip_to.select = True
         context.scene.sequence_editor.active_strip = strip_to
         bpy.ops.sequencer.effect_strip_add(type='GAMMA_CROSS')
+
+    def offset_sequence_handles(self, context, sequence_1, sequence_2):
+        """
+        Moves the handles of the two sequences before adding the crossfade
+        """
+        fade_duration = convert_duration_to_frames(context, self.crossfade_duration)
+        fade_offset = fade_duration / 2
+
+        if hasattr(sequence_1, 'input_1'):
+            sequence_1.input_1.frame_final_end -= fade_offset
+        else:
+            sequence_1.frame_final_end -= fade_offset
+
+        if hasattr(sequence_2, 'input_1'):
+            sequence_2.input_1.frame_final_start += fade_offset
+        else:
+            sequence_2.frame_final_start += fade_offset
