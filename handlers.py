@@ -28,14 +28,14 @@ def playback_speed_post(scene):
     frame_start = scene.frame_current
     frame_post = scene.frame_current
 
-    if playback_speed == 'fast' and frame_start % 3 == 0:
+    if playback_speed == "fast" and frame_start % 3 == 0:
         frame_post += 1
-    elif playback_speed == 'faster' and frame_start % 2 == 0:
+    elif playback_speed == "faster" and frame_start % 2 == 0:
         frame_post += 1
-    elif playback_speed == 'double':
+    elif playback_speed == "double":
         # 2.5x -> skip 5 frames for 2. 2 then 3 then 2 etc.
         frame_post += 1
-    elif playback_speed == 'triple':
+    elif playback_speed == "triple":
         frame_post += 2
 
     if frame_start != frame_post:
@@ -48,12 +48,12 @@ def playback_speed_post(scene):
 def draw_playback_speed(self, context):
     layout = self.layout
     scene = context.scene
-    layout.prop(scene.power_sequencer, 'playback_speed')
+    layout.prop(scene.power_sequencer, "playback_speed")
 
 
 def draw_ui_menu(self, context):
     layout = self.layout
-    layout.menu('POWER_SEQUENCER_MT_main')
+    layout.menu("POWER_SEQUENCER_MT_main")
 
 
 # Add-on updater
@@ -76,13 +76,13 @@ def register_handlers():
     # HANDLERS
     load_post = bpy.app.handlers.load_post
     for handler in load_post:
-        if (" load_file_post " in str(handler)):
+        if " load_file_post " in str(handler):
             load_post.remove(handler)
     load_post.append(load_file_post)
 
     frame_change_post = bpy.app.handlers.frame_change_post
     for handler in frame_change_post:
-        if (" playback_speed_post " in str(handler)):
+        if " playback_speed_post " in str(handler):
             frame_change_post.remove(handler)
     frame_change_post.append(playback_speed_post)
 
@@ -96,10 +96,10 @@ def unregister_handlers():
     # HANDLERS
     load_post = bpy.app.handlers.load_post
     for handler in load_post:
-        if (" load_file_post " in str(handler)):
+        if " load_file_post " in str(handler):
             load_post.remove(handler)
 
     frame_change_post = bpy.app.handlers.frame_change_post
     for handler in frame_change_post:
-        if (" playback_speed_post " in str(handler)):
+        if " playback_speed_post " in str(handler):
             frame_change_post.remove(handler)

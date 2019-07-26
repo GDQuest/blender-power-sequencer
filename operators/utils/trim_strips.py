@@ -5,9 +5,9 @@ import bpy
 from .global_settings import SequenceTypes
 
 
-def trim_strips(context,
-                start_frame, end_frame, select_mode,
-                strips_to_trim=[], strips_to_delete=[]):
+def trim_strips(
+    context, start_frame, end_frame, select_mode, strips_to_trim=[], strips_to_delete=[]
+):
     """
     Remove the footage and audio between start_frame and end_frame.
 
@@ -19,10 +19,10 @@ def trim_strips(context,
 
     for s in strips_to_trim:
         if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
-            bpy.ops.sequencer.select_all(action='DESELECT')
+            bpy.ops.sequencer.select_all(action="DESELECT")
             s.select = True
-            bpy.ops.sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
-            bpy.ops.sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
+            bpy.ops.sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
+            bpy.ops.sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
             strips_to_delete.append(context.selected_sequences[0])
             continue
         elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
@@ -31,9 +31,8 @@ def trim_strips(context,
             s.frame_final_end = trim_start
 
     if strips_to_delete != []:
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         for s in strips_to_delete:
             s.select = True
         bpy.ops.sequencer.delete()
-    return {'FINISHED'}
-
+    return {"FINISHED"}

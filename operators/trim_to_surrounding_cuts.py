@@ -13,31 +13,36 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
     """
     Trim to surrounding cuts
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'LEFTMOUSE', 'value': 'PRESS', 'shift': True, 'alt': True},
-             {},
-             'Trim to Surrounding Cuts')
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "LEFTMOUSE", "value": "PRESS", "shift": True, "alt": True},
+                {},
+                "Trim to Surrounding Cuts",
+            )
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     margin: bpy.props.FloatProperty(
         name="Trim margin",
         description="Margin to leave on either sides of the trim in seconds",
         default=0.2,
-        min=0)
+        min=0,
+    )
     gap_remove: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
-        default=True)
+        default=True,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -45,13 +50,12 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
 
     def invoke(self, context, event):
         if not context.sequences:
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
         sequencer = bpy.ops.sequencer
 
         # Convert mouse position to frame, channel
-        x = context.region.view2d.region_to_view(
-            x=event.mouse_region_x, y=event.mouse_region_y)[0]
+        x = context.region.view2d.region_to_view(x=event.mouse_region_x, y=event.mouse_region_y)[0]
         frame = round(x)
 
         left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(context, frame)
@@ -60,14 +64,16 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         margin_frame = convert_duration_to_frames(context, self.margin)
 
         if surrounding_cut_frames_duration <= margin_frame * 2:
-            self.report({'WARNING'},
-                        ("The trim margin is larger than the gap\n"
-                         "Use snap trim or reduce the margin"))
-            return {'CANCELLED'}
+            self.report(
+                {"WARNING"},
+                ("The trim margin is larger than the gap\n" "Use snap trim or reduce the margin"),
+            )
+            return {"CANCELLED"}
 
         strips_to_delete, strips_to_trim = self.find_strips_in_range(
-            context, left_cut_frame, right_cut_frame)
-        trim_start, trim_end = left_cut_frame + margin_frame, right_cut_frame - margin_frame
+            context, left_cut_frame, right_cut_frame
+        )
+        trim_start, trim_end = (left_cut_frame + margin_frame, right_cut_frame - margin_frame)
 
         # print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
         # for s in strips_to_trim:
@@ -76,10 +82,10 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         for s in strips_to_trim:
             # If the strip is larger than the range to trim cut it in three
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
-                sequencer.select_all(action='DESELECT')
+                sequencer.select_all(action="DESELECT")
                 s.select = True
-                sequencer.cut(frame=trim_start, type='SOFT', side='RIGHT')
-                sequencer.cut(frame=trim_end, type='SOFT', side='LEFT')
+                sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
+                sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
                 strips_to_delete.append(context.selected_sequences[0])
                 continue
 
@@ -89,7 +95,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
                 s.frame_final_end = trim_start
 
         # Delete all sequences that are between the cuts
-        sequencer.select_all(action='DESELECT')
+        sequencer.select_all(action="DESELECT")
         for s in strips_to_delete:
             s.select = True
         sequencer.delete()
@@ -100,14 +106,11 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             context.scene.frame_current = frame_to_remove_gap
             bpy.ops.power_sequencer.gap_remove()
             context.scene.frame_current = trim_start
-        return {'FINISHED'}
+        return {"FINISHED"}
 
-    def find_strips_in_range(self,
-                             context,
-                             start_frame,
-                             end_frame,
-                             sequences=None,
-                             find_overlapping=True):
+    def find_strips_in_range(
+        self, context, start_frame, end_frame, sequences=None, find_overlapping=True
+    ):
         """
         Returns strips which start and end within a certain frame range, or that overlap a
         certain frame range
@@ -154,16 +157,12 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             distance_to_start_cut_frame = abs(start_cut_frame - frame)
             distance_to_end_cut_frame = abs(end_cut_frame - frame)
 
-            if s.frame_final_start < frame and \
-               distance_to_start < distance_to_start_cut_frame:
+            if s.frame_final_start < frame and distance_to_start < distance_to_start_cut_frame:
                 start_cut_frame = s.frame_final_start
-            if s.frame_final_end < frame and \
-               distance_to_end < distance_to_start_cut_frame:
+            if s.frame_final_end < frame and distance_to_end < distance_to_start_cut_frame:
                 start_cut_frame = s.frame_final_end
-            if s.frame_final_end > frame and \
-               distance_to_end < distance_to_end_cut_frame:
+            if s.frame_final_end > frame and distance_to_end < distance_to_end_cut_frame:
                 end_cut_frame = s.frame_final_end
-            if s.frame_final_start > frame and \
-               distance_to_start < distance_to_end_cut_frame:
+            if s.frame_final_start > frame and distance_to_start < distance_to_end_cut_frame:
                 end_cut_frame = s.frame_final_start
         return start_cut_frame, end_cut_frame

@@ -9,17 +9,18 @@ class POWER_SEQUENCER_OT_select_closest_to_mouse(bpy.types.Operator):
     """
     Select the closest strip under the mouse cursor
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     frame: bpy.props.IntProperty(name="Frame")
     channel: bpy.props.IntProperty(name="Channel")
@@ -39,4 +40,3 @@ class POWER_SEQUENCER_OT_select_closest_to_mouse(bpy.types.Operator):
         except Exception:
             return {"CANCELLED"}
         return {"FINISHED"}
-

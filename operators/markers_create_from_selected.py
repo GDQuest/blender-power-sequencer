@@ -9,20 +9,21 @@ class POWER_SEQUENCER_OT_markers_create_from_selected_strips(bpy.types.Operator)
 
     Use it to copy markers as timecodes.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
 
     @classmethod
     def poll(cls, context):
-        return (context.selected_sequences and len(context.selected_sequences) > 0)
+        return context.selected_sequences and len(context.selected_sequences) > 0
 
     def execute(self, context):
         cursor_frame_start = context.scene.frame_current
@@ -39,4 +40,4 @@ class POWER_SEQUENCER_OT_markers_create_from_selected_strips(bpy.types.Operator)
             gap = s.frame_final_start - cursor_frame_start
             bpy.ops.marker.move(frames=gap)
             new_marker.select = False
-        return {'FINISHED'}
+        return {"FINISHED"}

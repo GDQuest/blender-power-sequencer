@@ -8,29 +8,30 @@ class POWER_SEQUENCER_OT_meta_trim_content_to_bounds(bpy.types.Operator):
     """
     Deletes and trims the strips inside selected meta-strips to the meta strip's bounds
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         try:
-            next(s for s in context.selected_sequences if s.type == 'META')
+            next(s for s in context.selected_sequences if s.type == "META")
             return context.selected_sequences
         except StopIteration:
             return False
 
     def execute(self, context):
         to_delete = []
-        meta_strips = [s for s in context.selected_sequences if s.type == 'META']
+        meta_strips = [s for s in context.selected_sequences if s.type == "META"]
         for m in meta_strips:
             start, end = m.frame_final_start, m.frame_final_end
             sequences_to_process = (s for s in m.sequences if s.type not in SequenceTypes.EFFECT)
@@ -43,9 +44,8 @@ class POWER_SEQUENCER_OT_meta_trim_content_to_bounds(bpy.types.Operator):
                     s.frame_final_start = start
                 if s.frame_final_end > end:
                     s.frame_final_end = end
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         for s in to_delete:
             s.select = True
         bpy.ops.sequencer.delete()
-        return {'FINISHED'}
-
+        return {"FINISHED"}

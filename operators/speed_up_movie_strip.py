@@ -14,29 +14,27 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
     Add 2x speed to strip and set its frame end accordingly. Wraps both the strip and the speed
     modifier into a META strip.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/ZyEd0jD.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'PLUS', 'value': 'PRESS', 'shift': True}, {}, 'Add Speed')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "https://i.imgur.com/ZyEd0jD.gif",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "PLUS", "value": "PRESS", "shift": True}, {}, "Add Speed")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
     speed_factor: bpy.props.IntProperty(
-        name="Speed factor",
-        description="How many times the footage gets sped up",
-        default=2,
-        min=0)
+        name="Speed factor", description="How many times the footage gets sped up", default=2, min=0
+    )
     individual_sequences: bpy.props.BoolProperty(
         name="Affect individual strips",
         description="Speed up every VIDEO strip individually",
-        default=False)
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -46,9 +44,11 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         sequences = [s for s in context.selected_sequences if s.type in SequenceTypes.VIDEO]
 
         if not sequences:
-            self.report({"ERROR_INVALID_INPUT"},
-                        "No Movie sequence or Metastrips selected. Operation cancelled")
-            return {'FINISHED'}
+            self.report(
+                {"ERROR_INVALID_INPUT"},
+                "No Movie sequence or Metastrips selected. Operation cancelled",
+            )
+            return {"FINISHED"}
 
         selection_blocks = []
         if self.individual_sequences:
@@ -57,11 +57,12 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
             selection_blocks = slice_selection(context, sequences)
 
         for sequences in selection_blocks:
-            bpy.ops.sequencer.select_all(action='DESELECT')
+            bpy.ops.sequencer.select_all(action="DESELECT")
             self.speed_effect_add(context, sequences)
 
-        self.report({"INFO"}, "Successfully processed " +
-                    str(len(selection_blocks)) + " selection blocks")
+        self.report(
+            {"INFO"}, "Successfully processed " + str(len(selection_blocks)) + " selection blocks"
+        )
         return {"FINISHED"}
 
     def speed_effect_add(self, context, sequences=[]):
@@ -78,7 +79,7 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
             bpy.ops.sequencer.meta_make()
             sequence = sequence_editor.active_strip
 
-        bpy.ops.sequencer.effect_strip_add(type='SPEED')
+        bpy.ops.sequencer.effect_strip_add(type="SPEED")
         speed_effect = sequence_editor.active_strip
         speed_effect.use_default_fade = False
         speed_effect.speed_factor = self.speed_factor
@@ -87,9 +88,9 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         sequence.frame_final_end = sequence.frame_final_start + duration
 
         sequence_editor.active_strip = sequence
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         sequence.select = True
         speed_effect.select = True
         bpy.ops.sequencer.meta_make()
 
-        sequence_editor.active_strip.name = sequence.name + " " + str(self.speed_factor) + 'x'
+        sequence_editor.active_strip.name = sequence.name + " " + str(self.speed_factor) + "x"

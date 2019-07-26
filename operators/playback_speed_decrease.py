@@ -19,18 +19,17 @@ class POWER_SEQUENCER_OT_playback_speed_decrease(bpy.types.Operator):
     Activating this operator will decrease playback speed through each
     of these steps until minimum speed is reached.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'LEFT_BRACKET', 'value': 'PRESS'}, {}, 'Decrease Playback Speed')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "LEFT_BRACKET", "value": "PRESS"}, {}, "Decrease Playback Speed")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
 
     def execute(self, context):
         scene = context.scene

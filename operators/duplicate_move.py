@@ -9,20 +9,21 @@ class POWER_SEQUENCER_OT_duplicate_move(bpy.types.Operator):
     Auto selects the strip under the mouse if nothing is selected, and calls Blender's
     Duplicate Move function
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'D', 'value': 'PRESS'}, {}, 'Duplicate Move'),
-            ({'type': 'D', 'value': 'PRESS', 'shift': True}, {}, 'Duplicate Move')
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            ({"type": "D", "value": "PRESS"}, {}, "Duplicate Move"),
+            ({"type": "D", "value": "PRESS", "shift": True}, {}, "Duplicate Move"),
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -31,11 +32,9 @@ class POWER_SEQUENCER_OT_duplicate_move(bpy.types.Operator):
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
-            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame,
-                                                            channel=channel)
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
-        bpy.ops.sequencer.duplicate_move('INVOKE_DEFAULT')
-        return {'FINISHED'}
-
+        bpy.ops.sequencer.duplicate_move("INVOKE_DEFAULT")
+        return {"FINISHED"}

@@ -18,17 +18,18 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
     longer to align. To mitigate this issue, analysis will be limited to
     the first 15 minutes of audio at most.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/xkBUzDj.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "https://i.imgur.com/xkBUzDj.gif",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -48,13 +49,13 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
             import scipy
         except ImportError:
             self.report({"ERROR"}, "Scipy must be installed to align audios")
-            return {'FINISHED'}
+            return {"FINISHED"}
 
         try:
             from .utils import is_ffmpeg_available
         except ImportError:
             self.report({"ERROR"}, "ffmpeg must be installed to align audios")
-            return {'FINISHED'}
+            return {"FINISHED"}
 
         # This import is here because it slows blender startup a little
         from .audiosync import find_offset
@@ -77,9 +78,8 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
         fps = scene.render.fps / scene.render.fps_base
         frames = int(offset * fps)
 
-        align_strip.frame_start -= (frames - initial_offset)
+        align_strip.frame_start -= frames - initial_offset
 
         self.report({"INFO"}, "Alignment score: " + str(round(score, 1)))
 
-        return {'FINISHED'}
-
+        return {"FINISHED"}

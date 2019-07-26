@@ -13,25 +13,28 @@ class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
     calls the grab operator. Allows you to quickly change the location
     of a fade transition between two strips.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/rCmLhg6.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "https://i.imgur.com/rCmLhg6.gif",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
-    crossfade_types = ['CROSS', 'GAMMA_CROSS']
+    crossfade_types = ["CROSS", "GAMMA_CROSS"]
 
     @classmethod
     def poll(cls, context):
-        return (context.scene.sequence_editor
-                and context.scene.sequence_editor.active_strip
-                and len(context.selected_sequences) > 0)
+        return (
+            context.scene.sequence_editor
+            and context.scene.sequence_editor.active_strip
+            and len(context.selected_sequences) > 0
+        )
 
     def execute(self, context):
         active = context.scene.sequence_editor.active_strip
@@ -41,14 +44,14 @@ class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
                 return {"CANCELLED"}
             active = context.scene.sequence_editor.active_strip = effect
 
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         active.select = True
         active.input_1.select_right_handle = True
         active.input_2.select_left_handle = True
         active.input_1.select = True
         active.input_2.select = True
-        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
-        return {'FINISHED'}
+        bpy.ops.transform.seq_slide("INVOKE_DEFAULT")
+        return {"FINISHED"}
 
     def find_cross_effect(self, sequence):
         """
@@ -59,8 +62,7 @@ class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
         if sequence.type not in SequenceTypes.VIDEO + SequenceTypes.IMAGE:
             return
 
-        effect_sequences = (s for s in context.sequences
-                            if s.type in SequenceTypes.EFFECT)
+        effect_sequences = (s for s in context.sequences if s.type in SequenceTypes.EFFECT)
         found_effect_strips = []
         for s in effect_sequences:
             if s.input_1.name == sequence.name:
@@ -72,4 +74,3 @@ class POWER_SEQUENCER_OT_crossfade_edit(bpy.types.Operator):
             if e.type not in self.crossfade_types:
                 continue
             return e
-

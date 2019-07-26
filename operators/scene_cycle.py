@@ -7,19 +7,18 @@ class POWER_SEQUENCER_OT_scene_cycle(bpy.types.Operator):
     """
     Cycle through scenes
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/7zhq8Tg.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'TAB', 'value': 'PRESS', 'shift': True}, {}, 'Cycle Scenes')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "https://i.imgur.com/7zhq8Tg.gif",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "TAB", "value": "PRESS", "shift": True}, {}, "Cycle Scenes")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -36,5 +35,4 @@ class POWER_SEQUENCER_OT_scene_cycle(bpy.types.Operator):
             if context.scene == scenes[index]:
                 context.window.scene = scenes[(index + 1) % scene_count]
                 break
-        return {'FINISHED'}
-
+        return {"FINISHED"}

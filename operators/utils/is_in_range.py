@@ -10,4 +10,3 @@ def is_in_range(context, sequence, start, end):
     s_start = sequence.frame_final_start
     s_end = sequence.frame_final_end
     return start <= s_start <= end or start <= s_end <= end
-

@@ -18,43 +18,50 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     Args:
     - frame_start and frame_end (int) define the frame range to trim
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'RIGHTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True},
-             {'select_mode': 'smart'},
-             'Trim strip, keep gap'),
-            ({'type': 'RIGHTMOUSE', 'value': 'PRESS', 'ctrl': True, 'alt': True, 'shift': True},
-             {'select_mode': 'cursor'},
-             'Trim strip, remove gap')
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "RIGHTMOUSE", "value": "PRESS", "ctrl": True, "alt": True},
+                {"select_mode": "smart"},
+                "Trim strip, keep gap",
+            ),
+            (
+                {"type": "RIGHTMOUSE", "value": "PRESS", "ctrl": True, "alt": True, "shift": True},
+                {"select_mode": "cursor"},
+                "Trim strip, remove gap",
+            ),
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     select_mode: bpy.props.EnumProperty(
-        items=[('mouse', 'Mouse',
-                'Only select the strip hovered by the mouse'),
-               ('cursor', 'Time cursor',
-                'Select all of the strips the time cursor overlaps'),
-               ('smart', 'Smart',
-                'Uses the selection if possible, else uses the other modes')],
+        items=[
+            ("mouse", "Mouse", "Only select the strip hovered by the mouse"),
+            ("cursor", "Time cursor", "Select all of the strips the time cursor overlaps"),
+            ("smart", "Smart", "Uses the selection if possible, else uses the other modes"),
+        ],
         name="Selection mode",
         description="Auto-select the strip you click on or that the time cursor overlaps",
-        default='smart')
+        default="smart",
+    )
     select_linked: bpy.props.BoolProperty(
         name="Use linked time",
         description="If auto-select, cut linked strips if checked",
-        default=False)
+        default=False,
+    )
     gap_remove: bpy.props.BoolProperty(
         name="Remove gaps",
         description="When trimming the sequences, remove gaps automatically",
-        default=True)
+        default=True,
+    )
 
     frame_start: bpy.props.IntProperty()
     frame_end: bpy.props.IntProperty()
@@ -69,39 +76,39 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         frame, channel = 1, 1
         if not self.frame_start or self.frame_end:
             x, y = context.region.view2d.region_to_view(
-                x=event.mouse_region_x, y=event.mouse_region_y)
+                x=event.mouse_region_x, y=event.mouse_region_y
+            )
             frame, channel = round(x), floor(y)
 
             mouse_clicked_strip = find_strips_mouse(context, frame, channel, self.select_linked)
-            if self.select_mode == 'smart' and mouse_clicked_strip:
-                self.select_mode = 'mouse'
+            if self.select_mode == "smart" and mouse_clicked_strip:
+                self.select_mode = "mouse"
             else:
-                self.select_mode = 'cursor'
+                self.select_mode = "cursor"
 
-            if self.select_mode == 'mouse':
+            if self.select_mode == "mouse":
                 if mouse_clicked_strip == []:
-                    return {'CANCELLED'}
+                    return {"CANCELLED"}
                 to_select.extend(mouse_clicked_strip)
-            if self.select_mode == 'cursor':
+            if self.select_mode == "cursor":
                 for s in context.sequences:
                     if s.frame_final_start <= frame <= s.frame_final_end:
                         to_select.append(s)
 
             selection_start, selection_end = get_frame_range(context, to_select)
             self.frame_start = frame
-            self.frame_end = (selection_end
-                              if abs(frame - selection_end) <= abs(frame - selection_start) else
-                              selection_start)
+            self.frame_end = (
+                selection_end
+                if abs(frame - selection_end) <= abs(frame - selection_start)
+                else selection_start
+            )
 
         self.to_select = [s for s in to_select if not s.lock]
-        trim_strips(context,
-                    self.frame_start, self.frame_end,
-                    self.select_mode, self.to_select)
+        trim_strips(context, self.frame_start, self.frame_end, self.select_mode, self.to_select)
 
-        if self.gap_remove and self.select_mode == 'cursor':
+        if self.gap_remove and self.select_mode == "cursor":
             context.scene.frame_current = min(self.frame_start, self.frame_end)
             bpy.ops.power_sequencer.gap_remove()
         else:
             context.scene.frame_current = self.frame_start if self.frame_start else frame
-        return {'FINISHED'}
-
+        return {"FINISHED"}

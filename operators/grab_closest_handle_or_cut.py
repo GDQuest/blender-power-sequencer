@@ -18,30 +18,32 @@ class POWER_SEQUENCER_OT_grab_closest_cut(bpy.types.Operator):
     Selects and grabs the strip handle or cut closest to the mouse cursor.
     Hover near a cut and fire this tool to slide it.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'G', 'value': 'PRESS', 'shift': True, 'alt': True},
-             {},
-             'Grab closest handle or cut')
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "G", "value": "PRESS", "shift": True, "alt": True},
+                {},
+                "Grab closest handle or cut",
+            )
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     select_linked: bpy.props.BoolProperty(
-        name="Select Linked",
-        description="Select strips that are linked in time",
-        default=True)
+        name="Select Linked", description="Select strips that are linked in time", default=True
+    )
 
     @classmethod
     def poll(cls, context):
-        return (context.sequences and len(context.sequences) > 0)
+        return context.sequences and len(context.sequences) > 0
 
     def invoke(self, context, event):
         sequencer = bpy.ops.sequencer
@@ -49,13 +51,14 @@ class POWER_SEQUENCER_OT_grab_closest_cut(bpy.types.Operator):
         mouse_x, mouse_y = event.mouse_region_x, event.mouse_region_y
         frame, channel = self.find_cut_closest_to_mouse(context, mouse_x, mouse_y)
 
-        matching_strips = [s for s in context.sequences
-                           if (abs(s.frame_final_start - frame) <= 1
-                               or abs(s.frame_final_end - frame) <= 1)]
+        matching_strips = [
+            s
+            for s in context.sequences
+            if (abs(s.frame_final_start - frame) <= 1 or abs(s.frame_final_end - frame) <= 1)
+        ]
         if not self.select_linked:
-            matching_strips = [s for s in matching_strips
-                               if s.channel == channel]
-        sequencer.select_all(action='DESELECT')
+            matching_strips = [s for s in matching_strips if s.channel == channel]
+        sequencer.select_all(action="DESELECT")
         for s in matching_strips:
             s.select = True
         return bpy.ops.power_sequencer.grab_sequence_handles(frame=frame)
@@ -73,15 +76,11 @@ class POWER_SEQUENCER_OT_grab_closest_cut(bpy.types.Operator):
 
         for s in context.sequences:
             channel_offset = s.channel + 0.5
-            start_x, start_y = view2d.view_to_region(s.frame_final_start,
-                                                     channel_offset)
-            end_x, end_y = view2d.view_to_region(s.frame_final_start,
-                                                 channel_offset)
+            start_x, start_y = view2d.view_to_region(s.frame_final_start, channel_offset)
+            end_x, end_y = view2d.view_to_region(s.frame_final_start, channel_offset)
 
-            distance_to_start = calculate_distance(start_x, start_y, mouse_x,
-                                                   mouse_y)
-            distance_to_end = calculate_distance(end_x, end_y, mouse_x,
-                                                 mouse_y)
+            distance_to_start = calculate_distance(start_x, start_y, mouse_x, mouse_y)
+            distance_to_end = calculate_distance(end_x, end_y, mouse_x, mouse_y)
 
             if distance_to_start < distance_to_closest_cut:
                 closest_cut = (start_x, start_y)
@@ -90,9 +89,6 @@ class POWER_SEQUENCER_OT_grab_closest_cut(bpy.types.Operator):
                 closest_cut = (end_x, end_y)
                 distance_to_closest_cut = distance_to_end
 
-        closest_cut_local_coords = view2d.region_to_view(
-            closest_cut[0], closest_cut[1])
-        frame, channel = round(closest_cut_local_coords[0]), floor(
-            closest_cut_local_coords[1])
+        closest_cut_local_coords = view2d.region_to_view(closest_cut[0], closest_cut[1])
+        frame, channel = (round(closest_cut_local_coords[0]), floor(closest_cut_local_coords[1]))
         return frame, channel
-

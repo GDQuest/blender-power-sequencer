@@ -7,6 +7,7 @@ from scipy.fftpack.realtransforms import dct
 from .trfbank import trfbank
 from .segment_axis import segment_axis
 
+
 def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     """Compute Mel Frequency Cepstral Coefficients.
 
@@ -45,10 +46,10 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     # radiation at the lips level)
     prefac = 0.97
 
-    #lowfreq = 400 / 3.
+    # lowfreq = 400 / 3.
     lowfreq = 133.33
-    #highfreq = 6855.4976
-    linsc = 200/3.
+    # highfreq = 6855.4976
+    linsc = 200 / 3.0
     logsc = 1.0711703
 
     nlinfil = 13
@@ -59,10 +60,10 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
 
     fbank = trfbank(fs, nfft, lowfreq, linsc, logsc, nlinfil, nlogfil)[0]
 
-    #------------------
+    # ------------------
     # Compute the MFCC
-    #------------------
-    extract = lfilter([1., -prefac], 1, input)
+    # ------------------
+    extract = lfilter([1.0, -prefac], 1, input)
     framed = segment_axis(extract, nwin, over) * w
 
     # Compute the spectrum magnitude
@@ -70,6 +71,6 @@ def mfcc(input, nwin=256, nfft=512, fs=16000, nceps=13):
     # Filter the spectrum through the triangle filterbank
     mspec = np.log10(np.dot(spec, fbank.T))
     # Use the DCT to 'compress' the coefficients (spectrum -> cepstrum domain)
-    ceps = dct(mspec, type=2, norm='ortho', axis=-1)[:, :nceps]
+    ceps = dct(mspec, type=2, norm="ortho", axis=-1)[:, :nceps]
 
     return ceps, mspec, spec

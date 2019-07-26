@@ -7,17 +7,18 @@ class POWER_SEQUENCER_OT_deselect_handles_and_grab(bpy.types.Operator):
     """
     Deselect the handles of all selected strips and call the Sequence Slide operator
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -29,6 +30,5 @@ class POWER_SEQUENCER_OT_deselect_handles_and_grab(bpy.types.Operator):
             s.select_right_handle = False
             s.select = True
 
-        bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
-        return {'FINISHED'}
-
+        bpy.ops.transform.seq_slide("INVOKE_DEFAULT")
+        return {"FINISHED"}

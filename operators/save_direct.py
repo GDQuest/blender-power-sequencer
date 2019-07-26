@@ -7,19 +7,18 @@ class POWER_SEQUENCER_OT_save_direct(bpy.types.Operator):
     """
     Saves current file without prompting for confirmation. Overrides Blender default
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'S', 'value': 'PRESS', 'ctrl': True}, {}, 'Direct Save')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "S", "value": "PRESS", "ctrl": True}, {}, "Direct Save")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -29,7 +28,6 @@ class POWER_SEQUENCER_OT_save_direct(bpy.types.Operator):
         if bpy.data.is_saved:
             bpy.ops.wm.save_mainfile()
         else:
-            bpy.ops.wm.save_as_mainfile({'dict': "override"}, 'INVOKE_DEFAULT')
-        self.report({'INFO'}, 'File saved')
+            bpy.ops.wm.save_as_mainfile({"dict": "override"}, "INVOKE_DEFAULT")
+        self.report({"INFO"}, "File saved")
         return {"FINISHED"}
-

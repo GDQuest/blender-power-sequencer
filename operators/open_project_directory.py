@@ -10,17 +10,18 @@ class POWER_SEQUENCER_OT_open_project_directory(bpy.types.Operator):
     """
     Opens the Blender project directory in file explorer
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -30,8 +31,8 @@ class POWER_SEQUENCER_OT_open_project_directory(bpy.types.Operator):
         path = os.path.split(bpy.data.filepath)[0]
 
         if not path:
-            self.report({'INFO'}, "You have to save your project first.")
-            return {'CANCELLED'}
+            self.report({"INFO"}, "You have to save your project first.")
+            return {"CANCELLED"}
 
         if system() == "Windows":
             Popen(["explorer", path])
@@ -39,5 +40,4 @@ class POWER_SEQUENCER_OT_open_project_directory(bpy.types.Operator):
             Popen(["open", path])
         else:
             Popen(["xdg-open", path])
-        return {'FINISHED'}
-
+        return {"FINISHED"}

@@ -10,34 +10,28 @@ class POWER_SEQUENCER_MT_contextual(bpy.types.Menu):
         layout = self.layout
 
         if not bpy.data.is_saved:
-            layout.label('Please save your project')
-            layout.operator(
-                'wm.save_as_mainfile', icon='SAVE_AS', text='Save as')
+            layout.label("Please save your project")
+            layout.operator("wm.save_as_mainfile", icon="SAVE_AS", text="Save as")
             return
 
         if not context.sequences:
             layout.operator(
-                'power_sequencer.import_local_footage',
-                icon='SEQUENCE',
-                text='Import local footage')
+                "power_sequencer.import_local_footage", icon="SEQUENCE", text="Import local footage"
+            )
             return
 
         selection = context.selected_sequences
         active_strip = context.scene.sequence_editor.active_strip
         types = set([s.type for s in selection])
 
-        if active_strip.type == 'GAMMA_CROSS':
+        if active_strip.type == "GAMMA_CROSS":
             layout.operator(
-                'power_sequencer.crossfade_edit',
-                icon='ACTION_TWEAK',
-                text='Edit crossfade')
+                "power_sequencer.crossfade_edit", icon="ACTION_TWEAK", text="Edit crossfade"
+            )
 
         for t in types:
             if t in SequenceTypes.VIDEO:
-                layout.operator(
-                    'power_sequencer.fade_add',
-                    icon='IMAGE_ALPHA',
-                    text='Fade strips')
+                layout.operator("power_sequencer.fade_add", icon="IMAGE_ALPHA", text="Fade strips")
                 break
 
         if len(selection) == 1:
@@ -45,9 +39,8 @@ class POWER_SEQUENCER_MT_contextual(bpy.types.Menu):
                 if s.type in SequenceTypes.VIDEO or s.type in SequenceTypes.IMAGE:
                     layout.separator()
                     layout.operator(
-                        'power_sequencer.crossfade_add',
-                        icon='IMAGE_ALPHA',
-                        text='Auto crossfade')
+                        "power_sequencer.crossfade_add", icon="IMAGE_ALPHA", text="Auto crossfade"
+                    )
                     break
 
         # TODO: Doesn't work from the menu, I guess there's an issue with the invoke method?
@@ -58,22 +51,17 @@ class POWER_SEQUENCER_MT_contextual(bpy.types.Menu):
             layout.separator()
 
             layout.operator(
-                'power_sequencer.ripple_delete',
-                icon='AUTOMERGE_ON',
-                text='Ripple delete')
+                "power_sequencer.ripple_delete", icon="AUTOMERGE_ON", text="Ripple delete"
+            )
             layout.operator(
-                'power_sequencer.snap_selection_to_cursor',
-                icon='SNAP_ON',
-                text='Snap selection')
+                "power_sequencer.snap_selection_to_cursor", icon="SNAP_ON", text="Snap selection"
+            )
 
         layout.separator()
 
         layout.operator(
-            'power_sequencer.import_local_footage',
-            icon='SEQUENCE',
-            text='Import local footage')
+            "power_sequencer.import_local_footage", icon="SEQUENCE", text="Import local footage"
+        )
         layout.operator(
-            'power_sequencer.render_video',
-            icon='RENDER_ANIMATION',
-            text='Render video for the web')
-
+            "power_sequencer.render_video", icon="RENDER_ANIMATION", text="Render video for the web"
+        )

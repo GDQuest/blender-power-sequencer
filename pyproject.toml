@@ -1,0 +1,14 @@
+[tool.black]
+line-length=100
+include = '\.py$'
+exclude = '''
+
+(
+      /(
+        \.git
+      | scripts
+    )/
+  | addon_updater.py
+  | addon_updater_ops.py
+)
+'''

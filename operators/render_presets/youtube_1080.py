@@ -8,15 +8,15 @@ bpy.context.scene.render.pixel_aspect_x = 1
 bpy.context.scene.render.pixel_aspect_y = 1
 
 # FFMPEG
-bpy.context.scene.render.image_settings.file_format = 'FFMPEG'
+bpy.context.scene.render.image_settings.file_format = "FFMPEG"
 bpy.context.scene.render.ffmpeg.format = "MPEG4"
 bpy.context.scene.render.ffmpeg.codec = "H264"
 
-bpy.context.scene.render.ffmpeg.constant_rate_factor = 'PERC_LOSSLESS'
-bpy.context.scene.render.ffmpeg.ffmpeg_preset = 'GOOD'
+bpy.context.scene.render.ffmpeg.constant_rate_factor = "PERC_LOSSLESS"
+bpy.context.scene.render.ffmpeg.ffmpeg_preset = "GOOD"
 
 
-is_ntsc = (bpy.context.scene.render.fps != 25)
+is_ntsc = bpy.context.scene.render.fps != 25
 if is_ntsc:
     bpy.context.scene.render.ffmpeg.gopsize = 18
 else:

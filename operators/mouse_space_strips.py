@@ -13,24 +13,22 @@ class POWER_SEQUENCER_OT_mouse_space_strips(bpy.types.Operator):
 
     Default shortcut: <kbd>=</kbd>
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'EQUAL', 'value': 'PRESS'}, {}, '')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "EQUAL", "value": "PRESS"}, {}, "")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     gap_to_insert: bpy.props.FloatProperty(
-        name="Duration",
-        description="The time offset to apply to the strips",
-        default=1.0)
+        name="Duration", description="The time offset to apply to the strips", default=1.0
+    )
 
     @classmethod
     def poll(cls, context):
@@ -45,8 +43,10 @@ class POWER_SEQUENCER_OT_mouse_space_strips(bpy.types.Operator):
             if s.frame_final_start >= frame:
                 strips_to_space.append(s)
 
-        sorted_strips = sorted(strips_to_space, key=operator.attrgetter('frame_start'), reverse=True)
+        sorted_strips = sorted(
+            strips_to_space, key=operator.attrgetter("frame_start"), reverse=True
+        )
 
         for s in sorted_strips:
             s.frame_start += gap_frames
-        return {'FINISHED'}
+        return {"FINISHED"}

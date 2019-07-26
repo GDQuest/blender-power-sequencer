@@ -7,29 +7,33 @@ class POWER_SEQUENCER_OT_toggle_selected_mute(bpy.types.Operator):
     """
     Mute or unmute selected sequences
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'H', 'value': 'PRESS'},
-             {'use_unselected': False},
-             'Mute or Unmute Selected Strips'),
-            ({'type': 'H', 'value': 'PRESS', 'alt': True},
-             {'use_unselected': True},
-             'Mute or Unmute Selected Strips')
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "H", "value": "PRESS"},
+                {"use_unselected": False},
+                "Mute or Unmute Selected Strips",
+            ),
+            (
+                {"type": "H", "value": "PRESS", "alt": True},
+                {"use_unselected": True},
+                "Mute or Unmute Selected Strips",
+            ),
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     use_unselected: bpy.props.BoolProperty(
-        name="Use unselected",
-        description="Toggle non selected sequences",
-        default=False)
+        name="Use unselected", description="Toggle non selected sequences", default=False
+    )
 
     @classmethod
     def poll(cls, context):
@@ -43,10 +47,9 @@ class POWER_SEQUENCER_OT_toggle_selected_mute(bpy.types.Operator):
 
         if not selection:
             self.report({"WARNING"}, "No sequences to toggle muted")
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
         mute = not selection[0].mute
         for s in selection:
             s.mute = mute
-        return {'FINISHED'}
-
+        return {"FINISHED"}

@@ -9,38 +9,41 @@ class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
     """
     Delete a crossfade strip and moves the handles of the input strips to form a cut again
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
     sequences_override = []
 
     @classmethod
     def poll(cls, context):
-        return (context.selected_sequences
-                and len([s for s in context.selected_sequences
-                         if s.type in SequenceTypes.TRANSITION]) > 0)
+        return (
+            context.selected_sequences
+            and len([s for s in context.selected_sequences if s.type in SequenceTypes.TRANSITION])
+            > 0
+        )
 
     def execute(self, context):
-        to_process = (self.sequences_override
-                      if self.sequences_override else
-                      context.selected_sequences)
-        transitions = [s for s in to_process
-                     if s.type in SequenceTypes.TRANSITION]
+        to_process = (
+            self.sequences_override if self.sequences_override else context.selected_sequences
+        )
+        transitions = [s for s in to_process if s.type in SequenceTypes.TRANSITION]
         if not transitions:
-            return {'FINISHED'}
-        bpy.ops.sequencer.select_all(action='DESELECT')
+            return {"FINISHED"}
+        bpy.ops.sequencer.select_all(action="DESELECT")
         for transition in transitions:
-            effect_middle_frame = round((transition.frame_final_start
-                                         + transition.frame_final_end) / 2)
+            effect_middle_frame = round(
+                (transition.frame_final_start + transition.frame_final_end) / 2
+            )
 
             inputs = [transition.input_1, transition.input_2]
             strips_to_edit = []
@@ -50,13 +53,12 @@ class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
                 else:
                     strips_to_edit.append(input)
 
-            strip_1 = min(strips_to_edit, key=attrgetter('frame_final_end'))
-            strip_2 = max(strips_to_edit, key=attrgetter('frame_final_end'))
+            strip_1 = min(strips_to_edit, key=attrgetter("frame_final_end"))
+            strip_2 = max(strips_to_edit, key=attrgetter("frame_final_end"))
 
             strip_1.frame_final_end = effect_middle_frame
             strip_2.frame_final_start = effect_middle_frame
 
             transition.select = True
             bpy.ops.sequencer.delete()
-        return {'FINISHED'}
-
+        return {"FINISHED"}

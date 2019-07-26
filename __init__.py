@@ -1,4 +1,4 @@
-'''
+"""
 Copyright (C) 2016-2018 Nathan Lovato, Davide Cristi, Daniel Oakey, Patrick W. Crawford,
 Razvan Radulescu, Pranav Sharma, Jooert, Blezyn
 nathan@gdquest.com
@@ -17,7 +17,7 @@ Created by Nathan Lovato
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 import bpy
 
 from . import addon_updater_ops
@@ -47,7 +47,7 @@ bl_info = {
     "tracker_url": "https://github.com/GDquest/Blender-power-sequencer/issues",
     "wiki_url": "https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI",
     "support": "COMMUNITY",
-    "category": "Sequencer"
+    "category": "Sequencer",
 }
 
 

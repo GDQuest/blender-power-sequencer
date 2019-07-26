@@ -12,7 +12,7 @@ def doc_idname(s):
     """
     Returns the id_name of the operator to register shortcuts in Blender's keymaps or call from other operators.
     """
-    out = '.'.join(map(str.lower, s.split('_OT_')))
+    out = ".".join(map(str.lower, s.split("_OT_")))
     return out
 
 
@@ -22,7 +22,7 @@ def doc_name(s):
     Removes POWER_SEQUENCER_OT_ from an operator's identifier
     and converts it to title case.
     """
-    out = s.split('_OT')[-1]
+    out = s.split("_OT")[-1]
     out = out.replace("_", " ").lstrip().title()
     return out
 
@@ -32,12 +32,11 @@ def doc_brief(s):
     Returns the first line of an operator's docstring to use as a summary of how the operator works.
     The line in question must contain *brief*.
     """
-    return ' '.join(s.split('\n\n')[0].split()[1:]) if s.startswith('*brief*') else s
+    return " ".join(s.split("\n\n")[0].split()[1:]) if s.startswith("*brief*") else s
 
 
 def doc_description(s):
     """
     Returns the lines after the brief line in an operator's documentation strings. See doc_brief above.
     """
-    return '\n'.join(map(lambda x: x.strip(), s.split('\n'))).strip()
-
+    return "\n".join(map(lambda x: x.strip(), s.split("\n"))).strip()

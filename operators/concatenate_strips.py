@@ -11,8 +11,7 @@ def find_sequences_before(context, strip):
     """
     Returns a list of sequences that are before the strip in the current context
     """
-    return [s for s in context.sequences
-            if s.frame_final_end <= strip.frame_final_start]
+    return [s for s in context.sequences if s.frame_final_end <= strip.frame_final_start]
 
 
 class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
@@ -23,51 +22,65 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
     strip is selected, either the next strip in the channel will be concatenated, or all
     strips in the channel will be concatenated depending on which shortcut is used.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': 'https://i.imgur.com/YyEL8YP.gif',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'C', 'value': 'PRESS'},
-             {'concatenate_all': False, 'direction': 'left'},
-             ('Concatenate selected strips in channel, or'
-              ' concatenate & select next strip in channel if only'
-              ' 1 strip selected')),
-            ({'type': 'C', 'value': 'PRESS', 'shift': True},
-             {'concatenate_all': True, 'direction': 'left'},
-             'Concatenate all strips in selected channels'),
-            ({'type': 'C', 'value': 'PRESS', 'alt': True},
-             {'concatenate_all': False, 'direction': 'right'},
-             ('Concatenate selected strips in channel'
-              ' towards the right, or concatenate and select'
-              ' the previous strip in the channel if only 1'
-              ' strip selected')),
-            ({'type': 'C', 'value': 'PRESS', 'shift': True, 'alt': True},
-             {'concatenate_all': True, 'direction': 'right'},
-             'Shift Alt C; Concatenate all strips in channel towards the right')
+        "name": doc_name(__qualname__),
+        "demo": "https://i.imgur.com/YyEL8YP.gif",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "C", "value": "PRESS"},
+                {"concatenate_all": False, "direction": "left"},
+                (
+                    "Concatenate selected strips in channel, or"
+                    " concatenate & select next strip in channel if only"
+                    " 1 strip selected"
+                ),
+            ),
+            (
+                {"type": "C", "value": "PRESS", "shift": True},
+                {"concatenate_all": True, "direction": "left"},
+                "Concatenate all strips in selected channels",
+            ),
+            (
+                {"type": "C", "value": "PRESS", "alt": True},
+                {"concatenate_all": False, "direction": "right"},
+                (
+                    "Concatenate selected strips in channel"
+                    " towards the right, or concatenate and select"
+                    " the previous strip in the channel if only 1"
+                    " strip selected"
+                ),
+            ),
+            (
+                {"type": "C", "value": "PRESS", "shift": True, "alt": True},
+                {"concatenate_all": True, "direction": "right"},
+                "Shift Alt C; Concatenate all strips in channel towards the right",
+            ),
         ],
-        'keymap': 'Sequencer'
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     frame, channel = -1, -1
 
     concatenate_all: bpy.props.BoolProperty(
         name="Concatenate all strips in channel",
-        description=("If only one strip selected, concatenate"
-                     " the entire channel"),
-        default=False)
+        description=("If only one strip selected, concatenate" " the entire channel"),
+        default=False,
+    )
     direction: bpy.props.EnumProperty(
         name="Direction",
-        description=("Concatenate strips moving them back in time (default)"
-                     " or forward in time"),
-        items=[('left', "Left", "Move strips back in time, to the left"),
-               ('right', "Right",
-                "Move strips forward in time, to the right")],
-        default='left')
+        description=("Concatenate strips moving them back in time (default)" " or forward in time"),
+        items=[
+            ("left", "Left", "Move strips back in time, to the left"),
+            ("right", "Right", "Move strips forward in time, to the right"),
+        ],
+        default="left",
+    )
 
     @classmethod
     def poll(cls, context):
@@ -76,8 +89,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
-            bpy.ops.power_sequencer.select_closest_to_mouse(
-                frame=frame, channel=channel)
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
@@ -89,28 +101,35 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         # Loop over each strip and detect which strips to concatenate
         if len(channels) == len(selection):
             for s in selection:
-                if self.direction == 'right':
-                    in_channel = [strip for strip in find_sequences_before(context, s)
-                                  if strip.channel == s.channel]
+                if self.direction == "right":
+                    in_channel = [
+                        strip
+                        for strip in find_sequences_before(context, s)
+                        if strip.channel == s.channel
+                    ]
                 else:
-                    in_channel = [strip for strip in find_sequences_after(context, s)
-                                  if strip.channel == s.channel]
+                    in_channel = [
+                        strip
+                        for strip in find_sequences_after(context, s)
+                        if strip.channel == s.channel
+                    ]
                 in_channel.append(s)
-                to_concatenate = [strip for strip in in_channel
-                                  if strip.type in SequenceTypes.CUTABLE]
+                to_concatenate = [
+                    strip for strip in in_channel if strip.type in SequenceTypes.CUTABLE
+                ]
 
-                if self.direction == 'right':
+                if self.direction == "right":
                     self.concatenate_right(to_concatenate, one_strip_only)
                 else:
                     self.concatenate_left(to_concatenate, one_strip_only)
         else:
             for channel in channels:
                 to_concatenate = [s for s in selection if s.channel == channel]
-                if self.direction == 'right':
+                if self.direction == "right":
                     self.concatenate_right(to_concatenate)
                 else:
                     self.concatenate_left(to_concatenate)
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def concatenate_left(self, sequences, one_strip_only=False):
         """
@@ -119,8 +138,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         """
         if len(sequences) <= 1:
             return
-        sorted_sequences = sorted(
-            sequences, key=attrgetter('frame_final_start'))
+        sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start"))
         first_strip = sorted_sequences[0]
         if self.concatenate_all or not one_strip_only:
             to_concatenate = sorted_sequences[1:]
@@ -149,8 +167,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         """
         if len(sequences) <= 1:
             return
-        sorted_sequences = sorted(sequences,
-                                  key=attrgetter('frame_final_start'))
+        sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start"))
         last_strip = sorted_sequences.pop()
         if self.concatenate_all or not one_strip_only:
             to_concatenate = sorted_sequences
@@ -172,4 +189,3 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
             last_gap = gap
             s.frame_start -= gap
             concatenate_start = s.frame_final_start
-

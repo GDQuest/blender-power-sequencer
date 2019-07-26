@@ -5,6 +5,5 @@ from operator import attrgetter
 
 
 def find_gaps(context, sequences):
-    sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start', 'frame_final_end'))
+    sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start", "frame_final_end"))
     # Detect disconnected sequence blocks, starting from first frame in the sequencer
-

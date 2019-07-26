@@ -13,7 +13,7 @@ from .cross_correlation import cross_correlation
 from .ensure_non_zero import ensure_non_zero
 
 
-def find_offset(file1, file2, freq=8000, trim=60*15, correl_nframes=1000):
+def find_offset(file1, file2, freq=8000, trim=60 * 15, correl_nframes=1000):
     """
     Determine the offset (in seconds) between 2 audio files
 

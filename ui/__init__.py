@@ -19,7 +19,7 @@ from .menu_toolbar import (
     POWER_SEQUENCER_MT_mouse,
     POWER_SEQUENCER_MT_preview,
     POWER_SEQUENCER_MT_audio,
-    POWER_SEQUENCER_MT_crossfade
+    POWER_SEQUENCER_MT_crossfade,
 )
 
 classes = [
@@ -42,7 +42,7 @@ classes = [
     POWER_SEQUENCER_MT_mouse,
     POWER_SEQUENCER_MT_preview,
     POWER_SEQUENCER_MT_audio,
-    POWER_SEQUENCER_MT_crossfade
+    POWER_SEQUENCER_MT_crossfade,
 ]
 
 register_ui, unregister_ui = bpy.utils.register_classes_factory(classes)

@@ -15,7 +15,7 @@ def slice_selection(context, sequences):
         return []
 
     break_ids = [0]
-    sorted_sequences = sorted(sequences, key=attrgetter('frame_final_start'))
+    sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start"))
     last_sequence = sorted_sequences[0]
     last_biggest_frame_end = last_sequence.frame_final_end
     index = 0
@@ -43,4 +43,3 @@ def slice_selection(context, sequences):
             broken_selection.append(temp_list)
         index += 1
     return broken_selection
-

@@ -12,23 +12,26 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
     Find and select effects related to the selection, but also inputs of selected effects.
     This helps to then copy or duplicate strips with all attached effects.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     find_all: bpy.props.BoolProperty(
         name="Find All",
-        description=("Find all related strips recursively so that you can copy the selection"
-                     " without getting an error from Blender"),
-        default=True
+        description=(
+            "Find all related strips recursively so that you can copy the selection"
+            " without getting an error from Blender"
+        ),
+        default=True,
     )
 
     @classmethod
@@ -43,8 +46,7 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
         else:
             related_strips = []
             # Only select direct neighbours and attached effects
-            effects = [s for s in context.sequences
-                       if s.type in SequenceTypes.EFFECT]
+            effects = [s for s in context.sequences if s.type in SequenceTypes.EFFECT]
             found_effects = self.find_related_effects(context.selected_sequences, effects)
             related_strips.extend(found_effects)
             while len(found_effects) > 0:
@@ -52,7 +54,7 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
                 related_strips.extend(found_effects)
         for s in related_strips:
             s.select = True
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def find_neighbours_recursive(self, visited, strip, context):
         """
@@ -86,7 +88,7 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
         init_selected_strips = [s for s in context.selected_sequences]
 
         neighbours = []
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         strip.select = True
         bpy.ops.transform.seq_slide(value=(0, 0))
         strip.select = False
@@ -99,7 +101,7 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
         except Exception:
             pass
 
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         for s in init_selected_strips:
             s.select = True
 
@@ -120,4 +122,3 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
                 except Exception:
                     continue
         return found
-

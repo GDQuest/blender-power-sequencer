@@ -8,19 +8,18 @@ class POWER_SEQUENCER_OT_select_linked_strips(bpy.types.Operator):
     Add/Remove linked strips near mouse pointer to/from selection without the need to
     previously have clicked/manually selected
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'L', 'value': 'PRESS'}, {}, 'Add/Remove Linked to/from Selection')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "L", "value": "PRESS"}, {}, "Add/Remove Linked to/from Selection")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -34,12 +33,12 @@ class POWER_SEQUENCER_OT_select_linked_strips(bpy.types.Operator):
         bpy.ops.sequencer.select_linked()
         selection_new = set(context.selected_sequences).difference(selection)
         # deselect & select only the linked strips near mouse pointer
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         # re-enable linked + add selection near mouse pointer
         for s in selection_new:
             s.select = True
         bpy.ops.sequencer.select_linked()
-        bpy.ops.sequencer.select_linked_pick('INVOKE_DEFAULT', extend=True)
+        bpy.ops.sequencer.select_linked_pick("INVOKE_DEFAULT", extend=True)
         selection_new = set(context.selected_sequences)
 
         # identify if linked strips under mouse pointer need to be added or removed
@@ -52,5 +51,4 @@ class POWER_SEQUENCER_OT_select_linked_strips(bpy.types.Operator):
         # take care of toggle for strips under mouse
         for s in selection_new:
             s.select = action
-        return {'FINISHED'}
-
+        return {"FINISHED"}

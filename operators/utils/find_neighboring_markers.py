@@ -6,7 +6,8 @@ def find_neighboring_markers(context, frame=None):
         return None, None
 
     from operator import attrgetter
-    markers = sorted(markers, key=attrgetter('frame'))
+
+    markers = sorted(markers, key=attrgetter("frame"))
 
     previous_marker, next_marker = None, None
     for m in markers:
@@ -16,4 +17,3 @@ def find_neighboring_markers(context, frame=None):
             break
 
     return previous_marker, next_marker
-

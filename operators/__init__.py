@@ -69,7 +69,6 @@ classes = [
     POWER_SEQUENCER_OT_speed_up_movie_strip,
     POWER_SEQUENCER_OT_add_transform,
     POWER_SEQUENCER_OT_align_audios,
-
     POWER_SEQUENCER_OT_playback_speed_set,
     POWER_SEQUENCER_OT_channel_offset,
     POWER_SEQUENCER_OT_concatenate_strips,
@@ -132,17 +131,15 @@ classes = [
     POWER_SEQUENCER_OT_toggle_selected_mute,
     POWER_SEQUENCER_OT_toggle_waveforms,
     POWER_SEQUENCER_OT_trim_three_point_edit,
-    POWER_SEQUENCER_OT_trim_to_surrounding_cuts
+    POWER_SEQUENCER_OT_trim_to_surrounding_cuts,
 ]
 
 doc = {
-    'sequencer.refresh_all': {
-        'name': 'Refresh All',
-        'description': '',
-        'shortcuts': [
-            ({'type': 'R', 'value': 'PRESS', 'shift': True}, {}, 'Refresh All')
-        ],
-        'demo': '',
-        'keymap': 'Sequencer'
+    "sequencer.refresh_all": {
+        "name": "Refresh All",
+        "description": "",
+        "shortcuts": [({"type": "R", "value": "PRESS", "shift": True}, {}, "Refresh All")],
+        "demo": "",
+        "keymap": "Sequencer",
     }
 }

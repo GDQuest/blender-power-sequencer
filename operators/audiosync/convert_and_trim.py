@@ -17,22 +17,29 @@ def convert_and_trim(audio_filepath, freq, dur):
         :outpath: path to the output wav file
     """
 
-    tmp = tempfile.NamedTemporaryFile(
-        mode='r+b', prefix='offset_', suffix='.wav')
+    tmp = tempfile.NamedTemporaryFile(mode="r+b", prefix="offset_", suffix=".wav")
     outpath = tmp.name
     tmp.close()
 
     channel_count = "1"
 
-    subprocess.call([
-        'ffmpeg',
-        '-loglevel', 'panic',
-        '-i', audio_filepath,
-        '-ac', channel_count,
-        '-ar', str(freq),
-        '-t', str(dur),
-        '-acodec', 'pcm_s16le',
-        outpath
-    ])
+    subprocess.call(
+        [
+            "ffmpeg",
+            "-loglevel",
+            "panic",
+            "-i",
+            audio_filepath,
+            "-ac",
+            channel_count,
+            "-ar",
+            str(freq),
+            "-t",
+            str(dur),
+            "-acodec",
+            "pcm_s16le",
+            outpath,
+        ]
+    )
 
     return outpath

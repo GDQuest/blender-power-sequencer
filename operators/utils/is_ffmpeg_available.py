@@ -10,12 +10,8 @@ def is_ffmpeg_available():
     bool
     """
     try:
-        subprocess.call(
-            ['ffmpeg', '--help'],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE)
+        subprocess.call(["ffmpeg", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return True
 
     except OSError:
         return False
-

@@ -12,19 +12,20 @@ class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
 
     The marker and strip names have to start with TITLE-001
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
-    TITLE_REGEX = r'^TITLE-?([0-9]+)-?'
+    TITLE_REGEX = r"^TITLE-?([0-9]+)-?"
 
     @classmethod
     def poll(cls, context):
@@ -38,19 +39,17 @@ class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
             if not markers:
                 self.report({"INFO"}, "No markers, operation cancelled.")
             else:
-                self.report({"INFO"},
-                            "No sequences selected, operation cancelled.")
+                self.report({"INFO"}, "No sequences selected, operation cancelled.")
             return {"CANCELLED"}
 
         title_markers = self.find_markers(context, self.TITLE_REGEX)
         if not title_markers:
-            self.report({"INFO"},
-                        "No title markers found, operation cancelled.")
+            self.report({"INFO"}, "No title markers found, operation cancelled.")
 
         matched = self.match_sequences_and_markers(selection, title_markers, self.TITLE_REGEX)
         for s, m in matched:
             s.frame_start = m.frame
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def match_sequences_and_markers(self, sequences, markers, regex):
         """Takes a list of sequences, of markers, and checks if they both
@@ -62,10 +61,11 @@ class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
             - markers, a list of markers
             - regex, the regular expression to match"""
         if not sequences and markers and regex:
-            raise AttributeError('missing attributes')
+            raise AttributeError("missing attributes")
 
         import re
         from .utils.global_settings import SequenceTypes
+
         sequences = (s for s in sequences if s.type not in SequenceTypes.EFFECT)
 
         return_list = []
@@ -86,11 +86,11 @@ class POWER_SEQUENCER_OT_synchronize_titles(bpy.types.Operator):
         Args:
             - regex, the re match pattern to use"""
         if not regex:
-            raise AttributeError('regex parameter missing')
+            raise AttributeError("regex parameter missing")
 
         import re
+
         regex = re.compile(regex)
         markers = context.scene.timeline_markers
         markers = (m for m in markers if regex.match(m.name))
         return markers
-

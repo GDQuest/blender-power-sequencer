@@ -11,28 +11,29 @@ class POWER_SEQUENCER_OT_meta_resize_to_content(bpy.types.Operator):
 
     Use it to trim a metastrip quickly
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         try:
-            next(s for s in context.selected_sequences if s.type == 'META')
+            next(s for s in context.selected_sequences if s.type == "META")
         except StopIteration:
             return False
         return context.sequences
 
     def execute(self, context):
-        selected_meta_strips = (s for s in context.selected_sequences if s.type == 'META')
+        selected_meta_strips = (s for s in context.selected_sequences if s.type == "META")
         for s in selected_meta_strips:
             s.frame_final_start, s.frame_final_end = get_frame_range(context, s.sequences)
-        return {'FINISHED'}
+        return {"FINISHED"}

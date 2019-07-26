@@ -7,40 +7,42 @@ class POWER_SEQUENCER_OT_meta_ungroup_and_trim(bpy.types.Operator):
     """
     UnMeta all selected meta strips and trim their content
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     trim_content: bpy.props.BoolProperty(
         name="Trim Content",
         description="Trim the content of the Meta Strips to their extents",
-        default=True)
+        default=True,
+    )
 
     @classmethod
     def poll(cls, context):
         try:
-            next(s for s in context.selected_sequences if s.type == 'META')
+            next(s for s in context.selected_sequences if s.type == "META")
             return context.selected_sequences
         except StopIteration:
             return False
 
     def execute(self, context):
-        meta_strips = [s for s in context.selected_sequences if s.type == 'META']
+        meta_strips = [s for s in context.selected_sequences if s.type == "META"]
         if self.trim_content:
             bpy.ops.power_sequencer.meta_trim_content_to_bounds()
         self.separate(context, meta_strips)
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def separate(self, context, meta_strips):
-        bpy.ops.sequencer.select_all(action='DESELECT')
+        bpy.ops.sequencer.select_all(action="DESELECT")
         for m in meta_strips:
             context.scene.sequence_editor.active_strip = m
             bpy.ops.sequencer.meta_separate()

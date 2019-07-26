@@ -19,18 +19,17 @@ class POWER_SEQUENCER_OT_playback_speed_increase(bpy.types.Operator):
     Activating this operator will increase playback speed through each
     of these steps until maximum speed is reached.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'RIGHT_BRACKET', 'value': 'PRESS'}, {}, 'Increase playback speed')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "RIGHT_BRACKET", "value": "PRESS"}, {}, "Increase playback speed")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
 
     def execute(self, context):
         scene = context.scene

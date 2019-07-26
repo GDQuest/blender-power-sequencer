@@ -23,7 +23,7 @@ def find_linked(context, sequences, selected_sequences):
     # Filter down to effects that have at least one of seq as input and
     # Append input sequences that aren't in the source list to linked_sequences
     for e in effects:
-        if not hasattr(e, 'input_2'):
+        if not hasattr(e, "input_2"):
             continue
         for s in sequences:
             if e.input_2 == s:
@@ -47,4 +47,3 @@ def find_linked(context, sequences, selected_sequences):
             continue
 
     return linked_sequences
-

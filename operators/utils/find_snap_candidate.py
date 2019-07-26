@@ -11,12 +11,13 @@ def find_snap_candidate(context, frame=0):
         distance_to_start = abs(start_to_frame)
         distance_to_end = abs(end_to_frame)
 
-        candidate = (frame - start_to_frame
-                     if min(distance_to_start, distance_to_end) == distance_to_start
-                     else frame - end_to_frame)
+        candidate = (
+            frame - start_to_frame
+            if min(distance_to_start, distance_to_end) == distance_to_start
+            else frame - end_to_frame
+        )
 
         if abs(frame - candidate) < abs(frame - snap_candidate):
             snap_candidate = candidate
 
     return snap_candidate
-

@@ -15,19 +15,18 @@ class POWER_SEQUENCER_OT_grab(bpy.types.Operator):
     one or multiple crossfades, selects the handles on either side of the
     crossfades before moving sequences, using POWER_SEQUENCER_OT_crossfade_edit
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'G', 'value': 'PRESS'}, {}, '')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "G", "value": "PRESS"}, {}, "")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
@@ -36,15 +35,12 @@ class POWER_SEQUENCER_OT_grab(bpy.types.Operator):
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)
         if not context.selected_sequences:
-            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame,
-                                                            channel=channel)
+            bpy.ops.power_sequencer.select_closest_to_mouse(frame=frame, channel=channel)
         return self.execute(context)
 
     def execute(self, context):
         first_sequence = context.selected_sequences[0]
-        if len(context.selected_sequences) == 1 \
-           and first_sequence.type in SequenceTypes.TRANSITION:
+        if len(context.selected_sequences) == 1 and first_sequence.type in SequenceTypes.TRANSITION:
             context.scene.sequence_editor.active_strip = first_sequence
             return bpy.ops.power_sequencer.crossfade_edit()
-        return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
-
+        return bpy.ops.transform.seq_slide("INVOKE_DEFAULT")

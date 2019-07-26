@@ -14,24 +14,23 @@ class POWER_SEQUENCER_OT_add_transform(bpy.types.Operator):
     * Centers the pivot point of image strips
     * Adds a transform effect and sets it to ALPHA_OVER
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'T', 'value': 'PRESS'}, {}, 'Add Transform')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "T", "value": "PRESS"}, {}, "Add Transform")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     @classmethod
     def poll(cls, context):
         try:
-            next((s for s in context.selected_sequences if s.type in ('IMAGE', 'MOVIE')))
+            next((s for s in context.selected_sequences if s.type in ("IMAGE", "MOVIE")))
             return True
         except (StopIteration, TypeError):
             return False
@@ -42,26 +41,24 @@ class POWER_SEQUENCER_OT_add_transform(bpy.types.Operator):
         render = context.scene.render
 
         selection = context.selected_sequences
-        selection = [s for s in selection if s.type in ('IMAGE', 'MOVIE')]
+        selection = [s for s in selection if s.type in ("IMAGE", "MOVIE")]
         if not selection:
-            self.report({"ERROR_INVALID_INPUT"},
-                        "No sequences movie or image strips selected")
-            return {'CANCELLED'}
+            self.report({"ERROR_INVALID_INPUT"}, "No sequences movie or image strips selected")
+            return {"CANCELLED"}
 
         transform_strips = []
-        sequencer.select_all(action='DESELECT')
-        image_strips = [s for s in selection if s.type == 'IMAGE']
+        sequencer.select_all(action="DESELECT")
+        image_strips = [s for s in selection if s.type == "IMAGE"]
 
         # Center image strips pivot
         for s in image_strips:
-            if s.use_translation and (s.transform.offset_x != 0 or
-                                      s.transform.offset_y != 0):
+            if s.use_translation and (s.transform.offset_x != 0 or s.transform.offset_y != 0):
                 continue
 
             image_width = s.elements[0].orig_width
             image_height = s.elements[0].orig_height
             if image_width == 0 or image_height == 0:
-                raise ValueError('image_height or image_width is 0')
+                raise ValueError("image_height or image_width is 0")
 
             # image_ratio = image_width / image_height
             # render_ratio = render.resolution_x / render.resolution_y
@@ -76,11 +73,11 @@ class POWER_SEQUENCER_OT_add_transform(bpy.types.Operator):
         # Add a transform effect to all selected MOVIE and IMAGE strips
         for s in selection:
             sequence_editor.active_strip = s
-            sequencer.effect_strip_add(type='TRANSFORM')
+            sequencer.effect_strip_add(type="TRANSFORM")
 
             active = sequence_editor.active_strip
             active.name = "TRANSFORM-{!s}".format(s.name)
-            active.blend_type = 'ALPHA_OVER'
+            active.blend_type = "ALPHA_OVER"
             transform_strips.append(active)
             active.select = False
             s.mute = True
@@ -91,7 +88,5 @@ class POWER_SEQUENCER_OT_add_transform(bpy.types.Operator):
         for s in selection:
             s.select = True
         sequence_editor.active_strip = transform_strips[0]
-        self.report({"INFO"}, "Successfully processed " + str(len(selection)) +
-                    " image sequences")
-        return {'FINISHED'}
-
+        self.report({"INFO"}, "Successfully processed " + str(len(selection)) + " image sequences")
+        return {"FINISHED"}

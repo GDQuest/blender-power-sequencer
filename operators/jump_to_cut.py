@@ -12,30 +12,38 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
     Jump to the next or the previous cut in the edit.  Unlike Blender's default tool, also
     works during playback.
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'UP_ARROW', 'value': 'PRESS'},
-             {'direction': 'RIGHT'},
-             'Jump to next cut or keyframe'),
-            ({'type': 'DOWN_ARROW', 'value': 'PRESS'},
-             {'direction': 'LEFT'},
-             'Jump to previous cut or keyframe'),
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [
+            (
+                {"type": "UP_ARROW", "value": "PRESS"},
+                {"direction": "RIGHT"},
+                "Jump to next cut or keyframe",
+            ),
+            (
+                {"type": "DOWN_ARROW", "value": "PRESS"},
+                {"direction": "LEFT"},
+                "Jump to previous cut or keyframe",
+            ),
         ],
-        'keymap': 'Frames'
+        "keymap": "Frames",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     direction: bpy.props.EnumProperty(
         name="Direction",
         description="Jump direction, either forward or backward",
-        items=[('RIGHT', "Forward", "Jump forward in time"),
-               ('LEFT', "Backward", "Jump backward in time")])
+        items=[
+            ("RIGHT", "Forward", "Jump forward in time"),
+            ("LEFT", "Backward", "Jump backward in time"),
+        ],
+    )
 
     @classmethod
     def poll(cls, context):
@@ -43,22 +51,24 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
 
     def execute(self, context):
         frame_current = context.scene.frame_current
-        sorted_sequences = sorted(context.sequences,
-                                  key=attrgetter('frame_final_start', 'frame_final_end'))
-
+        sorted_sequences = sorted(
+            context.sequences, key=attrgetter("frame_final_start", "frame_final_end")
+        )
 
         fcurves = []
         if context.scene.animation_data.action:
             fcurves = context.scene.animation_data.action.fcurves
 
         frame_target = -1
-        if self.direction == 'RIGHT':
+        if self.direction == "RIGHT":
             sequences = [s for s in sorted_sequences if s.frame_final_end > frame_current]
             for s in sequences:
 
-                frame_target = (s.frame_final_end
-                                if s.frame_final_start <= frame_current else
-                                s.frame_final_start)
+                frame_target = (
+                    s.frame_final_end
+                    if s.frame_final_start <= frame_current
+                    else s.frame_final_start
+                )
 
                 for f in fcurves:
                     for k in f.keyframe_points:
@@ -68,13 +78,15 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
                         frame_target = min(frame_target, frame)
                 break
 
-        elif self.direction == 'LEFT':
-            sequences = [s for s in reversed(sorted_sequences) if s.frame_final_start < frame_current]
+        elif self.direction == "LEFT":
+            sequences = [
+                s for s in reversed(sorted_sequences) if s.frame_final_start < frame_current
+            ]
             for s in sequences:
 
-                frame_target = (s.frame_final_start
-                                if s.frame_final_end >= frame_current else
-                                s.frame_final_end)
+                frame_target = (
+                    s.frame_final_start if s.frame_final_end >= frame_current else s.frame_final_end
+                )
 
                 for f in fcurves:
                     for k in f.keyframe_points:
@@ -87,4 +99,4 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
         if frame_target != -1:
             context.scene.frame_current = max(1, frame_target)
 
-        return {'FINISHED'}
+        return {"FINISHED"}

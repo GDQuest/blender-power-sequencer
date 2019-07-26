@@ -14,53 +14,56 @@ class POWER_SEQUENCER_OT_preview_closest_cut(bpy.types.Operator):
     Finds the closest cut to the time cursor and sets the preview to a small range around that
     frame. If the preview matches the range, resets to the full timeline
     """
+
     doc = {
-        'name': doc_name(__qualname__),
-        'demo': '',
-        'description': doc_description(__doc__),
-        'shortcuts': [
-            ({'type': 'P', 'value': 'PRESS', 'shift': True}, {}, 'Preview Last Cut')
-        ],
-        'keymap': 'Sequencer'
+        "name": doc_name(__qualname__),
+        "demo": "",
+        "description": doc_description(__doc__),
+        "shortcuts": [({"type": "P", "value": "PRESS", "shift": True}, {}, "Preview Last Cut")],
+        "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
-    bl_label = doc['name']
-    bl_description = doc_brief(doc['description'])
-    bl_options = {'REGISTER', 'UNDO'}
+    bl_label = doc["name"]
+    bl_description = doc_brief(doc["description"])
+    bl_options = {"REGISTER", "UNDO"}
 
     duration: bpy.props.FloatProperty(
         name="Preview duration",
         description="Total duration of the preview, in seconds",
         default=1.0,
-        min=0.1)
+        min=0.1,
+    )
     cut_frame_override: bpy.props.IntProperty(
         name="Cut Frame Override",
         description="Force to preview around this frame",
         default=0,
         min=0,
-        options={'HIDDEN'})
+        options={"HIDDEN"},
+    )
 
     @classmethod
     def poll(cls, context):
-        return (context.sequences and len(context.sequences) > 0)
+        return context.sequences and len(context.sequences) > 0
 
     def execute(self, context):
         scene = context.scene
 
-        preview_center = (self.find_closest_cut_frame(context)
-                          if not self.cut_frame_override else
-                          self.cut_frame_override)
+        preview_center = (
+            self.find_closest_cut_frame(context)
+            if not self.cut_frame_override
+            else self.cut_frame_override
+        )
 
         duration_frame = convert_duration_to_frames(context, self.duration)
         start = preview_center - duration_frame / 2
         end = preview_center + duration_frame / 2
         if not (preview_center > 1 and start > 1):
-            return {'CANCELLED'}
+            return {"CANCELLED"}
 
         if scene.frame_preview_start == start and scene.frame_preview_end == end:
             start, end = get_frame_range(context, context.sequences)
         set_preview_range(context, start, end)
-        return {'FINISHED'}
+        return {"FINISHED"}
 
     def find_closest_cut_frame(self, context):
         last_distance = 100000

@@ -11,7 +11,7 @@ class PowerSequencerPreferences(bpy.types.AddonPreferences):
         subtype="DIR_PATH",
         name="Video render folder",
         description="Relative folder to save videos rendered with the add-on",
-        default=""
+        default="",
     )
 
     # addon updater preferences
@@ -21,31 +21,28 @@ class PowerSequencerPreferences(bpy.types.AddonPreferences):
         default=True,
     )
     updater_intrval_months: bpy.props.IntProperty(
-        name='Months',
-        description="Number of months between checking for updates",
-        default=0,
-        min=0
+        name="Months", description="Number of months between checking for updates", default=0, min=0
     )
     updater_intrval_days: bpy.props.IntProperty(
-        name='Days',
+        name="Days",
         description="Number of days between checking for updates",
         default=1,
         min=0,
-        max=31
+        max=31,
     )
     updater_intrval_hours: bpy.props.IntProperty(
-        name='Hours',
+        name="Hours",
         description="Number of hours between checking for updates",
         default=0,
         min=0,
-        max=23
+        max=23,
     )
     updater_intrval_minutes: bpy.props.IntProperty(
-        name='Minutes',
+        name="Minutes",
         description="Number of minutes between checking for updates",
         default=0,
         min=0,
-        max=59
+        max=59,
     )
 
     def draw(self, context):
