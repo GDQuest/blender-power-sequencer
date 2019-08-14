@@ -111,4 +111,15 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             bpy.ops.power_sequencer.gap_remove()
         else:
             context.scene.frame_current = self.frame_start if self.frame_start else frame
+
+
+        # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
+        for s in bpy.context.sequences:
+            if s.lock:
+                continue
+            s.select = True
+            bpy.ops.transform.seq_slide(value=(0, 0))
+            s.select = False
+            break
+
         return {"FINISHED"}

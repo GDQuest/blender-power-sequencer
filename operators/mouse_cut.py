@@ -124,26 +124,20 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             context.scene.use_audio_scrub = self.use_audio_scrub
             return {"CANCELLED"}
 
-        # # Toggle cursor select mode
-        # if event.type in ['LEFT_SHIFT', 'RIGHT_SHIFT']:
-        #     if event.value == 'PRESS' and self.event_shift_released:
-        #         self.event_shift_released = False
-        #         self.select_mode = 'contextual' if self.select_mode == 'cursor' else 'cursor'
-        #     elif event.value == 'RELEASE' and not self.event_shift_released:
-        #         self.event_shift_released = True
-
-        # # Toggle remove gaps
-        # if event.type in ['LEFT_ALT', 'RIGHT_SHIFT']:
-        #     if event.value == 'PRESS' and self.event_alt_released:
-        #         self.event_alt_released = False
-        #         self.gap_remove = not self.gap_remove
-        #     elif event.value == 'RELEASE' and not self.event_alt_released:
-        #         self.event_alt_released = True
-
         # Start and end trim
         if event.type == "LEFTMOUSE" or (event.type in ["RET", "T"] and event.value == "PRESS"):
             self.trim_apply(context, event)
             self.draw_stop()
+
+            # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
+            for s in bpy.context.sequences:
+                if s.lock:
+                    continue
+                s.select = True
+                bpy.ops.transform.seq_slide(value=(0, 0))
+                s.select = False
+                break
+
             context.scene.use_audio_scrub = self.use_audio_scrub
             return {"FINISHED"}
 

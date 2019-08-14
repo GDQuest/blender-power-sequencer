@@ -106,6 +106,15 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             context.scene.frame_current = frame_to_remove_gap
             bpy.ops.power_sequencer.gap_remove()
             context.scene.frame_current = trim_start
+
+        # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
+        for s in bpy.context.sequences:
+            if s.lock:
+                continue
+            s.select = True
+            bpy.ops.transform.seq_slide(value=(0, 0))
+            s.select = False
+            break
         return {"FINISHED"}
 
     def find_strips_in_range(
