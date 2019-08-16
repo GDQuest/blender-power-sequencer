@@ -56,8 +56,9 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
         )
 
         fcurves = []
-        if context.scene.animation_data.action:
-            fcurves = context.scene.animation_data.action.fcurves
+        animation_data = context.scene.animation_data
+        if animation_data and animation_data.action:
+            fcurves = animation_data.action.fcurves
 
         frame_target = -1
         if self.direction == "RIGHT":
