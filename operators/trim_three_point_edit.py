@@ -14,8 +14,8 @@ class POWER_SEQUENCER_OT_trim_three_point_edit(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "I", "value": "PRESS"}, {"side": "left"}, "Trim In"),
-            ({"type": "O", "value": "PRESS"}, {"side": "right"}, "Trim Out"),
+            ({"type": "I", "value": "PRESS"}, {"side": "LEFT"}, "Trim In"),
+            ({"type": "O", "value": "PRESS"}, {"side": "RIGHT"}, "Trim Out"),
         ],
         "keymap": "Sequencer",
     }
@@ -25,10 +25,10 @@ class POWER_SEQUENCER_OT_trim_three_point_edit(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     side: bpy.props.EnumProperty(
-        items=[("left", "Left", "Left side"), ("right", "Right", "Right side")],
+        items=[("LEFT", "Left", "Left side"), ("RIGHT", "Right", "Right side")],
         name="Trim side",
-        description="Side of the strip(s) to trim, either left or right",
-        default="left",
+        description="Side of the strip(s) to trim, either LEFT or RIGHT",
+        default="LEFT",
     )
 
     @classmethod
