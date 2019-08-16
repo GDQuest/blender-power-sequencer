@@ -39,9 +39,7 @@ def playback_speed_post(scene):
         frame_post += 2
 
     if frame_start != frame_post:
-        bpy.ops.screen.animation_cancel(restore_frame=False)
-        scene.frame_current = frame_post
-        bpy.ops.screen.animation_play()
+        bpy.ops.screen.frame_offset(delta=frame_post - frame_start)
     scene.power_sequencer.frame_pre = scene.frame_current
 
 
