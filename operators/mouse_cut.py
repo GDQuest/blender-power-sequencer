@@ -406,4 +406,4 @@ def get_frame_and_channel(event):
     """
     frame_float, channel_float = bpy.context.region.view2d.region_to_view(
         x=event.mouse_region_x, y=event.mouse_region_y)
-    return round(frame_float), round(channel_float)
+    return round(frame_float), floor(channel_float)
