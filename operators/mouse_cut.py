@@ -276,27 +276,22 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         trim_start = min(self.trim_start, self.trim_end)
         trim_end = max(self.trim_start, self.trim_end)
 
-        under_mouse = find_strips_mouse(
-            context, self.trim_start, self.channel_start, select_linked=self.select_linked
-        )
-        if self.select_mode == "contextual":
-            to_trim.extend(under_mouse)
+        under_mouse = find_strips_mouse(context, self.trim_start,
+                                        self.channel_start, self.select_linked)
+        channel = under_mouse[0].channel if len(under_mouse) > 0 else -1
 
-        elif self.select_mode == "cursor" or (
-            not self.initially_clicked_strips and self.select_mode == "contextual"
-        ):
-            for s in context.sequences:
-                if s.lock:
-                    continue
+        for s in context.sequences:
+            if s.lock:
+                continue
+            if self.select_mode == "contextual" and channel != -1 and s.channel != channel:
+                continue
 
-                if trim_start <= s.frame_final_start and trim_end >= s.frame_final_end:
-                    to_delete.append(s)
-                    continue
-                if (
-                    s.frame_final_start <= trim_start <= s.frame_final_end
-                    or s.frame_final_start <= trim_end <= s.frame_final_end
-                ):
-                    to_trim.append(s)
+            if trim_start <= s.frame_final_start and trim_end >= s.frame_final_end:
+                to_delete.append(s)
+                continue
+            if (s.frame_final_start <= trim_start <= s.frame_final_end
+                    or s.frame_final_start <= trim_end <= s.frame_final_end):
+                to_trim.append(s)
 
         return to_trim, to_delete
 
