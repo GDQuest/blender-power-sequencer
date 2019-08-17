@@ -10,7 +10,6 @@ def trim_strips(
 ):
     """
     Remove the footage and audio between start_frame and end_frame.
-
     """
     trim_start = min(start_frame, end_frame)
     trim_end = max(start_frame, end_frame)

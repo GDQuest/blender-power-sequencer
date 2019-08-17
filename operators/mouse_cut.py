@@ -28,36 +28,72 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
     """
 
     doc = {
-        "name": doc_name(__qualname__),
-        "demo": "https://i.imgur.com/wVvX4ex.gif",
-        "description": doc_description(__doc__),
+        "name":
+        doc_name(__qualname__),
+        "demo":
+        "https://i.imgur.com/wVvX4ex.gif",
+        "description":
+        doc_description(__doc__),
         "shortcuts": [
             (
-                {"type": "T", "value": "PRESS"},
-                {"select_mode": "contextual"},
-                {"gap_remove": False},
+                {
+                    "type": "T",
+                    "value": "PRESS"
+                },
+                {
+                    "select_mode": "contextual"
+                },
+                {
+                    "gap_remove": False
+                },
                 "Trim using the mouse cursor",
             ),
             (
-                {"type": "T", "value": "PRESS", "alt": True},
-                {"select_mode": "contextual"},
-                {"gap_remove": True},
+                {
+                    "type": "T",
+                    "value": "PRESS",
+                    "alt": True
+                },
+                {
+                    "select_mode": "contextual"
+                },
+                {
+                    "gap_remove": True
+                },
                 "Trim using the mouse cursor and remove gaps",
             ),
             (
-                {"type": "T", "value": "PRESS", "shift": True},
-                {"select_mode": "cursor"},
-                {"gap_remove": False},
+                {
+                    "type": "T",
+                    "value": "PRESS",
+                    "shift": True
+                },
+                {
+                    "select_mode": "cursor"
+                },
+                {
+                    "gap_remove": False
+                },
                 "Trim in all channels",
             ),
             (
-                {"type": "T", "value": "PRESS", "shift": True, "alt": True},
-                {"select_mode": "cursor"},
-                {"gap_remove": True},
+                {
+                    "type": "T",
+                    "value": "PRESS",
+                    "shift": True,
+                    "alt": True
+                },
+                {
+                    "select_mode": "cursor"
+                },
+                {
+                    "gap_remove": True
+                },
                 "Trim in all channels and remove gaps",
             ),
         ],
-        "keymap": "Sequencer",
+        "keymap":
+        "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
     bl_label = doc["name"]
@@ -66,16 +102,20 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     select_mode: bpy.props.EnumProperty(
         items=[
-            ("cursor", "Time cursor", "Select all of the strips the time cursor overlaps"),
-            ("contextual", "Smart", "Uses the selection if possible, else uses the other modes"),
+            ("cursor", "Time cursor",
+             "Select all of the strips the time cursor overlaps"),
+            ("contextual", "Smart",
+             "Uses the selection if possible, else uses the other modes"),
         ],
         name="Selection mode",
-        description="Cut only the strip under the mouse or all strips under the time cursor",
+        description=
+        "Cut only the strip under the mouse or all strips under the time cursor",
         default="contextual",
     )
     select_linked: bpy.props.BoolProperty(
         name="Use linked time",
-        description="In mouse or contextual mode, always cut linked strips if this is checked",
+        description=
+        "In mouse or contextual mode, always cut linked strips if this is checked",
         default=False,
     )
     gap_remove: bpy.props.BoolProperty(
@@ -124,7 +164,8 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             return {"CANCELLED"}
 
         # Start and end trim
-        if event.type == "LEFTMOUSE" or (event.type in ["RET", "T"] and event.value == "PRESS"):
+        if event.type == "LEFTMOUSE" or (event.type in ["RET", "T"]
+                                         and event.value == "PRESS"):
             self.trim_apply(context, event)
             self.draw_stop()
 
@@ -160,15 +201,11 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     def trim_apply(self, context, event):
         start_x = context.region.view2d.region_to_view(
-            x=event.mouse_region_x, y=event.mouse_region_y
-        )[0]
+            x=event.mouse_region_x, y=event.mouse_region_y)[0]
         distance_to_start = abs(event.mouse_region_x - start_x)
 
-        is_cutting = (
-            self.trim_start == self.trim_end
-            or event.is_tablet
-            and distance_to_start <= self.TABLET_TRIM_DISTANCE_THRESHOLD
-        )
+        is_cutting = (self.trim_start == self.trim_end or event.is_tablet and
+                      distance_to_start <= self.TABLET_TRIM_DISTANCE_THRESHOLD)
         if is_cutting:
             self.cut(context)
         else:
@@ -189,16 +226,6 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         to_select, to_delete = self.find_strips_to_trim(context)
         target_strips = to_select + to_delete
 
-        # # Limit drawing range if trimming a single strip
-        # under_mouse = find_strips_mouse(context, self.trim_start, self.channel_start, select_linked=self.select_linked)
-        # if self.select_mode == 'contextual' and under_mouse:
-        #     s = under_mouse[0]
-        #     strip_start_x = context.region.view2d.view_to_region(s.frame_final_start, 1)[0]
-        #     strip_end_x = context.region.view2d.view_to_region(s.frame_final_end, 1)[0]
-        #     draw_end_x = max(strip_start_x, min(event.mouse_region_x, strip_end_x))
-        # else:
-        #     draw_end_x = event.mouse_region_x
-
         draw_args = (
             self,
             context,
@@ -209,12 +236,12 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             self.gap_remove,
         )
         self.draw_handler = bpy.types.SpaceSequenceEditor.draw_handler_add(
-            draw, draw_args, "WINDOW", "POST_PIXEL"
-        )
+            draw, draw_args, "WINDOW", "POST_PIXEL")
 
     def draw_stop(self):
         if self.draw_handler:
-            bpy.types.SpaceSequenceEditor.draw_handler_remove(self.draw_handler, "WINDOW")
+            bpy.types.SpaceSequenceEditor.draw_handler_remove(
+                self.draw_handler, "WINDOW")
 
     def cut(self, context):
         to_select = self.find_strips_to_cut(context)
@@ -224,12 +251,15 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
         frame_current = context.scene.frame_current
         context.scene.frame_current = self.trim_start
-        bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
+        bpy.ops.sequencer.cut(frame=context.scene.frame_current,
+                              type="SOFT",
+                              side="BOTH")
         context.scene.frame_current = frame_current
 
     def trim(self, context):
         to_select, to_delete = self.find_strips_to_trim(context)
-        trim_strips(context, self.trim_start, self.trim_end, self.select_mode, to_select, to_delete)
+        trim_strips(context, self.trim_start, self.trim_end, self.select_mode,
+                    to_select, to_delete)
         if self.gap_remove and self.select_mode == "cursor":
             context.scene.frame_current = min(self.trim_start, self.trim_end)
             bpy.ops.power_sequencer.gap_remove()
@@ -243,14 +273,13 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         to_cut = []
         overlapping_strips = []
         if self.select_mode == "contextual":
-            overlapping_strips = find_strips_mouse(
-                context, self.trim_start, self.channel_start, self.select_linked
-            )
+            overlapping_strips = find_strips_mouse(context, self.trim_start,
+                                                   self.channel_start,
+                                                   self.select_linked)
             to_cut.extend(overlapping_strips)
 
-        if self.select_mode == "cursor" or (
-            not overlapping_strips and self.select_mode == "contextual"
-        ):
+        if self.select_mode == "cursor" or (not overlapping_strips and
+                                            self.select_mode == "contextual"):
             for s in context.sequences:
                 if s.lock:
                     continue
@@ -264,7 +293,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         else:
             frame_current = context.scene.frame_current
             context.scene.frame_current = frame_cut
-            bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
+            bpy.ops.sequencer.cut(frame=context.scene.frame_current,
+                                  type="SOFT",
+                                  side="BOTH")
             context.scene.frame_current = frame_current
 
     def find_strips_to_trim(self, context):
@@ -296,9 +327,13 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         return to_trim, to_delete
 
 
-def draw(
-    self, context, frame_start=-1, frame_end=-1, mouse_y=-1, target_strips=[], draw_arrows=False
-):
+def draw(self,
+         context,
+         frame_start=-1,
+         frame_end=-1,
+         mouse_y=-1,
+         target_strips=[],
+         draw_arrows=False):
     """
     Draws the line and arrows that represent the trim
 
@@ -338,17 +373,25 @@ def draw(
 
     bgl.glLineWidth(3)
     draw_line(SHADER, start, end, color)
-    draw_line(SHADER, Vector((start.x, min_bottom)), Vector((start.x, max_top)), color)
-    draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)), color)
+    draw_line(SHADER, Vector((start.x, min_bottom)), Vector(
+        (start.x, max_top)), color)
+    draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)),
+              color)
 
     if draw_arrows:
-        first_arrow_center = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
-        second_arrow_center = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
+        first_arrow_center = Vector(
+            [start.x + ((end.x - start.x) * 0.25), start.y])
+        second_arrow_center = Vector(
+            [end.x - ((end.x - start.x) * 0.25), start.y])
         arrow_size = Vector([10, 20])
 
         bgl.glLineWidth(6)
         draw_arrow_head(SHADER, first_arrow_center, arrow_size, color=color)
-        draw_arrow_head(SHADER, second_arrow_center, arrow_size, points_right=False, color=color)
+        draw_arrow_head(SHADER,
+                        second_arrow_center,
+                        arrow_size,
+                        points_right=False,
+                        color=color)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
@@ -359,6 +402,5 @@ def get_frame_and_channel(event):
     Returns a tuple of (frame, channel)
     """
     frame_float, channel_float = bpy.context.region.view2d.region_to_view(
-        x=event.mouse_region_x, y=event.mouse_region_y
-    )
+        x=event.mouse_region_x, y=event.mouse_region_y)
     return round(frame_float), round(channel_float)
