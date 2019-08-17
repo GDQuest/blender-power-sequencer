@@ -1,23 +1,86 @@
 """Drawing utilities. A list of functions to draw common elements"""
 # import bgl
+import blf
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector
 
 
-def draw_line(shader, start, end):
+def get_color_gizmo_primary(context):
+    color = context.preferences.themes[0].user_interface.gizmo_primary
+    return _color_to_list(color)
+
+
+def get_color_gizmo_secondary(context):
+    color = context.preferences.themes[0].user_interface.gizmo_secondary
+    return _color_to_list(color)
+
+
+def get_color_axis_x(context):
+    color = context.preferences.themes[0].user_interface.axis_x
+    return _color_to_list(color)
+
+
+def get_color_axis_y(context):
+    color = context.preferences.themes[0].user_interface.axis_y
+    return _color_to_list(color)
+
+
+def get_color_axis_z(context):
+    color = context.preferences.themes[0].user_interface.axis_z
+    return _color_to_list(color)
+
+
+def draw_line(shader, start, end, color=(1.0, 1.0, 1.0, 1.0)):
     """Draws a line using two Vector-based points"""
     batch = batch_for_shader(shader, "LINES", {"pos": (start, end)})
 
     shader.bind()
-    shader.uniform_float("color", (1.0, 0.0, 1.0, 1.0))
+    shader.uniform_float("color", color)
     batch.draw(shader)
-    # bgl.glBegin(bgl.GL_LINES)
-    # bgl.glVertex(start.x, start.y)
-    # bgl.glVertex(end.x, end.y)
-    # bgl.glEnd()
 
 
-def draw_arrow_head(shader, center, size, points_right=True):
+def draw_rectangle(shader, origin, size, color=(1.0, 1.0, 1.0, 1.0)):
+    vertices = ((origin.x, origin.y), (origin.x + size.x, origin.y),
+                (origin.x, origin.y + size.y), (origin.x + size.x,
+                                                origin.y + size.y))
+    indices = ((0, 1, 2), (2, 1, 3))
+    batch = batch_for_shader(shader,
+                             'TRIS', {"pos": vertices},
+                             indices=indices)
+    shader.bind()
+    shader.uniform_float('color', color)
+    batch.draw(shader)
+
+
+def draw_triangle(point_1, point_2, point_3, color=(1.0, 1.0, 1.0, 1.0)):
+    vertices = (point_1, point_2, point_3)
+    indices = ((0, 1, 2), )
+    shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
+    batch = batch_for_shader(shader,
+                             'TRIS', {"pos": vertices},
+                             indices=indices)
+    shader.bind()
+    shader.uniform_float('color', color)
+    batch.draw(shader)
+
+
+def draw_text(x, y, size, text, justify='left', color=(1.0, 1.0, 1.0, 1.0)):
+    font_id = 0
+    blf.color(font_id, *color)
+    if justify == 'right':
+        text_width, text_height = blf.dimensions(font_id, text)
+    else:
+        text_width = 0
+    blf.position(font_id, x - text_width, y, 0)
+    blf.size(font_id, size, 72)
+    blf.draw(font_id, text)
+
+
+def draw_arrow_head(shader,
+                    center,
+                    size,
+                    points_right=True,
+                    color=(1.0, 1.0, 1.0, 1.0)):
     """
     Draws a triangular arrow using two Vectors:
     - the triangle's center
@@ -25,36 +88,16 @@ def draw_arrow_head(shader, center, size, points_right=True):
     """
     direction = 1 if points_right else -1
 
-    point_upper = Vector([center.x - size.x / 2 * direction, center.y + size.y / 2])
+    point_upper = Vector(
+        [center.x - size.x / 2 * direction, center.y + size.y / 2])
     point_tip = Vector([center.x + size.x / 2 * direction, center.y])
-    point_lower = Vector([center.x - size.x / 2 * direction, center.y - size.y / 2])
+    point_lower = Vector(
+        [center.x - size.x / 2 * direction, center.y - size.y / 2])
 
-    draw_line(shader, point_upper, point_tip)
-    draw_line(shader, point_tip, point_lower)
-
-
-# Singledispath doesn't work currently - you get an error if you try register more than 1 type?
-# Maybe due to Blender's py3 version?
-# from functools import singledispatch
-# @singledispatch
-# def draw_line(**args):
-#     """Fallback for draw_line"""
-#     print('Unsupported type, please use one of: {} '.format(draw_line.registry.keys()))
+    draw_line(shader, point_upper, point_tip, color)
+    draw_line(shader, point_tip, point_lower, color)
 
 
-# @draw_line.register(Vector)
-# def draw_line(start, end):
-#     """Draws an openGL line using two Vector objects"""
-#     bgl.glBegin(bgl.GL_LINES)
-#     bgl.glVertex2f(start.x, start.y)
-#     bgl.glVertex2f(end.x, end.y)
-#     bgl.glEnd()
-
-
-# @draw_line.register(float)
-# def draw_line(start_x, start_y, end_x, end_y):
-#     """Draws an openGL line with four floats for coordinates"""
-#     bgl.glBegin(bgl.GL_LINES)
-#     bgl.glVertex2f(start_x, start_y)
-#     bgl.glVertex2f(end_x, end_y)
-#     bgl.glEnd()
+def _color_to_list(color):
+    """Converts a Blender Color to a list of 4 color values to use with shaders and drawing"""
+    return list(color) + [1]
