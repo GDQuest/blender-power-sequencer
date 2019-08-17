@@ -40,34 +40,33 @@ def draw_line(shader, start, end, color=(1.0, 1.0, 1.0, 1.0)):
 
 
 def draw_rectangle(shader, origin, size, color=(1.0, 1.0, 1.0, 1.0)):
-    vertices = ((origin.x, origin.y), (origin.x + size.x, origin.y),
-                (origin.x, origin.y + size.y), (origin.x + size.x,
-                                                origin.y + size.y))
+    vertices = (
+        (origin.x, origin.y),
+        (origin.x + size.x, origin.y),
+        (origin.x, origin.y + size.y),
+        (origin.x + size.x, origin.y + size.y),
+    )
     indices = ((0, 1, 2), (2, 1, 3))
-    batch = batch_for_shader(shader,
-                             'TRIS', {"pos": vertices},
-                             indices=indices)
+    batch = batch_for_shader(shader, "TRIS", {"pos": vertices}, indices=indices)
     shader.bind()
-    shader.uniform_float('color', color)
+    shader.uniform_float("color", color)
     batch.draw(shader)
 
 
 def draw_triangle(point_1, point_2, point_3, color=(1.0, 1.0, 1.0, 1.0)):
     vertices = (point_1, point_2, point_3)
-    indices = ((0, 1, 2), )
-    shader = gpu.shader.from_builtin('2D_UNIFORM_COLOR')
-    batch = batch_for_shader(shader,
-                             'TRIS', {"pos": vertices},
-                             indices=indices)
+    indices = ((0, 1, 2),)
+    shader = gpu.shader.from_builtin("2D_UNIFORM_COLOR")
+    batch = batch_for_shader(shader, "TRIS", {"pos": vertices}, indices=indices)
     shader.bind()
-    shader.uniform_float('color', color)
+    shader.uniform_float("color", color)
     batch.draw(shader)
 
 
-def draw_text(x, y, size, text, justify='left', color=(1.0, 1.0, 1.0, 1.0)):
+def draw_text(x, y, size, text, justify="left", color=(1.0, 1.0, 1.0, 1.0)):
     font_id = 0
     blf.color(font_id, *color)
-    if justify == 'right':
+    if justify == "right":
         text_width, text_height = blf.dimensions(font_id, text)
     else:
         text_width = 0
@@ -76,11 +75,7 @@ def draw_text(x, y, size, text, justify='left', color=(1.0, 1.0, 1.0, 1.0)):
     blf.draw(font_id, text)
 
 
-def draw_arrow_head(shader,
-                    center,
-                    size,
-                    points_right=True,
-                    color=(1.0, 1.0, 1.0, 1.0)):
+def draw_arrow_head(shader, center, size, points_right=True, color=(1.0, 1.0, 1.0, 1.0)):
     """
     Draws a triangular arrow using two Vectors:
     - the triangle's center
@@ -88,11 +83,9 @@ def draw_arrow_head(shader,
     """
     direction = 1 if points_right else -1
 
-    point_upper = Vector(
-        [center.x - size.x / 2 * direction, center.y + size.y / 2])
+    point_upper = Vector([center.x - size.x / 2 * direction, center.y + size.y / 2])
     point_tip = Vector([center.x + size.x / 2 * direction, center.y])
-    point_lower = Vector(
-        [center.x - size.x / 2 * direction, center.y - size.y / 2])
+    point_lower = Vector([center.x - size.x / 2 * direction, center.y - size.y / 2])
 
     draw_line(shader, point_upper, point_tip, color)
     draw_line(shader, point_tip, point_lower, color)

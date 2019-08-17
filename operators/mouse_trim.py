@@ -112,7 +112,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         else:
             context.scene.frame_current = self.frame_start if self.frame_start else frame
 
-
         # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
         for s in bpy.context.sequences:
             if s.lock:

@@ -12,7 +12,6 @@ from .utils.find_snap_candidate import find_snap_candidate
 from .utils.draw import draw_line, draw_arrow_head, get_color_gizmo_primary
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
-
 if not bpy.app.background:
     SHADER = gpu.shader.from_builtin("2D_UNIFORM_COLOR")
 
@@ -344,28 +343,17 @@ def draw(
 
     bgl.glLineWidth(3)
     draw_line(SHADER, start, end, color)
-    draw_line(SHADER, Vector((start.x, min_bottom)), Vector(
-        (start.x, max_top)), color)
-    draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)),
-              color)
+    draw_line(SHADER, Vector((start.x, min_bottom)), Vector((start.x, max_top)), color)
+    draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)), color)
 
     if draw_arrows:
-        first_arrow_center = Vector(
-            [start.x + ((end.x - start.x) * 0.25), start.y])
-        second_arrow_center = Vector(
-            [end.x - ((end.x - start.x) * 0.25), start.y])
+        first_arrow_center = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
+        second_arrow_center = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
         arrow_size = Vector([10, 20])
 
         bgl.glLineWidth(6)
-        draw_arrow_head(SHADER,
-                        first_arrow_center,
-                        arrow_size,
-                        color=color)
-        draw_arrow_head(SHADER,
-                        second_arrow_center,
-                        arrow_size,
-                        points_right=False,
-                        color=color)
+        draw_arrow_head(SHADER, first_arrow_center, arrow_size, color=color)
+        draw_arrow_head(SHADER, second_arrow_center, arrow_size, points_right=False, color=color)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
