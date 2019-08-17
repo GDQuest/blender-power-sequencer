@@ -9,7 +9,7 @@ from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 from .utils.find_snap_candidate import find_snap_candidate
 
-from .utils.draw import draw_line, draw_arrow_head, get_color_gizmo_primary
+from .utils.draw import draw_line, draw_arrow_head, get_color_gizmo_primary, get_color_gizmo_secondary
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 if not bpy.app.background:
@@ -366,32 +366,35 @@ def draw(self,
     if start.x > end.x:
         start, end = end, start
 
-    color = get_color_gizmo_primary(context)
+    color_primary = get_color_gizmo_primary(context)
+    color_secondary = get_color_gizmo_secondary(context)
 
     # Drawing
     bgl.glEnable(bgl.GL_BLEND)
 
     bgl.glLineWidth(3)
-    draw_line(SHADER, start, end, color)
+    draw_line(SHADER, start, end, color_primary)
     draw_line(SHADER, Vector((start.x, min_bottom)), Vector(
-        (start.x, max_top)), color)
+        (start.x, max_top)), color_primary)
     draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)),
-              color)
+              color_primary)
 
     if draw_arrows:
-        first_arrow_center = Vector(
+        center_arrow_1 = Vector(
             [start.x + ((end.x - start.x) * 0.25), start.y])
-        second_arrow_center = Vector(
-            [end.x - ((end.x - start.x) * 0.25), start.y])
+        center_arrow_2 = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
         arrow_size = Vector([10, 20])
 
         bgl.glLineWidth(6)
-        draw_arrow_head(SHADER, first_arrow_center, arrow_size, color=color)
         draw_arrow_head(SHADER,
-                        second_arrow_center,
+                        center_arrow_1,
+                        arrow_size,
+                        color=color_secondary)
+        draw_arrow_head(SHADER,
+                        center_arrow_2,
                         arrow_size,
                         points_right=False,
-                        color=color)
+                        color=color_secondary)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
