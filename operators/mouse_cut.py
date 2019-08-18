@@ -2,7 +2,7 @@ import bpy
 import bgl
 import gpu
 from gpu_extras.batch import batch_for_shader
-from math import floor
+import math
 from mathutils import Vector
 
 from .utils.find_strips_mouse import find_strips_mouse
@@ -11,6 +11,8 @@ from .utils.find_snap_candidate import find_snap_candidate
 
 from .utils.draw import (
     draw_line,
+    draw_rectangle,
+    draw_triangle_equilateral,
     draw_arrow_head,
     get_color_gizmo_primary,
     get_color_gizmo_secondary,
@@ -308,29 +310,30 @@ def draw(
     end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
 
     channels = set([s.channel for s in target_strips])
-    y_min = view_to_region(0, floor(min(channels)))[1]
-    y_max = view_to_region(0, floor(max(channels) + 1))[1]
+    y_min = view_to_region(0, math.floor(min(channels)))[1]
+    y_max = view_to_region(0, math.floor(max(channels) + 1))[1]
 
     # Draw
     color_line = get_color_gizmo_primary(context)
     color_fill = color_line.copy()
-    color_fill[-1] = 0.4
+    color_fill[-1] = 0.3
 
     bgl.glEnable(bgl.GL_BLEND)
 
     bgl.glLineWidth(3)
-    draw_line(SHADER, start, end, color_line)
+    draw_rectangle(SHADER, Vector((start.x, y_min)), Vector((end.x - start.x, abs(y_min - y_max))), color_fill)
+    # Vertical lines
     draw_line(SHADER, Vector((start.x, y_min)), Vector((start.x, y_max)), color_line)
     draw_line(SHADER, Vector((end.x, y_min)), Vector((end.x, y_max)), color_line)
 
-    if draw_arrows:
-        center_arrow_1 = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
-        center_arrow_2 = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
-        arrow_size = Vector([10, 20])
-
-        bgl.glLineWidth(6)
-        draw_arrow_head(SHADER, center_arrow_1, arrow_size, color=color_line)
-        draw_arrow_head(SHADER, center_arrow_2, arrow_size, points_right=False, color=color_line)
+    offset = 20.0
+    radius = 12.0
+    if draw_arrows and end.x - start.x > 2 * offset + radius:
+        center_y = (y_max + y_min) / 2.0
+        center_1 = Vector((start.x + offset, center_y))
+        center_2 = Vector((end.x - offset, center_y))
+        draw_triangle_equilateral(SHADER, center_1, radius, color=color_line)
+        draw_triangle_equilateral(SHADER, center_2, radius, math.pi, color=color_line)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
@@ -343,4 +346,4 @@ def get_frame_and_channel(event):
     frame_float, channel_float = bpy.context.region.view2d.region_to_view(
         x=event.mouse_region_x, y=event.mouse_region_y
     )
-    return round(frame_float), floor(channel_float)
+    return round(frame_float), math.floor(channel_float)
