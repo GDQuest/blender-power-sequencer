@@ -93,4 +93,4 @@ def draw_arrow_head(shader, center, size, points_right=True, color=(1.0, 1.0, 1.
 
 def _color_to_list(color):
     """Converts a Blender Color to a list of 4 color values to use with shaders and drawing"""
-    return list(color) + [1]
+    return list(color) + [1.0]

@@ -303,40 +303,25 @@ def draw(
     """
     view_to_region = bpy.context.region.view2d.view_to_region
 
-    start = Vector((view_to_region(frame_start, 1)[0], mouse_y))
-    end = Vector((view_to_region(frame_end, 1)[0], mouse_y))
+    # Calculate coordinates
+    start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
+    end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
 
-    # find channel Y coordinates
-    channel_tops = [start.y]
-    channel_bottoms = [start.y]
+    channels = set([s.channel for s in target_strips])
+    y_min = view_to_region(0, floor(min(channels)))[1]
+    y_max = view_to_region(0, floor(max(channels) + 1))[1]
 
-    for s in target_strips:
-        bottom = view_to_region(0, floor(s.channel))[1]
-        if bottom == 12000:
-            bottom = 0
-        channel_bottoms.append(bottom)
+    # Draw
+    color_line = get_color_gizmo_primary(context)
+    color_fill = color_line.copy()
+    color_fill[-1] = 0.4
 
-        top = view_to_region(0, floor(s.channel) + 1)[1]
-        if top == 12000:
-            top = 0
-        channel_tops.append(top)
-
-    max_top = max(channel_tops)
-    min_bottom = min(channel_bottoms)
-
-    if start.x > end.x:
-        start, end = end, start
-
-    color_primary = get_color_gizmo_primary(context)
-    color_secondary = get_color_gizmo_secondary(context)
-
-    # Drawing
     bgl.glEnable(bgl.GL_BLEND)
 
     bgl.glLineWidth(3)
-    draw_line(SHADER, start, end, color_primary)
-    draw_line(SHADER, Vector((start.x, min_bottom)), Vector((start.x, max_top)), color_primary)
-    draw_line(SHADER, Vector((end.x, min_bottom)), Vector((end.x, max_top)), color_primary)
+    draw_line(SHADER, start, end, color_line)
+    draw_line(SHADER, Vector((start.x, y_min)), Vector((start.x, y_max)), color_line)
+    draw_line(SHADER, Vector((end.x, y_min)), Vector((end.x, y_max)), color_line)
 
     if draw_arrows:
         center_arrow_1 = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
@@ -344,10 +329,8 @@ def draw(
         arrow_size = Vector([10, 20])
 
         bgl.glLineWidth(6)
-        draw_arrow_head(SHADER, center_arrow_1, arrow_size, color=color_secondary)
-        draw_arrow_head(
-            SHADER, center_arrow_2, arrow_size, points_right=False, color=color_secondary
-        )
+        draw_arrow_head(SHADER, center_arrow_1, arrow_size, color=color_line)
+        draw_arrow_head(SHADER, center_arrow_2, arrow_size, points_right=False, color=color_line)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
