@@ -47,7 +47,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-        selection = context.selected_sequences
+        selection = [s for s in context.selected_sequences if not s.lock]
         if not selection:
             return {"CANCELLED"}
 
