@@ -1,12 +1,19 @@
 import json
 import os
+import re
 from operator import attrgetter
 
 import bpy
 
 from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
-from .utils.global_settings import Extensions
+from .utils.global_settings import (
+    Extensions,
+    EXTENSIONS_ALL,
+    EXTENSIONS_AUDIO,
+    EXTENSIONS_IMG,
+    EXTENSIONS_VIDEO,
+)
 
 
 class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
@@ -32,307 +39,181 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
-    SEQUENCER_AREA = None
-    import_all: bpy.props.BoolProperty(
-        name="Always Reimport",
-        description=(
-            "If true, always import all local files to new strips."
-            " If False, only import new files (check if footage has"
-            " already been imported to the VSE)"
-        ),
-        default=False,
-    )
     keep_audio: bpy.props.BoolProperty(
-        name="Keep audio from video files",
+        name="Keep Audio from Video Files",
         description=("If False, the audio that comes with video files will" " not be imported"),
         default=True,
     )
-
     img_length: bpy.props.FloatProperty(
-        name="Image strip length",
+        name="Image strip Length",
         description="Controls the duration of the imported image strip in seconds",
         default=3.0,
         min=1.0,
     )
     img_padding: bpy.props.FloatProperty(
-        name="Image strip padding",
+        name="Image Padding",
         description="Padding added between imported image strips in seconds",
         default=1.0,
         min=0.0,
     )
 
-    start_fps, start_fps_base = -1, -1
-    new_fps, new_fps_base = -1, -1
-    warnings = []
+    sequencer_area = None
+    directory = ""
 
     @classmethod
     def poll(cls, context):
-        return context is not None
+        return bpy.data.is_saved
 
     def execute(self, context):
-        if not bpy.data.is_saved:
-            self.report(
-                {"ERROR_INVALID_INPUT"}, "You need to save your project first. Import cancelled."
-            )
-            return {"CANCELLED"}
+        self.sequencer_area = self.get_sequencer_area(context)
+        self.directory = os.path.split(bpy.data.filepath)[0]
 
-        bpy.ops.screen.animation_cancel(restore_frame=True)
-        self.SEQUENCER_AREA = self.get_sequencer_area(context)
-
-        project_directory = os.path.split(bpy.data.filepath)[0]
-        local_footage_files = self.find_local_footage_files(project_directory)
-
-        files_to_import = self.find_new_files_to_import(local_footage_files)
+        filepaths = self.find_local_footage_files()
+        files_to_import = self.find_new_files_to_import(filepaths)
         if not files_to_import:
             self.report({"INFO"}, "No new files to import found")
             return {"FINISHED"}
 
-        imported_sequences, imported_video_sequences = [], []
-        self.start_fps, self.start_fps_base = (
-            context.scene.render.fps,
-            context.scene.render.fps_base,
+        bpy.ops.screen.animation_cancel(restore_frame=True)
+
+        audio = self.import_audios(
+            context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_AUDIO)]
         )
-        if "audio" in files_to_import.keys():
-            imported = self.import_audio(context, project_directory, files_to_import["audio"])
-            imported_sequences.extend(imported)
-        if "video" in files_to_import.keys():
-            imported, self.warnings = self.import_videos(
-                context, project_directory, files_to_import["video"]
-            )
-            imported_sequences.extend(imported)
-            imported_video_sequences.extend(imported)
-        if "img" in files_to_import.keys():
-            imported = self.import_img(context, project_directory, files_to_import["img"])
-            imported_sequences.extend(imported)
+        video = self.import_videos(
+            context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_VIDEO)]
+        )
+        img = self.import_imgs(
+            context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_IMG)]
+        )
 
-        bpy.data.texts["POWER_SEQUENCER_IMPORTS"].from_string(json.dumps(local_footage_files))
+        bpy.data.texts["POWER_SEQUENCER_IMPORTS"].from_string(json.dumps(filepaths))
 
-        self.new_fps, self.new_fps_base = (context.scene.render.fps, context.scene.render.fps_base)
-
-        for s in [s for s in imported_sequences if s.type == "SOUND"]:
+        for s in audio:
             s.show_waveform = True
 
-        for s in imported_sequences:
+        imported = audio + video + img
+        for s in imported:
             s.select = True
-
-        if self.warnings:
-            context.window_manager.invoke_popup(self)
-        else:
-            self.report(
-                {"INFO"},
-                "Imported {!s} strips from newly found files.".format(len(imported_sequences)),
-            )
+        self.report({"INFO"}, "Imported {!s} strips from newly found files.".format(len(imported)))
         return {"FINISHED"}
-
-    def draw(self, context):
-        start_framerate, new_framerate = 0, 0
-        if self.new_fps != self.start_fps or self.new_fps_base != self.start_fps_base:
-            start_framerate = round(self.start_fps / self.start_fps_base, 2)
-            new_framerate = round(self.new_fps / self.new_fps_base, 2)
-
-        self.layout.label("Import warnings", icon="ERROR")
-
-        if start_framerate and new_framerate:
-            self.layout.label("The project's framerate changed")
-            self.layout.label("from {} to {}".format(start_framerate, new_framerate))
-            self.layout.separator()
-
-        if self.warnings:
-            box = self.layout.box()
-            box.label("These files' framerate differs")
-            box.label("from the project's framerate:")
-            for file_name in self.warnings:
-                box.label(file_name, icon="FILE_MOVIE")
-
-            self.layout.separator()
-
-            self.layout.label("Blender doesn't support files with")
-            self.layout.label("different framerates in the same scene.")
-            self.layout.label("Check the source files' framerate")
-            self.layout.label("and transcode them with ffmpeg.")
 
     def get_sequencer_area(self, context):
         """
         Returns the sequencer area to use as a context override in
         some operators
         """
-        SEQUENCER_AREA = None
+        sequencer_area = None
         for window in context.window_manager.windows:
             for area in window.screen.areas:
                 if not area.type == "SEQUENCE_EDITOR":
                     continue
-                SEQUENCER_AREA = {
+                sequencer_area = {
                     "window": window,
                     "screen": window.screen,
                     "area": area,
                     "scene": context.scene,
                 }
-        return SEQUENCER_AREA
+        return sequencer_area
 
-    def find_local_footage_files(self, project_directory):
+    def find_local_footage_files(self, ignored_directories=("BL_proxy")):
         """
-        Walks through a folder relative to the project directory and returns
-        a list of filepaths that match the extensions.
-
-        Args: - project_directory, the absolute path to the folder that
-        contains the .blend file Use the extensions helper class in
-        .functions.global_settings. It gives default extensions to check the
-        files against.
-
-        Returns a dict with the form {
-            'video': [relative_path_1, relative_path_2],
-            'audio': [...],
-            'img': []
-        }
+        Returns a list of relative filepaths in all subdirectories of the `self.directory`
+        for all valid files that can be imported in the Sequencer
         """
-        files_dict = {}
-        for f in ("video", "audio", "img"):
-            files_dict[f] = []
+        files_list = []
+        for root, dirs, files in os.walk(self.directory):
+            for directory in ignored_directories:
+                if directory in dirs:
+                    dirs.remove(directory)
 
-            path = os.path.join(project_directory, f)
-            if not os.path.exists(path):
-                continue
+            files = [f for f in sorted(files) if f.lower().endswith(EXTENSIONS_ALL)]
+            files = map(lambda name: os.path.join(root, name), files)
+            files_list.extend(list(files))
 
-            for root, dirs, files in os.walk(path):
-                for ignore_pattern in ("BL_proxy", "src"):
-                    if ignore_pattern in dirs:
-                        dirs.remove(ignore_pattern)
+        return files_list
 
-                for name in sorted(files):
-                    extension = os.path.splitext(name)[1].lower()
-                    if name.startswith(".") or not extension in Extensions.DICT[f]:
-                        continue
-                    file_path = os.path.join(root, name)
-                    path_relative = os.path.relpath(file_path, start=project_directory)
-                    files_dict[f].append(path_relative)
-
-        return files_dict
-
-    def create_text_file(self, name):
+    def create_import_text_block(self, name):
         """
-        Create a new text file, change its name and return it
-        Args:
-        - name, a string to use as the new text file's name"""
-        import re
-
-        bpy.ops.text.new()
+        Creates a new text data block that contains an empty json list, renames it to `name` and
+        returns it
+        """
         re_text = re.compile(r"^Text.[0-9]{3}$")
 
-        text_name = ""
-        text_index, max_index = 0, 0
-        for text in bpy.data.texts:
-            if re_text.match(text.name):
-                text_index = int(text.name[-3:])
-                if text_index > max_index:
-                    max_index = text_index
-                    text_name = text.name
-        if not text_name:
-            text_name = "Text"
+        bpy.ops.text.new()
 
-        bpy.data.texts[text_name].name = name
-        return bpy.data.texts[name]
+        # Find the newly created text file's identifier
+        ids = [text.name for text in bpy.data.texts if text.name.startswith("Text")]
+        id = max(ids)
 
-    def get_import_text_file_content(self):
-        import_text_file = bpy.data.texts.get("POWER_SEQUENCER_IMPORTS")
-        if not import_text_file:
-            import_text_file = self.create_text_file("POWER_SEQUENCER_IMPORTS")
-        content = import_text_file.as_string()
-        return content
+        text_file = bpy.data.texts[id]
+        text_file.name = name
+        return text_file
 
-    def find_new_files_to_import(self, files_dict):
-        imported_files_text = self.get_import_text_file_content()
-        imported_files = json.loads(imported_files_text) if imported_files_text else {}
-        files_to_import = {}
-        for key in files_dict.keys():
-            if key not in imported_files:
-                files_to_import[key] = files_dict[key]
-                continue
-            files_to_import[key] = [p for p in files_dict[key] if p not in set(imported_files[key])]
-            imported_files[key].extend(files_to_import[key])
+    def find_new_files_to_import(self, filepaths):
+        """
+        Gets and optionally creates the list of already imported files in this project
+        Returns a list of paths from filepaths that are not in the imported text file
+        """
+        text_file = (
+            bpy.data.texts.get("POWER_SEQUENCER_IMPORTS")
+            if "POWER_SEQUENCER_IMPORTS" in bpy.data.texts.keys()
+            else self.create_import_text_block("POWER_SEQUENCER_IMPORTS")
+        )
+        imported_files = json.loads(text_file.as_string())
+        files_to_import = [p for p in filepaths if p not in imported_files]
         return files_to_import
 
-    def import_videos(self, context, project_directory, videos_to_import):
+    def import_videos(self, context, videos_filepaths):
         """
         Imports a list of files using movie_strip_add
-        Checks if the scene's framerate changes after importing the strips
-        and if the video and audio strips' lengths are different,
-        in which case it means the framerate is different from the Blender
-        project
-
-        Returns the list of imported sequences and
-        an optional warning message if strips don't follow the project's fps
+        Returns the list of imported sequences
         """
-        import_frame = context.scene.frame_current
+        frame = context.scene.frame_current
 
-        imported_sequences, warnings = [], []
-        for index, f in enumerate(videos_to_import):
+        imported = []
+        for index, f in enumerate(videos_filepaths):
             is_first_import = index == 0
-            video_file_path = os.path.join(project_directory, f)
             bpy.ops.sequencer.movie_strip_add(
-                self.SEQUENCER_AREA,
-                filepath=video_file_path,
-                frame_start=import_frame,
+                self.sequencer_area,
+                filepath=f,
+                frame_start=frame,
                 sound=self.keep_audio,
                 use_framerate=is_first_import,
             )
-            imported_sequences.extend(context.selected_sequences)
-            import_frame = context.selected_sequences[0].frame_final_end
+            imported.extend(context.selected_sequences)
+            frame = context.selected_sequences[0].frame_final_end
 
-            # FIX audio strip with 1 extra frame
-            audio_strip = None
-            video_strip = None
-            for s in context.selected_sequences:
-                if s.type == "SOUND":
-                    audio_strip = s
-                elif s.type == "MOVIE":
-                    video_strip = s
+        return imported
 
-            if not audio_strip:
-                continue
-            strips_duration_difference = abs(
-                audio_strip.frame_final_end - video_strip.frame_final_end
-            )
-            if strips_duration_difference == 1:
-                audio_strip.frame_final_end = video_strip.frame_final_end
-            # TODO: defer warnings to the end of the operator's code
-            # Return a tuple of video, audio strip so you can compare them
-            # later
-            elif strips_duration_difference > 1:
-                warnings.append(bpy.path.basename(video_strip.filepath))
-        return imported_sequences, warnings
-
-    def import_audio(self, context, project_directory, audio_files):
+    def import_audios(self, context, audio_filepaths):
         """
-        Imports audio files as sound strips from absolute file paths
+        Imports audio files as sound strips from a list of absolute file paths
         Returns the list of newly imported audio files
         """
-        import_frame = context.scene.frame_current
-        new_sequences = []
-        for f in audio_files:
-            audio_abs_path = os.path.join(project_directory, f)
-            bpy.ops.sequencer.sound_strip_add(
-                self.SEQUENCER_AREA, filepath=audio_abs_path, frame_start=import_frame
-            )
-            new_sequences.extend(context.selected_sequences)
-            import_frame = context.selected_sequences[0].frame_final_end
-        return new_sequences
+        frame = context.scene.frame_current
+        imported = []
+        for f in audio_filepaths:
+            bpy.ops.sequencer.sound_strip_add(self.sequencer_area, filepath=f, frame_start=frame)
+            imported.extend(context.selected_sequences)
+            frame = context.selected_sequences[0].frame_final_end
+        return imported
 
-    def import_img(self, context, project_directory, img_files):
-        import_frame = context.scene.frame_current
+    def import_imgs(self, context, img_filepaths):
+        frame = context.scene.frame_current
         strip_length = convert_duration_to_frames(context, self.img_length)
         strip_padding = convert_duration_to_frames(context, self.img_padding)
+
         new_sequences = []
-        for f in img_files:
+        for f in img_filepaths:
             head, tail = os.path.split(f)
-            img_directory = os.path.join(project_directory, head)
-            img_file_dict = [{"name": tail}]
             bpy.ops.sequencer.image_strip_add(
-                self.SEQUENCER_AREA,
-                directory=img_directory,
-                files=img_file_dict,
-                frame_start=import_frame,
-                frame_end=import_frame + strip_length,
+                self.sequencer_area,
+                directory=head,
+                files=[{"name": tail}],
+                frame_start=frame,
+                frame_end=frame + strip_length,
             )
-            import_frame += strip_length + strip_padding
+            frame += strip_length + strip_padding
             new_sequences.extend(context.selected_sequences)
+
         return new_sequences
