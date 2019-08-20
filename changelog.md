@@ -12,11 +12,54 @@
 
 ### Improvements ###
 
-- trim_left_or_right_handles.py: trims ripple through the channel if you keep <kbd>Shift</kbd> down when running the operator. E.g. <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>K</kbd>
+- `Trim left or right handles`, formerly `Smart Snap`: 
+    - Trims now ripple through the channel if you keep <kbd>Shift</kbd> down. E.g. <kbd>Shift</kbd><kbd>Alt</kbd><kbd>K</kbd>
+    - Auto selects strips under the cursor if there is no selection
+- `Cut`: Select side based on mouse cursor position after cut
+- Various operators: use seconds instead of frames for duration.
+- Added new shortcuts to deselect strips left or right of the time cursor, <kbd>Shift</kbd><kbd>Q</kbd> and <kbd>Shift</kbd><kbd>E</kbd>
+- `Concatenate strips`: Add ability to trim and concatenate multicam, color, and adjustment strips
+- `Fade add`: improved usability, now tries to detect and respect existing fades, detects the strips' length to prevent errors, updates instantly as you increase the fade duration
+- `Mouse cut`: 
+    - Added snapping support with <kbd>Ctrl</kbd>
+    - You can now trim multiple sequences in a single channel
+    - Improved drawing
+    - Use gizmo color from the user's color theme
 
 ### Changes ###
 
 The code now follows the official Blender conventions for operator names etc. We also renamed some files and cleaned up some code to make it easier to browse and to maintain.
+
+- `Import local footage`: 
+    - Removed code to find an empty channel, use Blender 2.80's default behavior instead
+    - Use seconds for time
+    - Changed shortcut to shortcut to <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd>
+- `Render for web` now only applies a render preset, it does not render
+- Removed `border select` now we can click and drag to box select in the sequencer
+- Removed Remove unused shortcut for `Edit Crossfade`
+- Updated the Blender add-on updater to the latest version
+- Removed empty panel UI
+
+### Bug fixes ###
+
+- `Concatenate strips`: Fixed error from concatenating strips with effect sequences
+- `Clear Fades`: 
+    - Fixed wrong `eval`" string error
+    - Fixed clear fades not working with audio strips
+- `Remove gaps`: fixed strange ripple behavior
+- `Trim left or right handles`: fixed error when the time cursor didn't overlap strips
+- `Add speed`: fixed error with effect strips
+- `Import local footage`: 
+    - fixed importing hidden directories
+    - fixed error with gif files
+- `Mouse cut`: fixed error when trying to cut a transition effect strip
+- `Gap remove`: fixed error with effect strips
+- Fixed error when removing `crossfades` between effect strips
+- `Jump to cut`: 
+    - fixed skipping some cuts on short sequences
+    - fixed error when there was no animation data in the sequencer
+- `Channel offset`: fixed moving locked strips
+
 
 ### Support our work ###
 
