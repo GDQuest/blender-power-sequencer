@@ -10,6 +10,7 @@ class POWER_SEQUENCER_OT_trim_left_or_right_handles(bpy.types.Operator):
     Trims or extends the handle closest to the time cursor for all selected strips.
 
     If you keep the Shift key down, the edit will ripple through the timeline.
+    Auto selects sequences under the time cursor when you don't have a selection.
     """
 
     doc = {

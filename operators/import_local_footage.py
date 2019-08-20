@@ -11,7 +11,9 @@ from .utils.global_settings import Extensions
 
 class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
     """
-    Import video and audio from the project folder to VSE strips
+    *brief* Imports video, images, and audio from the project folder
+
+    Finds and imports all valid video, audio files, and pictures in the blend file's folder and subfolders, ignoring folders named BL_proxy.
     """
 
     doc = {

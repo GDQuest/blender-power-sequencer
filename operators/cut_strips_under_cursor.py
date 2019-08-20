@@ -4,10 +4,10 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
 
 
-class POWER_SEQUENCER_OT_cut_strips_under_cursor(bpy.types.Operator):
+class POWER_SEQUENCER_OT_split_strips_under_cursor(bpy.types.Operator):
     """
-    Cuts all strips under cursor (without needing selection first), including mutted strips. It
-    excludes locked strips
+    Splits all strips under cursor including muted strips, but excluding locked strips.
+    Auto selects sequences under the time cursor when you don't have a selection.
     """
 
     doc = {

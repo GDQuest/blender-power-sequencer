@@ -18,7 +18,7 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
     """
     *brief* Remove space between strips
 
-    Concatenates selected strips in a channel (removes the gap between them) If a single
+    Concatenates selected strips in a channel, i.e. removes the gap between them. If a single
     strip is selected, either the next strip in the channel will be concatenated, or all
     strips in the channel will be concatenated depending on which shortcut is used.
     """

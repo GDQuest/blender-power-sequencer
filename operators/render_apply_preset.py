@@ -6,7 +6,14 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_render_apply_preset(bpy.types.Operator):
     """
-    Set rendering, and encoding settings, and the output filename based on a preset
+    *Brief* Applies a rendering preset to the project
+
+    Sets rendering and encoding settings and an output filename based on a preset.
+
+    Available presets:
+
+    - YouTube: 1080p mp4 video encoded with H264 and AAC for audio, based on YouTube's recommended settings
+    - Twitter: 720p mp4 video
     """
 
     doc = {

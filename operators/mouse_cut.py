@@ -28,6 +28,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
     Click somehwere in the Sequencer to insert a cut, click and drag to trim
     With this function you can quickly cut and remove a section of strips while keeping or
     collapsing the remaining gap.
+    Press <kbd>Ctrl</kbd> to snap to cuts.
 
     A [video demo](https://youtu.be/GiLmDhmMVAM?t=1m35s) is available.
     """
