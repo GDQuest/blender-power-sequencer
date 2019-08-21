@@ -237,8 +237,8 @@ class POWER_SEQUENCER_MT_mouse(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.mouse_cut", text="Mouse Cut")
         layout.operator("power_sequencer.mouse_trim", text="Mouse Trim")
+        layout.operator("power_sequencer.mouse_trim_instantly", text="Mouse Trim Instantly")
 
 
 class POWER_SEQUENCER_MT_preview(bpy.types.Menu):

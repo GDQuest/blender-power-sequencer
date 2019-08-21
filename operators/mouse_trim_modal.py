@@ -23,9 +23,10 @@ if not bpy.app.background:
     SHADER = gpu.shader.from_builtin("2D_UNIFORM_COLOR")
 
 
-class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     """
     *brief* Cut or Trim strips quickly with the mouse cursor
+
 
     Click somehwere in the Sequencer to insert a cut, click and drag to trim
     With this function you can quickly cut and remove a section of strips while keeping or
@@ -89,7 +90,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     TABLET_TRIM_DISTANCE_THRESHOLD = 6
     trim_start, channel_start = 0, 0
-    trim_end, end_channel = 0, 0
+    trim_end, channel_end = 0, 0
     is_trimming = False
 
     mouse_start_y = -1.0
@@ -112,7 +113,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         self.use_audio_scrub = context.scene.use_audio_scrub
         context.scene.use_audio_scrub = False
 
-        self.update_time_cursor(context, event)
+        self.update_trim_end(context, event)
         self.trim_initialize(event)
         self.draw_start(context, event)
 
@@ -149,7 +150,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
                 self.mouse_start_y = event.mouse_region_y
 
             self.draw_stop()
-            self.update_time_cursor(context, event)
+            self.update_trim_end(context, event)
             self.trim_end = context.scene.frame_current
             self.draw_start(context, event)
             return {"PASS_THROUGH"}
@@ -158,7 +159,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     def trim_initialize(self, event):
         self.trim_start, self.channel_start = get_frame_and_channel(event)
-        self.trim_end = self.trim_start
+        self.trim_end, self.channel_end = self.trim_start, self.channel_start
         self.is_trimming = True
 
     def trim_apply(self, context, event):
@@ -178,14 +179,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             self.trim(context)
         self.is_trimming = False
 
-    def update_time_cursor(self, context, event):
-        frame = get_frame_and_channel(event)[0]
-
-        if event.ctrl:
-            self.trim_end = find_snap_candidate(context, frame)
-        else:
-            self.trim_end = frame
-
+    def update_trim_end(self, context, event):
+        frame, self.channel_end = get_frame_and_channel(event)
+        self.trim_end = find_snap_candidate(context, frame) if event.ctrl else frame
         context.scene.frame_current = self.trim_end
 
     def draw_start(self, context, event):
@@ -271,15 +267,14 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         trim_start = min(self.trim_start, self.trim_end)
         trim_end = max(self.trim_start, self.trim_end)
 
-        under_mouse = find_strips_mouse(
-            context, self.trim_start, self.channel_start, self.select_linked
-        )
-        channel = under_mouse[0].channel if len(under_mouse) > 0 else -1
+        channel_min = min(self.channel_start, self.channel_end)
+        channel_max = max(self.channel_start, self.channel_end)
+        channels = set(range(channel_min, channel_max + 1))
 
         for s in context.sequences:
             if s.lock:
                 continue
-            if self.select_mode == "CONTEXT" and channel != -1 and s.channel != channel:
+            if self.select_mode == "CONTEXT" and s.channel not in channels:
                 continue
 
             if trim_start <= s.frame_final_start and trim_end >= s.frame_final_end:

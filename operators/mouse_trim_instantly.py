@@ -7,9 +7,9 @@ from .utils.get_frame_range import get_frame_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
     """
-    *brief* Trim strip from a start to an end frame
+    *brief* Trim strip from a start to an end frame instantly
 
 
     Trims a frame range or a selection from a start to an end frame.
