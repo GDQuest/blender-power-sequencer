@@ -7,11 +7,15 @@ from math import floor
 
 from .utils.convert_duration_to_frames import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.workaround_audio_bug import sequencer_workaround_2_80_audio_bug
 
 
 class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
     """
-    Trim to surrounding cuts
+    *Brief* Automatically trim to surrounding cuts with some time offset
+
+    Finds the two cuts closest to the mouse cursor and trims the footage in between, leaving a little time offset. It's useful after you removed some bad audio but you need to keep some video around for a transition.
+    By default, the tool leaves 0.2 a seconds margin on either side of the trim.
     """
 
     doc = {
@@ -75,10 +79,6 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         )
         trim_start, trim_end = (left_cut_frame + margin_frame, right_cut_frame - margin_frame)
 
-        # print("start: {!s}, end: {!s}".format(left_cut_frame, right_cut_frame))
-        # for s in strips_to_trim:
-        #     print(s.name)
-
         for s in strips_to_trim:
             # If the strip is larger than the range to trim cut it in three
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
@@ -108,13 +108,8 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             context.scene.frame_current = trim_start
 
         # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-        for s in bpy.context.sequences:
-            if s.lock:
-                continue
-            s.select = True
-            bpy.ops.transform.seq_slide(value=(0, 0))
-            s.select = False
-            break
+        sequencer_workaround_2_80_audio_bug(context)
+
         return {"FINISHED"}
 
     def find_strips_in_range(

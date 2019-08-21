@@ -8,6 +8,7 @@ from mathutils import Vector
 from .utils.find_strips_mouse import find_strips_mouse
 from .utils.trim_strips import trim_strips
 from .utils.find_snap_candidate import find_snap_candidate
+from .utils.workaround_audio_bug import sequencer_workaround_2_80_audio_bug
 
 from .utils.draw import (
     draw_line,
@@ -133,13 +134,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             self.draw_stop()
 
             # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-            for s in bpy.context.sequences:
-                if s.lock:
-                    continue
-                s.select = True
-                bpy.ops.transform.seq_slide(value=(0, 0))
-                s.select = False
-                break
+            sequencer_workaround_2_80_audio_bug(context)
 
             context.scene.use_audio_scrub = self.use_audio_scrub
             return {"FINISHED"}
@@ -316,7 +311,9 @@ def draw(
     bgl.glEnable(bgl.GL_BLEND)
 
     bgl.glLineWidth(3)
-    draw_rectangle(SHADER, Vector((start.x, y_min)), Vector((end.x - start.x, abs(y_min - y_max))), color_fill)
+    draw_rectangle(
+        SHADER, Vector((start.x, y_min)), Vector((end.x - start.x, abs(y_min - y_max))), color_fill
+    )
     # Vertical lines
     draw_line(SHADER, Vector((start.x, y_min)), Vector((start.x, y_max)), color_line)
     draw_line(SHADER, Vector((end.x, y_min)), Vector((end.x, y_max)), color_line)
