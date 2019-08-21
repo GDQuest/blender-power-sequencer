@@ -13,11 +13,6 @@ def convert_duration_to_frames(context, duration):
     return round(duration * context.scene.render.fps / context.scene.render.fps_base)
 
 
-def find_gaps(context, sequences):
-    sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start", "frame_final_end"))
-    # Detect disconnected sequence blocks, starting from first frame in the sequencer
-
-
 def find_linked(context, sequences, selected_sequences):
     """
     Takes a list of sequences and returns a list of all the sequences
@@ -184,22 +179,6 @@ def get_mouse_frame_and_channel(context, event):
     view2d = context.region.view2d
     frame, channel = view2d.region_to_view(event.mouse_region_x, event.mouse_region_y)
     return round(frame), floor(channel)
-
-
-def is_ffmpeg_available():
-    """
-    Check if ffmpeg is installed and usable
-
-    Returns
-    -------
-    bool
-    """
-    try:
-        subprocess.call(["ffmpeg", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-
-    except OSError:
-        return False
 
 
 def is_in_range(context, sequence, start, end):

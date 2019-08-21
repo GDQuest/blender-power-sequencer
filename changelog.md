@@ -16,6 +16,7 @@
 ### Changes ###
 
 - Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`
+- Source code: merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

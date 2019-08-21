@@ -51,9 +51,7 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
             self.report({"ERROR"}, "Scipy must be installed to align audios")
             return {"FINISHED"}
 
-        try:
-            from .utils.functions import is_ffmpeg_available
-        except ImportError:
+        if not is_ffmpeg_available():
             self.report({"ERROR"}, "ffmpeg must be installed to align audios")
             return {"FINISHED"}
 
@@ -83,3 +81,14 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
         self.report({"INFO"}, "Alignment score: " + str(round(score, 1)))
 
         return {"FINISHED"}
+
+
+def is_ffmpeg_available():
+    """
+    Returns true if ffmpeg is installed and available from the PATH
+    """
+    try:
+        subprocess.call(["ffmpeg", "--help"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except OSError:
+        return False
