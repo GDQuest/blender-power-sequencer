@@ -1,10 +1,23 @@
 # Changelog! What's new in the Add-On
 
-## Power Sequencer 1.3: Blender 2.80 support ##
+## [in development] Power Sequencer 1.4 ##
 
 *These are the features and fixes we added lately, and that'll be in the next major update.*
 
 ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
+
+### Improvements ###
+
+- `Mouse trim`: 
+    - Allows you to trim strips in multiple channels freely
+    - The drawing now shows the trimmed area with a yellow overlay
+- `Import Local Footage` does not impose a folder structure on you anymore
+
+### Changes ###
+
+- Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`
+
+## Power Sequencer 1.3: Blender 2.80 support ##
 
 ### 🎥🕺 New features ###
 
