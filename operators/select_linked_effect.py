@@ -1,6 +1,6 @@
 import bpy
 
-from .utils.find_linked_sequences import find_linked
+from .utils.functions import find_linked
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

@@ -5,7 +5,7 @@ from operator import attrgetter
 
 import bpy
 
-from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
 from .utils.global_settings import (
     Extensions,

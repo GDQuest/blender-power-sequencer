@@ -1,6 +1,6 @@
 import bpy
 
-from .utils.find_neighboring_markers import find_neighboring_markers
+from .utils.functions import find_neighboring_markers
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

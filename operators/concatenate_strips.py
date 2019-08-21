@@ -2,8 +2,8 @@ import bpy
 from operator import attrgetter
 
 from .utils.global_settings import SequenceTypes
-from .utils.find_sequences_after import find_sequences_after
-from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.functions import find_sequences_after
+from .utils.functions import get_mouse_frame_and_channel
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

@@ -52,7 +52,7 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
             return {"FINISHED"}
 
         try:
-            from .utils import is_ffmpeg_available
+            from .utils.functions import is_ffmpeg_available
         except ImportError:
             self.report({"ERROR"}, "ffmpeg must be installed to align audios")
             return {"FINISHED"}

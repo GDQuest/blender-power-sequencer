@@ -5,10 +5,10 @@ from gpu_extras.batch import batch_for_shader
 import math
 from mathutils import Vector
 
-from .utils.find_strips_mouse import find_strips_mouse
-from .utils.trim_strips import trim_strips
-from .utils.find_snap_candidate import find_snap_candidate
-from .utils.workaround_audio_bug import sequencer_workaround_2_80_audio_bug
+from .utils.functions import find_strips_mouse
+from .utils.functions import trim_strips
+from .utils.functions import find_snap_candidate
+from .utils.functions import sequencer_workaround_2_80_audio_bug
 
 from .utils.draw import (
     draw_line,

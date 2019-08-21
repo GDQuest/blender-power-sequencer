@@ -5,9 +5,9 @@ margin. Removes the newly formed gap.
 import bpy
 from math import floor
 
-from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.workaround_audio_bug import sequencer_workaround_2_80_audio_bug
+from .utils.functions import sequencer_workaround_2_80_audio_bug
 
 
 class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):

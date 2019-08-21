@@ -1,11 +1,11 @@
 import bpy
 from math import floor
 
-from .utils.find_strips_mouse import find_strips_mouse
-from .utils.trim_strips import trim_strips
-from .utils.get_frame_range import get_frame_range
+from .utils.functions import find_strips_mouse
+from .utils.functions import trim_strips
+from .utils.functions import get_frame_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.workaround_audio_bug import sequencer_workaround_2_80_audio_bug
+from .utils.functions import sequencer_workaround_2_80_audio_bug
 
 
 class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):

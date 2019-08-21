@@ -1,8 +1,8 @@
 import bpy
 import operator
 
-from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
-from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.functions import get_mouse_frame_and_channel
+from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

@@ -2,8 +2,8 @@ import bpy
 from math import ceil
 
 from .utils.global_settings import SequenceTypes
-from .utils.slice_contiguous_sequence_list import slice_selection
-from .utils.find_linked_sequences import find_linked
+from .utils.functions import slice_selection
+from .utils.functions import find_linked
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
