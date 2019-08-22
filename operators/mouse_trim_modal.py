@@ -107,6 +107,10 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     event_shift_released = True
     event_alt_released = True
 
+    event_ripple = "alt"
+    event_snap = "ctrl"
+    event_select_mode = "SHIFT"
+
     @classmethod
     def poll(cls, context):
         return context.sequences is not None
@@ -130,7 +134,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         if event.type in {"ESC"}:
             self.draw_stop()
             context.scene.use_audio_scrub = self.use_audio_scrub
-            return {"CANCELLED"}
+            return {"FINISHED"}
 
         # Start and end trim
         if event.type == "LEFTMOUSE" or (event.type in ["RET", "T"] and event.value == "PRESS"):
@@ -152,6 +156,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             self.update_trim_end(context, event)
             self.trim_end = context.scene.frame_current
             self.draw_start(context, event)
+            self.update_header_text(context, event)
             return {"PASS_THROUGH"}
 
         return {"RUNNING_MODAL"}
@@ -180,7 +185,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     def update_trim_end(self, context, event):
         frame, self.channel_end = get_frame_and_channel(event)
-        self.trim_end = find_snap_candidate(context, frame) if event.ctrl else frame
+        self.trim_end = (
+            find_snap_candidate(context, frame) if getattr(event, self.event_snap, False) else frame
+        )
         context.scene.frame_current = self.trim_end
 
     def draw_start(self, context, event):
@@ -204,6 +211,25 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     def draw_stop(self):
         if self.draw_handler:
             bpy.types.SpaceSequenceEditor.draw_handler_remove(self.draw_handler, "WINDOW")
+
+    def update_header_text(self, context, event):
+        text = (
+            "Trim from {} to {}".format(self.trim_start, self.trim_end)
+            + ", "
+            + "({}) Gap Remove {}".format(
+                self.event_ripple.capitalize(), "ON" if self.gap_remove else "OFF"
+            )
+            + ", "
+            + "({}) Mode: {}".format(
+                self.event_select_mode.capitalize(), self.select_mode.capitalize()
+            )
+            + ", "
+            + "({}) Snap: {}".format(
+                self.event_snap.capitalize(),
+                "ON" if getattr(event, self.event_snap, False) else "OFF",
+            )
+        )
+        context.area.header_text_set(text)
 
     def cut(self, context):
         to_select = self.find_strips_to_cut(context)

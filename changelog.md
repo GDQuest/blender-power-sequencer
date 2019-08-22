@@ -11,12 +11,15 @@
 - `Mouse trim`: 
     - Allows you to trim strips in multiple channels freely
     - The drawing now shows the trimmed area with a yellow overlay
+    - Displays shortcuts and information in the Sequencer's header
 - `Import Local Footage` does not impose a folder structure on you anymore
 
 ### Changes ###
 
 - Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`
-- Source code: merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
+- Source code: 
+    - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
+    - Improved and simplified code around various operators
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 
