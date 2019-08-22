@@ -49,9 +49,38 @@ class SequenceTypes:
     CUTABLE = VIDEO + SOUND + IMAGE + ("MULTICAM", "COLOR", "ADJUSTMENT")
 
 
-EXTENSIONS_IMG = ('jpeg', 'jpg', 'png', 'tga', 'tiff', 'tif', 'exr', 'hdr', 'avi', 'mov', 'mp4', 'ogg', 'bmp', 'cin', 'dpx', 'psd')
+EXTENSIONS_IMG = (
+    "jpeg",
+    "jpg",
+    "png",
+    "tga",
+    "tiff",
+    "tif",
+    "exr",
+    "hdr",
+    "avi",
+    "mov",
+    "mp4",
+    "ogg",
+    "bmp",
+    "cin",
+    "dpx",
+    "psd",
+)
 EXTENSIONS_AUDIO = (".wav", ".mp3", ".ogg", ".flac", ".opus")
-EXTENSIONS_VIDEO = (".mp4", ".avi", ".mts", ".flv", ".mkv", ".mov", ".mpg", ".mpeg", ".vob", ".ogv", "webm")
+EXTENSIONS_VIDEO = (
+    ".mp4",
+    ".avi",
+    ".mts",
+    ".flv",
+    ".mkv",
+    ".mov",
+    ".mpg",
+    ".mpeg",
+    ".vob",
+    ".ogv",
+    "webm",
+)
 EXTENSIONS_ALL = tuple(list(EXTENSIONS_IMG) + list(EXTENSIONS_AUDIO) + list(EXTENSIONS_VIDEO))
 
 
@@ -59,11 +88,8 @@ class Extensions:
     """
     Tuples of file types for checks when importing files
     """
-    DICT = {
-        "img": EXTENSIONS_IMG,
-        "audio": EXTENSIONS_AUDIO,
-        "video": EXTENSIONS_VIDEO,
-    }
+
+    DICT = {"img": EXTENSIONS_IMG, "audio": EXTENSIONS_AUDIO, "video": EXTENSIONS_VIDEO}
 
 
 class SearchMode:
