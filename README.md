@@ -4,7 +4,7 @@
 </h1>
 
 <p align='center'>
-    <img src="https://i.imgur.com/LbxKduw.png" alt="Power Sequencer logo" />
+    <img src="https://i.imgur.com/kLukwpL.png" alt="Power Sequencer logo" />
 </p>
 
 Power Sequencer brings smart new editing features to edit faster with Blender's Video Sequence Editor. It is completely Free and Open Source.
