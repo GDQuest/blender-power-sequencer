@@ -12,6 +12,7 @@
     - Allows you to trim strips in multiple channels freely
     - The drawing now shows the trimmed area with a yellow overlay
     - Displays shortcuts and information in the Sequencer's header
+    - Change the trim side on the fly by pressing the letter <kbd>O</kbd>
 - `Import Local Footage` does not impose a folder structure on you anymore
 
 ### Changes ###

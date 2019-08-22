@@ -94,6 +94,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     )
 
     TABLET_TRIM_DISTANCE_THRESHOLD = 6
+    # Don't rename these variables, we're using setattr to access them dynamically
     trim_start, channel_start = 0, 0
     trim_end, channel_end = 0, 0
     is_trimming = False
@@ -104,12 +105,15 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     use_audio_scrub = False
 
+    trim_side = "end"
+
     event_shift_released = True
     event_alt_released = True
 
     event_ripple = "alt"
     event_snap = "ctrl"
     event_select_mode = "SHIFT"
+    event_change_side = "O"
 
     @classmethod
     def poll(cls, context):
@@ -122,7 +126,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.use_audio_scrub = context.scene.use_audio_scrub
         context.scene.use_audio_scrub = False
 
-        self.update_trim_end(context, event)
+        self.update_frame(context, event)
         self.trim_initialize(event)
         self.draw_start(context, event)
 
@@ -130,6 +134,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         return {"RUNNING_MODAL"}
 
     def modal(self, context, event):
+
+        if event.type == self.event_change_side and event.value == "PRESS":
+            self.trim_side = "start" if self.trim_side == "end" else "end"
 
         if event.type in {"ESC"}:
             self.draw_stop()
@@ -153,8 +160,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 self.mouse_start_y = event.mouse_region_y
 
             self.draw_stop()
-            self.update_trim_end(context, event)
-            self.trim_end = context.scene.frame_current
+            self.update_frame(context, event)
             self.draw_start(context, event)
             self.update_header_text(context, event)
             return {"PASS_THROUGH"}
@@ -183,12 +189,14 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             self.trim(context)
         self.is_trimming = False
 
-    def update_trim_end(self, context, event):
-        frame, self.channel_end = get_frame_and_channel(event)
-        self.trim_end = (
+    def update_frame(self, context, event):
+        frame, channel = get_frame_and_channel(event)
+        frame_trim = (
             find_snap_candidate(context, frame) if getattr(event, self.event_snap, False) else frame
         )
-        context.scene.frame_current = self.trim_end
+        setattr(self, "channel_" + self.trim_side, channel)
+        setattr(self, "trim_" + self.trim_side, frame_trim)
+        context.scene.frame_current = getattr(self, "trim_" + self.trim_side)
 
     def draw_start(self, context, event):
         """Initializes the drawing handler, see draw()"""
@@ -228,6 +236,8 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 self.event_snap.capitalize(),
                 "ON" if getattr(event, self.event_snap, False) else "OFF",
             )
+            + ", "
+            + "({}) Change Side".format(self.event_change_side)
         )
         context.area.header_text_set(text)
 
