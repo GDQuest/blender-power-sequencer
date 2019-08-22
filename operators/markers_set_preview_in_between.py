@@ -1,6 +1,6 @@
 import bpy
 
-from .utils.find_neighboring_markers import find_neighboring_markers
+from .utils.functions import find_neighboring_markers
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
@@ -47,7 +47,7 @@ class POWER_SEQUENCER_OT_set_preview_between_markers(bpy.types.Operator):
                 context.scene.sequence_editor.sequences, key=attrgetter("frame_final_end")
             ).frame_final_end
 
-        from .utils.sequences import set_preview_range
+        from .utils.functions import set_preview_range
 
         set_preview_range(context, frame_start, frame_end)
         return {"FINISHED"}

@@ -1,7 +1,7 @@
 import bpy
 
-from .utils.find_sequences_after import find_sequences_after
-from .utils.convert_duration_to_frames import convert_duration_to_frames
+from .utils.functions import find_sequences_after
+from .utils.functions import convert_duration_to_frames
 from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 

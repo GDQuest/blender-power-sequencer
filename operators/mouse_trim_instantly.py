@@ -1,15 +1,16 @@
 import bpy
 from math import floor
 
-from .utils.find_strips_mouse import find_strips_mouse
-from .utils.trim_strips import trim_strips
-from .utils.get_frame_range import get_frame_range
+from .utils.functions import find_strips_mouse
+from .utils.functions import trim_strips
+from .utils.functions import get_frame_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.functions import sequencer_workaround_2_80_audio_bug
 
 
-class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
     """
-    *brief* Trim strip from a start to an end frame
+    *brief* Trim strip from a start to an end frame instantly
 
 
     Trims a frame range or a selection from a start to an end frame.
@@ -113,12 +114,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             context.scene.frame_current = self.frame_start if self.frame_start else frame
 
         # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-        for s in bpy.context.sequences:
-            if s.lock:
-                continue
-            s.select = True
-            bpy.ops.transform.seq_slide(value=(0, 0))
-            s.select = False
-            break
+        sequencer_workaround_2_80_audio_bug(context)
 
         return {"FINISHED"}

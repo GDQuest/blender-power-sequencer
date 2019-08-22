@@ -6,7 +6,7 @@ import bpy
 
 from math import floor
 
-from .utils.calculate_distance import calculate_distance
+from .utils.functions import calculate_distance
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

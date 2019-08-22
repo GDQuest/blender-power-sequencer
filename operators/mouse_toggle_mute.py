@@ -2,7 +2,7 @@
 import bpy
 from math import floor
 
-from .utils.find_strips_mouse import find_strips_mouse
+from .utils.functions import find_strips_mouse
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 

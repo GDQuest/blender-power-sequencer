@@ -3,6 +3,7 @@
 import blf
 from gpu_extras.batch import batch_for_shader
 from mathutils import Vector
+import math
 
 
 def get_color_gizmo_primary(context):
@@ -53,14 +54,22 @@ def draw_rectangle(shader, origin, size, color=(1.0, 1.0, 1.0, 1.0)):
     batch.draw(shader)
 
 
-def draw_triangle(point_1, point_2, point_3, color=(1.0, 1.0, 1.0, 1.0)):
+def draw_triangle(shader, point_1, point_2, point_3, color=(1.0, 1.0, 1.0, 1.0)):
     vertices = (point_1, point_2, point_3)
     indices = ((0, 1, 2),)
-    shader = gpu.shader.from_builtin("2D_UNIFORM_COLOR")
     batch = batch_for_shader(shader, "TRIS", {"pos": vertices}, indices=indices)
     shader.bind()
     shader.uniform_float("color", color)
     batch.draw(shader)
+
+
+def draw_triangle_equilateral(shader, center, radius, rotation=0.0, color=(1.0, 1.0, 1.0, 1.0)):
+    points = []
+    for i in range(3):
+        angle = i * math.pi * 2 / 3 + rotation
+        offset = Vector((radius * math.cos(angle), radius * math.sin(angle)))
+        points.append(center + offset)
+    draw_triangle(shader, *points, color)
 
 
 def draw_text(x, y, size, text, justify="left", color=(1.0, 1.0, 1.0, 1.0)):

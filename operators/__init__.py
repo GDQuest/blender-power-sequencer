@@ -34,10 +34,10 @@ from .markers_snap_matching_strips import POWER_SEQUENCER_OT_markers_snap_matchi
 from .meta_resize_to_content import POWER_SEQUENCER_OT_meta_resize_to_content
 from .meta_ungroup_and_trim import POWER_SEQUENCER_OT_meta_ungroup_and_trim
 from .meta_trim_content_to_bounds import POWER_SEQUENCER_OT_meta_trim_content_to_bounds
-from .mouse_cut import POWER_SEQUENCER_OT_mouse_cut
+from .mouse_trim_modal import POWER_SEQUENCER_OT_mouse_trim
 from .mouse_space_strips import POWER_SEQUENCER_OT_mouse_space_strips
 from .mouse_toggle_mute import POWER_SEQUENCER_OT_mouse_toggle_mute
-from .mouse_trim import POWER_SEQUENCER_OT_mouse_trim
+from .mouse_trim_instantly import POWER_SEQUENCER_OT_mouse_trim_instantly
 from .open_project_directory import POWER_SEQUENCER_OT_open_project_directory
 from .preview_closest_cut import POWER_SEQUENCER_OT_preview_closest_cut
 from .preview_to_selection import POWER_SEQUENCER_OT_preview_to_selection
@@ -102,10 +102,10 @@ classes = [
     POWER_SEQUENCER_OT_meta_resize_to_content,
     POWER_SEQUENCER_OT_meta_ungroup_and_trim,
     POWER_SEQUENCER_OT_meta_trim_content_to_bounds,
-    POWER_SEQUENCER_OT_mouse_cut,
+    POWER_SEQUENCER_OT_mouse_trim,
     POWER_SEQUENCER_OT_mouse_space_strips,
     POWER_SEQUENCER_OT_mouse_toggle_mute,
-    POWER_SEQUENCER_OT_mouse_trim,
+    POWER_SEQUENCER_OT_mouse_trim_instantly,
     POWER_SEQUENCER_OT_open_project_directory,
     POWER_SEQUENCER_OT_preview_closest_cut,
     POWER_SEQUENCER_OT_preview_to_selection,

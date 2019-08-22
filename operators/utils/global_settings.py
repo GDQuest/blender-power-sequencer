@@ -49,20 +49,47 @@ class SequenceTypes:
     CUTABLE = VIDEO + SOUND + IMAGE + ("MULTICAM", "COLOR", "ADJUSTMENT")
 
 
+EXTENSIONS_IMG = (
+    "jpeg",
+    "jpg",
+    "png",
+    "tga",
+    "tiff",
+    "tif",
+    "exr",
+    "hdr",
+    "avi",
+    "mov",
+    "mp4",
+    "ogg",
+    "bmp",
+    "cin",
+    "dpx",
+    "psd",
+)
+EXTENSIONS_AUDIO = (".wav", ".mp3", ".ogg", ".flac", ".opus")
+EXTENSIONS_VIDEO = (
+    ".mp4",
+    ".avi",
+    ".mts",
+    ".flv",
+    ".mkv",
+    ".mov",
+    ".mpg",
+    ".mpeg",
+    ".vob",
+    ".ogv",
+    "webm",
+)
+EXTENSIONS_ALL = tuple(list(EXTENSIONS_IMG) + list(EXTENSIONS_AUDIO) + list(EXTENSIONS_VIDEO))
+
+
 class Extensions:
     """
     Tuples of file types for checks when importing files
-    Attributes:
-        DICT: A dictionary of file types. Each key (IMG, AUDIO, VIDEO, PSD) contains a set
-        of strings that represent a file name with a wildcard and extension ("*.ext"). To
-        use with the glob builtin module.
     """
 
-    DICT = {
-        "img": (".png", ".jpg", ".jpeg"),
-        "audio": (".wav", ".mp3", ".ogg"),
-        "video": (".mp4", ".avi", ".mts", ".flv", ".mkv", ".mov"),
-    }
+    DICT = {"img": EXTENSIONS_IMG, "audio": EXTENSIONS_AUDIO, "video": EXTENSIONS_VIDEO}
 
 
 class SearchMode:

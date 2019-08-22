@@ -2,15 +2,21 @@ import bpy
 import bgl
 import gpu
 from gpu_extras.batch import batch_for_shader
-from math import floor
+import math
 from mathutils import Vector
 
-from .utils.find_strips_mouse import find_strips_mouse
-from .utils.trim_strips import trim_strips
-from .utils.find_snap_candidate import find_snap_candidate
+from .utils.functions import (
+    find_strips_mouse,
+    trim_strips,
+    find_snap_candidate,
+    find_closest_surrounding_cuts,
+    sequencer_workaround_2_80_audio_bug,
+)
 
 from .utils.draw import (
     draw_line,
+    draw_rectangle,
+    draw_triangle_equilateral,
     draw_arrow_head,
     get_color_gizmo_primary,
     get_color_gizmo_secondary,
@@ -21,9 +27,10 @@ if not bpy.app.background:
     SHADER = gpu.shader.from_builtin("2D_UNIFORM_COLOR")
 
 
-class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
+class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     """
     *brief* Cut or Trim strips quickly with the mouse cursor
+
 
     Click somehwere in the Sequencer to insert a cut, click and drag to trim
     With this function you can quickly cut and remove a section of strips while keeping or
@@ -88,7 +95,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     TABLET_TRIM_DISTANCE_THRESHOLD = 6
     trim_start, channel_start = 0, 0
-    trim_end, end_channel = 0, 0
+    trim_end, channel_end = 0, 0
     is_trimming = False
 
     mouse_start_y = -1.0
@@ -111,7 +118,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         self.use_audio_scrub = context.scene.use_audio_scrub
         context.scene.use_audio_scrub = False
 
-        self.update_time_cursor(context, event)
+        self.update_trim_end(context, event)
         self.trim_initialize(event)
         self.draw_start(context, event)
 
@@ -131,13 +138,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             self.draw_stop()
 
             # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-            for s in bpy.context.sequences:
-                if s.lock:
-                    continue
-                s.select = True
-                bpy.ops.transform.seq_slide(value=(0, 0))
-                s.select = False
-                break
+            sequencer_workaround_2_80_audio_bug(context)
 
             context.scene.use_audio_scrub = self.use_audio_scrub
             return {"FINISHED"}
@@ -148,7 +149,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
                 self.mouse_start_y = event.mouse_region_y
 
             self.draw_stop()
-            self.update_time_cursor(context, event)
+            self.update_trim_end(context, event)
             self.trim_end = context.scene.frame_current
             self.draw_start(context, event)
             return {"PASS_THROUGH"}
@@ -157,7 +158,7 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
 
     def trim_initialize(self, event):
         self.trim_start, self.channel_start = get_frame_and_channel(event)
-        self.trim_end = self.trim_start
+        self.trim_end, self.channel_end = self.trim_start, self.channel_start
         self.is_trimming = True
 
     def trim_apply(self, context, event):
@@ -177,14 +178,9 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
             self.trim(context)
         self.is_trimming = False
 
-    def update_time_cursor(self, context, event):
-        frame = get_frame_and_channel(event)[0]
-
-        if event.ctrl:
-            self.trim_end = find_snap_candidate(context, frame)
-        else:
-            self.trim_end = frame
-
+    def update_trim_end(self, context, event):
+        frame, self.channel_end = get_frame_and_channel(event)
+        self.trim_end = find_snap_candidate(context, frame) if event.ctrl else frame
         context.scene.frame_current = self.trim_end
 
     def draw_start(self, context, event):
@@ -270,15 +266,14 @@ class POWER_SEQUENCER_OT_mouse_cut(bpy.types.Operator):
         trim_start = min(self.trim_start, self.trim_end)
         trim_end = max(self.trim_start, self.trim_end)
 
-        under_mouse = find_strips_mouse(
-            context, self.trim_start, self.channel_start, self.select_linked
-        )
-        channel = under_mouse[0].channel if len(under_mouse) > 0 else -1
+        channel_min = min(self.channel_start, self.channel_end)
+        channel_max = max(self.channel_start, self.channel_end)
+        channels = set(range(channel_min, channel_max + 1))
 
         for s in context.sequences:
             if s.lock:
                 continue
-            if self.select_mode == "CONTEXT" and channel != -1 and s.channel != channel:
+            if self.select_mode == "CONTEXT" and s.channel not in channels:
                 continue
 
             if trim_start <= s.frame_final_start and trim_end >= s.frame_final_end:
@@ -304,34 +299,43 @@ def draw(
     """
     view_to_region = bpy.context.region.view2d.view_to_region
 
-    # Calculate coordinates
-    start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
-    end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
+    # Detect and draw the gap's limits if not trimming any strips
+    if not target_strips:
+        strip_before, strip_after = find_closest_surrounding_cuts(context, frame_end)
+        start = Vector((view_to_region(strip_before.frame_final_end, 1)[0], mouse_y))
+        end = Vector((view_to_region(strip_after.frame_final_start, 1)[0], mouse_y))
+        channels = [strip_before.channel, strip_after.channel]
+    else:
+        start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
+        end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
+        channels = set([s.channel for s in target_strips])
 
-    channels = set([s.channel for s in target_strips])
-    y_min = view_to_region(0, floor(min(channels)))[1]
-    y_max = view_to_region(0, floor(max(channels) + 1))[1]
+    y_min = view_to_region(0, math.floor(min(channels)))[1]
+    y_max = view_to_region(0, math.floor(max(channels) + 1))[1]
 
     # Draw
     color_line = get_color_gizmo_primary(context)
     color_fill = color_line.copy()
-    color_fill[-1] = 0.4
+    color_fill[-1] = 0.3
 
     bgl.glEnable(bgl.GL_BLEND)
 
     bgl.glLineWidth(3)
-    draw_line(SHADER, start, end, color_line)
+    draw_rectangle(
+        SHADER, Vector((start.x, y_min)), Vector((end.x - start.x, abs(y_min - y_max))), color_fill
+    )
+    # Vertical lines
     draw_line(SHADER, Vector((start.x, y_min)), Vector((start.x, y_max)), color_line)
     draw_line(SHADER, Vector((end.x, y_min)), Vector((end.x, y_max)), color_line)
 
-    if draw_arrows:
-        center_arrow_1 = Vector([start.x + ((end.x - start.x) * 0.25), start.y])
-        center_arrow_2 = Vector([end.x - ((end.x - start.x) * 0.25), start.y])
-        arrow_size = Vector([10, 20])
-
-        bgl.glLineWidth(6)
-        draw_arrow_head(SHADER, center_arrow_1, arrow_size, color=color_line)
-        draw_arrow_head(SHADER, center_arrow_2, arrow_size, points_right=False, color=color_line)
+    offset = 20.0
+    radius = 12.0
+    if draw_arrows and end.x - start.x > 2 * offset + radius:
+        center_y = (y_max + y_min) / 2.0
+        center_1 = Vector((start.x + offset, center_y))
+        center_2 = Vector((end.x - offset, center_y))
+        draw_triangle_equilateral(SHADER, center_1, radius, color=color_line)
+        draw_triangle_equilateral(SHADER, center_2, radius, math.pi, color=color_line)
 
     bgl.glLineWidth(1)
     bgl.glDisable(bgl.GL_BLEND)
@@ -344,4 +348,4 @@ def get_frame_and_channel(event):
     frame_float, channel_float = bpy.context.region.view2d.region_to_view(
         x=event.mouse_region_x, y=event.mouse_region_y
     )
-    return round(frame_float), floor(channel_float)
+    return round(frame_float), math.floor(channel_float)

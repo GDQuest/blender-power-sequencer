@@ -1,7 +1,7 @@
 import bpy
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.functions import get_mouse_frame_and_channel
 
 
 class POWER_SEQUENCER_OT_split_strips_under_cursor(bpy.types.Operator):

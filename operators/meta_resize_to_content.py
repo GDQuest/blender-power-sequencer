@@ -1,5 +1,5 @@
 import bpy
-from .utils.get_frame_range import get_frame_range
+from .utils.functions import get_frame_range
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 

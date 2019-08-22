@@ -2,10 +2,10 @@ import bpy
 from operator import attrgetter
 
 from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
-from .utils.get_frame_range import get_frame_range
-from .utils.get_mouse_view_coords import get_mouse_frame_and_channel
+from .utils.functions import get_frame_range
+from .utils.functions import get_mouse_frame_and_channel
 from .utils.global_settings import SequenceTypes
-from .utils.slice_contiguous_sequence_list import slice_selection
+from .utils.functions import slice_selection
 
 
 class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
