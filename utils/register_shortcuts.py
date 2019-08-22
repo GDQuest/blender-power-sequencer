@@ -1,6 +1,6 @@
 import bpy
 import operator as op
-from .. import operators as ops
+from .. import operators
 from itertools import groupby
 
 
@@ -20,22 +20,22 @@ def set_keymap_property(properties, property_name, value):
 
 
 def register_shortcuts():
-    def keymapgetter(o):
-        return o[1]["keymap"]
+    def keymapgetter(operator):
+        return operator[1]["keymap"]
 
-    os = dir(ops)
-    os = filter(lambda o: o[0].isupper(), os)
-    os = map(lambda o: op.attrgetter(o), os)
-    os = map(lambda o: o(ops), os)
-    os = map(lambda o: op.attrgetter("bl_idname", "doc")(o), os)
-    os = {k: v for k, v in os if v != {}}
-    os.update(ops.doc)
-    os = sorted(os.items(), key=keymapgetter)
-    os = groupby(os, key=keymapgetter)
+    data = dir(operators)
+    data = filter(lambda operator: operator[0].isupper(), data)
+    data = map(lambda operator: op.attrgetter(operator), data)
+    data = map(lambda operator: operator(operators), data)
+    data = map(lambda operator: op.attrgetter("bl_idname", "doc")(operator), data)
+    data = {k: v for k, v in data if v != {}}
+    data.update(operators.doc)
+    data = sorted(data.items(), key=keymapgetter)
+    data = groupby(data, key=keymapgetter)
 
     kms = []
     wm = bpy.context.window_manager
-    for name, group in os:
+    for name, group in data:
         km = wm.keyconfigs.addon.keymaps.new(name=name, space_type=keymaps_meta[name])
         for bl_idname, d in group:
             for s in d["shortcuts"]:
