@@ -284,6 +284,39 @@ def trim_strips(
     return {"FINISHED"}
 
 
+def find_closest_surrounding_cuts(context, frame):
+    """
+    Returns a tuple of (strip_before, strip_after), the two closest sequences around a gap.
+    If the frame is in the middle of a strip, both strips may be the same.
+    """
+    strip_before = max(
+        context.sequences,
+        key=lambda s: s.frame_final_end
+        if s.frame_final_end <= frame
+        else s.frame_final_start
+        if s.frame_final_start <= frame
+        else 0,
+    )
+    strip_after = min(
+        context.sequences,
+        key=lambda s: s.frame_final_start
+        if s.frame_final_start >= frame
+        else s.frame_final_end
+        if s.frame_final_end >= frame
+        else 1000000,
+    )
+    return strip_before, strip_after
+
+
+def find_closest_surrounding_cuts_frames(context, frame):
+    before, after = find_closest_surrounding_cuts(context, frame)
+    if before == after:
+        frame_left, frame_right = before.frame_final_start, before.frame_final_end
+    else:
+        frame_left, frame_right = before.frame_final_end, after.frame_final_start
+    return frame_left, frame_right
+
+
 def sequencer_workaround_2_80_audio_bug(context):
     for s in context.sequences:
         if s.lock:

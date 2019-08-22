@@ -5,10 +5,13 @@ from gpu_extras.batch import batch_for_shader
 import math
 from mathutils import Vector
 
-from .utils.functions import find_strips_mouse
-from .utils.functions import trim_strips
-from .utils.functions import find_snap_candidate
-from .utils.functions import sequencer_workaround_2_80_audio_bug
+from .utils.functions import (
+    find_strips_mouse,
+    trim_strips,
+    find_snap_candidate,
+    find_closest_surrounding_cuts,
+    sequencer_workaround_2_80_audio_bug,
+)
 
 from .utils.draw import (
     draw_line,
@@ -295,11 +298,17 @@ def draw(
     """
     view_to_region = bpy.context.region.view2d.view_to_region
 
-    # Calculate coordinates
-    start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
-    end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
+    # Detect and draw the gap's limits if not trimming any strips
+    if not target_strips:
+        strip_before, strip_after = find_closest_surrounding_cuts(context, frame_end)
+        start = Vector((view_to_region(strip_before.frame_final_end, 1)[0], mouse_y))
+        end = Vector((view_to_region(strip_after.frame_final_start, 1)[0], mouse_y))
+        channels = [strip_before.channel, strip_after.channel]
+    else:
+        start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
+        end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
+        channels = set([s.channel for s in target_strips])
 
-    channels = set([s.channel for s in target_strips])
     y_min = view_to_region(0, math.floor(min(channels)))[1]
     y_max = view_to_region(0, math.floor(max(channels) + 1))[1]
 

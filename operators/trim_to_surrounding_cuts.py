@@ -7,7 +7,7 @@ from math import floor
 
 from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.functions import sequencer_workaround_2_80_audio_bug
+from .utils.functions import find_closest_surrounding_cuts_frames, sequencer_workaround_2_80_audio_bug
 
 
 class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
@@ -62,7 +62,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         x = context.region.view2d.region_to_view(x=event.mouse_region_x, y=event.mouse_region_y)[0]
         frame = round(x)
 
-        left_cut_frame, right_cut_frame = self.find_closest_surrounding_cuts(context, frame)
+        left_cut_frame, right_cut_frame = find_closest_surrounding_cuts_frames(context, frame)
         surrounding_cut_frames_duration = abs(left_cut_frame - right_cut_frame)
 
         margin_frame = convert_duration_to_frames(context, self.margin)
@@ -74,19 +74,19 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             )
             return {"CANCELLED"}
 
-        strips_to_delete, strips_to_trim = self.find_strips_in_range(
+        to_delete, to_trim = self.find_strips_in_range(
             context, left_cut_frame, right_cut_frame
         )
         trim_start, trim_end = (left_cut_frame + margin_frame, right_cut_frame - margin_frame)
 
-        for s in strips_to_trim:
+        for s in to_trim:
             # If the strip is larger than the range to trim cut it in three
             if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
                 sequencer.select_all(action="DESELECT")
                 s.select = True
                 sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
                 sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
-                strips_to_delete.append(context.selected_sequences[0])
+                to_delete.append(context.selected_sequences[0])
                 continue
 
             if s.frame_final_start < trim_end and s.frame_final_end > trim_end:
@@ -96,7 +96,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
 
         # Delete all sequences that are between the cuts
         sequencer.select_all(action="DESELECT")
-        for s in strips_to_delete:
+        for s in to_delete:
             s.select = True
         sequencer.delete()
 
@@ -145,28 +145,3 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             if s.frame_final_start < start_frame and s.frame_final_end > end_frame:
                 strips_overlapping_range.append(s)
         return strips_in_range, strips_overlapping_range
-
-    def find_closest_surrounding_cuts(self, context, frame=0):
-        """
-        Returns a tuple of (left_cut_frame, right_cut_frame) of the two closest cuts
-        surrounding a frame
-        Args:
-        - frame, find the closest cuts that surround this frame
-        """
-        start_cut_frame, end_cut_frame = 1000000, 1000000
-        for s in context.sequences:
-            distance_to_start = abs(frame - s.frame_final_start)
-            distance_to_end = abs(frame - s.frame_final_end)
-
-            distance_to_start_cut_frame = abs(start_cut_frame - frame)
-            distance_to_end_cut_frame = abs(end_cut_frame - frame)
-
-            if s.frame_final_start < frame and distance_to_start < distance_to_start_cut_frame:
-                start_cut_frame = s.frame_final_start
-            if s.frame_final_end < frame and distance_to_end < distance_to_start_cut_frame:
-                start_cut_frame = s.frame_final_end
-            if s.frame_final_end > frame and distance_to_end < distance_to_end_cut_frame:
-                end_cut_frame = s.frame_final_end
-            if s.frame_final_start > frame and distance_to_start < distance_to_end_cut_frame:
-                end_cut_frame = s.frame_final_start
-        return start_cut_frame, end_cut_frame
