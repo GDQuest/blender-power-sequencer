@@ -98,6 +98,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     trim_start, channel_start = 0, 0
     trim_end, channel_end = 0, 0
     is_trimming = False
+    trim_side = "end"
 
     mouse_start_y = -1.0
 
@@ -105,14 +106,12 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     use_audio_scrub = False
 
-    trim_side = "end"
-
     event_shift_released = True
     event_alt_released = True
 
-    event_ripple = "alt"
-    event_snap = "ctrl"
-    event_select_mode = "SHIFT"
+    event_ripple, event_ripple_string = "LEFT_ALT", "Alt"
+    event_snap = "CTRL"
+    event_select_mode, event_select_mode_string = "LEFT_SHIFT", "Shift"
     event_change_side = "O"
 
     @classmethod
@@ -138,6 +137,12 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         if event.type == self.event_change_side and event.value == "PRESS":
             self.trim_side = "start" if self.trim_side == "end" else "end"
 
+        if event.type == self.event_ripple and event.value == "PRESS":
+            self.gap_remove = False if self.gap_remove else True
+
+        if event.type == self.event_select_mode and event.value == "PRESS":
+            self.select_mode = "CONTEXT" if self.select_mode == "CURSOR" else "CURSOR"
+
         if event.type in {"ESC"}:
             self.draw_stop()
             context.scene.use_audio_scrub = self.use_audio_scrub
@@ -147,11 +152,11 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         if event.type == "LEFTMOUSE" or (event.type in ["RET", "T"] and event.value == "PRESS"):
             self.trim_apply(context, event)
             self.draw_stop()
+            context.scene.use_audio_scrub = self.use_audio_scrub
 
             # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
             sequencer_workaround_2_80_audio_bug(context)
 
-            context.scene.use_audio_scrub = self.use_audio_scrub
             return {"FINISHED"}
 
         # Update trim
@@ -225,11 +230,11 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             "Trim from {} to {}".format(self.trim_start, self.trim_end)
             + ", "
             + "({}) Gap Remove {}".format(
-                self.event_ripple.capitalize(), "ON" if self.gap_remove else "OFF"
+                self.event_ripple_string, "ON" if self.gap_remove else "OFF"
             )
             + ", "
             + "({}) Mode: {}".format(
-                self.event_select_mode.capitalize(), self.select_mode.capitalize()
+                self.event_select_mode_string, self.select_mode.capitalize()
             )
             + ", "
             + "({}) Snap: {}".format(
