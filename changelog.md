@@ -6,6 +6,10 @@
 
 ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
 
+### 🎥🕺 New features ###
+
+- `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences
+
 ### Improvements ###
 
 - `Mouse trim`: 

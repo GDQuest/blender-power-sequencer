@@ -14,6 +14,7 @@ from .delete_direct import POWER_SEQUENCER_OT_delete_direct
 from .deselect_all_left_or_right import POWER_SEQUENCER_OT_deselect_all_strips_left_or_right
 from .deselect_handles_and_grab import POWER_SEQUENCER_OT_deselect_handles_and_grab
 from .duplicate_move import POWER_SEQUENCER_OT_duplicate_move
+from .expand_to_surrounding_cuts import POWER_SEQUENCER_OT_expand_to_surrounding_cuts
 from .fade_add import POWER_SEQUENCER_OT_fade_add
 from .fade_clear import POWER_SEQUENCER_OT_fade_clear
 from .grab_closest_handle_or_cut import POWER_SEQUENCER_OT_grab_closest_cut
@@ -82,6 +83,7 @@ classes = [
     POWER_SEQUENCER_OT_deselect_all_strips_left_or_right,
     POWER_SEQUENCER_OT_deselect_handles_and_grab,
     POWER_SEQUENCER_OT_duplicate_move,
+    POWER_SEQUENCER_OT_expand_to_surrounding_cuts,
     POWER_SEQUENCER_OT_fade_add,
     POWER_SEQUENCER_OT_fade_clear,
     POWER_SEQUENCER_OT_grab_closest_cut,
