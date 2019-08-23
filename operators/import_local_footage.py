@@ -117,7 +117,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
                 }
         return sequencer_area
 
-    def find_local_footage_files(self, ignored_directories=("BL_proxy")):
+    def find_local_footage_files(self, ignored_directories=["BL_proxy"]):
         """
         Returns a list of relative filepaths in all subdirectories of the `self.directory`
         for all valid files that can be imported in the Sequencer
