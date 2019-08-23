@@ -144,6 +144,8 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.use_audio_scrub = context.scene.use_audio_scrub
         context.scene.use_audio_scrub = False
 
+        self.mouse_start_y = event.mouse_region_y
+
         self.trim_initialize(context, event)
         self.draw_start(context, event)
 
@@ -179,9 +181,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
         # Update trim
         if event.type == "MOUSEMOVE":
-            if self.mouse_start_y < 0.0:
-                self.mouse_start_y = event.mouse_region_y
-
             self.draw_stop()
             self.update_frame(context, event)
             self.draw_start(context, event)
@@ -228,9 +227,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         draw_args = (
             self,
             context,
+            event.mouse_region_y,
             self.trim_start,
             self.trim_end,
-            self.mouse_start_y,
             target_strips,
             self.gap_remove,
         )
@@ -342,51 +341,54 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
 
 def draw(
-    self, context, frame_start=-1, frame_end=-1, mouse_y=-1, target_strips=[], draw_arrows=False
+    self, context, mouse_region_y, frame_start=-1, frame_end=-1, target_strips=[], draw_arrows=False
 ):
     """
     Draws the line and arrows that represent the trim
 
     Params:
-    - start and end are Vector(), the start and end of the drawn trim line's vertices in region coordinates
+    - start_x and end_x are Vector(), the start_x and end_x of the drawn trim line's vertices in region coordinates
     """
     view_to_region = bpy.context.region.view2d.view_to_region
 
     # Detect and draw the gap's limits if not trimming any strips
     if not target_strips:
         strip_before, strip_after = find_closest_surrounding_cuts(context, frame_end)
-        start = Vector((view_to_region(strip_before.frame_final_end, 1)[0], mouse_y))
-        end = Vector((view_to_region(strip_after.frame_final_start, 1)[0], mouse_y))
+        start_x = (view_to_region(strip_before.frame_final_end, 1))[0]
+        end_x = (view_to_region(strip_after.frame_final_start, 1))[0]
         channels = [strip_before.channel, strip_after.channel]
     else:
-        start = Vector((view_to_region(min(frame_start, frame_end), 1)[0], mouse_y))
-        end = Vector((view_to_region(max(frame_start, frame_end), 1)[0], mouse_y))
+        start_x = (view_to_region(min(frame_start, frame_end), 1))[0]
+        end_x = (view_to_region(max(frame_start, frame_end), 1))[0]
         channels = set([s.channel for s in target_strips])
 
     y_min = view_to_region(0, math.floor(min(channels)))[1]
     y_max = view_to_region(0, math.floor(max(channels) + 1))[1]
+    if math.isclose(y_min, 12000.0):
+        y_min = min(self.mouse_start_y, mouse_region_y)
+        y_max = max(self.mouse_start_y, mouse_region_y)
 
     # Draw
     color_line = get_color_gizmo_primary(context)
     color_fill = color_line.copy()
     color_fill[-1] = 0.3
 
-    bgl.glEnable(bgl.GL_BLEND)
+    rect_origin = Vector((start_x, y_min))
+    rect_size = Vector((end_x - start_x, abs(y_min - y_max)))
 
+    bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(3)
-    draw_rectangle(
-        SHADER, Vector((start.x, y_min)), Vector((end.x - start.x, abs(y_min - y_max))), color_fill
-    )
+    draw_rectangle(SHADER, rect_origin, rect_size, color_fill)
     # Vertical lines
-    draw_line(SHADER, Vector((start.x, y_min)), Vector((start.x, y_max)), color_line)
-    draw_line(SHADER, Vector((end.x, y_min)), Vector((end.x, y_max)), color_line)
+    draw_line(SHADER, Vector((start_x, y_min)), Vector((start_x, y_max)), color_line)
+    draw_line(SHADER, Vector((end_x, y_min)), Vector((end_x, y_max)), color_line)
 
     offset = 20.0
     radius = 12.0
-    if draw_arrows and end.x - start.x > 2 * offset + radius:
+    if draw_arrows and end_x - start_x > 2 * offset + radius:
         center_y = (y_max + y_min) / 2.0
-        center_1 = Vector((start.x + offset, center_y))
-        center_2 = Vector((end.x - offset, center_y))
+        center_1 = Vector((start_x + offset, center_y))
+        center_2 = Vector((end_x - offset, center_y))
         draw_triangle_equilateral(SHADER, center_1, radius, color=color_line)
         draw_triangle_equilateral(SHADER, center_2, radius, math.pi, color=color_line)
 
