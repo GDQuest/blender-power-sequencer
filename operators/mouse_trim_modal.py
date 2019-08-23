@@ -65,6 +65,26 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 {"select_mode": "CURSOR", "gap_remove": True},
                 "Trim in all channels and remove gaps",
             ),
+            (
+                {"type": "T", "value": "PRESS", "ctrl": True},
+                {"select_mode": "CONTEXT", "gap_remove": False},
+                "Trim using the mouse cursor",
+            ),
+            (
+                {"type": "T", "value": "PRESS", "ctrl": True, "alt": True},
+                {"select_mode": "CONTEXT", "gap_remove": True},
+                "Trim using the mouse cursor and remove gaps",
+            ),
+            (
+                {"type": "T", "value": "PRESS", "ctrl": True, "shift": True},
+                {"select_mode": "CURSOR", "gap_remove": True},
+                "Trim in all channels",
+            ),
+            (
+                {"type": "T", "value": "PRESS", "ctrl": True, "shift": True, "alt": True},
+                {"select_mode": "CURSOR", "gap_remove": True},
+                "Trim in all channels and remove gaps",
+            ),
         ],
         "keymap": "Sequencer",
     }
@@ -110,7 +130,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     event_alt_released = True
 
     event_ripple, event_ripple_string = "LEFT_ALT", "Alt"
-    event_snap = "CTRL"
     event_select_mode, event_select_mode_string = "LEFT_SHIFT", "Shift"
     event_change_side = "O"
 
@@ -125,8 +144,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.use_audio_scrub = context.scene.use_audio_scrub
         context.scene.use_audio_scrub = False
 
-        self.update_frame(context, event)
-        self.trim_initialize(event)
+        self.trim_initialize(context, event)
         self.draw_start(context, event)
 
         context.window_manager.modal_handler_add(self)
@@ -172,8 +190,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
         return {"RUNNING_MODAL"}
 
-    def trim_initialize(self, event):
-        self.trim_start, self.channel_start = get_frame_and_channel(event)
+    def trim_initialize(self, context, event):
+        frame, self.channel_start = get_frame_and_channel(event)
+        self.trim_start = find_snap_candidate(context, frame) if event.ctrl else frame
         self.trim_end, self.channel_end = self.trim_start, self.channel_start
         self.is_trimming = True
 
@@ -197,7 +216,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
     def update_frame(self, context, event):
         frame, channel = get_frame_and_channel(event)
         frame_trim = (
-            find_snap_candidate(context, frame) if getattr(event, self.event_snap, False) else frame
+            find_snap_candidate(context, frame) if event.ctrl else frame
         )
         setattr(self, "channel_" + self.trim_side, channel)
         setattr(self, "trim_" + self.trim_side, frame_trim)
@@ -237,10 +256,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 self.event_select_mode_string, self.select_mode.capitalize()
             )
             + ", "
-            + "({}) Snap: {}".format(
-                self.event_snap.capitalize(),
-                "ON" if getattr(event, self.event_snap, False) else "OFF",
-            )
+            + "(Ctrl) Snap: " + "ON" if event.ctrl else "OFF"
             + ", "
             + "({}) Change Side".format(self.event_change_side)
         )

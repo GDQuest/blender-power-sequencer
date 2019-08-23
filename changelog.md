@@ -18,6 +18,7 @@
     - Displays shortcuts and information in the Sequencer's header
     - Change the trim side on the fly by pressing the letter <kbd>O</kbd>
     - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively
+    - Press <kbd>Ctrl</kbd> when starting the tool to snap the start frame to the closest cut.
 - `Import Local Footage` does not impose a folder structure on you anymore
 - `Set Playback Speed`: Add shortcut to set the speed to 3x
 
