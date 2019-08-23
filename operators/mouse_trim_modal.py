@@ -215,9 +215,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     def update_frame(self, context, event):
         frame, channel = get_frame_and_channel(event)
-        frame_trim = (
-            find_snap_candidate(context, frame) if event.ctrl else frame
-        )
+        frame_trim = find_snap_candidate(context, frame) if event.ctrl else frame
         setattr(self, "channel_" + self.trim_side, channel)
         setattr(self, "trim_" + self.trim_side, frame_trim)
         context.scene.frame_current = getattr(self, "trim_" + self.trim_side)
@@ -252,11 +250,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 self.event_ripple_string, "ON" if self.gap_remove else "OFF"
             )
             + ", "
-            + "({}) Mode: {}".format(
-                self.event_select_mode_string, self.select_mode.capitalize()
-            )
+            + "({}) Mode: {}".format(self.event_select_mode_string, self.select_mode.capitalize())
             + ", "
-            + "(Ctrl) Snap: " + "ON" if event.ctrl else "OFF"
+            + "(Ctrl) Snap: {}".format("ON" if event.ctrl else "OFF")
             + ", "
             + "({}) Change Side".format(self.event_change_side)
         )
