@@ -341,7 +341,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
 
 def draw(
-    self, context, mouse_region_y, frame_start=-1, frame_end=-1, target_strips=[], draw_arrows=False
+    self, context, frame_start=-1, frame_end=-1, target_strips=[], draw_arrows=False
 ):
     """
     Draws the line and arrows that represent the trim
