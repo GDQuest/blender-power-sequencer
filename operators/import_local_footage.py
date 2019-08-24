@@ -81,9 +81,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         audio = self.import_audios(
             context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_AUDIO)]
         )
-        video = self.import_videos(
-            context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_VIDEO)]
-        )
+        video = self.import_videos(context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_VIDEO)])
         img = self.import_imgs(
             context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_IMG)]
         )
@@ -172,6 +170,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         """
         frame = context.scene.frame_current
 
+        context.window_manager.progress_begin(0, len(videos_filepaths))
         imported = []
         for index, f in enumerate(videos_filepaths):
             is_first_import = index == 0
@@ -184,7 +183,9 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
             )
             imported.extend(context.selected_sequences)
             frame = context.selected_sequences[0].frame_final_end
+            context.window_manager.progress_update(index)
 
+        context.window_manager.progress_end()
         return imported
 
     def import_audios(self, context, audio_filepaths):
