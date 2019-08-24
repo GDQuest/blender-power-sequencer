@@ -28,14 +28,14 @@ def playback_speed_post(scene):
     frame_start = scene.frame_current
     frame_post = scene.frame_current
 
-    if playback_speed == "fast" and frame_start % 3 == 0:
+    if playback_speed == "FAST" and frame_start % 3 == 0:
         frame_post += 1
-    elif playback_speed == "faster" and frame_start % 2 == 0:
+    elif playback_speed == "FASTER" and frame_start % 2 == 0:
         frame_post += 1
-    elif playback_speed == "double":
+    elif playback_speed == "DOUBLE":
         # 2.5x -> skip 5 frames for 2. 2 then 3 then 2 etc.
         frame_post += 1
-    elif playback_speed == "triple":
+    elif playback_speed == "TRIPLE":
         frame_post += 2
 
     if frame_start != frame_post:

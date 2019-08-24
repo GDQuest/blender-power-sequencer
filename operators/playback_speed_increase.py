@@ -34,7 +34,7 @@ class POWER_SEQUENCER_OT_playback_speed_increase(bpy.types.Operator):
     def execute(self, context):
         scene = context.scene
 
-        speeds = ["normal", "fast", "faster", "double", "triple"]
+        speeds = ["NORMAL", "FAST", "FASTER", "DOUBLE", "TRIPLE"]
         current_speed = scene.power_sequencer.playback_speed
 
         try:

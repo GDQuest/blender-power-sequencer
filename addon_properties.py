@@ -4,14 +4,14 @@ import bpy
 class PowerSequencerProperties(bpy.types.PropertyGroup):
     playback_speed: bpy.props.EnumProperty(
         items=[
-            ("normal", "Normal (1x)", ""),
-            ("fast", "Fast (1.33x)", ""),
-            ("faster", "Faster (1.66x)", ""),
-            ("double", "Double (2x)", ""),
-            ("triple", "Triple (3x)", ""),
+            ("NORMAL", "Normal (1x)", ""),
+            ("FAST", "Fast (1.33x)", ""),
+            ("FASTER", "Faster (1.66x)", ""),
+            ("DOUBLE", "Double (2x)", ""),
+            ("TRIPLE", "Triple (3x)", ""),
         ],
         name="Playback speed",
-        default="normal",
+        default="NORMAL",
     )
 
     frame_pre: bpy.props.IntProperty(name="Frame before frame_change", default=0, min=0)
