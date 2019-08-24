@@ -227,7 +227,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         draw_args = (
             self,
             context,
-            event.mouse_region_y,
             self.trim_start,
             self.trim_end,
             target_strips,
