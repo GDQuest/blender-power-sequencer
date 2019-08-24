@@ -33,7 +33,8 @@
 
 ### Bug fixes ###
 
-- Fixed error when deleting a crossfade between color strips
+- `Delete crossfade`: Fixed error when deleting a crossfade between color strips
+- `Expand to surrounding cuts`: Fixed breaking the strip if trying to use the tool on the the first or the last sequence in the scene.
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

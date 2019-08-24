@@ -59,18 +59,26 @@ class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):
             ):
                 continue
 
-            seq_first.frame_final_start = frame_left
-            seq_last.frame_final_end = frame_right
+            seq_first.frame_final_start = (
+                frame_left
+                if frame_left < seq_first.frame_final_start
+                else seq_first.frame_final_start
+            )
+            seq_last.frame_final_end = (
+                frame_right
+                if frame_right > seq_first.frame_final_end
+                else seq_first.frame_final_end
+            )
 
         return {"FINISHED"}
 
 
 def find_closest_cuts(context, sequences, frame_min, frame_max):
     frame_left = max(
-        context.sequences, key=lambda s: s.frame_final_end if s.frame_final_end <= frame_min else -1
+        context.sequences, key=lambda s: s.frame_final_end if s.frame_final_end < frame_min else -1
     ).frame_final_end
     frame_right = min(
         context.sequences,
-        key=lambda s: s.frame_final_start if s.frame_final_start >= frame_max else 1000000,
+        key=lambda s: s.frame_final_start if s.frame_final_start > frame_max else 1000000,
     ).frame_final_start
     return frame_left, frame_right
