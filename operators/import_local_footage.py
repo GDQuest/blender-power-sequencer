@@ -18,10 +18,13 @@ from .utils.global_settings import (
 
 
 class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
-    """
-    *brief* Imports video, images, and audio from the project folder
+    """*brief* Imports video, images, and audio from the project folder
 
-    Finds and imports all valid video, audio files, and pictures in the blend file's folder and subfolders, ignoring folders named BL_proxy.
+    Finds and imports all valid video, audio files, and pictures in the blend file's folder and
+    sub-folders, ignoring folders named BL_proxy.
+
+    If you set it in the add-on preferences, it also sets imported sequences to use proxies. See
+    `Preferences -> Add-ons -> Blender Power Sequencer -> Proxy`
     """
 
     doc = {
@@ -82,7 +85,9 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         audio = self.import_audios(
             context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_AUDIO)]
         )
-        video = self.import_videos(context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_VIDEO)])
+        video = self.import_videos(
+            context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_VIDEO)]
+        )
         img = self.import_imgs(
             context, [f for f in files_to_import if f.lower().endswith(EXTENSIONS_IMG)]
         )
@@ -224,21 +229,21 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         return new_sequences
 
     def set_selected_strips_proxies(self, context):
-        proxy_sizes = ['25', '50', '75', '100']
+        proxy_sizes = ["25", "50", "75", "100"]
 
         use_proxy = False
         prefs = get_preferences(context)
         for size in proxy_sizes:
-            if hasattr(prefs, 'proxy_' + size):
+            if hasattr(prefs, "proxy_" + size):
                 use_proxy = True
                 break
 
         if not use_proxy:
             return
 
-        for s in [s for s in context.selected_sequences if s.type in ['MOVIE', 'IMAGE']]:
+        for s in [s for s in context.selected_sequences if s.type in ["MOVIE", "IMAGE"]]:
             s.use_proxy = True
-            s.proxy.build_25  = prefs.proxy_25
-            s.proxy.build_50  = prefs.proxy_50
-            s.proxy.build_75  = prefs.proxy_75
+            s.proxy.build_25 = prefs.proxy_25
+            s.proxy.build_50 = prefs.proxy_50
+            s.proxy.build_75 = prefs.proxy_75
             s.proxy.build_100 = prefs.proxy_100
