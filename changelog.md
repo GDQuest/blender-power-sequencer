@@ -35,6 +35,9 @@
 
 - `Delete crossfade`: Fixed error when deleting a crossfade between color strips
 - `Expand to surrounding cuts`: Fixed breaking the strip if trying to use the tool on the the first or the last sequence in the scene.
+- `Playback Speed`: 
+    - Fixed error when calling `Decrease Playback Speed`
+    - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

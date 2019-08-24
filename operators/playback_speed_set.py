@@ -13,11 +13,11 @@ class POWER_SEQUENCER_OT_playback_speed_set(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "ONE", "value": "PRESS"}, {"speed": "NORMAL"}, "Speed to 1x"),
-            ({"type": "TWO", "value": "PRESS"}, {"speed": "FAST"}, "Speed to 1.33x"),
-            ({"type": "THREE", "value": "PRESS"}, {"speed": "FASTER"}, "Speed to 1.66x"),
-            ({"type": "FOUR", "value": "PRESS"}, {"speed": "DOUBLE"}, "Speed to 2x"),
-            ({"type": "FIVE", "value": "PRESS"}, {"speed": "TRIPLE"}, "Speed to 3x"),
+            ({"type": "ONE", "ctrl": True, "value": "PRESS"}, {"speed": "NORMAL"}, "Speed to 1x"),
+            ({"type": "TWO", "ctrl": True, "value": "PRESS"}, {"speed": "FAST"}, "Speed to 1.33x"),
+            ({"type": "THREE", "ctrl": True, "value": "PRESS"}, {"speed": "FASTER"}, "Speed to 1.66x"),
+            ({"type": "FOUR", "ctrl": True, "value": "PRESS"}, {"speed": "DOUBLE"}, "Speed to 2x"),
+            ({"type": "FIVE", "ctrl": True, "value": "PRESS"}, {"speed": "TRIPLE"}, "Speed to 3x"),
         ],
         "keymap": "Sequencer",
     }
