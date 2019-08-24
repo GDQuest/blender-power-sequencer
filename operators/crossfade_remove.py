@@ -48,7 +48,7 @@ class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
             inputs = [transition.input_1, transition.input_2]
             strips_to_edit = []
             for input in inputs:
-                if input.type in SequenceTypes.EFFECT:
+                if input.type in SequenceTypes.EFFECT and hasattr(input, 'input_1'):
                     strips_to_edit.append(input.input_1)
                 else:
                     strips_to_edit.append(input)

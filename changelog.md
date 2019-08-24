@@ -6,7 +6,7 @@
 
 ⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
 
-### 🎥🕺 New features ###
+### New features ###
 
 - `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences
 
@@ -31,9 +31,13 @@
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
     - Improved and simplified code around various operators
 
+### Bug fixes ###
+
+- Fixed error when deleting a crossfade between color strips
+
 ## Power Sequencer 1.3: Blender 2.80 support ##
 
-### 🎥🕺 New features ###
+### New features ###
 
 - Power Sequencer now works in **Blender 2.80**
 
