@@ -349,24 +349,19 @@ def draw(
     Params:
     - start_x and end_x are Vector(), the start_x and end_x of the drawn trim line's vertices in region coordinates
     """
-    view_to_region = bpy.context.region.view2d.view_to_region
+    view_to_region = context.region.view2d.view_to_region
 
     # Detect and draw the gap's limits if not trimming any strips
     if not target_strips:
         strip_before, strip_after = find_closest_surrounding_cuts(context, frame_end)
-        start_x = (view_to_region(strip_before.frame_final_end, 1))[0]
-        end_x = (view_to_region(strip_after.frame_final_start, 1))[0]
+        frame_start = strip_before.frame_final_end
+        frame_end = strip_after.frame_final_start
         channels = [strip_before.channel, strip_after.channel]
     else:
-        start_x = (view_to_region(min(frame_start, frame_end), 1))[0]
-        end_x = (view_to_region(max(frame_start, frame_end), 1))[0]
-        channels = set([s.channel for s in target_strips])
+        channels = {s.channel for s in target_strips}
 
-    y_min = view_to_region(0, math.floor(min(channels)))[1]
-    y_max = view_to_region(0, math.floor(max(channels) + 1))[1]
-    if math.isclose(y_min, 12000.0):
-        y_min = min(self.mouse_start_y, mouse_region_y)
-        y_max = max(self.mouse_start_y, mouse_region_y)
+    start_x, y_min = (view_to_region(min(frame_start, frame_end), math.floor(min(channels))))
+    end_x, y_max = (view_to_region(max(frame_start, frame_end), math.floor(max(channels) + 1)))
 
     # Draw
     color_line = get_color_gizmo_primary(context)
