@@ -5,14 +5,16 @@ import bpy
 from . import addon_updater_ops
 
 
+def get_preferences(context):
+    return context.preferences.addons[__package__].preferences
+
 class PowerSequencerPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
-    video_export_path: bpy.props.StringProperty(
-        subtype="DIR_PATH",
-        name="Video render folder",
-        description="Relative folder to save videos rendered with the add-on",
-        default="",
-    )
+
+    proxy_25: bpy.props.BoolProperty(name="25%", default=False)
+    proxy_50: bpy.props.BoolProperty(name="50%", default=False)
+    proxy_75: bpy.props.BoolProperty(name="75%", default=False)
+    proxy_100: bpy.props.BoolProperty(name="100%", default=False)
 
     # addon updater preferences
     auto_check_update: bpy.props.BoolProperty(
@@ -48,7 +50,13 @@ class PowerSequencerPreferences(bpy.types.AddonPreferences):
     def draw(self, context):
         layout = self.layout
 
-        layout.prop(self, "video_export_path")
+        layout.label(text="Proxy")
+
+        row = layout.row()
+        row.prop(self, "proxy_25")
+        row.prop(self, "proxy_50")
+        row.prop(self, "proxy_75")
+        row.prop(self, "proxy_100")
 
         # updater draw function
         addon_updater_ops.update_settings_ui(self, context)

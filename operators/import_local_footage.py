@@ -7,6 +7,7 @@ import bpy
 
 from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
+from ..addon_preferences import get_preferences
 from .utils.global_settings import (
     Extensions,
     EXTENSIONS_ALL,
@@ -94,6 +95,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         imported = audio + video + img
         for s in imported:
             s.select = True
+        self.set_selected_strips_proxies(context)
         self.report({"INFO"}, "Imported {!s} strips from newly found files.".format(len(imported)))
         return {"FINISHED"}
 
@@ -220,3 +222,23 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
             new_sequences.extend(context.selected_sequences)
 
         return new_sequences
+
+    def set_selected_strips_proxies(self, context):
+        proxy_sizes = ['25', '50', '75', '100']
+
+        use_proxy = False
+        prefs = get_preferences(context)
+        for size in proxy_sizes:
+            if hasattr(prefs, 'proxy_' + size):
+                use_proxy = True
+                break
+
+        if not use_proxy:
+            return
+
+        for s in [s for s in context.selected_sequences if s.type in ['MOVIE', 'IMAGE']]:
+            s.use_proxy = True
+            s.proxy.build_25  = prefs.proxy_25
+            s.proxy.build_50  = prefs.proxy_50
+            s.proxy.build_75  = prefs.proxy_75
+            s.proxy.build_100 = prefs.proxy_100
