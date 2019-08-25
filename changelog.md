@@ -50,7 +50,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Fixed error when calling `Decrease Playback Speed`
     - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80
 - `Delete Direct`: Fixed always moving input strip handles when removing transition effects.
-- `Remove Transitions`: 
+- `Import Local Footage`: Fixed error when importing footage in a new project
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

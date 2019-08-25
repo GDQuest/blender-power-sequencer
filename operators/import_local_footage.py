@@ -154,6 +154,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
 
         text_file = bpy.data.texts[id]
         text_file.name = name
+        text_file.from_string("[]")
         return text_file
 
     def find_new_files_to_import(self, filepaths):
