@@ -25,6 +25,15 @@
 - `Set Playback Speed`: Add shortcut to set the speed to 3x
 - `Delete Direct`: You can now press <kbd>X</kbd> to remove strips without confirmation, but using Blender's default behavior, and <kbd>Alt</kbd><kbd>X</kbd> to smartly remove transitions.
 
+#### User Interface ####
+
+Cleaned up the Power Sequencer menu based on @tintwotin's suggestions: 
+
+- No more two levels deep sub-menus
+- Removed most icons to be consistent with Blender's Sequencer menus
+- Removed custom text, using the Operator names instead, for consistency with the rest of Blender
+
+
 ### Changes ###
 
 - Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`

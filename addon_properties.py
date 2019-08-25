@@ -10,7 +10,7 @@ class PowerSequencerProperties(bpy.types.PropertyGroup):
             ("DOUBLE", "Double (2x)", ""),
             ("TRIPLE", "Triple (3x)", ""),
         ],
-        name="Playback speed",
+        name="Playback",
         default="NORMAL",
     )
 
