@@ -359,31 +359,34 @@ def draw(
     else:
         channels = {s.channel for s in target_strips}
 
-    start_x, y_min = (view_to_region(min(frame_start, frame_end), math.floor(min(channels))))
-    end_x, y_max = (view_to_region(max(frame_start, frame_end), math.floor(max(channels) + 1)))
+    start_x, start_y = (view_to_region(min(frame_start, frame_end), math.floor(min(channels)), clip=False))
+    end_x, end_y = (view_to_region(max(frame_start, frame_end), math.floor(max(channels) + 1), clip=False))
 
-    y_min = max(y_min, context.region.y)
-    y_max = min(y_max, context.region.y + context.region.height)
+    start_x = max(start_x, context.region.x)
+    start_y = max(start_y, context.region.y)
+
+    end_x = min(end_x, context.region.x + context.region.width)
+    end_y = min(end_y, context.region.y + context.region.height)
 
     # Draw
     color_line = get_color_gizmo_primary(context)
     color_fill = color_line.copy()
     color_fill[-1] = 0.3
 
-    rect_origin = Vector((start_x, y_min))
-    rect_size = Vector((end_x - start_x, abs(y_min - y_max)))
+    rect_origin = Vector((start_x, start_y))
+    rect_size = Vector((end_x - start_x, abs(start_y - end_y)))
 
     bgl.glEnable(bgl.GL_BLEND)
     bgl.glLineWidth(3)
     draw_rectangle(SHADER, rect_origin, rect_size, color_fill)
     # Vertical lines
-    draw_line(SHADER, Vector((start_x, y_min)), Vector((start_x, y_max)), color_line)
-    draw_line(SHADER, Vector((end_x, y_min)), Vector((end_x, y_max)), color_line)
+    draw_line(SHADER, Vector((start_x, start_y)), Vector((start_x, end_y)), color_line)
+    draw_line(SHADER, Vector((end_x, start_y)), Vector((end_x, end_y)), color_line)
 
     offset = 20.0
     radius = 12.0
     if draw_arrows and end_x - start_x > 2 * offset + radius:
-        center_y = (y_max + y_min) / 2.0
+        center_y = (end_y + start_y) / 2.0
         center_1 = Vector((start_x + offset, center_y))
         center_2 = Vector((end_x - offset, center_y))
         draw_triangle_equilateral(SHADER, center_1, radius, color=color_line)
