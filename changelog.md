@@ -24,6 +24,9 @@
     - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`
 - `Set Playback Speed`: Add shortcut to set the speed to 3x
 - `Delete Direct`: You can now press <kbd>X</kbd> to remove strips without confirmation, but using Blender's default behavior, and <kbd>Alt</kbd><kbd>X</kbd> to smartly remove transitions.
+- `Space Sequences`: 
+    - Offsets strips to the right of the time cursor, ignoring locked sequences
+    - Now also offsets timeline markers
 
 #### User Interface ####
 
