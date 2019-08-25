@@ -26,7 +26,7 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
-    is_removing_transitions = bpy.props.BoolProperty(name="Remove Transitions", default=False)
+    is_removing_transitions: bpy.props.BoolProperty(name="Remove Transitions", default=False)
 
     @classmethod
     def poll(cls, context):
