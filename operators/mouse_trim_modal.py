@@ -362,6 +362,9 @@ def draw(
     start_x, y_min = (view_to_region(min(frame_start, frame_end), math.floor(min(channels))))
     end_x, y_max = (view_to_region(max(frame_start, frame_end), math.floor(max(channels) + 1)))
 
+    y_min = max(y_min, context.region.y)
+    y_max = min(y_max, context.region.y + context.region.height)
+
     # Draw
     color_line = get_color_gizmo_primary(context)
     color_fill = color_line.copy()
