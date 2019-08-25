@@ -6,7 +6,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
     """
-    Delete without confirmation. Replaces default Blender setting
+    Deletes strips without confirmation, and cleans up crossfades nicely.
     """
 
     doc = {
@@ -15,7 +15,9 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
         "description": doc_description(__doc__),
         "shortcuts": [
             ({"type": "X", "value": "PRESS"}, {}, "Delete Direct"),
+            ({"type": "X", "alt": True, "value": "PRESS"}, {"is_removing_transitions": True}, "Delete Direct with Transitions"),
             ({"type": "DEL", "value": "PRESS"}, {}, "Delete Direct"),
+            ({"type": "DEL", "alt": True, "value": "PRESS"}, {"is_removing_transitions": True}, "Delete Direct with Transitions"),
         ],
         "keymap": "Sequencer",
     }
@@ -23,6 +25,8 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
     bl_label = doc["name"]
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
+
+    is_removing_transitions = bpy.props.BoolProperty(name="Remove Transitions", default=False)
 
     @classmethod
     def poll(cls, context):
@@ -36,8 +40,8 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
 
     def execute(self, context):
         selection = context.selected_sequences
-        if bpy.ops.power_sequencer.crossfade_remove.poll():
-            bpy.ops.power_sequencer.crossfade_remove()
+        if self.is_removing_transitions and bpy.ops.power_sequencer.transitions_remove.poll():
+            bpy.ops.power_sequencer.transitions_remove()
         bpy.ops.sequencer.delete()
 
         report_message = "Deleted " + str(len(selection)) + " sequence"

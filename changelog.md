@@ -23,6 +23,7 @@
     - Does not impose a folder structure on you anymore
     - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`
 - `Set Playback Speed`: Add shortcut to set the speed to 3x
+- `Delete Direct`: You can now press <kbd>X</kbd> to remove strips without confirmation, but using Blender's default behavior, and <kbd>Alt</kbd><kbd>X</kbd> to smartly remove transitions.
 
 ### Changes ###
 
@@ -30,6 +31,7 @@
 - Source code: 
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
     - Improved and simplified code around various operators
+    - Renamed `crossfade_remove.py` to `transitions_remove`
 
 ### Bug fixes ###
 
@@ -38,6 +40,8 @@
 - `Playback Speed`: 
     - Fixed error when calling `Decrease Playback Speed`
     - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80
+- `Delete Direct`: Fixed always moving input strip handles when removing transition effects.
+- `Remove Transitions`: 
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

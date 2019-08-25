@@ -5,7 +5,7 @@ from .utils.global_settings import SequenceTypes
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
+class POWER_SEQUENCER_OT_transitions_remove(bpy.types.Operator):
     """
     Delete a crossfade strip and moves the handles of the input strips to form a cut again
     """
@@ -36,9 +36,12 @@ class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
         to_process = (
             self.sequences_override if self.sequences_override else context.selected_sequences
         )
+
         transitions = [s for s in to_process if s.type in SequenceTypes.TRANSITION]
         if not transitions:
             return {"FINISHED"}
+
+        saved_selection = [s for s in context.selected_sequences if s.type not in SequenceTypes.TRANSITION]
         bpy.ops.sequencer.select_all(action="DESELECT")
         for transition in transitions:
             effect_middle_frame = round(
@@ -61,4 +64,7 @@ class POWER_SEQUENCER_OT_crossfade_remove(bpy.types.Operator):
 
             transition.select = True
             bpy.ops.sequencer.delete()
+
+        for s in saved_selection:
+            s.select = True
         return {"FINISHED"}

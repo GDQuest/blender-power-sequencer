@@ -7,7 +7,7 @@ from .concatenate_strips import POWER_SEQUENCER_OT_concatenate_strips
 from .copy_selected_sequences import POWER_SEQUENCER_OT_copy_selected_sequences
 from .crossfade_add import POWER_SEQUENCER_OT_crossfade_add
 from .crossfade_edit import POWER_SEQUENCER_OT_crossfade_edit
-from .crossfade_remove import POWER_SEQUENCER_OT_crossfade_remove
+from .transitions_remove import POWER_SEQUENCER_OT_transitions_remove
 from .cut_strips_under_cursor import POWER_SEQUENCER_OT_split_strips_under_cursor
 from .playback_speed_decrease import POWER_SEQUENCER_OT_playback_speed_decrease
 from .delete_direct import POWER_SEQUENCER_OT_delete_direct
@@ -76,7 +76,7 @@ classes = [
     POWER_SEQUENCER_OT_copy_selected_sequences,
     POWER_SEQUENCER_OT_crossfade_add,
     POWER_SEQUENCER_OT_crossfade_edit,
-    POWER_SEQUENCER_OT_crossfade_remove,
+    POWER_SEQUENCER_OT_transitions_remove,
     POWER_SEQUENCER_OT_split_strips_under_cursor,
     POWER_SEQUENCER_OT_playback_speed_decrease,
     POWER_SEQUENCER_OT_delete_direct,

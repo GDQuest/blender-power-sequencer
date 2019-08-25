@@ -269,4 +269,4 @@ class POWER_SEQUENCER_MT_crossfade(bpy.types.Menu):
         layout = self.layout
         layout.operator("power_sequencer.crossfade_add", text="Add Crossfade")
         layout.operator("power_sequencer.crossfade_edit", text="Edit Crossfade")
-        layout.operator("power_sequencer.crossfade_remove", text="Remove Crossfade")
+        layout.operator("power_sequencer.transitions_remove", text="Remove Crossfade")
