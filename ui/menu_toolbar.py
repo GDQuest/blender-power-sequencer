@@ -11,19 +11,22 @@ class POWER_SEQUENCER_MT_main(bpy.types.Menu):
 
         layout.menu("POWER_SEQUENCER_MT_file")
         layout.menu("POWER_SEQUENCER_MT_edit")
-        layout.menu("POWER_SEQUENCER_MT_preview")
-        layout.menu("POWER_SEQUENCER_MT_playback")
+        layout.menu("POWER_SEQUENCER_MT_select")
         layout.menu("POWER_SEQUENCER_MT_trim")
         layout.menu("POWER_SEQUENCER_MT_strips")
         layout.menu("POWER_SEQUENCER_MT_transitions")
-        layout.menu("POWER_SEQUENCER_MT_markers")
         layout.menu("POWER_SEQUENCER_MT_audio")
-        layout.menu("POWER_SEQUENCER_MT_select")
-        layout.menu("POWER_SEQUENCER_MT_render")
+        layout.menu("POWER_SEQUENCER_MT_playback")
+        layout.menu("POWER_SEQUENCER_MT_preview")
+        layout.menu("POWER_SEQUENCER_MT_markers")
+
+        layout.separator()
+
+        layout.operator("power_sequencer.render_apply_preset", text="Apply Render Preset")
 
 
 class POWER_SEQUENCER_MT_playback(bpy.types.Menu):
-    bl_label = "Playback Speed"
+    bl_label = "Playback"
 
     def draw(self, context):
         layout = self.layout
@@ -131,14 +134,6 @@ class POWER_SEQUENCER_MT_markers(bpy.types.Menu):
         layout.operator("power_sequencer.marker_snap_to_cursor")
         layout.operator("power_sequencer.set_preview_between_markers")
         layout.operator("power_sequencer.markers_snap_matching_strips")
-
-
-class POWER_SEQUENCER_MT_render(bpy.types.Menu):
-    bl_label = "Render"
-
-    def draw(self, context):
-        layout = self.layout
-        layout.operator("power_sequencer.render_apply_preset")
 
 
 class POWER_SEQUENCER_MT_file(bpy.types.Menu):
