@@ -135,7 +135,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences is not None
+        return context.sequences
 
     def invoke(self, context, event):
         if context.screen.is_animation_playing:

@@ -70,7 +70,7 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences is not None
+        return context.sequences
 
     def invoke(self, context, event):
         to_select = []
