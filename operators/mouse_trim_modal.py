@@ -224,14 +224,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         to_select, to_delete = self.find_strips_to_trim(context)
         target_strips = to_select + to_delete
 
-        draw_args = (
-            self,
-            context,
-            self.trim_start,
-            self.trim_end,
-            target_strips,
-            self.gap_remove,
-        )
+        draw_args = (self, context, self.trim_start, self.trim_end, target_strips, self.gap_remove)
         self.draw_handler = bpy.types.SpaceSequenceEditor.draw_handler_add(
             draw, draw_args, "WINDOW", "POST_PIXEL"
         )
@@ -339,9 +332,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         return to_trim, to_delete
 
 
-def draw(
-    self, context, frame_start=-1, frame_end=-1, target_strips=[], draw_arrows=False
-):
+def draw(self, context, frame_start=-1, frame_end=-1, target_strips=[], draw_arrows=False):
     """
     Draws the line and arrows that represent the trim
 
@@ -359,8 +350,12 @@ def draw(
     else:
         channels = {s.channel for s in target_strips}
 
-    start_x, start_y = (view_to_region(min(frame_start, frame_end), math.floor(min(channels)), clip=False))
-    end_x, end_y = (view_to_region(max(frame_start, frame_end), math.floor(max(channels) + 1), clip=False))
+    start_x, start_y = view_to_region(
+        min(frame_start, frame_end), math.floor(min(channels)), clip=False
+    )
+    end_x, end_y = view_to_region(
+        max(frame_start, frame_end), math.floor(max(channels) + 1), clip=False
+    )
 
     start_x = max(start_x, context.region.x)
     start_y = max(start_y, context.region.y)

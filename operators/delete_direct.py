@@ -15,9 +15,17 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
         "description": doc_description(__doc__),
         "shortcuts": [
             ({"type": "X", "value": "PRESS"}, {}, "Delete Direct"),
-            ({"type": "X", "alt": True, "value": "PRESS"}, {"is_removing_transitions": True}, "Delete Direct with Transitions"),
+            (
+                {"type": "X", "alt": True, "value": "PRESS"},
+                {"is_removing_transitions": True},
+                "Delete Direct with Transitions",
+            ),
             ({"type": "DEL", "value": "PRESS"}, {}, "Delete Direct"),
-            ({"type": "DEL", "alt": True, "value": "PRESS"}, {"is_removing_transitions": True}, "Delete Direct with Transitions"),
+            (
+                {"type": "DEL", "alt": True, "value": "PRESS"},
+                {"is_removing_transitions": True},
+                "Delete Direct with Transitions",
+            ),
         ],
         "keymap": "Sequencer",
     }
