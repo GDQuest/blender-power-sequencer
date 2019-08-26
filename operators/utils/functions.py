@@ -317,6 +317,16 @@ def find_closest_surrounding_cuts_frames(context, frame):
     return frame_left, frame_right
 
 
+def get_sequences_under_cursor(context):
+    frame = context.scene.frame_current
+    under_cursor = [
+        s
+        for s in context.sequences
+        if s.frame_final_start <= frame and s.frame_final_end >= frame and not s.lock
+    ]
+    return under_cursor
+
+
 def sequencer_workaround_2_80_audio_bug(context):
     for s in context.sequences:
         if s.lock:

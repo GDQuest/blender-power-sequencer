@@ -107,7 +107,7 @@ class POWER_SEQUENCER_MT_edit(bpy.types.Menu):
         layout.separator()
 
         layout.operator("power_sequencer.trim_left_or_right_handles")
-        layout.operator("power_sequencer.snap_selection_to_cursor")
+        layout.operator("power_sequencer.snap_selection")
 
         layout.separator()
 

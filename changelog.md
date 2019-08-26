@@ -9,6 +9,7 @@
 ### New features ###
 
 - `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences
+- `Snap`: Replacement for Blender's built-in snap that auto-selects strips under the time cursor if you don't have a selection
 
 ### Improvements ###
 
@@ -27,6 +28,7 @@
 - `Space Sequences`: 
     - Offsets strips to the right of the time cursor, ignoring locked sequences
     - Now also offsets timeline markers
+- `Snap Selection`: auto-select strips under the time cursor
 
 #### User Interface ####
 
@@ -90,6 +92,7 @@ The code now follows the official Blender conventions for operator names etc. We
 - Removed Remove unused shortcut for `Edit Crossfade`
 - Updated the Blender add-on updater to the latest version
 - Removed empty panel UI
+- Added workaround Blender 2.80's audio not updating bug
 
 ### Bug fixes ###
 

@@ -41,7 +41,9 @@ class POWER_SEQUENCER_OT_transitions_remove(bpy.types.Operator):
         if not transitions:
             return {"FINISHED"}
 
-        saved_selection = [s for s in context.selected_sequences if s.type not in SequenceTypes.TRANSITION]
+        saved_selection = [
+            s for s in context.selected_sequences if s.type not in SequenceTypes.TRANSITION
+        ]
         bpy.ops.sequencer.select_all(action="DESELECT")
         for transition in transitions:
             effect_middle_frame = round(
@@ -51,7 +53,7 @@ class POWER_SEQUENCER_OT_transitions_remove(bpy.types.Operator):
             inputs = [transition.input_1, transition.input_2]
             strips_to_edit = []
             for input in inputs:
-                if input.type in SequenceTypes.EFFECT and hasattr(input, 'input_1'):
+                if input.type in SequenceTypes.EFFECT and hasattr(input, "input_1"):
                     strips_to_edit.append(input.input_1)
                 else:
                     strips_to_edit.append(input)
