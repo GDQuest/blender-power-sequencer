@@ -35,7 +35,8 @@ class POWER_SEQUENCER_OT_snap(bpy.types.Operator):
             if len(context.selected_sequences) > 0
             else get_sequences_under_cursor(context)
         )
-        for s in sorted(sequences, key=lambda s: s.frame_final_start):
-            s.frame_start = context.scene.frame_current
-
+        frame = context.scene.frame_current
+        for s in sequences:
+            s.select = True
+        bpy.ops.sequencer.snap(frame=frame)
         return {"FINISHED"}
