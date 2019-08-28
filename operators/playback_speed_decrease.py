@@ -24,7 +24,7 @@ class POWER_SEQUENCER_OT_playback_speed_decrease(bpy.types.Operator):
         "name": doc_name(__qualname__),
         "demo": "",
         "description": doc_description(__doc__),
-        "shortcuts": [({"type": "LEFT_BRACKET", "value": "PRESS"}, {}, "Decrease Playback Speed")],
+        "shortcuts": [({"type": "COMMA", "value": "PRESS"}, {}, "Decrease Playback Speed")],
         "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
