@@ -42,6 +42,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 
 - Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`
 - Changed the shortcuts of `Playback Speed Decrease` and `Playback Speed Increase` to <kbd>,</kbd> and <kbd>.</kbd> respectively, so they don't override the already bound <kbd>[</kbd> and <kbd>]</kbd>
+- Changed the shortcut of `Add Transform` to <kbd>Alt</kbd><kbd>T</kbd> so it doesn't collide with `Mouse Trim Modal`
 - Source code: 
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
     - Improved and simplified code around various operators

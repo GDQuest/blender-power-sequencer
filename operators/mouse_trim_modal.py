@@ -51,11 +51,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
                 "Trim using the mouse cursor",
             ),
             (
-                {"type": "T", "value": "PRESS", "alt": True},
-                {"select_mode": "CONTEXT", "gap_remove": True},
-                "Trim using the mouse cursor and remove gaps",
-            ),
-            (
                 {"type": "T", "value": "PRESS", "shift": True},
                 {"select_mode": "CURSOR", "gap_remove": True},
                 "Trim in all channels",
