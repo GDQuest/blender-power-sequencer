@@ -39,8 +39,12 @@ class POWER_SEQUENCER_OT_grab(bpy.types.Operator):
         return self.execute(context)
 
     def execute(self, context):
-        first_sequence = context.selected_sequences[0]
-        if len(context.selected_sequences) == 1 and first_sequence.type in SequenceTypes.TRANSITION:
-            context.scene.sequence_editor.active_strip = first_sequence
+        if len(context.selected_sequences) == 0:
+            return {'FINISHED'}
+
+        strip = context.selected_sequences[0]
+        if len(context.selected_sequences) == 1 and strip.type in SequenceTypes.TRANSITION:
+            context.scene.sequence_editor.active_strip = strip
             return bpy.ops.power_sequencer.crossfade_edit()
-        return bpy.ops.transform.seq_slide("INVOKE_DEFAULT")
+        else:
+            return bpy.ops.transform.seq_slide('INVOKE_DEFAULT')
