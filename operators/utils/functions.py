@@ -116,8 +116,7 @@ def find_snap_candidate(context, frame=0):
 
 def find_strips_mouse(context, frame, channel, select_linked=False):
     """
-    Finds a list of sequences to select based on the mouse position
-    or using the time cursor.
+    Finds a list of sequences to select based on the frame and channel the mouse cursor is at
 
     Args:
     - frame: the frame the mouse or cursor is on
@@ -127,24 +126,20 @@ def find_strips_mouse(context, frame, channel, select_linked=False):
     Returns the sequence(s) under the mouse cursor as a list
     Returns an empty list if nothing found
     """
-    sequences = [s for s in context.sequences if not s.lock and s.channel == channel]
-    try:
-        under_mouse = [
-            next(s for s in sequences if s.frame_final_start <= frame <= s.frame_final_end)
-        ]
-    except StopIteration:
-        return []
-
+    sequences = [
+        s
+        for s in context.sequences
+        if not s.lock and s.channel == channel and s.frame_final_start <= frame <= s.frame_final_end
+    ]
     if select_linked:
         linked_strips = [
             s
-            for s in sequences
-            if s.frame_final_start == under_mouse[0].frame_final_start
-            and s.frame_final_end == under_mouse[0].frame_final_end
+            for s in context.sequences
+            if s.frame_final_start == sequences[0].frame_final_start
+            and s.frame_final_end == sequences[0].frame_final_end
         ]
-        return under_mouse.append(linked_strips)
-    else:
-        return under_mouse
+        sequences.extend(linked_strips)
+    return sequences
 
 
 def get_frame_range(context, sequences=[], get_from_start=False):
