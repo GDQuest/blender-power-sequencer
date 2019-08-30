@@ -142,7 +142,9 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.mouse_start_y = event.mouse_region_y
 
         self.trim_initialize(context, event)
+        self.update_frame(context, event)
         self.draw_start(context, event)
+        self.update_header_text(context, event)
 
         context.window_manager.modal_handler_add(self)
         return {"RUNNING_MODAL"}
@@ -190,23 +192,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.trim_end, self.channel_end = self.trim_start, self.channel_start
         self.is_trimming = True
 
-    def trim_apply(self, context, event):
-        start_x = context.region.view2d.region_to_view(
-            x=event.mouse_region_x, y=event.mouse_region_y
-        )[0]
-        distance_to_start = abs(event.mouse_region_x - start_x)
-
-        is_cutting = (
-            self.trim_start == self.trim_end
-            or event.is_tablet
-            and distance_to_start <= self.TABLET_TRIM_DISTANCE_THRESHOLD
-        )
-        if is_cutting:
-            self.cut(context)
-        else:
-            self.trim(context)
-        self.is_trimming = False
-
     def update_frame(self, context, event):
         frame, channel = get_frame_and_channel(event)
         frame_trim = find_snap_candidate(context, frame) if event.ctrl else frame
@@ -244,57 +229,68 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         )
         context.area.header_text_set(text)
 
+    def trim_apply(self, context, event):
+        start_x = context.region.view2d.region_to_view(
+            x=event.mouse_region_x, y=event.mouse_region_y
+        )[0]
+        distance_to_start = abs(event.mouse_region_x - start_x)
+
+        is_cutting = (
+            self.trim_start == self.trim_end
+            or event.is_tablet
+            and distance_to_start <= self.TABLET_TRIM_DISTANCE_THRESHOLD
+        )
+        if is_cutting:
+            self.cut(context)
+        else:
+            self.trim(context)
+        self.is_trimming = False
+
     def cut(self, context):
         to_select = self.find_strips_to_cut(context)
         bpy.ops.sequencer.select_all(action="DESELECT")
         for s in to_select:
             s.select = True
 
-        frame_current = context.scene.frame_current
-        context.scene.frame_current = self.trim_start
-        bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
-        context.scene.frame_current = frame_current
-
-    def trim(self, context):
-        to_select, to_delete = self.find_strips_to_trim(context)
-        trim_strips(context, self.trim_start, self.trim_end, self.select_mode, to_select, to_delete)
-        if self.gap_remove and self.select_mode == "CURSOR":
-            context.scene.frame_current = min(self.trim_start, self.trim_end)
+        if len(to_select) == 0:
             bpy.ops.power_sequencer.gap_remove()
         else:
-            context.scene.frame_current = self.trim_end
+            frame_current = context.scene.frame_current
+            context.scene.frame_current = self.trim_start
+            bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
+            context.scene.frame_current = frame_current
 
     def find_strips_to_cut(self, context):
         """
-        Returns a list of strips to cut, either the strip hovered by the mouse or all strips under the
-        time cursor, depending on the select_mode
+        Returns a list of strips to cut, either the strip hovered by the mouse or all strips under
+        the time cursor, depending on the select_mode
         """
-        to_cut = []
-        overlapping_strips = []
+        to_cut, overlapping_strips = [], []
         if self.select_mode == "CONTEXT":
             overlapping_strips = find_strips_mouse(
                 context, self.trim_start, self.channel_start, self.select_linked
             )
             to_cut.extend(overlapping_strips)
-
         if self.select_mode == "CURSOR" or (
             not overlapping_strips and self.select_mode == "CONTEXT"
         ):
-            for s in context.sequences:
-                if s.lock:
-                    continue
-                if s.frame_final_start <= self.trim_start <= s.frame_final_end:
-                    to_cut.append(s)
+            to_cut = [
+                s
+                for s in context.sequences
+                if not s.lock and s.frame_final_start <= self.trim_start <= s.frame_final_end
+            ]
         return to_cut
 
-    def cut_strips_or_gap(self, context, frame_cut):
-        if self.cut_gaps and len(context.selected_sequences) == 0:
+    def trim(self, context):
+        to_select, to_delete = self.find_strips_to_trim(context)
+        trim_strips(context, self.trim_start, self.trim_end, self.select_mode, to_select, to_delete)
+        if (self.gap_remove and self.select_mode == "CURSOR") or (
+            self.select_mode == "CONTEXT" and to_select == [] and to_delete == []
+        ):
+            context.scene.frame_current = min(self.trim_start, self.trim_end)
             bpy.ops.power_sequencer.gap_remove()
         else:
-            frame_current = context.scene.frame_current
-            context.scene.frame_current = frame_cut
-            bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
-            context.scene.frame_current = frame_current
+            context.scene.frame_current = self.trim_end
 
     def find_strips_to_trim(self, context):
         """

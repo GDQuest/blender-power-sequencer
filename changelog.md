@@ -20,6 +20,7 @@
     - Change the trim side on the fly by pressing the letter <kbd>O</kbd>
     - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively
     - Press <kbd>Ctrl</kbd> when starting the tool to snap the start frame to the closest cut.
+    - Allow trimming gaps reliably with the mouse and tablet
 - `Import Local Footage`: 
     - Does not impose a folder structure on you anymore
     - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`
