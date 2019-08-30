@@ -60,6 +60,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Delete Direct`: Fixed always moving input strip handles when removing transition effects
 - `Import Local Footage`: Fixed error when importing footage in a new project
 - `Grab`: Fixed error when there was no selection and no strip under the mouse cursor
+- `Mouse Trim Instantly`: Rewrote the tool to fix cases where it would stop trimming
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 

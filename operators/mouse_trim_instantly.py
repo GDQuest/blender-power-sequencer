@@ -27,12 +27,12 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
         "shortcuts": [
             (
                 {"type": "RIGHTMOUSE", "value": "PRESS", "ctrl": True, "alt": True},
-                {"select_mode": "smart"},
+                {"select_mode": "CONTEXT"},
                 "Trim strip, keep gap",
             ),
             (
                 {"type": "RIGHTMOUSE", "value": "PRESS", "ctrl": True, "alt": True, "shift": True},
-                {"select_mode": "cursor"},
+                {"select_mode": "CURSOR"},
                 "Trim strip, remove gap",
             ),
         ],
@@ -45,13 +45,12 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
 
     select_mode: bpy.props.EnumProperty(
         items=[
-            ("mouse", "Mouse", "Only select the strip hovered by the mouse"),
-            ("cursor", "Time cursor", "Select all of the strips the time cursor overlaps"),
-            ("smart", "Smart", "Uses the selection if possible, else uses the other modes"),
+            ("CONTEXT", "Smart", "Uses the selection if possible, else uses the other modes"),
+            ("CURSOR", "Time cursor", "Select all of the strips the time cursor overlaps"),
         ],
         name="Selection mode",
         description="Auto-select the strip you click on or that the time cursor overlaps",
-        default="smart",
+        default="CONTEXT",
     )
     select_linked: bpy.props.BoolProperty(
         name="Use linked time",
@@ -64,8 +63,6 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
         default=True,
     )
 
-    frame_start: bpy.props.IntProperty()
-    frame_end: bpy.props.IntProperty()
     to_select = []
 
     @classmethod
@@ -74,46 +71,27 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
 
     def invoke(self, context, event):
         to_select = []
-        frame, channel = 1, 1
-        if not self.frame_start or self.frame_end:
-            x, y = context.region.view2d.region_to_view(
-                x=event.mouse_region_x, y=event.mouse_region_y
-            )
-            frame, channel = round(x), floor(y)
+        frame, channel = -1, -1
+        x, y = context.region.view2d.region_to_view(
+            x=event.mouse_region_x, y=event.mouse_region_y
+        )
+        frame, channel = round(x), floor(y)
 
-            mouse_clicked_strip = find_strips_mouse(context, frame, channel, self.select_linked)
-            if self.select_mode == "smart" and mouse_clicked_strip:
-                self.select_mode = "mouse"
-            else:
-                self.select_mode = "cursor"
+        mouse_clicked_strip = find_strips_mouse(context, frame, channel, self.select_linked)
+        to_select.extend(mouse_clicked_strip)
+        if self.select_mode == "CURSOR":
+            to_select.extend([s for s in context.sequences if s.frame_final_start <= frame <= s.frame_final_end and not s.lock])
 
-            if self.select_mode == "mouse":
-                if mouse_clicked_strip == []:
-                    return {"CANCELLED"}
-                to_select.extend(mouse_clicked_strip)
-            if self.select_mode == "cursor":
-                for s in context.sequences:
-                    if s.frame_final_start <= frame <= s.frame_final_end:
-                        to_select.append(s)
+        frame_cut_closest = min(get_frame_range(context, to_select), key=lambda f: abs(frame - f))
+        frame_start = min(frame, frame_cut_closest)
+        frame_end = max(frame, frame_cut_closest)
 
-            selection_start, selection_end = get_frame_range(context, to_select)
-            self.frame_start = frame
-            self.frame_end = (
-                selection_end
-                if abs(frame - selection_end) <= abs(frame - selection_start)
-                else selection_start
-            )
+        trim_strips(context, frame_start, frame_end, self.select_mode, to_select)
 
-        self.to_select = [s for s in to_select if not s.lock]
-        trim_strips(context, self.frame_start, self.frame_end, self.select_mode, self.to_select)
-
-        if self.gap_remove and self.select_mode == "cursor":
-            context.scene.frame_current = min(self.frame_start, self.frame_end)
+        context.scene.frame_current = frame_start
+        if self.gap_remove and self.select_mode == "CURSOR":
             bpy.ops.power_sequencer.gap_remove()
-        else:
-            context.scene.frame_current = self.frame_start if self.frame_start else frame
 
         # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
         sequencer_workaround_2_80_audio_bug(context)
-
         return {"FINISHED"}
