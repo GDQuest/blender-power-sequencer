@@ -19,7 +19,7 @@ class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "E", "value": "PRESS", "shift": True}, {}, "Expand to Surrounding Cuts")
+            ({"type": "E", "value": "PRESS", "ctrl": True}, {}, "Expand to Surrounding Cuts")
         ],
         "keymap": "Sequencer",
     }
@@ -75,10 +75,10 @@ class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):
 
 def find_closest_cuts(context, sequences, frame_min, frame_max):
     frame_left = max(
-        context.sequences, key=lambda s: s.frame_final_end if s.frame_final_end < frame_min else -1
+        context.sequences, key=lambda s: s.frame_final_end if s.frame_final_end <= frame_min else -1
     ).frame_final_end
     frame_right = min(
         context.sequences,
-        key=lambda s: s.frame_final_start if s.frame_final_start > frame_max else 1000000,
+        key=lambda s: s.frame_final_start if s.frame_final_start >= frame_max else 1000000,
     ).frame_final_start
     return frame_left, frame_right
