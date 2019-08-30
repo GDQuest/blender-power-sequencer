@@ -20,7 +20,7 @@ class POWER_SEQUENCER_OT_select_all_left_or_right(bpy.types.Operator):
             ),
             (
                 {"type": "E", "value": "PRESS", "shift": True},
-                {"side": "right"},
+                {"side": "RIGHT"},
                 "Select all strips to the right of the time cursor",
             ),
         ],
