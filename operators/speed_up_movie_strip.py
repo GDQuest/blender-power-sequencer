@@ -19,7 +19,11 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         "name": doc_name(__qualname__),
         "demo": "https://i.imgur.com/ZyEd0jD.gif",
         "description": doc_description(__doc__),
-        "shortcuts": [({"type": "PLUS", "value": "PRESS", "shift": True}, {}, "Add Speed")],
+        "shortcuts": [
+            ({"type": "NUMPAD_2", "value": "PRESS", "alt": True}, {"speed_factor": 2.0}, "Speed x2"),
+            ({"type": "NUMPAD_3", "value": "PRESS", "alt": True}, {"speed_factor": 3.0}, "Speed x3"),
+            ({"type": "NUMPAD_4", "value": "PRESS", "alt": True}, {"speed_factor": 4.0}, "Speed x4"),
+        ],
         "keymap": "Sequencer",
     }
     bl_idname = doc_idname(__qualname__)
@@ -46,7 +50,7 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         if not sequences:
             self.report(
                 {"ERROR_INVALID_INPUT"},
-                "No Movie sequence or Metastrips selected. Operation cancelled",
+                "No Movie meta_strip or Metastrips selected. Operation cancelled",
             )
             return {"FINISHED"}
 
@@ -57,7 +61,6 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
             selection_blocks = slice_selection(context, sequences)
 
         for sequences in selection_blocks:
-            bpy.ops.sequencer.select_all(action="DESELECT")
             self.speed_effect_add(context, sequences)
 
         self.report(
@@ -65,32 +68,29 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         )
         return {"FINISHED"}
 
-    def speed_effect_add(self, context, sequences=[]):
+    def speed_effect_add(self, context, sequences):
         if not sequences:
             return
 
         sequence_editor = context.scene.sequence_editor
-        sequence = None
-        if len(sequences) == 1:
-            sequence = sequence_editor.active_strip = sequences[0]
-        else:
-            for s in sequences:
-                s.select = True
-            bpy.ops.sequencer.meta_make()
-            sequence = sequence_editor.active_strip
+        bpy.ops.sequencer.select_all(action="DESELECT")
+        for s in sequences:
+            s.select = True
+        bpy.ops.sequencer.meta_make()
+        meta_strip = sequence_editor.active_strip
+        if len(meta_strip.sequences) == 1:
+            meta_strip.sequences[0].frame_offset_start = 0
+            meta_strip.sequences[0].frame_offset_end = 0
 
         bpy.ops.sequencer.effect_strip_add(type="SPEED")
         speed_effect = sequence_editor.active_strip
         speed_effect.use_default_fade = False
         speed_effect.speed_factor = self.speed_factor
 
-        duration = ceil(sequence.frame_final_duration / speed_effect.speed_factor)
-        sequence.frame_final_end = sequence.frame_final_start + duration
+        duration = ceil(meta_strip.frame_final_duration / speed_effect.speed_factor)
+        meta_strip.frame_final_end = meta_strip.frame_final_start + duration
 
-        sequence_editor.active_strip = sequence
-        bpy.ops.sequencer.select_all(action="DESELECT")
-        sequence.select = True
-        speed_effect.select = True
-        bpy.ops.sequencer.meta_make()
-
-        sequence_editor.active_strip.name = sequence.name + " " + str(self.speed_factor) + "x"
+        sequence_editor.active_strip = meta_strip
+        speed_effect.select = False
+        meta_strip.select = True
+        meta_strip.name = meta_strip.sequences[0].name + " " + str(self.speed_factor) + "x"
