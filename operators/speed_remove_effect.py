@@ -3,7 +3,7 @@ import bpy
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
-class POWER_SEQUENCER_OT_unspeed(bpy.types.Operator):
+class POWER_SEQUENCER_OT_speed_remove_effect(bpy.types.Operator):
     """
     *brief* Removes speed from META, un-groups META
 
@@ -26,15 +26,7 @@ class POWER_SEQUENCER_OT_unspeed(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        result = False
-        try:
-            scene = context.scene
-            active_strip = scene.sequence_editor.active_strip
-            result = active_strip.select and active_strip.type == "META"
-            result = result and [s for s in active_strip.sequences if s.type == "SPEED"]
-        except AttributeError:
-            pass
-        return result
+        return context.scene.sequence_editor.active_strip.type == "META"
 
     def execute(self, context):
         active = context.scene.sequence_editor.active_strip

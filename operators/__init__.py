@@ -59,7 +59,7 @@ from .set_timeline_range import POWER_SEQUENCER_OT_set_timeline_range
 from .trim_left_or_right_handles import POWER_SEQUENCER_OT_trim_left_or_right_handles
 from .snap import POWER_SEQUENCER_OT_snap
 from .snap_selection import POWER_SEQUENCER_OT_snap_selection
-from .speed_remove_effect import POWER_SEQUENCER_OT_unspeed
+from .speed_remove_effect import POWER_SEQUENCER_OT_speed_remove_effect
 from .swap_strips import POWER_SEQUENCER_OT_swap_strips
 from .select_all_left_or_right import POWER_SEQUENCER_OT_select_all_left_or_right
 from .synchronize_titles import POWER_SEQUENCER_OT_synchronize_titles
@@ -130,7 +130,7 @@ classes = [
     POWER_SEQUENCER_OT_trim_left_or_right_handles,
     POWER_SEQUENCER_OT_snap,
     POWER_SEQUENCER_OT_snap_selection,
-    POWER_SEQUENCER_OT_unspeed,
+    POWER_SEQUENCER_OT_speed_remove_effect,
     POWER_SEQUENCER_OT_swap_strips,
     POWER_SEQUENCER_OT_synchronize_titles,
     POWER_SEQUENCER_OT_toggle_selected_mute,
