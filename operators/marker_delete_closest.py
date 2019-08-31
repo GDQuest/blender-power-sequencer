@@ -13,7 +13,7 @@ class POWER_SEQUENCER_OT_marker_delete_closest(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [],
-        "keymap": "Sequencer",
+        "keymap": "Markers",
     }
     bl_idname = doc_idname(__qualname__)
     bl_label = doc["name"]

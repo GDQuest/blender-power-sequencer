@@ -4,7 +4,7 @@ from .. import operators
 from itertools import groupby
 
 
-keymaps_meta = {"Frames": "EMPTY", "Sequencer": "SEQUENCE_EDITOR"}
+keymaps_meta = {"Frames": "EMPTY", "Sequencer": "SEQUENCE_EDITOR", "Markers": "EMPTY"}
 
 
 def set_keymap_property(properties, property_name, value):

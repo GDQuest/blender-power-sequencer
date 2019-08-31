@@ -12,8 +12,8 @@ class POWER_SEQUENCER_OT_marker_delete_direct(bpy.types.Operator):
         "name": doc_name(__qualname__),
         "demo": "",
         "description": doc_description(__doc__),
-        "shortcuts": [],
-        "keymap": "Sequencer",
+        "shortcuts": [({"type": "X", "value": "PRESS"}, {}, "Delete Markers Instantly")],
+        "keymap": "Markers",
     }
     bl_idname = doc_idname(__qualname__)
     bl_label = doc["name"]

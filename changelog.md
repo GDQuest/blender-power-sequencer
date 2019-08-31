@@ -34,6 +34,7 @@
     - Use the full source clip for single sequences, so you can slip their content
     - Change the shortcuts and add <kbd>Alt</kbd><kbd>2</kbd>, <kbd>Alt</kbd><kbd>3</kbd>, <kbd>Alt</kbd><kbd>4</kbd> to speed up to 2, 3, and 4 times the normal speed.
 - `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h
+- `Markers Delete Direct`: removed the confirmation popup when deleting markers with X
 
 #### User Interface ####
 
