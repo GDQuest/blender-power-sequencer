@@ -41,6 +41,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - No more two levels deep sub-menus
 - Removed most icons to be consistent with Blender's Sequencer menus
 - Removed custom text, using the Operator names instead, for consistency with the rest of Blender
+- Add `Speed Up Movie Strip` and `Speed Remove Effect` to the menu
 
 ### Changes ###
 
