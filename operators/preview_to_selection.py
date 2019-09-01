@@ -7,11 +7,11 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
     """
-    *brief* Sets the timeline preview range to that of the selected sequences
-
+    *brief* Sets the timeline preview range to match the selection
 
     Sets the scene frame start to the earliest frame start of selected sequences and the scene
     frame end to the last frame of selected sequences.
+    Uses all sequences in the current context if no sequences are selected.
     """
 
     doc = {
@@ -30,16 +30,11 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.selected_sequences
+        return len(context.sequences) > 0
 
     def execute(self, context):
         scene = context.scene
-        frame_start, frame_end = get_frame_range(
-            context, sequences=context.selected_sequences, get_from_start=False
-        )
-
-        if scene.frame_start == frame_start and scene.frame_end == frame_end:
-            frame_start, frame_end = get_frame_range(context, sequences=[], get_from_start=True)
-
+        sequences = context.selected_sequences if len(context.selected_sequences) >= 1 else context.sequences
+        frame_start, frame_end = get_frame_range(context, sequences)
         set_preview_range(context, frame_start, frame_end - 1)
         return {"FINISHED"}

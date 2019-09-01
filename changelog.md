@@ -90,6 +90,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Improved drawing
     - Use gizmo color from the user's color theme
 - `Import Local Footage`: Fixed files re-importing after moving the project folder
+- `Preview To Selection`: Use sequences in the current context if nothing is selected
 
 ### Changes ###
 

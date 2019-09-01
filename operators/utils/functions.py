@@ -146,16 +146,12 @@ def get_frame_range(context, sequences=[], get_from_start=False):
     """
     Returns a tuple with the minimum and maximum frames of the
     list of passed sequences.
-    If no sequences are passed, returns the timeline's start and end frames
     Args:
         - sequences, the sequences to use
         - get_from_start, the returned start frame is set to 1 if
         this boolean is True
     """
-    if not sequences:
-        scene = context.scene
-        return scene.frame_start, scene.frame_end
-
+    start, end = -1, -1
     start = (
         1
         if get_from_start
