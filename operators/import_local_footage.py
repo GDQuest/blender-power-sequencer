@@ -75,7 +75,8 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         self.directory = os.path.split(bpy.data.filepath)[0]
 
         filepaths = self.find_local_footage_files()
-        files_to_import = self.find_new_files_to_import(filepaths)
+        files_to_import = [os.path.join(self.directory, f) for f in self.find_new_files_to_import(filepaths)]
+        print(files_to_import)
         if not files_to_import:
             self.report({"INFO"}, "No new files to import found")
             return {"FINISHED"}
@@ -135,6 +136,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
 
             files = [f for f in sorted(files) if f.lower().endswith(EXTENSIONS_ALL)]
             files = map(lambda name: os.path.join(root, name), files)
+            files = map(lambda path: os.path.relpath(path, root), files)
             files_list.extend(list(files))
 
         return files_list

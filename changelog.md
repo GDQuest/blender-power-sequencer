@@ -89,6 +89,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - You can now trim multiple sequences in a single channel
     - Improved drawing
     - Use gizmo color from the user's color theme
+- `Import Local Footage`: Fixed files re-importing after moving the project folder
 
 ### Changes ###
 
