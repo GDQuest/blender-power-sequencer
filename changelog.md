@@ -35,6 +35,7 @@
     - Change the shortcuts and add <kbd>Alt</kbd><kbd>2</kbd>, <kbd>Alt</kbd><kbd>3</kbd>, <kbd>Alt</kbd><kbd>4</kbd> to speed up to 2, 3, and 4 times the normal speed.
 - `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h
 - `Markers Delete Direct`: removed the confirmation popup when deleting markers with X
+- `Concatenate Strips`: now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel
 
 #### User Interface ####
 
@@ -67,6 +68,8 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Import Local Footage`: Fixed error when importing footage in a new project
 - `Grab`: Fixed error when there was no selection and no strip under the mouse cursor
 - `Mouse Trim Instantly`: Rewrote the tool to fix cases where it would stop trimming
+- `Import Local Footage`: Fixed files re-importing after moving the project folder
+- `Preview To Selection`: Use sequences in the current context if nothing is selected
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 
@@ -89,8 +92,6 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - You can now trim multiple sequences in a single channel
     - Improved drawing
     - Use gizmo color from the user's color theme
-- `Import Local Footage`: Fixed files re-importing after moving the project folder
-- `Preview To Selection`: Use sequences in the current context if nothing is selected
 
 ### Changes ###
 
