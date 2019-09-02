@@ -2,7 +2,7 @@ import bpy
 import time
 
 
-class InfoProgressBar(object):
+class InfoProgressBar:
     """
     Draws a progress bar in the info header area
     """
