@@ -1,7 +1,6 @@
 import bpy
 import datetime as dt
 import operator as op
-from .utils import pyperclip
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
@@ -48,5 +47,5 @@ class POWER_SEQUENCER_OT_copy_markers_as_timecodes(bpy.types.Operator):
             markers_as_timecodes.append(
                 time.strftime(time_format) + " " + marker.name)
 
-        pyperclip.copy("\n".join(markers_as_timecodes))
+        bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)
         return {"FINISHED"}
