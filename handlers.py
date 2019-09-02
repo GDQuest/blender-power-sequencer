@@ -4,7 +4,7 @@ from . import addon_updater_ops
 
 
 @persistent
-def load_file_post(arg):
+def power_sequencer_load_file_post(arg):
     """
     Called after loading the blend file
     """
@@ -13,7 +13,7 @@ def load_file_post(arg):
 
 
 @persistent
-def playback_speed_post(scene):
+def power_sequencer_playback_speed_post(scene):
     """
     Handler function for faster playback
     Skips keyframes after a frame change based on the playback_speed value
@@ -66,38 +66,22 @@ def draw_check_for_update(self, context):
 
 
 def register_handlers():
-    # MENUS
+    # Menus
     bpy.types.SEQUENCER_HT_header.append(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.append(draw_playback_speed)
     bpy.types.SEQUENCER_HT_header.append(draw_check_for_update)
 
-    # HANDLERS
-    load_post = bpy.app.handlers.load_post
-    for handler in load_post:
-        if " load_file_post " in str(handler):
-            load_post.remove(handler)
-    load_post.append(load_file_post)
-
-    frame_change_post = bpy.app.handlers.frame_change_post
-    for handler in frame_change_post:
-        if " playback_speed_post " in str(handler):
-            frame_change_post.remove(handler)
-    frame_change_post.append(playback_speed_post)
+    # Handlers
+    bpy.app.handlers.load_post.append(power_sequencer_load_file_post)
+    bpy.app.handlers.frame_change_post.append(power_sequencer_playback_speed_post)
 
 
 def unregister_handlers():
-    # MENUS
+    # Menus
     bpy.types.SEQUENCER_HT_header.remove(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.remove(draw_playback_speed)
     bpy.types.SEQUENCER_HT_header.remove(draw_check_for_update)
 
-    # HANDLERS
-    load_post = bpy.app.handlers.load_post
-    for handler in load_post:
-        if " load_file_post " in str(handler):
-            load_post.remove(handler)
-
-    frame_change_post = bpy.app.handlers.frame_change_post
-    for handler in frame_change_post:
-        if " playback_speed_post " in str(handler):
-            frame_change_post.remove(handler)
+    # Handlers
+    bpy.app.handlers.load_post.remove(power_sequencer_load_file_post)
+    bpy.app.handlers.frame_change_post.remove(power_sequencer_playback_speed_post)
