@@ -15,7 +15,6 @@
 # not, see <https://www.gnu.org/licenses/>.
 #
 from .speed_up_movie_strip import POWER_SEQUENCER_OT_speed_up_movie_strip
-from .add_transform import POWER_SEQUENCER_OT_add_transform
 from .align_audios import POWER_SEQUENCER_OT_align_audios
 from .playback_speed_set import POWER_SEQUENCER_OT_playback_speed_set
 from .channel_offset import POWER_SEQUENCER_OT_channel_offset
@@ -86,7 +85,6 @@ from .trim_to_surrounding_cuts import POWER_SEQUENCER_OT_trim_to_surrounding_cut
 
 classes = [
     POWER_SEQUENCER_OT_speed_up_movie_strip,
-    POWER_SEQUENCER_OT_add_transform,
     POWER_SEQUENCER_OT_align_audios,
     POWER_SEQUENCER_OT_playback_speed_set,
     POWER_SEQUENCER_OT_channel_offset,

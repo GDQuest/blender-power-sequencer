@@ -56,7 +56,6 @@ class POWER_SEQUENCER_MT_strips(bpy.types.Menu):
 
     def draw(self, context):
         layout = self.layout
-        layout.operator("power_sequencer.add_transform")
         layout.operator("power_sequencer.speed_up_movie_strip")
         layout.operator("power_sequencer.speed_remove_effect")
 

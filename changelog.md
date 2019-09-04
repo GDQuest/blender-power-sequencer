@@ -55,6 +55,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
     - Improved and simplified code around various operators
     - Renamed `crossfade_remove.py` to `transitions_remove`
+- Removed the `Add Transform` tool: the one from the VSE Transform tool add-on achieves the same result
 
 ### Bug fixes ###
 
