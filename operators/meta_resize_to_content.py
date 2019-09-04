@@ -42,11 +42,7 @@ class POWER_SEQUENCER_OT_meta_resize_to_content(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        try:
-            next(s for s in context.selected_sequences if s.type == "META")
-        except StopIteration:
-            return False
-        return context.sequences
+        return context.selected_sequences
 
     def execute(self, context):
         selected_meta_strips = (s for s in context.selected_sequences if s.type == "META")
