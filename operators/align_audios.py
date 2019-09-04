@@ -20,19 +20,17 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
-    """
-    *brief* Align two similar audios
+    """*brief* Align two audio strips
 
 
-    Attempt alignment between the selected audio strip to the active
-    audio strip. The better the correlation, the better the result.
+    Tries to synchronize the selected audio strip to the active audio strip by comparing the sound.
+    Useful to synchronize audio of the same event recorded with different microphones.
 
-    This operator requires
-    [ffmpeg](https://www.ffmpeg.org/download.html) and
-    [scipy](https://www.scipy.org/install.html) to work. Audio must be
-    converted to WAV data prior to analyzing, so longer strips may take
-    longer to align. To mitigate this issue, analysis will be limited to
-    the first 15 minutes of audio at most.
+    To use this feature, you must have [ffmpeg](https://www.ffmpeg.org/download.html) and
+    [scipy](https://www.scipy.org/install.html) installed on your computer and available on the PATH (command line) to work.
+
+    The longer the audio files, the longer the tool can take to run, as it has to convert, analyze,
+    and compare the audio sources to work.
     """
 
     doc = {
@@ -49,16 +47,17 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        scene = context.scene
-        if scene.sequence_editor and scene.sequence_editor.active_strip:
-            active = scene.sequence_editor.active_strip
-            selected = context.selected_sequences
+        if not context.scene:
+            return False
 
-            if len(selected) == 2 and active in selected:
-                selected.pop(selected.index(active))
-                if selected[0].type == "SOUND" and active.type == "SOUND":
-                    return context.selected_sequences
-        return False
+        active = context.scene.sequence_editor.active_strip
+        selected = context.selected_sequences
+        ok = (
+            len(selected) == 2
+            and active in selected
+            and all(map(lambda s: s.type == "SOUND", selected))
+        )
+        return ok
 
     def execute(self, context):
         try:
@@ -71,7 +70,7 @@ class POWER_SEQUENCER_OT_align_audios(bpy.types.Operator):
             self.report({"ERROR"}, "ffmpeg must be installed to align audios")
             return {"FINISHED"}
 
-        # This import is here because it slows blender startup a little
+        # This import is here because otherwise, it slows down blender startup
         from .audiosync import find_offset
 
         scene = context.scene
