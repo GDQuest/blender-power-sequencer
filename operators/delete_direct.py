@@ -54,7 +54,7 @@ class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences and len(context.sequences) > 0
+        return context.selected_sequences
 
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)

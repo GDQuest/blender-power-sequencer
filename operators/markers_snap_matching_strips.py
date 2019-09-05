@@ -38,7 +38,7 @@ class POWER_SEQUENCER_OT_markers_snap_matching_strips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.scene.timeline_markers) > 0
+        return context.scene.timeline_markers
 
     def execute(self, context):
         timeline_markers = context.scene.timeline_markers

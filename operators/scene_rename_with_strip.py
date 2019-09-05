@@ -46,22 +46,15 @@ class POWER_SEQUENCER_OT_scene_rename_with_strip(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        if context.selected_sequences == None or len(context.selected_sequences) < 1:
-            return False
-
-        is_all_scene = True
-        for sequence in context.selected_sequences:
-            if not sequence.type == "SCENE":
-                is_all_scene = False
-        return is_all_scene
+        return context.selected_sequences
 
     def invoke(self, context, event):
         window_manager = context.window_manager
         return window_manager.invoke_props_dialog(self)
 
     def execute(self, context):
-
-        for strip in context.selected_sequences:
+        scene_strips = [s for s in context.selected_sequences if s.type == "SCENE"]
+        for strip in scene_strips:
             strip.name = self.new_name
             strip.scene.name = strip.name
         return {"FINISHED"}

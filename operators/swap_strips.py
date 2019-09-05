@@ -54,7 +54,7 @@ class POWER_SEQUENCER_OT_swap_strips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.selected_sequences and len(context.selected_sequences) in range(1, 3)
+        return context.selected_sequences
 
     def execute(self, context):
         strip_1 = context.selected_sequences[0]

@@ -72,7 +72,7 @@ class POWER_SEQUENCER_OT_jump_time_offset(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context is not None
+        return context.scene
 
     def execute(self, context):
         direction = 1 if self.direction == "forward" else -1

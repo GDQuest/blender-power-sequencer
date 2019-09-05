@@ -63,7 +63,7 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences and len(context.sequences) > 0
+        return context.sequences
 
     def execute(self, context):
         frame_current = context.scene.frame_current

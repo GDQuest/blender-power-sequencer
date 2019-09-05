@@ -47,6 +47,10 @@ class POWER_SEQUENCER_OT_playback_speed_decrease(bpy.types.Operator):
     bl_label = doc["name"]
     bl_description = doc_brief(doc["description"])
 
+    @classmethod
+    def poll(cls, context):
+        return context.sequences
+
     def execute(self, context):
         scene = context.scene
 

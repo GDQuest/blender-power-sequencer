@@ -46,7 +46,7 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return context.sequences
 
     def execute(self, context):
         scene = context.scene

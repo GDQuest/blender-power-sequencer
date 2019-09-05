@@ -44,7 +44,7 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.selected_sequences) > 0
+        return context.selected_sequences
 
     def execute(self, context):
         fcurves = context.scene.animation_data.action.fcurves

@@ -39,7 +39,7 @@ class POWER_SEQUENCER_OT_markers_create_from_selected_strips(bpy.types.Operator)
 
     @classmethod
     def poll(cls, context):
-        return context.selected_sequences and len(context.selected_sequences) > 0
+        return context.selected_sequences
 
     def execute(self, context):
         cursor_frame_start = context.scene.frame_current

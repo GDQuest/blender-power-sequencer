@@ -65,7 +65,7 @@ class POWER_SEQUENCER_OT_deselect_all_strips_left_or_right(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.selected_sequences and len(context.selected_sequences) > 0
+        return context.selected_sequences
 
     def invoke(self, context, event):
         frame_current = context.scene.frame_current

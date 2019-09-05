@@ -69,7 +69,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context is not None
+        return context
 
     def invoke(self, context, event):
         if not context.sequences:

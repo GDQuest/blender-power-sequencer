@@ -52,7 +52,7 @@ class POWER_SEQUENCER_OT_select_related_strips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.selected_sequences) > 0
+        return context.selected_sequences
 
     def execute(self, context):
         if self.find_all:

@@ -56,7 +56,7 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences and len(context.sequences) > 0
+        return context.sequences
 
     def execute(self, context):
         frame = self.frame if self.frame >= 0 else context.scene.frame_current

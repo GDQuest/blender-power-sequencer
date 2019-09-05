@@ -46,7 +46,7 @@ class POWER_SEQUENCER_OT_grab(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context is not None
+        return context.selected_sequences
 
     def invoke(self, context, event):
         frame, channel = get_mouse_frame_and_channel(context, event)

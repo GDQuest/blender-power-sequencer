@@ -39,11 +39,7 @@ class POWER_SEQUENCER_OT_meta_trim_content_to_bounds(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        try:
-            next(s for s in context.selected_sequences if s.type == "META")
-            return context.selected_sequences
-        except StopIteration:
-            return False
+        return context.selected_sequences
 
     def execute(self, context):
         to_delete = []

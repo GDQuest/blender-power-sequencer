@@ -44,7 +44,7 @@ class POWER_SEQUENCER_OT_space_sequences(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.sequences) > 0
+        return context.sequences
 
     def invoke(self, context, event):
         sequences = [

@@ -50,7 +50,7 @@ class POWER_SEQUENCER_OT_grab_sequence_handles(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences and len(context.sequences) > 0
+        return context.sequences
 
     def invoke(self, context, event):
         self.frame, self.channel = context.region.view2d.region_to_view(

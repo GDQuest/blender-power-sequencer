@@ -39,7 +39,7 @@ class POWER_SEQUENCER_OT_select_linked_strips(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.sequence_editor is not None
+        return context.scene.sequence_editor
 
     def execute(self, context):
         # save current selection first

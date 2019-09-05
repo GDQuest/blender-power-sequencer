@@ -38,7 +38,7 @@ class POWER_SEQUENCER_OT_scene_cycle(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(bpy.data.scenes) > 1
+        return bpy.data.scenes
 
     def execute(self, context):
         scenes = bpy.data.scenes

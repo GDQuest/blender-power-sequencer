@@ -59,7 +59,7 @@ class POWER_SEQUENCER_OT_preview_closest_cut(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.sequences and len(context.sequences) > 0
+        return context.sequences
 
     def execute(self, context):
         scene = context.scene

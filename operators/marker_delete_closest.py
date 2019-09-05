@@ -38,7 +38,7 @@ class POWER_SEQUENCER_OT_marker_delete_closest(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return len(context.scene.timeline_markers) > 0
+        return context.scene.timeline_markers
 
     def invoke(self, context, event):
         markers = context.scene.timeline_markers

@@ -42,11 +42,8 @@ class POWER_SEQUENCER_OT_transitions_remove(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return (
-            context.selected_sequences
-            and len([s for s in context.selected_sequences if s.type in SequenceTypes.TRANSITION])
-            > 0
-        )
+        return context.selected_sequences
+
 
     def execute(self, context):
         to_process = (
