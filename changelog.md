@@ -36,6 +36,7 @@
 - `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h
 - `Markers Delete Direct`: removed the confirmation popup when deleting markers with X
 - `Concatenate Strips`: now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel
+- Improved performances when adding Power Sequencer's features to menus or panels
 
 #### User Interface ####
 
