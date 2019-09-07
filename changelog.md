@@ -57,6 +57,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Improved and simplified code around various operators
     - Renamed `crossfade_remove.py` to `transitions_remove`
 - Removed the `Add Transform` tool: the one from the VSE Transform tool add-on achieves the same result
+- Removed `Synchronize titles`: it was a weird, not so useful tool that was replaced by `Markers Snap Matching Strips`.
 
 ### Bug fixes ###
 
