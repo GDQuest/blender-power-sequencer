@@ -8,6 +8,10 @@
 
 ### New features ###
 
+Power Sequencer is now **included in Blender 2.81**! 🙂
+
+Big thanks to everyone who helped us get there. Development continues in this repository, and help is still welcome, as always.
+
 - `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences
 - `Snap`: Replacement for Blender's built-in snap that auto-selects strips under the time cursor if you don't have a selection
 
