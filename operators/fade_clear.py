@@ -55,9 +55,10 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
                 if not curve.data_path.endswith(animated_property):
                     continue
                 # Ensure the fcurve corresponds to the selected sequence
-                if sequence == eval(
-                    "bpy.context.scene." + curve.data_path.replace("." + animated_property, "")
-                ):
+                name = curve.data_path.rsplit(']')[0]
+                name = name.split('[')[-1]
+                name = name.replace("\"", "")
+                if sequence == context.scene.sequence_editor.sequences_all[name]:
                     fcurves.remove(curve)
             setattr(sequence, animated_property, 1.0)
 
