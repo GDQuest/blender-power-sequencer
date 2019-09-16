@@ -51,15 +51,11 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
 
         for sequence in context.selected_sequences:
             animated_property = "volume" if hasattr(sequence, "volume") else "blend_alpha"
+            data_path = sequence.path_from_id() + "." + animated_property
             for curve in fcurves:
-                if not curve.data_path.endswith(animated_property):
+                if curve.data_path != data_path:
                     continue
-                # Ensure the fcurve corresponds to the selected sequence
-                name = curve.data_path.rsplit(']')[0]
-                name = name.split('[')[-1]
-                name = name.replace("\"", "")
-                if sequence == context.scene.sequence_editor.sequences_all[name]:
-                    fcurves.remove(curve)
+                fcurves.remove(curve)
             setattr(sequence, animated_property, 1.0)
 
         return {"FINISHED"}
