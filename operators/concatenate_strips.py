@@ -149,6 +149,6 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
             concatenate_start = s.frame_final_end if self.to_left else s.frame_final_start
             last_gap = gap
 
-        if not self.concatenate_all:
+        if not (self.concatenate_all or force_all):
             strip_target.select = False
             to_concatenate[0].select = True
