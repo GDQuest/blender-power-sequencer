@@ -341,3 +341,19 @@ def sequencer_workaround_2_80_audio_bug(context):
         bpy.ops.transform.seq_slide(value=(0, 0))
         s.select = False
         break
+
+
+def ripple_move(context, sequences=[], duration_frames=0):
+    """Moves sequences in the list and ripples the change to all sequences after them, in the corresponding channels
+    """
+    channels = {s.channel for s in sequences}
+    first_strip = min(sequences, key=lambda s: s.frame_final_start)
+    to_ripple = set([
+        s
+        for s in context.sequences
+        if s.channel in channels
+        and s.frame_final_start >= first_strip.frame_final_start
+    ] + sequences)
+    to_ripple = sorted(to_ripple, key=attrgetter("frame_final_start"), reverse=duration_frames > 0)
+    for s in to_ripple:
+        s.frame_start += duration_frames
