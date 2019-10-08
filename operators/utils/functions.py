@@ -345,6 +345,7 @@ def sequencer_workaround_2_80_audio_bug(context):
 
 def ripple_move(context, sequences=[], duration_frames=0):
     """Moves sequences in the list and ripples the change to all sequences after them, in the corresponding channels
+    The duration_frames can be positive or negative.
     """
     channels = {s.channel for s in sequences}
     first_strip = min(sequences, key=lambda s: s.frame_final_start)
@@ -354,6 +355,13 @@ def ripple_move(context, sequences=[], duration_frames=0):
         if s.channel in channels
         and s.frame_final_start >= first_strip.frame_final_start
     ] + sequences)
-    to_ripple = sorted(to_ripple, key=attrgetter("frame_final_start"), reverse=duration_frames > 0)
+
+    # Use the built-in seq_slide operator to move strips, for best performances
+    initial_selection = context.selected_sequences
+    bpy.ops.sequencer.select_all(action="DESELECT")
     for s in to_ripple:
-        s.frame_start += duration_frames
+        s.select = True
+    bpy.ops.transform.seq_slide(value=(duration_frames, 0))
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for s in initial_selection:
+        s.select = True
