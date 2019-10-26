@@ -52,7 +52,7 @@ class POWER_SEQUENCER_MT_playback(bpy.types.Menu):
 
 
 class POWER_SEQUENCER_MT_strips(bpy.types.Menu):
-    bl_label = "Strips"
+    bl_label = "Strip"
 
     def draw(self, context):
         layout = self.layout
@@ -72,7 +72,7 @@ class POWER_SEQUENCER_MT_strips(bpy.types.Menu):
 
 
 class POWER_SEQUENCER_MT_transitions(bpy.types.Menu):
-    bl_label = "Transitions"
+    bl_label = "Transition"
 
     def draw(self, context):
         layout = self.layout
@@ -132,7 +132,7 @@ class POWER_SEQUENCER_MT_edit(bpy.types.Menu):
 
 
 class POWER_SEQUENCER_MT_markers(bpy.types.Menu):
-    bl_label = "Markers"
+    bl_label = "Marker"
 
     def draw(self, context):
         layout = self.layout
