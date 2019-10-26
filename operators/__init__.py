@@ -42,7 +42,7 @@ from .jump_to_cut import POWER_SEQUENCER_OT_jump_to_cut
 from .make_still_image import POWER_SEQUENCER_OT_make_still_image
 from .marker_delete_closest import POWER_SEQUENCER_OT_marker_delete_closest
 from .marker_delete_direct import POWER_SEQUENCER_OT_marker_delete_direct
-from .marker_go_to_next import POWER_SEQUENCER_OT_marker_go_to_next
+
 from .markers_as_timecodes import POWER_SEQUENCER_OT_copy_markers_as_timecodes
 from .markers_create_from_selected import POWER_SEQUENCER_OT_markers_create_from_selected_strips
 from .marker_snap_to_cursor import POWER_SEQUENCER_OT_marker_snap_to_cursor
@@ -111,7 +111,7 @@ classes = [
     POWER_SEQUENCER_OT_make_still_image,
     POWER_SEQUENCER_OT_marker_delete_closest,
     POWER_SEQUENCER_OT_marker_delete_direct,
-    POWER_SEQUENCER_OT_marker_go_to_next,
+
     POWER_SEQUENCER_OT_copy_markers_as_timecodes,
     POWER_SEQUENCER_OT_markers_create_from_selected_strips,
     POWER_SEQUENCER_OT_marker_snap_to_cursor,

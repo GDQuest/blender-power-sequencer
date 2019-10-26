@@ -142,7 +142,6 @@ class POWER_SEQUENCER_MT_markers(bpy.types.Menu):
 
         layout.separator()
 
-        layout.operator("power_sequencer.marker_go_to_next")
         layout.operator("power_sequencer.copy_markers_as_timecodes")
         layout.operator("power_sequencer.marker_snap_to_cursor")
         layout.operator("power_sequencer.set_preview_between_markers")
