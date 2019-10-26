@@ -43,6 +43,7 @@ Big thanks to everyone who helped us get there. Development continues in this re
     - Now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel
     - Added option to ripple edit
 - Improved performances when adding Power Sequencer's features to menus or panels
+- `Snap selection to time cursor`: Make behavior consistent and improve performances when many strips are selected
 
 #### User Interface ####
 

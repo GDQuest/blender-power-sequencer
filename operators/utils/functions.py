@@ -365,3 +365,18 @@ def ripple_move(context, sequences=[], duration_frames=0):
     bpy.ops.sequencer.select_all(action="DESELECT")
     for s in initial_selection:
         s.select = True
+
+
+def apply_time_offset(context, sequences=[], offset=0):
+    """Offsets a list of sequences in time using bpy.ops.transform.seq_slide. Mutates and restores the
+    user's selection. Use this function to ensure maximum performances and avoid having to figure
+    out the logic to move strips in the right order.
+    """
+    selection = context.selected_sequences
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for s in sequences:
+        s.select = True
+    bpy.ops.transform.seq_slide(value=(offset, 0))
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for s in selection:
+        s.select = True
