@@ -36,21 +36,9 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         "demo": "https://i.imgur.com/ZyEd0jD.gif",
         "description": doc_description(__doc__),
         "shortcuts": [
-            (
-                {"type": "NUMPAD_2", "value": "PRESS", "alt": True},
-                {"speed_factor": 2.0},
-                "Speed x2",
-            ),
-            (
-                {"type": "NUMPAD_3", "value": "PRESS", "alt": True},
-                {"speed_factor": 3.0},
-                "Speed x3",
-            ),
-            (
-                {"type": "NUMPAD_4", "value": "PRESS", "alt": True},
-                {"speed_factor": 4.0},
-                "Speed x4",
-            ),
+            ({"type": "TWO", "value": "PRESS", "alt": True}, {"speed_factor": 2.0}, "Speed x2",),
+            ({"type": "THREE", "value": "PRESS", "alt": True}, {"speed_factor": 3.0}, "Speed x3",),
+            ({"type": "FOUR", "value": "PRESS", "alt": True}, {"speed_factor": 4.0}, "Speed x4",),
         ],
         "keymap": "Sequencer",
     }

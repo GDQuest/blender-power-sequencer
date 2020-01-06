@@ -62,7 +62,8 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - Removed the `Add Transform` tool: the one from the VSE Transform tool add-on achieves the same result.
 - Removed `Synchronize titles`: it was a weird, not so useful tool that was replaced by `Markers Snap Matching Strips`.
 - Update the YouTube rendering preset to match the platform's recommendations for 1080p.
-- `Playback Speed Set`: Changed shortcuts from numpad keys to number keys.
+- `Playback Speed Set`: changed shortcuts from numpad keys to number keys.
+- `Speed Up Movie Strip`: changed shortcuts from numpad keys to number keys. 
 - Source code: 
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`.
     - Improved and simplified code around various operators.
