@@ -24,6 +24,7 @@ from . import addon_updater_ops
 def get_preferences(context):
     return context.preferences.addons[__package__].preferences
 
+
 class PowerSequencerPreferences(bpy.types.AddonPreferences):
     bl_idname = __package__
 

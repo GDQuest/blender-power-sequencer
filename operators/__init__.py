@@ -111,7 +111,6 @@ classes = [
     POWER_SEQUENCER_OT_make_still_image,
     POWER_SEQUENCER_OT_marker_delete_closest,
     POWER_SEQUENCER_OT_marker_delete_direct,
-
     POWER_SEQUENCER_OT_copy_markers_as_timecodes,
     POWER_SEQUENCER_OT_markers_create_from_selected_strips,
     POWER_SEQUENCER_OT_marker_snap_to_cursor,

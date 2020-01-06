@@ -48,8 +48,7 @@ class POWER_SEQUENCER_OT_copy_markers_as_timecodes(bpy.types.Operator):
             self.report({"INFO"}, "No markers found")
             return {"CANCELLED"}
 
-        sorted_markers = sorted(context.scene.timeline_markers,
-                                key=lambda m: m.frame)
+        sorted_markers = sorted(context.scene.timeline_markers, key=lambda m: m.frame)
 
         framerate = render.fps / render.fps_base
         last_marker_seconds = sorted_markers[-1].frame / framerate
@@ -59,9 +58,9 @@ class POWER_SEQUENCER_OT_copy_markers_as_timecodes(bpy.types.Operator):
         markers_as_timecodes = []
         for marker in sorted_markers:
             time = dt.datetime(year=1, month=1, day=1) + dt.timedelta(
-                seconds=marker.frame / framerate)
-            markers_as_timecodes.append(
-                time.strftime(time_format) + " " + marker.name)
+                seconds=marker.frame / framerate
+            )
+            markers_as_timecodes.append(time.strftime(time_format) + " " + marker.name)
 
         bpy.context.window_manager.clipboard = "\n".join(markers_as_timecodes)
         return {"FINISHED"}

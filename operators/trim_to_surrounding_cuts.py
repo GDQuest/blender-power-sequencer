@@ -38,6 +38,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
 
     By default, the tool leaves a 0.2 seconds margin on either side of the trim.
     """
+
     doc = {
         "name": doc_name(__qualname__),
         "demo": "",
@@ -78,7 +79,9 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
 
         sequencer = bpy.ops.sequencer
 
-        frame = context.region.view2d.region_to_view(x=event.mouse_region_x, y=event.mouse_region_y)[0]
+        frame = context.region.view2d.region_to_view(
+            x=event.mouse_region_x, y=event.mouse_region_y
+        )[0]
         frame = round(frame)
 
         left_cut_frame, right_cut_frame = find_closest_surrounding_cuts_frames(context, frame)
