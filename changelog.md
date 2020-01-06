@@ -83,6 +83,9 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Mouse Trim Instantly`: Rewrote the tool to fix cases where it would stop trimming.
 - `Import Local Footage`: Fixed files re-importing after moving the project folder.
 - `Preview To Selection`: Use sequences in the current context if nothing is selected.
+- `Ripple Delete`:
+    - Fixed changing the time cursor's position.
+    - Fixed not working after an undo.
 
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
