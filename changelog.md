@@ -12,38 +12,38 @@ Power Sequencer is now **included in Blender 2.81**! 🙂
 
 Big thanks to everyone who helped us get there. Development continues in this repository, and help is still welcome, as always.
 
-- `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences
-- `Snap`: Replacement for Blender's built-in snap that auto-selects strips under the time cursor if you don't have a selection
+- `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences.
+- `Snap`: Replacement for Blender's built-in snap that auto-selects strips under the time cursor if you don't have a selection.
 
 ### Improvements ###
 
 - `Mouse trim`: 
-    - Allows you to trim strips in multiple channels freely
-    - The drawing now shows the trimmed area with a yellow overlay
-    - Displays shortcuts and information in the Sequencer's header
-    - Change the trim side on the fly by pressing the letter <kbd>O</kbd>
-    - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively
+    - Allows you to trim strips in multiple channels freely.
+    - The drawing now shows the trimmed area with a yellow overlay.
+    - Displays shortcuts and information in the Sequencer's header.
+    - Change the trim side on the fly by pressing the letter <kbd>O</kbd>.
+    - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively.
     - Press <kbd>Ctrl</kbd> when starting the tool to snap the start frame to the closest cut.
-    - Allow trimming gaps reliably with the mouse and tablet
+    - Allow trimming gaps reliably with the mouse and tablet.
 - `Import Local Footage`: 
-    - Does not impose a folder structure on you anymore
-    - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`
-- `Set Playback Speed`: Add shortcut to set the speed to 3x
+    - Does not impose a folder structure on you anymore.
+    - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`.
+- `Set Playback Speed`: Add shortcut to set the speed to 3x.
 - `Delete Direct`: You can now press <kbd>X</kbd> to remove strips without confirmation, but using Blender's default behavior, and <kbd>Alt</kbd><kbd>X</kbd> to smartly remove transitions.
 - `Space Sequences`: 
-    - Offsets strips to the right of the time cursor, ignoring locked sequences
-    - Now also offsets timeline markers
-- `Snap Selection`: auto-select strips under the time cursor
+    - Offsets strips to the right of the time cursor, ignoring locked sequences.
+    - Now also offsets timeline markers.
+- `Snap Selection`: auto-select strips under the time cursor.
 - `Add Speed`: 
-    - Use the full source clip for single sequences, so you can slip their content
+    - Use the full source clip for single sequences, so you can slip their content.
     - Change the shortcuts and add <kbd>Alt</kbd><kbd>2</kbd>, <kbd>Alt</kbd><kbd>3</kbd>, <kbd>Alt</kbd><kbd>4</kbd> to speed up to 2, 3, and 4 times the normal speed.
-- `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h
-- `Markers Delete Direct`: removed the confirmation popup when deleting markers with X
+- `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h.
+- `Markers Delete Direct`: removed the confirmation popup when deleting markers with X.
 - `Concatenate Strips`: 
-    - Now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel
-    - Added option to ripple edit
-- Improved performances when adding Power Sequencer's features to menus or panels
-- `Snap selection to time cursor`: Make behavior consistent and improve performances when many strips are selected
+    - Now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel.
+    - Added option to ripple edit.
+- Improved performances when adding Power Sequencer's features to menus or panels.
+- `Snap selection to time cursor`: Make behavior consistent and improve performances when many strips are selected.
 
 #### User Interface ####
 
@@ -56,33 +56,34 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 
 ### Changes ###
 
-- Renamed `Mouse cut` to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`
-- Changed the shortcuts of `Playback Speed Decrease` and `Playback Speed Increase` to <kbd>,</kbd> and <kbd>.</kbd> respectively, so they don't override the already bound <kbd>[</kbd> and <kbd>]</kbd>
-- Changed the shortcut of `Add Transform` to <kbd>Alt</kbd><kbd>T</kbd> so it doesn't collide with `Mouse Trim Modal`
-- Source code: 
-    - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`
-    - Improved and simplified code around various operators
-    - Renamed `crossfade_remove.py` to `transitions_remove`
-- Removed the `Add Transform` tool: the one from the VSE Transform tool add-on achieves the same result
+- `Mouse cut`: renamed to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`.
+- Changed the shortcuts of `Playback Speed Decrease` and `Playback Speed Increase` to <kbd>,</kbd> and <kbd>.</kbd> respectively, so they don't override the already bound <kbd>[</kbd> and <kbd>]</kbd>.
+- Changed the shortcut of `Add Transform` to <kbd>Alt</kbd><kbd>T</kbd> so it doesn't collide with `Mouse Trim Modal`.
+- Removed the `Add Transform` tool: the one from the VSE Transform tool add-on achieves the same result.
 - Removed `Synchronize titles`: it was a weird, not so useful tool that was replaced by `Markers Snap Matching Strips`.
-- Update the YouTube rendering preset to match the platform's recommendations for 1080p
+- Update the YouTube rendering preset to match the platform's recommendations for 1080p.
 - `Playback Speed Set`: Changed shortcuts from numpad keys to number keys.
+- Source code: 
+    - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`.
+    - Improved and simplified code around various operators.
+    - Renamed `crossfade_remove.py` to `transitions_remove`.
 
 ### Bug fixes ###
 
-- `Delete crossfade`: Fixed error when deleting a crossfade between color strips
-- `Add Crossfade`: Fixed not crossfading with color strips
+- `Delete crossfade`: Fixed error when deleting a crossfade between color strips.
+- `Add Crossfade`: Fixed not crossfading with color strips.
 - `Expand to surrounding cuts`: Fixed breaking the strip if trying to use the tool on the the first or the last sequence in the scene.
 - `Playback Speed`: 
-    - Fixed error when calling `Decrease Playback Speed`
-    - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80
-    - Fixed error with `Playback Speed Increase` when it was already at maximum speed
-- `Delete Direct`: Fixed always moving input strip handles when removing transition effects
-- `Import Local Footage`: Fixed error when importing footage in a new project
-- `Grab`: Fixed error when there was no selection and no strip under the mouse cursor
-- `Mouse Trim Instantly`: Rewrote the tool to fix cases where it would stop trimming
-- `Import Local Footage`: Fixed files re-importing after moving the project folder
-- `Preview To Selection`: Use sequences in the current context if nothing is selected
+    - Fixed error when calling `Decrease Playback Speed`.
+    - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80.
+    - Fixed error with `Playback Speed Increase` when it was already at maximum speed.
+- `Delete Direct`: Fixed always moving input strip handles when removing transition effects.
+- `Import Local Footage`: Fixed error when importing footage in a new project.
+- `Grab`: Fixed error when there was no selection and no strip under the mouse cursor.
+- `Mouse Trim Instantly`: Rewrote the tool to fix cases where it would stop trimming.
+- `Import Local Footage`: Fixed files re-importing after moving the project folder.
+- `Preview To Selection`: Use sequences in the current context if nothing is selected.
+
 
 ## Power Sequencer 1.3: Blender 2.80 support ##
 
