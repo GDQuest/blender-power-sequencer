@@ -63,7 +63,6 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - Removed `Synchronize titles`: it was a weird, not so useful tool that was replaced by `Markers Snap Matching Strips`.
 - Update the YouTube rendering preset to match the platform's recommendations for 1080p.
 - `Playback Speed Set`: changed shortcuts from numpad keys to number keys.
-- `Speed Up Movie Strip`: changed shortcuts from numpad keys to number keys. 
 - Source code: 
     - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`.
     - Improved and simplified code around various operators.
@@ -87,6 +86,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Ripple Delete`:
     - Fixed changing the time cursor's position.
     - Fixed not working after an undo.
+- `Speed Up Movie Strip`: Fixed created meta-strip being the length of the full source movie strip when speeding up a single movie strip.
 
 
 ## Power Sequencer 1.3: Blender 2.80 support ##

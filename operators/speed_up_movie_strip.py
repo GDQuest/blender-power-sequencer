@@ -89,16 +89,15 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
             return
 
         sequence_editor = context.scene.sequence_editor
-        bpy.ops.sequencer.select_all(action="DESELECT")
+        sequencer = bpy.ops.sequencer
+
+        sequencer.select_all(action="DESELECT")
         for s in sequences:
             s.select = True
-        bpy.ops.sequencer.meta_make()
+        sequencer.meta_make()
         meta_strip = sequence_editor.active_strip
-        if len(meta_strip.sequences) == 1:
-            meta_strip.sequences[0].frame_offset_start = 0
-            meta_strip.sequences[0].frame_offset_end = 0
 
-        bpy.ops.sequencer.effect_strip_add(type="SPEED")
+        sequencer.effect_strip_add(type="SPEED")
         speed_effect = sequence_editor.active_strip
         speed_effect.use_default_fade = False
         speed_effect.speed_factor = self.speed_factor
@@ -109,7 +108,7 @@ class POWER_SEQUENCER_OT_speed_up_movie_strip(bpy.types.Operator):
         sequence_editor.active_strip = meta_strip
         speed_effect.select = True
         meta_strip.select = True
-        bpy.ops.sequencer.meta_make()
+        sequencer.meta_make()
         sequence_editor.active_strip.name = (
             meta_strip.sequences[0].name + " " + str(self.speed_factor) + "x"
         )
