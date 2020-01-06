@@ -87,6 +87,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Fixed changing the time cursor's position.
     - Fixed not working after an undo.
 - `Speed Up Movie Strip`: Fixed created meta-strip being the length of the full source movie strip when speeding up a single movie strip.
+- `Concatenate Strips`: Fixed error when there was no strip in the channel after the selected or hovered strip.
 
 
 ## Power Sequencer 1.3: Blender 2.80 support ##

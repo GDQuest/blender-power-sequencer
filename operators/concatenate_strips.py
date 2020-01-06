@@ -18,7 +18,12 @@ import bpy
 from operator import attrgetter
 
 from .utils.global_settings import SequenceTypes
-from .utils.functions import find_sequences_after, get_mouse_frame_and_channel, sequencer_workaround_2_80_audio_bug, ripple_move
+from .utils.functions import (
+    find_sequences_after,
+    get_mouse_frame_and_channel,
+    sequencer_workaround_2_80_audio_bug,
+    ripple_move,
+)
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
@@ -101,7 +106,8 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         selection = context.selected_sequences
         channels = {s.channel for s in selection}
 
-        if len(selection) == len(channels):
+        is_one_strip_per_channel = len(selection) == len(channels)
+        if is_one_strip_per_channel:
             for s in selection:
                 candidates = (
                     find_sequences_before(context, s)
@@ -115,6 +121,8 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
                     and not strip.lock
                     and strip.type in SequenceTypes.CUTABLE
                 ]
+                if not to_concatenate:
+                    continue
                 self.concatenate(context, s, to_concatenate)
 
         else:
@@ -133,7 +141,9 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
 
     def concatenate(self, context, strip_target, sequences, force_all=False):
         to_concatenate = sorted(sequences, key=attrgetter("frame_final_start"))
-        to_concatenate = list(reversed(to_concatenate)) if not self.is_towards_left else to_concatenate
+        to_concatenate = (
+            list(reversed(to_concatenate)) if not self.is_towards_left else to_concatenate
+        )
         to_concatenate = (
             [to_concatenate[0]] if not (self.concatenate_all or force_all) else to_concatenate
         )
@@ -145,7 +155,9 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
         for s in to_concatenate:
             if isinstance(s, bpy.types.EffectSequence):
                 concatenate_start = (
-                    s.frame_final_end - last_gap if self.is_towards_left else s.frame_final_start - last_gap
+                    s.frame_final_end - last_gap
+                    if self.is_towards_left
+                    else s.frame_final_start - last_gap
                 )
                 continue
             concat_strip_frame = getattr(s, attribute_concat)
