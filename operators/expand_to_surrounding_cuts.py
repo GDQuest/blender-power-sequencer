@@ -15,11 +15,9 @@
 # not, see <https://www.gnu.org/licenses/>.
 #
 import bpy
-from math import floor
 
-from .utils.functions import convert_duration_to_frames
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 from .utils.functions import slice_selection
+from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):

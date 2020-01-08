@@ -17,7 +17,6 @@
 import bpy
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.global_settings import SequenceTypes
 
 
 class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):

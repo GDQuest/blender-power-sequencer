@@ -19,7 +19,6 @@ Find the two closest cuts, trims and deletes all strips above in the range but l
 margin. Removes the newly formed gap.
 """
 import bpy
-from math import floor
 
 from .utils.functions import convert_duration_to_frames, trim_strips
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
@@ -71,8 +70,6 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         return context
 
     def invoke(self, context, event):
-        sequencer = bpy.ops.sequencer
-
         if not context.sequences:
             return {"CANCELLED"}
 

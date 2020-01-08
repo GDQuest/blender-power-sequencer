@@ -17,7 +17,6 @@
 import json
 import os
 import re
-from operator import attrgetter
 
 import bpy
 
@@ -164,7 +163,7 @@ class POWER_SEQUENCER_OT_import_local_footage(bpy.types.Operator):
         Creates a new text data block that contains an empty json list, renames it to `name` and
         returns it
         """
-        re_text = re.compile(r"^Text.[0-9]{3}$")
+        re.compile(r"^Text.[0-9]{3}$")
 
         bpy.ops.text.new()
 

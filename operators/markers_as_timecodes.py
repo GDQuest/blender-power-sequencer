@@ -16,7 +16,6 @@
 #
 import bpy
 import datetime as dt
-import operator as op
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 

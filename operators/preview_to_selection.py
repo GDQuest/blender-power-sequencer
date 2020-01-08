@@ -49,7 +49,6 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
         return context.sequences
 
     def execute(self, context):
-        scene = context.scene
         sequences = (
             context.selected_sequences
             if len(context.selected_sequences) >= 1

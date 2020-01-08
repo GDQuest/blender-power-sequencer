@@ -23,7 +23,6 @@ from .utils.functions import (
     slice_selection,
     ripple_move,
 )
-from .utils.global_settings import SequenceTypes
 
 
 class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
@@ -70,7 +69,6 @@ class POWER_SEQUENCER_OT_ripple_delete(bpy.types.Operator):
 
         is_single_channel = len(channels) == 1
         if is_single_channel:
-            first_strip = selection_blocks[0][0]
             for block in selection_blocks:
                 delete_start = block[0].frame_final_start
                 delete_end = block[-1].frame_final_end
