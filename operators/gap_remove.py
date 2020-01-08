@@ -18,6 +18,7 @@ import bpy
 from operator import attrgetter
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.functions import slice_selection
 
 
 class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
