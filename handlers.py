@@ -16,7 +16,6 @@
 #
 import bpy
 from bpy.app.handlers import persistent
-from . import addon_updater_ops
 
 
 @persistent
@@ -70,22 +69,10 @@ def draw_ui_menu(self, context):
     layout.menu("POWER_SEQUENCER_MT_main")
 
 
-# Add-on updater
-def draw_check_for_update(self, context):
-    # Call to check for update in background
-    # note: built-in checks ensure it runs at most once
-    # and will run in the background thread, not blocking
-    # or hanging blender
-    # Internally also checks to see if auto-check enabled
-    # and if the time interval has passed
-    addon_updater_ops.check_for_update_background()
-
-
 def register_handlers():
     # Menus
     bpy.types.SEQUENCER_HT_header.append(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.append(draw_playback_speed)
-    bpy.types.SEQUENCER_HT_header.append(draw_check_for_update)
 
     # Handlers
     bpy.app.handlers.load_post.append(power_sequencer_load_file_post)
@@ -96,7 +83,6 @@ def unregister_handlers():
     # Menus
     bpy.types.SEQUENCER_HT_header.remove(draw_ui_menu)
     bpy.types.SEQUENCER_HT_header.remove(draw_playback_speed)
-    bpy.types.SEQUENCER_HT_header.remove(draw_check_for_update)
 
     # Handlers
     bpy.app.handlers.load_post.remove(power_sequencer_load_file_post)

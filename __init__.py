@@ -16,7 +16,6 @@
 #
 import bpy
 
-from . import addon_updater_ops
 from .addon_preferences import register_preferences, unregister_preferences
 from .addon_properties import register_properties, unregister_properties
 from .operators import classes
@@ -29,7 +28,7 @@ from .ui import register_ui, unregister_ui
 # load and reload submodules
 ##################################
 modules = addon_auto_imports.setup_addon_modules(
-    __path__, __name__, ignore_packages=[".utils", ".audiosync"], ignore_modules=["addon_updater"]
+    __path__, __name__, ignore_packages=[".utils", ".audiosync"]
 )
 
 
@@ -52,7 +51,6 @@ addon_keymaps = []
 
 def register():
     global addon_keymaps
-    addon_updater_ops.register(bl_info)
 
     register_preferences()
     register_properties()
@@ -70,7 +68,6 @@ def register():
 
 def unregister():
     global addon_keymaps
-    addon_updater_ops.unregister()
 
     for km, kmi in addon_keymaps:
         km.keymap_items.remove(kmi)

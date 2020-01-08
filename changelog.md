@@ -56,6 +56,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 
 ### Changes ###
 
+- Removed the add-on auto updater feature: we cannot have it in the add-on for official Blender releases.
 - `Mouse cut`: renamed to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`.
 - Changed the shortcuts of `Playback Speed Decrease` and `Playback Speed Increase` to <kbd>,</kbd> and <kbd>.</kbd> respectively, so they don't override the already bound <kbd>[</kbd> and <kbd>]</kbd>.
 - Changed the shortcut of `Add Transform` to <kbd>Alt</kbd><kbd>T</kbd> so it doesn't collide with `Mouse Trim Modal`.

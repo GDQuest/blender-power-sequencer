@@ -18,7 +18,6 @@
 Add-on preferences and interface in the Blender preferences window.
 """
 import bpy
-from . import addon_updater_ops
 
 
 def get_preferences(context):
@@ -33,37 +32,6 @@ class PowerSequencerPreferences(bpy.types.AddonPreferences):
     proxy_75: bpy.props.BoolProperty(name="75%", default=False)
     proxy_100: bpy.props.BoolProperty(name="100%", default=False)
 
-    # addon updater preferences
-    auto_check_update: bpy.props.BoolProperty(
-        name="Auto-check for Update",
-        description="If enabled, auto-check for updates using an interval",
-        default=True,
-    )
-    updater_intrval_months: bpy.props.IntProperty(
-        name="Months", description="Number of months between checking for updates", default=0, min=0
-    )
-    updater_intrval_days: bpy.props.IntProperty(
-        name="Days",
-        description="Number of days between checking for updates",
-        default=1,
-        min=0,
-        max=31,
-    )
-    updater_intrval_hours: bpy.props.IntProperty(
-        name="Hours",
-        description="Number of hours between checking for updates",
-        default=0,
-        min=0,
-        max=23,
-    )
-    updater_intrval_minutes: bpy.props.IntProperty(
-        name="Minutes",
-        description="Number of minutes between checking for updates",
-        default=0,
-        min=0,
-        max=59,
-    )
-
     def draw(self, context):
         layout = self.layout
 
@@ -74,9 +42,6 @@ class PowerSequencerPreferences(bpy.types.AddonPreferences):
         row.prop(self, "proxy_50")
         row.prop(self, "proxy_75")
         row.prop(self, "proxy_100")
-
-        # updater draw function
-        addon_updater_ops.update_settings_ui(self, context)
 
 
 register_preferences, unregister_preferences = bpy.utils.register_classes_factory(
