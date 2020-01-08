@@ -23,10 +23,7 @@ from math import floor
 
 from .utils.functions import convert_duration_to_frames
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.functions import (
-    find_closest_surrounding_cuts_frames,
-    sequencer_workaround_2_80_audio_bug,
-)
+from .utils.functions import find_closest_surrounding_cuts_frames
 
 
 class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
@@ -125,7 +122,6 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
             bpy.ops.power_sequencer.gap_remove()
             context.scene.frame_current = trim_start
 
-        sequencer_workaround_2_80_audio_bug(context)
         return {"FINISHED"}
 
     def find_strips_in_range(

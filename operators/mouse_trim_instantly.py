@@ -21,7 +21,6 @@ from .utils.functions import find_strips_mouse
 from .utils.functions import trim_strips
 from .utils.functions import get_frame_range
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.functions import sequencer_workaround_2_80_audio_bug
 
 
 class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
@@ -112,6 +111,4 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
         if self.gap_remove and self.select_mode == "CURSOR":
             bpy.ops.power_sequencer.gap_remove()
 
-        # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-        sequencer_workaround_2_80_audio_bug(context)
         return {"FINISHED"}

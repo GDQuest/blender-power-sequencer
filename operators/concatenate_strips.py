@@ -21,7 +21,6 @@ from .utils.global_settings import SequenceTypes
 from .utils.functions import (
     find_sequences_after,
     get_mouse_frame_and_channel,
-    sequencer_workaround_2_80_audio_bug,
     ripple_move,
 )
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
@@ -136,7 +135,6 @@ class POWER_SEQUENCER_OT_concatenate_strips(bpy.types.Operator):
                 to_concatenate.remove(strip_target)
                 self.concatenate(context, strip_target, to_concatenate, force_all=True)
 
-        sequencer_workaround_2_80_audio_bug(context)
         return {"FINISHED"}
 
     def concatenate(self, context, strip_target, sequences, force_all=False):

@@ -26,7 +26,6 @@ from .utils.functions import (
     trim_strips,
     find_snap_candidate,
     find_closest_surrounding_cuts,
-    sequencer_workaround_2_80_audio_bug,
 )
 
 from .utils.draw import (
@@ -186,10 +185,6 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
             self.trim_apply(context, event)
             self.draw_stop()
             context.scene.use_audio_scrub = self.use_audio_scrub
-
-            # FIXME: Workaround Blender 2.80's audio bug, remove when fixed in Blender
-            sequencer_workaround_2_80_audio_bug(context)
-
             return {"FINISHED"}
 
         # Update trim

@@ -333,16 +333,6 @@ def get_sequences_under_cursor(context):
     return under_cursor
 
 
-def sequencer_workaround_2_80_audio_bug(context):
-    for s in context.sequences:
-        if s.lock:
-            continue
-        s.select = True
-        bpy.ops.transform.seq_slide(value=(0, 0))
-        s.select = False
-        break
-
-
 def ripple_move(context, sequences, duration_frames, delete=False):
     """Moves sequences in the list and ripples the change to all sequences after them, in the corresponding channels
     The `duration_frames` can be positive or negative.
