@@ -14,10 +14,12 @@
 # You should have received a copy of the GNU General Public License along with Power Sequencer. If
 # not, see <https://www.gnu.org/licenses/>.
 #
-import bpy
 import subprocess
-from math import sqrt, floor
+from math import floor, sqrt
 from operator import attrgetter
+
+import bpy
+
 from .global_settings import SequenceTypes
 
 
@@ -258,36 +260,48 @@ def slice_selection(context, sequences):
     return broken_selection
 
 
-def trim_strips(
-    context, start_frame, end_frame, select_mode, strips_to_trim=[], strips_to_delete=[]
-):
+def trim_strips(context, start_frame, end_frame, to_trim=[], to_delete=[]):
     """
     Remove the footage and audio between start_frame and end_frame.
     """
     trim_start = min(start_frame, end_frame)
     trim_end = max(start_frame, end_frame)
 
-    strips_to_trim = [s for s in strips_to_trim if s.type in SequenceTypes.CUTABLE]
+    to_trim = [s for s in to_trim if s.type in SequenceTypes.CUTABLE]
 
-    for s in strips_to_trim:
-        if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
+    for s in to_trim:
+        # Cut strip longer than the trim range in three
+        is_strip_longer_than_trim_range = (
+            s.frame_final_start < trim_start and s.frame_final_end > trim_end
+        )
+        if is_strip_longer_than_trim_range:
             bpy.ops.sequencer.select_all(action="DESELECT")
             s.select = True
             bpy.ops.sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
             bpy.ops.sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
-            strips_to_delete.append(context.selected_sequences[0])
+            to_delete.append(context.selected_sequences[0])
             continue
+
+        # Resize strips that overlap the trim range
         elif s.frame_final_start < trim_end and s.frame_final_end > trim_end:
             s.frame_final_start = trim_end
         elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
             s.frame_final_end = trim_start
 
-    if strips_to_delete != []:
-        bpy.ops.sequencer.select_all(action="DESELECT")
-        for s in strips_to_delete:
-            s.select = True
-        bpy.ops.sequencer.delete()
+    delete_strips(to_delete)
     return {"FINISHED"}
+
+
+def delete_strips(to_delete=[]):
+    """
+    Remove the footage and audio between start_frame and end_frame.
+    """
+    if to_delete == []:
+        return
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for s in to_delete:
+        s.select = True
+    bpy.ops.sequencer.delete()
 
 
 def find_closest_surrounding_cuts(context, frame):

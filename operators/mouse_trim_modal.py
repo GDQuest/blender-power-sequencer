@@ -212,8 +212,8 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
 
     def draw_start(self, context, event):
         """Initializes the drawing handler, see draw()"""
-        to_select, to_delete = self.find_strips_to_trim(context)
-        target_strips = to_select + to_delete
+        to_trim, to_delete = self.find_strips_to_trim(context)
+        target_strips = to_trim + to_delete
 
         draw_args = (self, context, self.trim_start, self.trim_end, target_strips, self.gap_remove)
         self.draw_handler = bpy.types.SpaceSequenceEditor.draw_handler_add(
@@ -258,12 +258,12 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         self.is_trimming = False
 
     def cut(self, context):
-        to_select = self.find_strips_to_cut(context)
+        to_cut = self.find_strips_to_cut(context)
         bpy.ops.sequencer.select_all(action="DESELECT")
-        for s in to_select:
+        for s in to_cut:
             s.select = True
 
-        if len(to_select) == 0:
+        if len(to_cut) == 0:
             bpy.ops.power_sequencer.gap_remove()
         else:
             frame_current = context.scene.frame_current
@@ -293,10 +293,10 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         return to_cut
 
     def trim(self, context):
-        to_select, to_delete = self.find_strips_to_trim(context)
-        trim_strips(context, self.trim_start, self.trim_end, self.select_mode, to_select, to_delete)
+        to_trim, to_delete = self.find_strips_to_trim(context)
+        trim_strips(context, self.trim_start, self.trim_end, to_trim, to_delete)
         if (self.gap_remove and self.select_mode == "CURSOR") or (
-            self.select_mode == "CONTEXT" and to_select == [] and to_delete == []
+            self.select_mode == "CONTEXT" and to_trim == [] and to_delete == []
         ):
             context.scene.frame_current = min(self.trim_start, self.trim_end)
             bpy.ops.power_sequencer.gap_remove()
