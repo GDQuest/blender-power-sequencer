@@ -21,7 +21,7 @@ margin. Removes the newly formed gap.
 import bpy
 from math import floor
 
-from .utils.functions import convert_duration_to_frames
+from .utils.functions import convert_duration_to_frames, trim_strips
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 from .utils.functions import find_closest_surrounding_cuts_frames
 
@@ -71,19 +71,18 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         return context
 
     def invoke(self, context, event):
+        sequencer = bpy.ops.sequencer
+
         if not context.sequences:
             return {"CANCELLED"}
-
-        sequencer = bpy.ops.sequencer
 
         frame = context.region.view2d.region_to_view(
             x=event.mouse_region_x, y=event.mouse_region_y
         )[0]
         frame = round(frame)
 
-        left_cut_frame, right_cut_frame = find_closest_surrounding_cuts_frames(context, frame)
         margin_frame = convert_duration_to_frames(context, self.margin)
-
+        left_cut_frame, right_cut_frame = find_closest_surrounding_cuts_frames(context, frame)
         if abs(left_cut_frame - right_cut_frame) <= margin_frame * 2:
             self.report(
                 {"WARNING"},
@@ -94,26 +93,7 @@ class POWER_SEQUENCER_OT_trim_to_surrounding_cuts(bpy.types.Operator):
         to_delete, to_trim = self.find_strips_in_range(context, left_cut_frame, right_cut_frame)
         trim_start, trim_end = (left_cut_frame + margin_frame, right_cut_frame - margin_frame)
 
-        for s in to_trim:
-            # If the strip is larger than the range to trim cut it in three
-            if s.frame_final_start < trim_start and s.frame_final_end > trim_end:
-                sequencer.select_all(action="DESELECT")
-                s.select = True
-                sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
-                sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
-                to_delete.append(context.selected_sequences[0])
-                continue
-
-            if s.frame_final_start < trim_end and s.frame_final_end > trim_end:
-                s.frame_final_start = trim_end
-            elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
-                s.frame_final_end = trim_start
-
-        # Delete all sequences that are between the cuts
-        sequencer.select_all(action="DESELECT")
-        for s in to_delete:
-            s.select = True
-        sequencer.delete()
+        trim_strips(context, trim_start, trim_end, to_trim, to_delete)
 
         if self.gap_remove:
             frame_to_remove_gap = right_cut_frame - 1 if frame == right_cut_frame else frame
