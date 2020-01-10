@@ -14,7 +14,7 @@ Power Sequencer brings smart new editing features to edit faster with Blender's 
 Power Sequencer is included in Blender *since Blender 2.81*. 
 
 1. Open Blender
-1. Go to `File > User Preferences > Addons`
+1. Go to `Edit > Preferences > Addons`
 1. In the search box, search for "Power Sequencer"
 1. Activate the checkbox next to "Sequencer: Power Sequencer"
 
