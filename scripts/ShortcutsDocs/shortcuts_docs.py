@@ -19,18 +19,19 @@ import operator as op
 import os.path
 import sys
 
-sys.path.append(os.path.abspath(os.path.join("..", "..")))
+import power_sequencer.operators as operators
 
-import operators as ops
+sys.path.append(os.path.abspath(os.path.join("..", "..", "..")))
+
 
 
 if __name__ == "__main__":
-    os = dir(ops)
+    os = dir(operators)
     os = filter(lambda o: o[0].isupper(), os)
     os = map(lambda o: op.attrgetter(o), os)
-    os = map(lambda o: o(ops), os)
+    os = map(lambda o: o(operators), os)
     os = map(lambda o: op.attrgetter("bl_idname", "doc")(o), os)
     os = {k: v for k, v in os if v != {}}
-    os.update(ops.doc)
+    os.update(operators.doc)
 
-    json.dump(os, open("shortcuts_docs.json", "w"), indent=4, sort_keys=True)
+    json.dump(os, open("power_sequencer_docs.json", "w"), indent=4, sort_keys=True)
