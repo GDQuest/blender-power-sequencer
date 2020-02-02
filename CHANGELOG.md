@@ -4,9 +4,13 @@ This document lists new features, improvements, changes, and bug fixes in every 
 
 ##  Power Sequencer 1.4 ##
 
-*These are the features and fixes we added lately, and that'll be in the next major update.*
+This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
 
-⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
+### Manual ###
+
+We now have a [Getting Started](https://www.gdquest.com/docs/documentation/power-sequencer/getting-started/) guide that showcases some of the most useful features in the add-on.
+
+You can also read about all the features and shortcuts in the [Features Reference](https://www.gdquest.com/docs/documentation/power-sequencer/reference/).
 
 ### New features ###
 
