@@ -4,7 +4,9 @@ This document lists new features, improvements, changes, and bug fixes in every 
 
 ##  Power Sequencer 1.4 ##
 
-This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
+*These are the features and fixes we added lately, and that'll be in the next major update.*
+
+⚠ This is a Work in Progress. Even if we're careful, new features can have bugs 🐛
 
 ### New features ###
 
