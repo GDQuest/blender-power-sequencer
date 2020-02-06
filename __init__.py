@@ -70,7 +70,7 @@ def register():
         bpy.utils.register_class(cls)
 
     # Register tools
-    version_min_toolbar = (2, 82, 0)
+    version_min_toolbar = (2, 83, 0)
     if is_blender_version_compatible(version_min_toolbar):
         classes_tool = get_tool_classes()
         last_tool = {"builtin.cut"}
