@@ -84,3 +84,11 @@ def unregister():
     unregister_handlers()
 
     print("Unregistered {}".format(bl_info["name"]))
+
+
+def is_blender_version_compatible(version: Tuple[int, int, int]) -> bool:
+    """Returns True if the `version` is greater or equal to the current Blender version.
+    Converts the versions to integers to compare them."""
+    version_int = version[0] * 1000 + version[1] * 10 + version[2]
+    blender_version_int = bpy.app.version[0] * 1000 + bpy.app.version[1] * 10 + bpy.app.version[2]
+    return blender_version_int >= version_int
