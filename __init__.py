@@ -18,7 +18,7 @@ import bpy
 
 from .addon_preferences import register_preferences, unregister_preferences
 from .addon_properties import register_properties, unregister_properties
-from .operators import classes
+from .operators import get_operator_classes
 from .utils.register_shortcuts import register_shortcuts
 from .handlers import register_handlers, unregister_handlers
 from .utils import addon_auto_imports
@@ -57,10 +57,11 @@ def register():
     register_handlers()
     register_ui()
 
-    for c in classes:
-        bpy.utils.register_class(c)
+    operator_classes = get_operator_classes()
+    for cls in operator_classes:
+        bpy.utils.register_class(cls)
 
-    keymaps = register_shortcuts()
+    keymaps = register_shortcuts(operator_classes)
     addon_keymaps += keymaps
 
     print("Registered {} with {} modules".format(bl_info["name"], len(modules)))
@@ -73,8 +74,9 @@ def unregister():
         km.keymap_items.remove(kmi)
     addon_keymaps.clear()
 
-    for c in classes:
-        bpy.utils.unregister_class(c)
+    operator_classes = get_operator_classes()
+    for cls in operator_classes:
+        bpy.utils.unregister_class(cls)
 
     unregister_ui()
     unregister_preferences()
