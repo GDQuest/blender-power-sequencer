@@ -2,6 +2,19 @@
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
+##  Power Sequencer 1.5 ##
+
+This release is a work-in-progress. New features may contain bugs. New features may also require Blender 2.82.
+
+### New features ###
+
+- Interactive trim tool in the toolbar. In Blender 2.82+, press <kbd>T</kbd> to toggle the toolbar and select a tool, or press <kbd>Shift</kbd> <kbd>Spacebar</kbd> to bring the interactive tool menu.
+
+### Changes ###
+
+- Refactored the loading code to automatically discover operators and tools.
+- Added a version check for features that require Blender 2.82, so the add-on keeps working with Blender 2.80+.
+
 ##  Power Sequencer 1.4 ##
 
 This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
