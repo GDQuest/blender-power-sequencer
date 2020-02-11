@@ -1,7 +1,4 @@
-<h1 align="center">
-    Blender Power Sequencer</br>
-    <small>The Free add-on for content creators</small>
-</h1>
+# Blender Power Sequencer #
 
 ![Project banner](./img/power-sequencer-banner.svg)
 
