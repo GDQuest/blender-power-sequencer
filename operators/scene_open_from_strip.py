@@ -49,5 +49,5 @@ class POWER_SEQUENCER_OT_open_scene_strip(bpy.types.Operator):
             return {"FINISHED"}
 
         strip_scene = active_strip.scene
-        context.screen.scene = bpy.data.scenes[strip_scene.name]
+        context.window.scene = bpy.data.scenes[strip_scene.name]
         return {"FINISHED"}
