@@ -15,6 +15,12 @@ This release is a work-in-progress. New features may contain bugs. New features 
 - Refactored the loading code to automatically discover operators and tools.
 - Added a version check for features that require Blender 2.82, so the add-on keeps working with Blender 2.80+.
 
+### Bug fixes ###
+
+- Fixed an error when trying to use `Align Audios`.
+- Fixed several bugs in `Merge From Scene Strip`.
+- Fixed a couple of scene-related operators that weren't working anymore.
+
 ##  Power Sequencer 1.4 ##
 
 This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
