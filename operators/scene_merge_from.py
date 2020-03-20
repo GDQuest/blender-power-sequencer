@@ -80,29 +80,39 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
         return {"FINISHED"}
 
     def merge_strips(self, context, source_scene, target_scene):
+        strip = context.scene.sequence_editor.active_strip
+
         context.window.scene = source_scene
+        current_frame = context.scene.frame_current
+        context.scene.frame_current = context.scene.frame_start
         bpy.ops.sequencer.select_all(action="SELECT")
         bpy.ops.sequencer.copy()
+        context.scene.frame_current = current_frame
 
         context.window.scene = target_scene
         current_frame = context.scene.frame_current
         active = context.scene.sequence_editor.active_strip
-        context.scene.frame_current = active.frame_final_start
+        context.scene.frame_current = active.frame_start
         bpy.ops.sequencer.select_all(action="DESELECT")
         bpy.ops.sequencer.paste()
 
         context.scene.frame_current = current_frame
 
-    def merge_markers(self, source_scene, target_scene):
+    def merge_markers(self, context, source_scene, target_scene):
+        if len(source_scene.timeline_markers) == 0:
+            return
+
         if len(target_scene.timeline_markers) > 0:
             bpy.ops.marker.select_all(action="DESELECT")
 
-        bpy.context.screen.scene = source_scene
+        bpy.context.window.scene = source_scene
         bpy.ops.marker.select_all(action="SELECT")
         bpy.ops.marker.make_links_scene(scene=target_scene.name)
 
-        bpy.context.screen.scene = target_scene
-        active = bpy.context.screen.scene.sequence_editor.active_strip
-        time_offset = active.frame_final_start
+        bpy.context.window.scene = target_scene
+        active = bpy.context.window.scene.sequence_editor.active_strip
+
+        # Offset to account for source scenes starting on any frame.
+        time_offset = active.frame_start - source_scene.frame_start
         bpy.ops.marker.move(frames=time_offset)
         bpy.ops.marker.select_all(action="DESELECT")
