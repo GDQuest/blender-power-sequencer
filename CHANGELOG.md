@@ -20,6 +20,7 @@ This release is a work-in-progress. New features may contain bugs. New features 
 - Fixed an error when trying to use `Align Audios`.
 - Fixed several bugs in `Merge From Scene Strip`.
 - Fixed a couple of scene-related operators that weren't working anymore.
+- Fixed two errors when using `Swap Strips`.
 
 ##  Power Sequencer 1.4 ##
 
