@@ -68,7 +68,7 @@ class POWER_SEQUENCER_MT_strips(bpy.types.Menu):
 
         layout.separator()
 
-        layout.operator("power_sequencer.make_still_image")
+        layout.operator("power_sequencer.make_hold_frame")
 
 
 class POWER_SEQUENCER_MT_transitions(bpy.types.Menu):
