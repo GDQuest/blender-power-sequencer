@@ -18,6 +18,7 @@ This release is a work-in-progress. New features may contain bugs. New features 
 
 - Refactored the loading code to automatically discover operators and tools.
 - Added a version check for features that require Blender 2.82, so the add-on keeps working with Blender 2.80+.
+- Renamed `Make Still Image` to `Make Hold Frame`.
 
 ### Bug fixes
 
@@ -25,6 +26,7 @@ This release is a work-in-progress. New features may contain bugs. New features 
 - Fixed several bugs in `Merge From Scene Strip`.
 - Fixed a couple of scene-related operators that weren't working anymore.
 - Fixed two errors when using `Swap Strips`.
+- Fixed an error when trying to apply `Make Hold Frame` to an audio sequence.
 
 ##  Power Sequencer 1.4
 
