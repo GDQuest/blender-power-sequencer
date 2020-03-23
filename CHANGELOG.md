@@ -1,38 +1,42 @@
-# Changelog #
+# Changelog
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
-##  Power Sequencer 1.5 ##
+##  Power Sequencer 1.5
 
 This release is a work-in-progress. New features may contain bugs. New features may also require Blender 2.82.
 
-### New features ###
+### New features
 
 - Interactive trim tool in the toolbar. In Blender 2.82+, press <kbd>T</kbd> to toggle the toolbar and select a tool, or press <kbd>Shift</kbd> <kbd>Spacebar</kbd> to bring the interactive tool menu.
 
-### Changes ###
+### Improvements
+
+- `Trim instantly`: Move the time cursor to the end of the trim, and when removing gaps.
+
+### Changes
 
 - Refactored the loading code to automatically discover operators and tools.
 - Added a version check for features that require Blender 2.82, so the add-on keeps working with Blender 2.80+.
 
-### Bug fixes ###
+### Bug fixes
 
 - Fixed an error when trying to use `Align Audios`.
 - Fixed several bugs in `Merge From Scene Strip`.
 - Fixed a couple of scene-related operators that weren't working anymore.
 - Fixed two errors when using `Swap Strips`.
 
-##  Power Sequencer 1.4 ##
+##  Power Sequencer 1.4
 
 This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
 
-### Manual ###
+### Manual
 
 We now have a [Getting Started](https://www.gdquest.com/docs/documentation/power-sequencer/getting-started/) guide that showcases some of the most useful features in the add-on.
 
 You can also read about all the features and shortcuts in the [Features Reference](https://www.gdquest.com/docs/documentation/power-sequencer/reference/).
 
-### New features ###
+### New features
 
 Power Sequencer is now **included in Blender 2.81**! 🙂
 
@@ -41,7 +45,7 @@ Big thanks to everyone who helped us get there. Development continues in this re
 - `Expand to surrounding`: expands the sequence's handles to the surrounding cuts, for each contiguous block of selected sequences.
 - `Snap`: Replacement for Blender's built-in snap that auto-selects strips under the time cursor if you don't have a selection.
 
-### Improvements ###
+### Improvements
 
 - `Mouse trim`: 
     - Allows you to trim strips in multiple channels freely.
@@ -71,7 +75,7 @@ Big thanks to everyone who helped us get there. Development continues in this re
 - Improved performances when adding Power Sequencer's features to menus or panels.
 - `Snap selection to time cursor`: Make behavior consistent and improve performances when many strips are selected.
 
-#### User Interface ####
+#### User Interface
 
 Cleaned up the Power Sequencer menu based on @tintwotin's suggestions: 
 
@@ -80,7 +84,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - Removed custom text, using the Operator names instead, for consistency with the rest of Blender
 - Add `Speed Up Movie Strip` and `Speed Remove Effect` to the menu
 
-### Changes ###
+### Changes
 
 - Removed the add-on auto updater feature: we cannot have it in the add-on for official Blender releases.
 - `Mouse cut`: renamed to `Mouse trim`, and the old `Mouse trim` to `Mouse trim instantly`.
@@ -95,7 +99,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Improved and simplified code around various operators.
     - Renamed `crossfade_remove.py` to `transitions_remove`.
 
-### Bug fixes ###
+### Bug fixes
 
 - `Delete crossfade`: Fixed error when deleting a crossfade between color strips.
 - `Add Crossfade`: Fixed not crossfading with color strips.
@@ -117,13 +121,13 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Concatenate Strips`: Fixed error when there was no strip in the channel after the selected or hovered strip.
 
 
-## Power Sequencer 1.3: Blender 2.80 support ##
+## Power Sequencer 1.3: Blender 2.80 support
 
-### New features ###
+### New features
 
 - Power Sequencer now works in **Blender 2.80**
 
-### Improvements ###
+### Improvements
 
 - `Trim left or right handles`, formerly `Smart Snap`: 
     - Trims now ripple through the channel if you keep <kbd>Shift</kbd> down. E.g. <kbd>Shift</kbd><kbd>Alt</kbd><kbd>K</kbd>
@@ -139,7 +143,7 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
     - Improved drawing
     - Use gizmo color from the user's color theme
 
-### Changes ###
+### Changes
 
 The code now follows the official Blender conventions for operator names etc. We also renamed some files and cleaned up some code to make it easier to browse and to maintain.
 
@@ -154,7 +158,7 @@ The code now follows the official Blender conventions for operator names etc. We
 - Removed empty panel UI
 - Added workaround Blender 2.80's audio not updating bug
 
-### Bug fixes ###
+### Bug fixes
 
 - `Concatenate strips`: Fixed error from concatenating strips with effect sequences
 - `Clear Fades`: 
@@ -175,14 +179,14 @@ The code now follows the official Blender conventions for operator names etc. We
 - `Channel offset`: fixed moving locked strips
 
 
-### Support our work ###
+### Support our work
 
 - [Follow GDquest](https://twitter.com/NathanGDquest) on Twitter
 - You can buy one of our [game creation courses](https://gumroad.com/gdquest) for you or one of your friends. They make for a great present and help us to keep going! ☺
 
-## Power Sequencer 1.2 ##
+## Power Sequencer 1.2
 
-### 📘 Free Tutorials ###
+### 📘 Free Tutorials
 
 Learn to use BPSrender from the command line! We still need people to tell us that it works well everywhere before we can integrate it in Blender. Also, we need your help to design a nice render panel 😄
 
@@ -198,7 +202,7 @@ Thanks to @aditiapratama and @libreartist, we now have a nice **toolbar menu**! 
 
 ![Power Sequencer toolbar menu](https://i.imgur.com/M8Mk5RH.png)
 
-### 🎥🕺 New features ###
+### 🎥🕺 New features
 
 - **Remove crossfade**: Remove crossfades in a clean way, as you'd expect! If you select one or more transition effects like Crossfade or Wipe, pressing <kbd>X</kbd> will now bring the sequences back together to form a precise cut.
 - **Remove Gaps and ignore locked strips**: Blender's default tool to remove gap isn't very smart. We had to code our own to create the feature below...
@@ -206,7 +210,7 @@ Thanks to @aditiapratama and @libreartist, we now have a nice **toolbar menu**! 
 - **Select related strips**: find and select effects related to the selection, to then cut, copy or duplicate a strip with everything that should come with it.
 - **Space strips based on mouse position**: this is bound to the <kbd>=</kbd> key by default
 
-#### BPSProxies ####
+#### BPSProxies
 
 The proxy render script got serious love in this version.
 
@@ -216,17 +220,17 @@ The proxy render script got serious love in this version.
 - You can now **render 25%, 50%, and 100% proxies**! The default size is still 25%. use the `--size` option (`-s` in short form) when calling the program from the command line. E.g. `-s 50` to generate 50% proxies
 - The code is better organized now, easier to read and to contribute to in the future. Thanks [@sudopluto](https://github.com/sudopluto) for making this possible 🙂
 
-#### Meta strips ####
+#### Meta strips
 
 - **Resize to content**: if you edit inside a group or meta strip, you may want to trim it to use it as a compositing group. Now you can! Works on all selected strips at once.
 - **UnMeta many strips**: <kbd>Alt</kbd> <kbd>G</kbd> now works on all selected meta strips at once
 - **Auto-trim** your nested timelines when you UnMeta strips: also works by default with <kbd>Alt</kbd> <kbd>G</kbd>. If you don't want this to happen, use Resize to Content first
 
-#### Scenes ####
+#### Scenes
 
 - **Convert selection to scene strip**: If you want to use the node compositor to do complex grade, or to help organize your project, you'll want to use scene strips at times, instead of meta strips.
 
-### ✅ Improvements ###
+### ✅ Improvements
 
 - Auto crossfades (<kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>C</kbd>) now work in a **single channel by default**, as in every other professional video editing program
   - You can also **add multiple crossfades** at a time, e.g. to create an image slideshow with fades between each picture
@@ -242,11 +246,11 @@ The proxy render script got serious love in this version.
 - **Auto-selection**: If you don't have anything selected, Power Sequencer will use the strip under the cursor for concatenate, delete, and grab operators, saving your extra keystrokes and time 😄
 - **Edit crossfades with the grab tool**: grab became smarter. If you only select cross effects, it G will select the handles on either side of the crossfade instead of trying to move it directly.
 
-#### Improvements to the source code ####
+#### Improvements to the source code
 
 We've reorganized and simplified many features, to make it easier for you to read and to contribute! Now, all marker-related features, fade-related features, etc. are grouped together.
 
-### 🤕 Fixes ###
+### 🤕 Fixes
 
 - Removed the option to swap strips with effects, as they were causing problems
 - Fixed errors when adding crossfades, that could happen with different starting selections
@@ -262,20 +266,20 @@ We've reorganized and simplified many features, to make it easier for you to rea
 
 
 
-## Power Sequencer 1.1: Faster edits 🎞✂ ##
+## Power Sequencer 1.1: Faster edits 🎞✂
 
 📅 Released in August 2018
 
 *Huge thanks to all the contributors who made this release possible: @doakey3 and @sudopluto, @razcore-art, @jooert, and @Blezyn, who recently joined the adventure 😊. Thanks to them this new version brings many new features and improvements to the add-on!*
 
-### Free tutorials ###
+### Free tutorials
 
 **Two new tutorials** came out to complement the project. They are about Python programming, to help more people create their own tools and contribute to existing add-ons:
 
 - [Learn to Code Blender Features in Python: Add-On Programming Tutorial](https://www.youtube.com/watch?v=1_Jo9NShkP8)
 - [Auto-Completion for Blender Python in Any Code Editor](https://www.youtube.com/watch?v=IQgLBnPO2uo)
 
-### 🎥🕺 New features ###
+### 🎥🕺 New features
 
 - **Multithreaded rendering** with BPSRender: use this command line tool to leverage all your CPU cores! Works on all platforms and available as a stand-alone program. ⚠ Only tested on Ubuntu and Windows 10! *Known issues: on Windows, you will sometimes need to close Blender instances manually with the task manager if you interrupt the render.*
 
@@ -287,7 +291,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - **Markers from selected strips**: Create a new marker at the start of each strip in the selection
 - **Match strips to markers**: snap selected strips to markers that have a similar name
 
-### ✅ Improvements ###
+### ✅ Improvements
 
 *Existing features got some love as well!*
 
@@ -295,13 +299,13 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - **Multithreaded proxies**: supports calling presets from the command line. More work planned for version 1.2
 - Many small improvements happened to exsting features, e.g. to automatically select strip near the mouse cursor if nothing is selected.
 
-### 🤕 Fixes ###
+### 🤕 Fixes
 
 **Restored the missing interface** code so you can call the contextual Power Sequencer menu again, and find the power sequencer tab in the menu. We need help to design the UI: we have a developer who wants to work on it, but we need a UX designer to guide him!
 
 Reply to [this issue](https://github.com/GDquest/Blender-power-sequencer/issues/90) and [that issue](https://github.com/GDquest/Blender-power-sequencer/issues/89) if you want to help us wit it 😄
 
-### ⚠ Experimental ###
+### ⚠ Experimental
 
 - **Auto align audio and video**: this tool for tech-savy people, currently not available in blender
 - **Batch transcode videos**: transcode selected videos to the same frame rate from blender! Uses FFMPEG. More work planned for version 1.2

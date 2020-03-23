@@ -53,6 +53,11 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
         description="Frame to remove gaps from, defaults at the time cursor",
         default=-1,
     )
+    move_time_cursor: bpy.props.BoolProperty(
+        name="Move Time Cursor",
+        description="Move the time cursor when closing the gap.",
+        default=False,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -84,11 +89,14 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
         )
 
         self.gaps_remove(context, blocks_after_gap, gap_frame)
+        if self.move_time_cursor:
+            context.scene.frame_current = gap_frame
         return {"FINISHED"}
 
     def find_gap_frame(self, context, frame, sorted_sequences):
         """
-        Takes a list sequences sorted by frame_final_start
+        Finds and returns the frame at which the gap starts.
+        Takes a list sequences sorted by frame_final_start.
         """
         strips_start = min(sorted_sequences, key=attrgetter("frame_final_start")).frame_final_start
         strips_end = max(sorted_sequences, key=attrgetter("frame_final_end")).frame_final_end
@@ -108,7 +116,7 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
 
     def gaps_remove(self, context, sequence_blocks, gap_frame_start):
         """
-        Recursively removes gaps between blocks of sequences
+        Recursively removes gaps between blocks of sequences.
         """
 
         gap_frame = gap_frame_start

@@ -96,6 +96,8 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
                 for s in context.sequences
                 if s.frame_final_start <= frame <= s.frame_final_end and not s.lock
             ]
+        if not to_trim:
+            return {"FINISHED"}
 
         frame_cut_closest = min(get_frame_range(context, to_trim), key=lambda f: abs(frame - f))
         frame_start = min(frame, frame_cut_closest)
@@ -103,8 +105,9 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
 
         trim_strips(context, frame_start, frame_end, to_trim=to_trim)
 
-        context.scene.frame_current = frame_start
+        context.scene.frame_current = frame
+
         if self.gap_remove and self.select_mode == "CURSOR":
-            bpy.ops.power_sequencer.gap_remove()
+            bpy.ops.power_sequencer.gap_remove(frame=frame_start, move_time_cursor=True)
 
         return {"FINISHED"}
