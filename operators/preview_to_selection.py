@@ -54,6 +54,6 @@ class POWER_SEQUENCER_OT_preview_to_selection(bpy.types.Operator):
             if len(context.selected_sequences) >= 1
             else context.sequences
         )
-        frame_start, frame_end = get_frame_range(context, sequences)
+        frame_start, frame_end = get_frame_range(sequences)
         set_preview_range(context, frame_start, frame_end - 1)
         return {"FINISHED"}

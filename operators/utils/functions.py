@@ -40,7 +40,7 @@ def find_linked(context, sequences, selected_sequences):
 
     Returns a list of all the linked sequences, but not the sequences passed to the function
     """
-    start, end = get_frame_range(context, sequences, selected_sequences)
+    start, end = get_frame_range(sequences, selected_sequences)
     sequences_in_range = [s for s in sequences if is_in_range(context, s, start, end)]
     effects = (s for s in sequences_in_range if s.type in SequenceTypes.EFFECT)
     selected_effects = (s for s in sequences if s.type in SequenceTypes.EFFECT)
@@ -158,7 +158,7 @@ def find_strips_mouse(context, frame, channel, select_linked=False):
     return sequences
 
 
-def get_frame_range(context, sequences=[], get_from_start=False):
+def get_frame_range(sequences, get_from_start=False):
     """
     Returns a tuple with the minimum and maximum frames of the
     list of passed sequences.

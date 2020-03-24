@@ -99,7 +99,7 @@ class POWER_SEQUENCER_OT_mouse_trim_instantly(bpy.types.Operator):
         if not to_trim:
             return {"FINISHED"}
 
-        frame_cut_closest = min(get_frame_range(context, to_trim), key=lambda f: abs(frame - f))
+        frame_cut_closest = min(get_frame_range(to_trim), key=lambda f: abs(frame - f))
         frame_start = min(frame, frame_cut_closest)
         frame_end = max(frame, frame_cut_closest)
 
