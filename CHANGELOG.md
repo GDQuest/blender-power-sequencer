@@ -9,6 +9,7 @@ This release is a work-in-progress. New features may contain bugs. New features 
 ### New features
 
 - Interactive trim tool in the toolbar. In Blender 2.82+, press <kbd>T</kbd> to toggle the toolbar and select a tool, or press <kbd>Shift</kbd> <kbd>Spacebar</kbd> to bring the interactive tool menu.
+- `Channel Offset` can trim strips in the way. Press <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Up</kbd> and <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Down</kbd> to do so.
 
 ### Improvements
 
