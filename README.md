@@ -7,7 +7,11 @@ Power Sequencer brings smart new editing features to edit faster with Blender's 
 
 ## Installation guide ##
 
-Power Sequencer is included in Blender *since Blender 2.81*. 
+Power Sequencer is an add-on for Blender 2.80 and more recent versions of the program.
+
+It is included in Blender *since Blender 2.81*.
+
+To install it:
 
 1. Open Blender
 1. Go to `Edit > Preferences > Addons`
