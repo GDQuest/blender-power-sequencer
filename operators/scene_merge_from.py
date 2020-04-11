@@ -42,7 +42,7 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
-    delete_scene = BoolProperty(
+    delete_scene: BoolProperty(
         name="Delete Strip's scene",
         description="Delete the SceneStrip's scene after the merging",
         default=True,
@@ -75,13 +75,11 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
         context.window.scene = strip_scene
         bpy.ops.scene.delete()
         context.window.scene = start_scene
-        self.report(type={"WARNING"}, message="All animations on source scene were lost")
+        self.report(type={"WARNING"}, message="Merged scenes lose all their animation data.")
 
         return {"FINISHED"}
 
     def merge_strips(self, context, source_scene, target_scene):
-        strip = context.scene.sequence_editor.active_strip
-
         context.window.scene = source_scene
         current_frame = context.scene.frame_current
         context.scene.frame_current = context.scene.frame_start
