@@ -2,7 +2,7 @@
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
-##  Power Sequencer 1.5
+## Power Sequencer 1.5
 
 This release is a work-in-progress. New features may contain bugs. New features may also require Blender 2.82.
 
@@ -28,8 +28,9 @@ This release is a work-in-progress. New features may contain bugs. New features 
 - Fixed a couple of scene-related operators that weren't working anymore.
 - Fixed two errors when using `Swap Strips`.
 - Fixed an error when trying to apply `Make Hold Frame` to an audio sequence.
+- Fixed `Merge From Scene Strips` not working
 
-##  Power Sequencer 1.4
+## Power Sequencer 1.4
 
 This new release brings many quality of life improvements to the existing toolset, including a rewrite of the interactive trim tool.
 
@@ -50,37 +51,37 @@ Big thanks to everyone who helped us get there. Development continues in this re
 
 ### Improvements
 
-- `Mouse trim`: 
-    - Allows you to trim strips in multiple channels freely.
-    - The drawing now shows the trimmed area with a yellow overlay.
-    - Displays shortcuts and information in the Sequencer's header.
-    - Change the trim side on the fly by pressing the letter <kbd>O</kbd>.
-    - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively.
-    - Press <kbd>Ctrl</kbd> when starting the tool to snap the start frame to the closest cut.
-    - Allow trimming gaps reliably with the mouse and tablet.
-- `Import Local Footage`: 
-    - Does not impose a folder structure on you anymore.
-    - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`.
+- `Mouse trim`:
+  - Allows you to trim strips in multiple channels freely.
+  - The drawing now shows the trimmed area with a yellow overlay.
+  - Displays shortcuts and information in the Sequencer's header.
+  - Change the trim side on the fly by pressing the letter <kbd>O</kbd>.
+  - Toggle ripple edit and select mode on the fly with <kbd>Alt</kbd> and <kbd>Shift</kbd> respectively.
+  - Press <kbd>Ctrl</kbd> when starting the tool to snap the start frame to the closest cut.
+  - Allow trimming gaps reliably with the mouse and tablet.
+- `Import Local Footage`:
+  - Does not impose a folder structure on you anymore.
+  - Automatically sets imported sequences to use proxy sizes based on your preferences. See `Preferences -> Add-ons -> Power Sequencer -> Proxy`.
 - `Set Playback Speed`: Add shortcut to set the speed to 3x.
 - `Delete Direct`: You can now press <kbd>X</kbd> to remove strips without confirmation, but using Blender's default behavior, and <kbd>Alt</kbd><kbd>X</kbd> to smartly remove transitions.
-- `Space Sequences`: 
-    - Offsets strips to the right of the time cursor, ignoring locked sequences.
-    - Now also offsets timeline markers.
+- `Space Sequences`:
+  - Offsets strips to the right of the time cursor, ignoring locked sequences.
+  - Now also offsets timeline markers.
 - `Snap Selection`: auto-select strips under the time cursor.
-- `Add Speed`: 
-    - Use the full source clip for single sequences, so you can slip their content.
-    - Change the shortcuts and add <kbd>Alt</kbd><kbd>2</kbd>, <kbd>Alt</kbd><kbd>3</kbd>, <kbd>Alt</kbd><kbd>4</kbd> to speed up to 2, 3, and 4 times the normal speed.
+- `Add Speed`:
+  - Use the full source clip for single sequences, so you can slip their content.
+  - Change the shortcuts and add <kbd>Alt</kbd><kbd>2</kbd>, <kbd>Alt</kbd><kbd>3</kbd>, <kbd>Alt</kbd><kbd>4</kbd> to speed up to 2, 3, and 4 times the normal speed.
 - `Copy Markers as Timecodes`: remove the hours if the last marker is at less than 1h.
 - `Markers Delete Direct`: removed the confirmation popup when deleting markers with X.
-- `Concatenate Strips`: 
-    - Now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel.
-    - Added option to ripple edit.
+- `Concatenate Strips`:
+  - Now has a more consistent behavior, <kbd>C</kbd> will only concatenate one strip or the selection, while <kbd>Shift</kbd><kbd>C</kbd> will always concatenate all strips in the channel.
+  - Added option to ripple edit.
 - Improved performances when adding Power Sequencer's features to menus or panels.
 - `Snap selection to time cursor`: Make behavior consistent and improve performances when many strips are selected.
 
 #### User Interface
 
-Cleaned up the Power Sequencer menu based on @tintwotin's suggestions: 
+Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 
 - No more two levels deep sub-menus
 - Removed most icons to be consistent with Blender's Sequencer menus
@@ -97,20 +98,20 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - Removed `Synchronize titles`: it was a weird, not so useful tool that was replaced by `Markers Snap Matching Strips`.
 - Update the YouTube rendering preset to match the platform's recommendations for 1080p.
 - `Playback Speed Set`: changed shortcuts from numpad keys to number keys.
-- Source code: 
-    - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`.
-    - Improved and simplified code around various operators.
-    - Renamed `crossfade_remove.py` to `transitions_remove`.
+- Source code:
+  - Merged all utility functions into one `.utils.functions` module. See `/operators/utils/functions.py`.
+  - Improved and simplified code around various operators.
+  - Renamed `crossfade_remove.py` to `transitions_remove`.
 
 ### Bug fixes
 
 - `Delete crossfade`: Fixed error when deleting a crossfade between color strips.
 - `Add Crossfade`: Fixed not crossfading with color strips.
 - `Expand to surrounding cuts`: Fixed breaking the strip if trying to use the tool on the the first or the last sequence in the scene.
-- `Playback Speed`: 
-    - Fixed error when calling `Decrease Playback Speed`.
-    - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80.
-    - Fixed error with `Playback Speed Increase` when it was already at maximum speed.
+- `Playback Speed`:
+  - Fixed error when calling `Decrease Playback Speed`.
+  - Fixed `Set Playback Speed` shortcuts not working anymore in Blender 2.80.
+  - Fixed error with `Playback Speed Increase` when it was already at maximum speed.
 - `Delete Direct`: Fixed always moving input strip handles when removing transition effects.
 - `Import Local Footage`: Fixed error when importing footage in a new project.
 - `Grab`: Fixed error when there was no selection and no strip under the mouse cursor.
@@ -118,11 +119,10 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 - `Import Local Footage`: Fixed files re-importing after moving the project folder.
 - `Preview To Selection`: Use sequences in the current context if nothing is selected.
 - `Ripple Delete`:
-    - Fixed changing the time cursor's position.
-    - Fixed not working after an undo.
+  - Fixed changing the time cursor's position.
+  - Fixed not working after an undo.
 - `Speed Up Movie Strip`: Fixed created meta-strip being the length of the full source movie strip when speeding up a single movie strip.
 - `Concatenate Strips`: Fixed error when there was no strip in the channel after the selected or hovered strip.
-
 
 ## Power Sequencer 1.3: Blender 2.80 support
 
@@ -132,28 +132,28 @@ Cleaned up the Power Sequencer menu based on @tintwotin's suggestions:
 
 ### Improvements
 
-- `Trim left or right handles`, formerly `Smart Snap`: 
-    - Trims now ripple through the channel if you keep <kbd>Shift</kbd> down. E.g. <kbd>Shift</kbd><kbd>Alt</kbd><kbd>K</kbd>
-    - Auto selects strips under the cursor if there is no selection
+- `Trim left or right handles`, formerly `Smart Snap`:
+  - Trims now ripple through the channel if you keep <kbd>Shift</kbd> down. E.g. <kbd>Shift</kbd><kbd>Alt</kbd><kbd>K</kbd>
+  - Auto selects strips under the cursor if there is no selection
 - `Cut`: Select side based on mouse cursor position after cut
 - Various operators: use seconds instead of frames for duration.
 - Added new shortcuts to deselect strips left or right of the time cursor, <kbd>Shift</kbd><kbd>Q</kbd> and <kbd>Shift</kbd><kbd>E</kbd>
 - `Concatenate strips`: Add ability to trim and concatenate multicam, color, and adjustment strips
 - `Fade add`: improved usability, now tries to detect and respect existing fades, detects the strips' length to prevent errors, updates instantly as you increase the fade duration
-- `Mouse cut`: 
-    - Added snapping support with <kbd>Ctrl</kbd>
-    - You can now trim multiple sequences in a single channel
-    - Improved drawing
-    - Use gizmo color from the user's color theme
+- `Mouse cut`:
+  - Added snapping support with <kbd>Ctrl</kbd>
+  - You can now trim multiple sequences in a single channel
+  - Improved drawing
+  - Use gizmo color from the user's color theme
 
 ### Changes
 
 The code now follows the official Blender conventions for operator names etc. We also renamed some files and cleaned up some code to make it easier to browse and to maintain.
 
-- `Import local footage`: 
-    - Removed code to find an empty channel, use Blender 2.80's default behavior instead
-    - Use seconds for time
-    - Changed shortcut to shortcut to <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd>
+- `Import local footage`:
+  - Removed code to find an empty channel, use Blender 2.80's default behavior instead
+  - Use seconds for time
+  - Changed shortcut to shortcut to <kbd>Ctrl</kbd><kbd>Shift</kbd><kbd>I</kbd>
 - `Render for web` now only applies a render preset, it does not render
 - Removed `border select` now we can click and drag to box select in the sequencer
 - Removed Remove unused shortcut for `Edit Crossfade`
@@ -164,23 +164,22 @@ The code now follows the official Blender conventions for operator names etc. We
 ### Bug fixes
 
 - `Concatenate strips`: Fixed error from concatenating strips with effect sequences
-- `Clear Fades`: 
-    - Fixed wrong `eval`" string error
-    - Fixed clear fades not working with audio strips
+- `Clear Fades`:
+  - Fixed wrong `eval`" string error
+  - Fixed clear fades not working with audio strips
 - `Remove gaps`: fixed strange ripple behavior
 - `Trim left or right handles`: fixed error when the time cursor didn't overlap strips
 - `Add speed`: fixed error with effect strips
-- `Import local footage`: 
-    - fixed importing hidden directories
-    - fixed error with gif files
+- `Import local footage`:
+  - fixed importing hidden directories
+  - fixed error with gif files
 - `Mouse cut`: fixed error when trying to cut a transition effect strip
 - `Gap remove`: fixed error with effect strips
 - Fixed error when removing `crossfades` between effect strips
-- `Jump to cut`: 
-    - fixed skipping some cuts on short sequences
-    - fixed error when there was no animation data in the sequencer
+- `Jump to cut`:
+  - fixed skipping some cuts on short sequences
+  - fixed error when there was no animation data in the sequencer
 - `Channel offset`: fixed moving locked strips
-
 
 ### Support our work
 
@@ -197,7 +196,7 @@ Learn to use BPSrender from the command line! We still need people to tell us th
 - [Precise and Fast selections with Blender's Sequencer](https://www.youtube.com/watch?v=ewwFVsNCBNg)
 - [BPSProxies: create proxies fast with FFMPEG](https://youtu.be/oFLo7IHfGB0)
 
-*Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`*
+_Note: if you [install bpsrender with pip](https://pypi.org/project/bpsrender/), you can call bpsrender directly like so: `bpsrender blender_file_path [options]`, instead of typing `python -m bpsrender ...`_
 
 ### 💻 User Interface
 
@@ -219,7 +218,7 @@ The proxy render script got serious love in this version.
 
 - Thanks to François Grassard, a TV engineer, we now have **super efficient proxy rendering** presets! These proxies are designed to be easy on Blender, and they offer way smoother preview than Blender's ones 😃. They also generate way faster
 - You can now use convenient presets to render proxies, thanks to [@jooert](https://github.com/jooert). Use the `--preset` or `-p` option followed by the preset's name. This version ships with the `mp4`, `webm`, and `nvenc` presets
-    - Nvenc is Nvidia's solution to encode MP4 with your graphics card. It requires ffmpeg 4, an nvidia GPU that supports Nvenc encoding, and I'm not sure this is available on linux! But it will work on Windows. It's especially fast with 50% and 100% sized proxies. The rendering speed difference isn't as big with 25% proxies.
+  - Nvenc is Nvidia's solution to encode MP4 with your graphics card. It requires ffmpeg 4, an nvidia GPU that supports Nvenc encoding, and I'm not sure this is available on linux! But it will work on Windows. It's especially fast with 50% and 100% sized proxies. The rendering speed difference isn't as big with 25% proxies.
 - You can now **render 25%, 50%, and 100% proxies**! The default size is still 25%. use the `--size` option (`-s` in short form) when calling the program from the command line. E.g. `-s 50` to generate 50% proxies
 - The code is better organized now, easier to read and to contribute to in the future. Thanks [@sudopluto](https://github.com/sudopluto) for making this possible 🙂
 
@@ -267,13 +266,11 @@ We've reorganized and simplified many features, to make it easier for you to rea
 - Fixed Concatenate not taking in account the selection if more than one strip is selected in a given channel
 - Fixed strips changing channels when using Snap Selection to Cursor
 
-
-
 ## Power Sequencer 1.1: Faster edits 🎞✂
 
 📅 Released in August 2018
 
-*Huge thanks to all the contributors who made this release possible: @doakey3 and @sudopluto, @razcore-art, @jooert, and @Blezyn, who recently joined the adventure 😊. Thanks to them this new version brings many new features and improvements to the add-on!*
+_Huge thanks to all the contributors who made this release possible: @doakey3 and @sudopluto, @razcore-art, @jooert, and @Blezyn, who recently joined the adventure 😊. Thanks to them this new version brings many new features and improvements to the add-on!_
 
 ### Free tutorials
 
@@ -284,7 +281,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 
 ### 🎥🕺 New features
 
-- **Multithreaded rendering** with BPSRender: use this command line tool to leverage all your CPU cores! Works on all platforms and available as a stand-alone program. ⚠ Only tested on Ubuntu and Windows 10! *Known issues: on Windows, you will sometimes need to close Blender instances manually with the task manager if you interrupt the render.*
+- **Multithreaded rendering** with BPSRender: use this command line tool to leverage all your CPU cores! Works on all platforms and available as a stand-alone program. ⚠ Only tested on Ubuntu and Windows 10! _Known issues: on Windows, you will sometimes need to close Blender instances manually with the task manager if you interrupt the render._
 
 - **Unspeed**: remove a speed effect from a video sequence
 - **Clear fades**: remove fade animation cleanly on selected sequences
@@ -296,7 +293,7 @@ We've reorganized and simplified many features, to make it easier for you to rea
 
 ### ✅ Improvements
 
-*Existing features got some love as well!*
+_Existing features got some love as well!_
 
 - **Multithreaded proxies** now shows a percentage-based progress for each video being rendered
 - **Multithreaded proxies**: supports calling presets from the command line. More work planned for version 1.2
