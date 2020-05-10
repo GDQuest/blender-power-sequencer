@@ -86,9 +86,9 @@ class POWER_SEQUENCER_OT_make_hold_frame(bpy.types.Operator):
 
         active.select = True
         source_blend_type = active.blend_type
-        sequencer.cut(frame=scene.frame_current, type="SOFT", side="RIGHT")
+        sequencer.split(frame=scene.frame_current, type="SOFT", side="RIGHT")
         transform.seq_slide(value=(offset, 0))
-        sequencer.cut(frame=scene.frame_current + offset + 1, type="SOFT", side="LEFT")
+        sequencer.split(frame=scene.frame_current + offset + 1, type="SOFT", side="LEFT")
         transform.seq_slide(value=(-offset, 0))
 
         sequencer.meta_make()

@@ -267,7 +267,7 @@ class POWER_SEQUENCER_OT_mouse_trim(bpy.types.Operator):
         else:
             frame_current = context.scene.frame_current
             context.scene.frame_current = self.trim_start
-            bpy.ops.sequencer.cut(frame=context.scene.frame_current, type="SOFT", side="BOTH")
+            bpy.ops.sequencer.split(frame=context.scene.frame_current, type="SOFT", side="BOTH")
             context.scene.frame_current = frame_current
 
     def find_strips_to_cut(self, context):

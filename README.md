@@ -1,15 +1,16 @@
-# Blender Power Sequencer #
+# Blender Power Sequencer
 
 ![Project banner](./img/power-sequencer-banner.svg)
 
-
 Power Sequencer brings smart new editing features to edit faster with Blender's Video Sequence Editor. It is completely Free and Open Source.
 
-## Installation guide ##
+## Installation guide
 
 Power Sequencer is an add-on for Blender 2.80 and more recent versions of the program.
 
-It is included in Blender *since Blender 2.81*.
+It is included in Blender _since Blender 2.81_.
+
+⚠ The latest master branch is a bleeding edge version and might require alpha or beta releases of Blender. For stable versions, head to the [releases tab](releases).
 
 To install it:
 
@@ -18,7 +19,7 @@ To install it:
 1. In the search box, search for "Power Sequencer"
 1. Activate the checkbox next to "Sequencer: Power Sequencer"
 
-## Learn Power Sequencer ##
+## Learn Power Sequencer
 
 Read **all the features and shortcuts** in the [Power Sequencer Docs](http://gdquest.com/blender/power-sequencer/docs/)
 
@@ -29,7 +30,7 @@ We have video tutorials to get you started:
 
 You can find more in our growing list of [Free Blender VSE tutorials](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI) on YouTube.
 
-## Become a Contributor ##
+## Become a Contributor
 
 Whether you want to contribute code, help with testing, design, user interface, tutorials, or communication, **all contributors are welcome**!
 
@@ -39,7 +40,7 @@ See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-g
 
 Then, join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues) anytime!
 
-## Other add-ons ##
+## Other add-ons
 
 Here are other recommended add-ons for a better editing workflow:
 
@@ -49,4 +50,3 @@ Power Sequencer ships with two separate Python tools:
 
 1. [BPSRender](https://github.com/GDquest/BPSRender), a tool to render videos with multiple threads from the terminal.
 1. [BPSProxy](https://github.com/GDquest/BPSProxy), a program to render proxies fast using FFmpeg and, if your graphics card supports it, use hardware acceleration.
-

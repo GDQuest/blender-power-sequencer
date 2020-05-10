@@ -2,9 +2,20 @@
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
+## Power Sequencer 2.0
+
+This release is only for **Blender 2.83 and above**.
+
+This release is a work-in-progress. New features may contain bugs.
+
+### Changes
+
+- Renamed `bpy.ops.sequencer.cut` to `bpy.ops.sequencer.split`.
+- Removed code checking for blender 2.81 and 2.82.
+
 ## Power Sequencer 1.5
 
-This release is a work-in-progress. New features may contain bugs. New features may also require Blender 2.82.
+This release is the last compatible with Blender 2.82.
 
 ### New features
 

@@ -287,8 +287,8 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
         if is_strip_longer_than_trim_range:
             bpy.ops.sequencer.select_all(action="DESELECT")
             s.select = True
-            bpy.ops.sequencer.cut(frame=trim_start, type="SOFT", side="RIGHT")
-            bpy.ops.sequencer.cut(frame=trim_end, type="SOFT", side="LEFT")
+            bpy.ops.sequencer.split(frame=trim_start, type="SOFT", side="RIGHT")
+            bpy.ops.sequencer.split(frame=trim_end, type="SOFT", side="LEFT")
             to_delete.append(context.selected_sequences[0])
             continue
 
