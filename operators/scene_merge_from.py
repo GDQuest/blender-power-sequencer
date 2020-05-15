@@ -16,7 +16,6 @@
 #
 import bpy
 
-from bpy.props import BoolProperty
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
@@ -27,7 +26,7 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
 
 
     WARNING: Currently the operator doesn't recreate any animation data,
-    be careful by choosing to delete the scene after the merge.
+    be careful by choosing to delete the scene after the merge
     """
 
     doc = {
@@ -42,7 +41,7 @@ class POWER_SEQUENCER_OT_merge_from_scene_strip(bpy.types.Operator):
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
-    delete_scene: BoolProperty(
+    delete_scene: bpy.props.BoolProperty(
         name="Delete Strip's scene",
         description="Delete the SceneStrip's scene after the merging",
         default=True,

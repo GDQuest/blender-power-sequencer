@@ -24,7 +24,7 @@ class POWER_SEQUENCER_OT_snap_selection(bpy.types.Operator):
     *Brief* Snap the entire selection to the time cursor.
 
     Automatically selects sequences if there is no active selection.
-    To snap each strip individually, see Snap.
+    To snap each strip individually, see Snap
     """
 
     doc = {

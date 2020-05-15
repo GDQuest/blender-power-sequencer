@@ -71,7 +71,7 @@ def register():
 
     # Register tools
     classes_tool = get_tool_classes()
-    last_tool = {"builtin.cut"}
+    last_tool = {"builtin.blade"}
     for index, cls in enumerate(classes_tool):
         bpy.utils.register_tool(cls, after=last_tool, separator=index == 0)
         last_tool = {cls.bl_idname}

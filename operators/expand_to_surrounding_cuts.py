@@ -25,7 +25,7 @@ class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):
     *Brief* Expand selected strips to surrounding cuts
 
     Finds potential gaps surrounding each block of selected sequences and extends the corresponding
-    sequence handle to it.
+    sequence handle to it
     """
 
     doc = {

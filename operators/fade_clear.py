@@ -24,7 +24,7 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
     *brief* Removes fade animation from selected sequences.
 
     Removes opacity or volume animation on selected sequences and resets the
-    property to a value of 1.0. Works on all types of sequences.
+    property to a value of 1.0. Works on all types of sequences
     """
 
     doc = {

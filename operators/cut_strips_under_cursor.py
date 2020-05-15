@@ -23,7 +23,7 @@ from .utils.functions import get_mouse_frame_and_channel
 class POWER_SEQUENCER_OT_split_strips_under_cursor(bpy.types.Operator):
     """
     Splits all strips under cursor including muted strips, but excluding locked strips.
-    Auto selects sequences under the time cursor when you don't have a selection.
+    Auto selects sequences under the time cursor when you don't have a selection
     """
 
     doc = {

@@ -65,7 +65,6 @@ class POWER_SEQUENCER_OT_scene_create_from_selection(bpy.types.Operator):
             bpy.ops.scene.new(type="FULL_COPY")
                        
             context.window.scene.name = context.selected_sequences[0].name
-            print(context.selected_sequences[0].name)
             new_scene_name = context.window.scene.name
             
             

@@ -22,7 +22,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_delete_direct(bpy.types.Operator):
     """
-    Deletes strips without confirmation, and cleans up crossfades nicely.
+    Deletes strips without confirmation, and cleans up crossfades nicely
     """
 
     doc = {

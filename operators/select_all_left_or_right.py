@@ -21,7 +21,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_select_all_left_or_right(bpy.types.Operator):
     """
-    *Brief* Selects all strips left or right of the time cursor.
+    *Brief* Selects all strips left or right of the time cursor
     """
 
     doc = {

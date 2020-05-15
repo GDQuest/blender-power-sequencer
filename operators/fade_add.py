@@ -31,7 +31,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
     - From playhead: the fade animation goes from the start of sequences under the playhead to the playhead
     - To playhead: the fade animation goes from the playhead to the end of sequences under the playhead
 
-    By default, the duration of the fade is 1 second.
+    By default, the duration of the fade is 1 second
     """
 
     doc = {
