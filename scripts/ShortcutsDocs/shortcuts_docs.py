@@ -24,7 +24,6 @@ import power_sequencer.operators as operators
 sys.path.append(os.path.abspath(os.path.join("..", "..", "..")))
 
 
-
 if __name__ == "__main__":
     os = dir(operators)
     os = filter(lambda o: o[0].isupper(), os)
