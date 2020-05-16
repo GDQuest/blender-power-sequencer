@@ -24,10 +24,10 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_make_hold_frame(bpy.types.Operator):
     """
-    *brief* Make a hold frame from the active strip.
+    *brief* Make a hold frame from the active strip
 
     Converts the image under the cursor to a hold frame, to create a pause effect in the video,
-    using the active sequence.
+    using the active sequence
     """
 
     doc = {

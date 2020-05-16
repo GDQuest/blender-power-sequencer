@@ -21,7 +21,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
     """
-    *brief* Removes fade animation from selected sequences.
+    *brief* Removes fade animation from selected sequences
 
     Removes opacity or volume animation on selected sequences and resets the
     property to a value of 1.0. Works on all types of sequences
@@ -32,7 +32,7 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "F", "value": "PRESS", "alt": True, "ctrl": True}, {}, "Clear Fades")
+            ({"type": "F", "value": "PRESS", "alt": True, "ctrl": True}, {}, "Clear Fades",)
         ],
         "keymap": "Sequencer",
     }

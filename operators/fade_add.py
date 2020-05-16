@@ -22,7 +22,7 @@ from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 
 
 class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
-    """*brief* Adds or updates a fade animation for either visual or audio strips.
+    """*brief* Adds or updates a fade animation for either visual or audio strips
 
     Fade options:
 
@@ -51,7 +51,7 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     duration_seconds: bpy.props.FloatProperty(
-        name="Fade Duration", description="Duration of the fade in seconds", default=1.0, min=0.01
+        name="Fade Duration", description="Duration of the fade in seconds", default=1.0, min=0.01,
     )
     type: bpy.props.EnumProperty(
         items=[
@@ -115,7 +115,8 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
 
         sequence_string = "sequence" if len(faded_sequences) == 1 else "sequences"
         self.report(
-            {"INFO"}, "Added fade animation to {} {}.".format(len(faded_sequences), sequence_string)
+            {"INFO"},
+            "Added fade animation to {} {}.".format(len(faded_sequences), sequence_string),
         )
         return {"FINISHED"}
 

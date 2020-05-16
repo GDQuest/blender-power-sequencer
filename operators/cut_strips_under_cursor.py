@@ -39,7 +39,10 @@ class POWER_SEQUENCER_OT_split_strips_under_cursor(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     side: bpy.props.EnumProperty(
-        items=[("LEFT", "", ""), ("RIGHT", "", "")], name="Side", default="LEFT", options={"HIDDEN"}
+        items=[("LEFT", "", ""), ("RIGHT", "", "")],
+        name="Side",
+        default="LEFT",
+        options={"HIDDEN"},
     )
 
     @classmethod

@@ -55,7 +55,7 @@ class POWER_SEQUENCER_OT_gap_remove(bpy.types.Operator):
     )
     move_time_cursor: bpy.props.BoolProperty(
         name="Move Time Cursor",
-        description="Move the time cursor when closing the gap.",
+        description="Move the time cursor when closing the gap",
         default=False,
     )
 
