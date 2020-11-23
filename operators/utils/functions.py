@@ -278,6 +278,7 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
     trim_end = max(frame_start, frame_end)
 
     to_trim = [s for s in to_trim if s.type in SequenceTypes.CUTABLE]
+    rescue_selected = context.selected_sequences
 
     for s in to_trim:
         # Cut strip longer than the trim range in three
@@ -299,6 +300,8 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
             s.frame_final_end = trim_start
 
     delete_strips(to_delete)
+    for s in rescue_selected:
+        s.select = True
     return {"FINISHED"}
 
 
