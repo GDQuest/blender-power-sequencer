@@ -291,6 +291,8 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
             bpy.ops.sequencer.split(frame=trim_start, type="SOFT", side="RIGHT")
             bpy.ops.sequencer.split(frame=trim_end, type="SOFT", side="LEFT")
             to_delete.append(context.selected_sequences[0])
+            if s in rescue_selected:
+                rescue_selected.append(context.sequences[0])
             continue
 
         # Resize strips that overlap the trim range
