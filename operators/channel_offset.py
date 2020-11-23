@@ -39,7 +39,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         "shortcuts": [
             (
                 {"type": "UP_ARROW", "value": "PRESS", "alt": True},
-                {"direction": "up"},
+                {"direction": "up", "trim_target_channel": False},
                 "Move to Open Channel Above",
             ),
             (
@@ -49,7 +49,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
             ),
             (
                 {"type": "DOWN_ARROW", "value": "PRESS", "alt": True},
-                {"direction": "down"},
+                {"direction": "down", "trim_target_channel": False},
                 "Move to Open Channel Below",
             ),
             (
@@ -85,7 +85,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-        selection = [s for s in context.selected_sequences if not s.lock]
+        selection = [s for s in context.selected_sequences if not s.lock and not (self.direction == "down" and s.channel == 1)]
         if not selection:
             return {"FINISHED"}
 
