@@ -85,7 +85,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-        selection = [s for s in context.selected_sequences if not s.lock and not (self.direction == "down" and s.channel == 1)]
+        selection = [s for s in context.selected_sequences if not s.lock and not (self.direction == "down" and s.channel == 1) and not (self.direction == "up" and s.channel == 32)]
         if not selection:
             return {"FINISHED"}
 
@@ -98,7 +98,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
             if self.trim_target_channel:
                 to_delete, to_trim = find_strips_in_range(frame_start, frame_end, context.sequences)
                 channel_trim = (
-                    channel_end + 1 if self.direction == "up" else max(1, channel_start - 1)
+                    min(32, channel_end + 1) if self.direction == "up" else max(1, channel_start - 1)
                 )
                 to_trim = [s for s in to_trim if s.channel == channel_trim]
                 to_delete = [s for s in to_delete if s.channel == channel_trim]
@@ -106,7 +106,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
             if self.direction == "up":
                 for s in reversed(sequences):
-                    s.channel += 1
+                    s.channel = min(32, s.channel + 1)
             elif self.direction == "down":
                 for s in sequences:
                     s.channel = max(1, s.channel - 1)
