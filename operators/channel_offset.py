@@ -82,6 +82,20 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         max_channel = 32
         min_channel = 1
 
+        def is_in_limit_channel(sequence):
+            if self.direction == "up" and sequence.channel == max_channel:
+                return True
+            elif self.direction == "down" and sequence.channel == min_channel:
+                return True
+            else:
+                return False
+        
+        def out_of_range():
+            if target_end <= moving_start or moving_end <= target_start:   # <<<<<<<<<<<<
+                return True
+            else:
+                return False
+
         selection = [s for s in context.selected_sequences if (
             not s.lock and not (self.direction == "down" and s.channel == min_channel)
             and not (self.direction == "up" and s.channel == max_channel)
@@ -90,8 +104,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
             return {"FINISHED"}
         
         # Sorts the "selection" list depending of the key press.
-        # If the key press is down, the order of moving will begin from the bottom channel,
-        # otherwise from the top.
+        # By default will be set to move downwards. If the direction is up, the list is reversed.
         selection = sorted(selection, key=attrgetter("channel", "frame_final_start"))
         if self.direction == "up":
             selection = reversed(selection)
@@ -109,21 +122,19 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
                     min(max_channel, moving_strip.channel + 1) if self.direction == "up" 
                     else max(min_channel, moving_strip.channel - 1)
                 )
+                
+                # Makes it easier to read.
+                moving_start = moving_strip.frame_final_start
+                moving_end = moving_strip.frame_final_end
 
                 # s is any strip able to move.
                 for target_strip in context.sequences:
-
-                    # Makes it easier to read.
-                    moving_start = moving_strip.frame_final_start
-                    moving_end = moving_strip.frame_final_end
+                    
                     target_start = target_strip.frame_final_start
                     target_end = target_strip.frame_final_end
                     
                     # Checks if the moving strip could interact with the target strip.
-                    if (
-                        (target_strip.channel == target_channel)
-                        and not (target_end < moving_start or target_start > moving_end)
-                    ):
+                    if target_strip.channel == target_channel and not out_of_range():
                         bpy.ops.sequencer.select_all(action="DESELECT")
 
                         ###########################################################################
@@ -131,10 +142,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
                         
                         # Makes a list with all strips that will be deleted if they are completely
                         # inside the range of the moving strip.
-                        if (
-                            moving_start <= target_start <= moving_end
-                            and moving_start <= target_end <= moving_end
-                        ):
+                        if moving_start <= target_start and target_end <= moving_end:
                             to_delete.append(target_strip)
                             continue
 
@@ -143,9 +151,8 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
                         # If the target strip's start/end are inside moving strip's range: divide
                         # in 3, delete the middle and select the last if the target was selected.
-                        if (
-                            target_start < moving_start and target_end > moving_end
-                        ):
+                        if target_start < moving_start and moving_end < target_end:
+                            
                             target_strip.select = True
                             bpy.ops.sequencer.split(frame=moving_start, type="SOFT", side="RIGHT")
                             bpy.ops.sequencer.split(frame=moving_end, type="SOFT", side="LEFT")
@@ -164,16 +171,14 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
                         # If the target strip's end is outside moving strip's range, trim target
                         # strip's start.
-                        elif (
-                            target_start < moving_end and target_end > moving_end
-                        ):
+                        elif moving_start <= target_start:
+                            
                             target_strip.frame_final_start = moving_strip.frame_final_end
 
                         # If the target strip's start is outside moving strip's range, trim target
                         # strip's end.
-                        elif (
-                            target_end > moving_start and target_start < moving_start
-                        ):
+                        elif target_end <= moving_end:
+                            
                             target_strip.frame_final_end = moving_strip.frame_final_start
 
                         ###########################################################################
