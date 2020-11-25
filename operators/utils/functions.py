@@ -278,8 +278,12 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
     trim_end = max(frame_start, frame_end)
 
     to_trim = [s for s in to_trim if s.type in SequenceTypes.CUTABLE]
+    rescue_selected = context.selected_sequences
 
     for s in to_trim:
+        # List with strips that are in the target channel. Used for the reselection
+        strips_in_target_channel = []
+        
         # Cut strip longer than the trim range in three
         is_strip_longer_than_trim_range = (
             s.frame_final_start < trim_start and s.frame_final_end > trim_end
@@ -290,6 +294,13 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
             bpy.ops.sequencer.split(frame=trim_start, type="SOFT", side="RIGHT")
             bpy.ops.sequencer.split(frame=trim_end, type="SOFT", side="LEFT")
             to_delete.append(context.selected_sequences[0])
+            
+            for c in context.sequences:
+                if c.channel == s.channel:
+                    strips_in_target_channel.append(c)
+            
+            if s in rescue_selected:
+                rescue_selected.append(strips_in_target_channel[0])
             continue
 
         # Resize strips that overlap the trim range
@@ -299,6 +310,8 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
             s.frame_final_end = trim_start
 
     delete_strips(to_delete)
+    for s in rescue_selected:
+        s.select = True
     return {"FINISHED"}
 
 
