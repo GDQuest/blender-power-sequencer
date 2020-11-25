@@ -92,10 +92,9 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         # Sorts the "selection" list depending of the key press.
         # If the key press is down, the order of moving will begin from the bottom channel,
         # otherwise from the top.
-        if self.direction == "down":
-            selection = sorted(selection, key=attrgetter("channel", "frame_final_start"))
-        else:
-            selection = reversed(sorted(selection, key=attrgetter("channel", "frame_final_start")))
+        selection = sorted(selection, key=attrgetter("channel", "frame_final_start"))
+        if self.direction == "up":
+            selection = reversed(selection)
 
         # Saves all selected strips to reselect them after the operation.
         rescue_selected = context.selected_sequences
