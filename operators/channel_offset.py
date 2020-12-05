@@ -18,6 +18,13 @@ import bpy
 from operator import attrgetter
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.functions import (
+    slice_selection,
+    trim_strips,
+    find_strips_in_range,
+    move_selection,
+    zoom,
+)
 
 
 class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
@@ -72,6 +79,11 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         description="Trim strips to make space in the target channel",
         default=False,
     )
+    keep_selection_offset: bpy.props.BoolProperty(
+        name="Keep selection offset",
+        description="The selected strips preserve their relative positions",
+        default=True,
+    )
 
     @classmethod
     def poll(cls, context):
@@ -82,112 +94,80 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         max_channel = 32
         min_channel = 1
 
-        def is_in_limit_channel(sequence):
-            return self.direction == "up" and sequence.channel == max_channel
-            return self.direction == "down" and sequence.channel == min_channel
-        
-        def out_of_range():
-            return target_end <= moving_start or moving_end <= target_start
-        
-        def in_target_channel(sequence):
-            return sequence.channel == target_channel
+        if self.direction == "up":
+            movement = + 1
+            limit_channel = max_channel
+            movement_to_limit = min
 
-        selection = [s for s in context.selected_sequences if (
-            not s.lock and not is_in_limit_channel(s)
-        )]
+        if self.direction == "down":
+            movement = - 1
+            limit_channel = min_channel
+            movement_to_limit = max
+
+
+        selection = [s for s in context.selected_sequences if not s.lock]
+
         if not selection:
             return {"FINISHED"}
         
-        # Sorts the "selection" list depending of the key press.
-        # By default will be set to move downwards. If the direction is up, the list is reversed.
-        selection = sorted(selection, key=attrgetter("channel", "frame_final_start"))
-        if self.direction == "up":
-            selection = reversed(selection)
+        range_block = round(47 * zoom(context, "x"))
+        '''
+        This way the strips will be considered as one block depending on how far apart are the
+        strips between each other in frames/pixels instead of frames. It feels more natural to the
+        user.q
+        Parts:
+            - Arbitrary number which is convinient for the functionality. Bigger means more apart.
+            - zoom("x") gives the current relation frame/pixel on screen of the sequencer panel in
+            the given axis.
+        '''
 
-        # Saves all selected strips to reselect them after the operation.
-        rescue_selected = context.selected_sequences
-
-        for moving_strip in selection:
-
-            if self.trim_target_channel:
-
-                to_delete = []
-                strips_in_target_channel = []
-                target_channel = (
-                    min(max_channel, moving_strip.channel + 1) if self.direction == "up" 
-                    else max(min_channel, moving_strip.channel - 1)
-                )
-                
-                # Makes it easier to read.
-                moving_start = moving_strip.frame_final_start
-                moving_end = moving_strip.frame_final_end
-
-                # s is any strip able to move.
-                for target_strip in context.sequences:
-                    
-                    target_start = target_strip.frame_final_start
-                    target_end = target_strip.frame_final_end
-                    
-                    # Checks if the moving strip could interact with the target strip.
-                    if in_target_channel(target_strip) and not out_of_range():
-
-                        ###########################################################################
-                        # Delete:
-                        
-                        # Makes a list with all strips that will be deleted if they are completely
-                        # inside the range of the moving strip.
-                        if moving_start <= target_start and target_end <= moving_end:
-                            to_delete.append(target_strip)
-                            continue
-
-                        ###########################################################################
-                        # Trim: 
-
-                        # If the target strip's start/end are inside moving strip's range: divide
-                        # in 3, delete the middle and select the last if the target was selected.
-                        if target_start < moving_start and moving_end < target_end:
-                            
-                            bpy.ops.sequencer.select_all(action="DESELECT")
-                            target_strip.select = True
-                            bpy.ops.sequencer.split(frame=moving_start, type="SOFT", side="RIGHT")
-                            bpy.ops.sequencer.split(frame=moving_end, type="SOFT", side="LEFT")
-                            to_delete.append(context.selected_sequences[0])
-
-                            # Sets all strips in the target channel in a tuple.
-                            # It's to correctly reselect the remaining bits of the trimmed strip.
-                            strips_in_target_channel = [s for s in context.sequences if in_target_channel(s)]
-
-                            # Appends the last trimmed strip to the rescue list
-                            if target_strip in rescue_selected:
-                                rescue_selected.append(strips_in_target_channel[0])
-                            continue
-
-                        # If the target strip's end is outside moving strip's range, trim target
-                        # strip's start.
-                        elif moving_start <= target_start:
-                            
-                            target_strip.frame_final_start = moving_strip.frame_final_end
-
-                        # If the target strip's start is outside moving strip's range, trim target
-                        # strip's end.
-                        elif target_end <= moving_end:
-                            
-                            target_strip.frame_final_end = moving_strip.frame_final_start
-
-                        ###########################################################################
-
-                # Deletes all strips in "to_delete" by selecting them.
-                bpy.ops.sequencer.select_all(action="DESELECT")
-                for s in to_delete:
-                    s.select = True
-                bpy.ops.sequencer.delete()
-                
-                # Reselects all the initial strips.
-                for s in rescue_selected:
-                    s.select = True
-
+        selection_blocks = slice_selection(context, selection, range_block)
+        for block in selection_blocks:
+            sequences = sorted(block, key=attrgetter("channel", "frame_final_start"))
             if self.direction == "up":
-                moving_strip.channel = min(max_channel, moving_strip.channel + 1)
-            elif self.direction == "down":
-                moving_strip.channel = max(min_channel, moving_strip.channel - 1)
+                sequences = [s for s in reversed(sequences)]
+
+            head = sequences[0]
+            if self.keep_selection_offset == False or (not head.channel == limit_channel and self.keep_selection_offset == True):
+
+                if self.trim_target_channel:
+                    to_remove = []
+                    for s in sequences:
+                        if s.channel == limit_channel:
+                            to_remove.append(s)
+                            continue
+
+                        channel_trim = movement_to_limit(limit_channel, s.channel + movement)
+                        all_strips = [c for c in context.sequences if c.channel == channel_trim]
+                        to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
+                        trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
+                        s.channel = movement_to_limit(limit_channel, s.channel + movement)
+
+                        to_remove.append(s)
+                    for s in to_remove:
+                        sequences.remove(s)
+                
+                # Movement of strips
+                if sequences:
+                    start_frame = head.frame_final_start
+                    x_difference = 0
+
+                    if self.keep_selection_offset:
+                        while not head.channel == limit_channel:
+                            move_selection(context, sequences, -x_difference, movement)
+                            x_difference = head.frame_final_start - start_frame
+                            if x_difference == 0:
+                                break
+                    else:
+                        for s in sequences: 
+                            '''
+                            There is an internal bug when going to pass the 32nd channel.
+                            The side_movement to not overlap is always to the right,
+                            whether it's close to the left edge of the upper strip or not.
+                            Solves an internal bug of overlapping at max_channel when jumping 2+
+                            strips.
+                            '''
+                            s.channel = movement_to_limit(limit_channel, s.channel + movement)
+                            if s.channel == limit_channel:
+                                move_selection(context, [s], 0, 0)
         return {"FINISHED"}
