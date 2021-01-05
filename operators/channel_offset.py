@@ -112,9 +112,10 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         
         range_block = round(47 * zoom(context, "x"))
         '''
-        This way the strips will be considered as one block depending on how far apart are the
-        strips between each other in frames/pixels instead of frames. It feels more natural to the
-        user.q
+        If keep_selection_offset, sets all the strips by blocks. The blocks consists of strips
+        close enough between each other. The minimum distance is range_block, which uses the real
+        distance from the screen (pixel/frame) and not just frames. That means more strips will
+        in the same block the larger the view is, and viceversa.
         Parts:
             - Arbitrary number which is convinient for the functionality. Bigger means more apart.
             - zoom("x") gives the current relation frame/pixel on screen of the sequencer panel in
@@ -139,10 +140,10 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
                         channel_trim = movement_to_limit(limit_channel, s.channel + movement)
                         all_strips = [c for c in context.sequences if c.channel == channel_trim]
-                        to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
-                        trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
+                        if all_strips:
+                            to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
+                            trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
                         s.channel = movement_to_limit(limit_channel, s.channel + movement)
-
                         to_remove.append(s)
                     for s in to_remove:
                         sequences.remove(s)
