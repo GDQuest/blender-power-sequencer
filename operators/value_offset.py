@@ -16,7 +16,8 @@
 #
 import bpy
 
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
+from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
+from .utils.functions import convert_duration_to_frames
 
 
 class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
@@ -32,12 +33,12 @@ class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
             (
                 {"type": "LEFT_ARROW", "value": "PRESS", "shift": True, "alt": True},
                 {"direction": "left"},
-                "Move to Left Given Seconds",
+                "Offset the selection to the left.",
             ),
             (
                 {"type": "RIGHT_ARROW", "value": "PRESS", "shift": True, "alt": True},
                 {"direction": "right"},
-                "Move to Right Given Seconds",
+                "Offset the selection to the right.",
             ),
         ],
         "keymap": "Sequencer",
@@ -47,37 +48,32 @@ class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
     bl_description = doc_brief(doc["description"])
     bl_options = {"REGISTER", "UNDO"}
 
-    
-    # Hidden as the user mustn't and doesn't have to touch it.
     direction: bpy.props.EnumProperty(
         items=[
             ("left", "left", "Move the selection to the left"),
             ("right", "right", "Move the selection to the right"),
-            ("none", "none", "Direction which the operations are made")
         ],
         name="Direction",
         description="Move the selection given frames or seconds",
         default="right",
-        options={'HIDDEN'},
+        options={"HIDDEN"},
     )
-
     value_type: bpy.props.EnumProperty(
         items=[
             ("seconds", "Seconds", "Move with the value as seconds"),
             ("frames", "Frames", "Move with the value as frames"),
         ],
         name="Value Type",
-        description="Set the value type to be operated",
+        description="Toggle between offset in frames or seconds",
         default="seconds",
     )
-
-    value_offset: bpy.props.FloatProperty(
-        name="Value",
-        description="Move the selection the number of frames or seconds",
+    offset: bpy.props.FloatProperty(
+        name="Offset",
+        description="Offset amount to apply",
         default=1.0,
+        min=0.0,
         step=5,
         precision=3,
-        subtype='NONE',
     )
 
     @classmethod
@@ -85,26 +81,11 @@ class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-
+        offset_frames = (
+            convert_duration_to_frames(context, self.offset)
+            if self.value_type == "seconds"
+            else self.offset
+        )
         if self.direction == "left":
-            self.value_offset = - abs(self.value_offset)
-
-        if self.direction == "right":
-            self.value_offset = abs(self.value_offset)
-        
-        # Used to reset the direction
-        self.direction = "none"
-
-        if self.value_type == "seconds":
-            
-            fps = bpy.context.scene.render.fps
-            fps_base = bpy.context.scene.render.fps_base
-            fps_rate = fps / fps_base
-            frames_offset = self.value_offset * fps_rate
-        else:
-            frames_offset = round(self.value_offset)
-            self.value_offset = frames_offset
-
-        bpy.ops.transform.seq_slide(value=(frames_offset, 0))
-
-        return {"FINISHED"}
+            offset_frames *= -1.0
+        return bpy.ops.transform.seq_slide(value=(offset_frames, 0))
