@@ -21,8 +21,8 @@ from .utils.functions import convert_duration_to_frames
 
 
 class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
-    """
-    Move the selection given frames or seconds to the left/right
+    """Instantly offset selected strips, either using frames or seconds. Allows to
+    nudge the selection quickly, using keyboard shortcuts.
     """
 
     doc = {
@@ -71,7 +71,6 @@ class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
         name="Offset",
         description="Offset amount to apply",
         default=1.0,
-        min=0.0,
         step=5,
         precision=3,
     )
@@ -80,12 +79,16 @@ class POWER_SEQUENCER_OT_value_offset(bpy.types.Operator):
     def poll(cls, context):
         return context.selected_sequences
 
+    def invoke(self, context, event):
+        self.offset = abs(self.offset)
+        if self.direction == "left":
+            self.offset *= -1.0
+        return self.execute(context)
+
     def execute(self, context):
         offset_frames = (
             convert_duration_to_frames(context, self.offset)
             if self.value_type == "seconds"
             else self.offset
         )
-        if self.direction == "left":
-            offset_frames *= -1.0
         return bpy.ops.transform.seq_slide(value=(offset_frames, 0))
