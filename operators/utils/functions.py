@@ -223,16 +223,14 @@ def set_preview_range(context, start, end):
     scene.frame_preview_end = end
 
 
-def slice_selection(context, sequences):
+def slice_selection(context, sequences, range_block=0):
     """
     Takes a list of sequences and breaks it down
     into multiple lists of connected sequences
-
     Returns a list of lists of sequences,
     each list corresponding to a block of sequences
     that are connected in time and sorted by frame_final_start
     """
-    # Find when 2 sequences are not connected in time
     if not sequences:
         return []
 
