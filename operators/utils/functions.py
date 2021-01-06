@@ -236,14 +236,17 @@ def slice_selection(context, sequences, range_block=0):
 
     # Indicates the index number of the lists from the "broken_selection" list
     index = -1
+    block_end = 0
     broken_selection = []
     sorted_sequences = sorted(sequences, key=attrgetter("frame_final_start"))
 
     for s in sorted_sequences:
-        if not broken_selection or (broken_selection[index][-1].frame_final_end + 1 + range_block < s.frame_final_start):
+        if not broken_selection or (block_end + 1 + range_block < s.frame_final_start):
             broken_selection.append([s])
+            block_end = s.frame_final_end
             index += 1
             continue
+        block_end = max(block_end, s.frame_final_end)
         broken_selection[index].append(s)
 
     return broken_selection
