@@ -171,4 +171,5 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
                             s.channel = movement_to_limit(limit_channel, s.channel + movement)
                             if s.channel == limit_channel:
                                 move_selection(context, [s], 0, 0)
+
         return {"FINISHED"}

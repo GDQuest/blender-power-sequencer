@@ -8,6 +8,10 @@ This release is only for **Blender 2.83 and above**.
 
 This release is a work-in-progress. New features may contain bugs.
 
+### New features
+
+- Value offset operator to offset the selection in time instantly with the keyboard. Assigned to <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>Left</kbd> and <kbd>Shift</kbd> <kbd>Alt</kbd> <kbd>Right</kbd>.
+
 ### Changes
 
 - Renamed `bpy.ops.sequencer.cut` to `bpy.ops.sequencer.split`.
