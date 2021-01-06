@@ -23,7 +23,7 @@ from .utils.functions import (
     trim_strips,
     find_strips_in_range,
     move_selection,
-    pixel_frame_ratio,
+    calculate_pixel_frame_ratio,
 )
 
 
@@ -110,7 +110,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         if not selection:
             return {"FINISHED"}
         
-        range_block = round(47 * pixel_frame_ratio(context, "x"))
+        range_block = round(47 * calculate_pixel_frame_ratio(context, "x"))
         '''
         If keep_selection_offset, sets all the strips by blocks. The blocks consists of strips
         close enough between each other. The minimum distance is range_block, which uses the real
@@ -118,7 +118,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         in the same block the larger the view is, and viceversa.
         Parts:
             - Arbitrary number which is convinient for the functionality. Bigger means more apart.
-            - pixel_frame_ratio("x") gives the current relation frame/pixel on screen of the sequencer panel in
+            - calculate_pixel_frame_ratio("x") gives the current relation frame/pixel on screen of the sequencer panel in
             the given axis.
         '''
 
