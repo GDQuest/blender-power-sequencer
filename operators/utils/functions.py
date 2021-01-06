@@ -419,7 +419,7 @@ def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=Tru
     return strips_inside_range, strips_overlapping_range
 
 
-def pixel_frame_ratio(context, axis):
+def calculate_frame_pixel_ratio(context, axis):
     """
     Returns frame/pixel relation in the current view.
     There's an internal bug which the bpy.context.region.x is wrongly assigned when the toolbar is toggled.
