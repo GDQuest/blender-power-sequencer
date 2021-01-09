@@ -19,11 +19,9 @@ from operator import attrgetter
 
 from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
 from .utils.functions import (
-    slice_selection,
     trim_strips,
     find_strips_in_range,
     move_selection,
-    calculate_frame_pixel_ratio,
 )
 
 
@@ -104,72 +102,36 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
             limit_channel = min_channel
             movement_to_limit = max
 
-
         selection = [s for s in context.selected_sequences if not s.lock]
 
         if not selection:
             return {"FINISHED"}
         
-        range_block = round(47 * calculate_frame_pixel_ratio(context, "x"))
-        '''
-        If keep_selection_offset, sets all the strips by blocks. The blocks consists of strips
-        close enough between each other. The minimum distance is range_block, which uses the real
-        distance from the screen (pixel/frame) and not just frames. That means more strips will
-        in the same block the larger the view is, and viceversa.
-        Parts:
-            - Arbitrary number which is convinient for the functionality. Bigger means more apart.
-            - calculate_frame_pixel_ratio("x") gives the current relation frame/pixel on screen of the sequencer panel in
-            the given axis.
-        '''
+        sequences = sorted(selection, key=attrgetter("channel", "frame_final_start"))
+        if self.direction == "up":
+            sequences = [s for s in reversed(sequences)]
 
-        selection_blocks = slice_selection(context, selection, range_block)
-        for block in selection_blocks:
-            sequences = sorted(block, key=attrgetter("channel", "frame_final_start"))
-            if self.direction == "up":
-                sequences = [s for s in reversed(sequences)]
-
-            head = sequences[0]
-            if self.keep_selection_offset == False or (not head.channel == limit_channel and self.keep_selection_offset == True):
-
+        head = sequences[0]
+        if self.keep_selection_offset == False or (not head.channel == limit_channel and self.keep_selection_offset == True):
+            for s in sequences:
                 if self.trim_target_channel:
-                    to_remove = []
-                    for s in sequences:
-                        if s.channel == limit_channel:
-                            to_remove.append(s)
-                            continue
+                    channel_trim = s.channel + movement
+                    all_strips = [c for c in context.sequences if (c.channel == channel_trim)]
+                    if all_strips:
+                        to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
+                        trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
+                        
+                if sele.keep_selection_offset == False:
+                    s.channel = movement_to_limit(limit_channel, s.channel + movement)
+                    if s.channel == limit_channel:
+                        move_selection(context, [s], 0, 0)
 
-                        channel_trim = movement_to_limit(limit_channel, s.channel + movement)
-                        all_strips = [c for c in context.sequences if c.channel == channel_trim]
-                        if all_strips:
-                            to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
-                            trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
-                        s.channel = movement_to_limit(limit_channel, s.channel + movement)
-                        to_remove.append(s)
-                    for s in to_remove:
-                        sequences.remove(s)
-                
-                # Movement of strips
-                if sequences:
-                    start_frame = head.frame_final_start
-                    x_difference = 0
-
-                    if self.keep_selection_offset:
-                        while not head.channel == limit_channel:
-                            move_selection(context, sequences, -x_difference, movement)
-                            x_difference = head.frame_final_start - start_frame
-                            if x_difference == 0:
-                                break
-                    else:
-                        for s in sequences: 
-                            '''
-                            There is an internal bug when going to pass the 32nd channel.
-                            The side_movement to not overlap is always to the right,
-                            whether it's close to the left edge of the upper strip or not.
-                            Solves an internal bug of overlapping at max_channel when jumping 2+
-                            strips.
-                            '''
-                            s.channel = movement_to_limit(limit_channel, s.channel + movement)
-                            if s.channel == limit_channel:
-                                move_selection(context, [s], 0, 0)
-
+            if self.keep_selection_offset:
+                start_frame = head.frame_final_start
+                x_difference = 0
+                while not head.channel == limit_channel:
+                    move_selection(context, sequences, -x_difference, movement)
+                    x_difference = head.frame_final_start - start_frame
+                    if x_difference == 0:
+                        break
         return {"FINISHED"}
