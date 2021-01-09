@@ -419,33 +419,6 @@ def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=Tru
     return strips_inside_range, strips_overlapping_range
 
 
-def calculate_frame_pixel_ratio(context, axis):
-    """
-    Returns frame/pixel relation in the current view.
-    There's an internal bug which the bpy.context.region.x is wrongly assigned when the toolbar is toggled.
-    """
-    context.space_data.show_region_toolbar = False
-
-    region_width = context.region.width
-    region_height = context.region.height
-
-    # Coordinates from bottom_left corner
-    region_xs = context.region.x
-    region_ys = context.region.y
-    region_xe = region_width + region_xs
-    region_ye = region_height + region_ys
-
-    context.space_data.show_region_toolbar = True
-
-    xs, ys = context.region.view2d.region_to_view(region_xs, region_ys)
-    xe, ye = context.region.view2d.region_to_view(region_xe, region_ye)
-            
-    if axis == "x":
-        return (xe-xs)/region_width
-    else:
-        return (ye-ys)/region_height
-
-
 def move_selection(context, sequences, x, y):
     """
     Moves the "sequences" list as says the vector (x,y) and preserves the current selected sequences.
