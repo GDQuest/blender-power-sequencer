@@ -380,7 +380,7 @@ def apply_time_offset(context, sequences=[], offset=0):
     user's selection. Use this function to ensure maximum performances and avoid having to figure
     out the logic to move strips in the right order.
     """
-    move_selection(context, to_ripple, duration_frames, 0)
+    move_selection(context, sequences, offset, 0)
 
 
 def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=True):
