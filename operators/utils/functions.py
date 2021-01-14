@@ -365,14 +365,6 @@ def ripple_move(context, sequences, duration_frames, delete=False):
     move_selection(context, to_ripple, duration_frames, 0)
 
 
-def apply_time_offset(context, sequences=[], offset=0):
-    """Offsets a list of sequences in time using bpy.ops.transform.seq_slide. Mutates and restores the
-    user's selection. Use this function to ensure maximum performances and avoid having to figure
-    out the logic to move strips in the right order.
-    """
-    move_selection(context, sequences, offset, 0)
-
-
 def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=True):
     """
     Returns a tuple of two lists: (strips_inside_range, strips_overlapping_range)
@@ -409,9 +401,9 @@ def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=Tru
     return strips_inside_range, strips_overlapping_range
 
 
-def move_selection(context, sequences, x, y):
-    """
-    Moves the "sequences" list as says the vector (x,y) and preserves the current selected sequences.
+def move_selection(context, sequences, frame_offset, channel_offset=0):
+    """Offsets the selected `sequences` horizontally and vertically and preserves
+    the current selected sequences.
     """
     if not sequences:
         return
@@ -419,7 +411,7 @@ def move_selection(context, sequences, x, y):
     bpy.ops.sequencer.select_all(action="DESELECT")
     for s in sequences:
         s.select = True
-    bpy.ops.transform.seq_slide(value=(x, y))
+    bpy.ops.transform.seq_slide(value=(frame_offset, channel_offset))
     bpy.ops.sequencer.select_all(action="DESELECT")
     for s in initial_selection:
         s.select = True
