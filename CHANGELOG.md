@@ -4,9 +4,7 @@ This document lists new features, improvements, changes, and bug fixes in every 
 
 ## Power Sequencer 2.0
 
-This release is only for **Blender 2.83 and above**.
-
-This release is a work-in-progress. New features may contain bugs.
+This release is only for **Blender 2.83 and above**. The major version change is because of that: the add-on breaks compatibility with older versions of Blender due to a breaking change in the Blender Python API.
 
 ### New features
 
