@@ -14,15 +14,12 @@
 # You should have received a copy of the GNU General Public License along with Power Sequencer. If
 # not, see <https://www.gnu.org/licenses/>.
 #
-import bpy
 from operator import attrgetter
 
-from .utils.doc import doc_name, doc_idname, doc_brief, doc_description
-from .utils.functions import (
-    trim_strips,
-    find_strips_in_range,
-    move_selection,
-)
+import bpy
+
+from .utils.doc import doc_brief, doc_description, doc_idname, doc_name
+from .utils.functions import find_strips_in_range, move_selection, trim_strips
 
 
 class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
@@ -88,41 +85,51 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
         return context.selected_sequences
 
     def execute(self, context):
-        
+
         max_channel = 32
         min_channel = 1
 
         if self.direction == "up":
-            movement = + 1
+            channel_offset = +1
             limit_channel = max_channel
-            movement_to_limit = min
+            comparison_function = min
 
         if self.direction == "down":
-            movement = - 1
+            channel_offset = -1
             limit_channel = min_channel
-            movement_to_limit = max
+            comparison_function = max
 
         selection = [s for s in context.selected_sequences if not s.lock]
 
         if not selection:
             return {"FINISHED"}
-        
+
         sequences = sorted(selection, key=attrgetter("channel", "frame_final_start"))
         if self.direction == "up":
             sequences = [s for s in reversed(sequences)]
 
         head = sequences[0]
-        if self.keep_selection_offset == False or (not head.channel == limit_channel and self.keep_selection_offset == True):
+        if not self.keep_selection_offset or (
+            head.channel != limit_channel and self.keep_selection_offset
+        ):
             for s in sequences:
                 if self.trim_target_channel:
-                    channel_trim = s.channel + movement
-                    all_strips = [c for c in context.sequences if (c.channel == channel_trim)]
-                    if all_strips:
-                        to_delete, to_trim = find_strips_in_range(s.frame_final_start, s.frame_final_end, all_strips)
-                        trim_strips(context, s.frame_final_start, s.frame_final_end, to_trim, to_delete)
-                        
-                if sele.keep_selection_offset == False:
-                    s.channel = movement_to_limit(limit_channel, s.channel + movement)
+                    channel_trim = s.channel + channel_offset
+                    strips_in_trim_channel = [
+                        sequence
+                        for sequence in context.sequences
+                        if (sequence.channel == channel_trim)
+                    ]
+                    if strips_in_trim_channel:
+                        to_delete, to_trim = find_strips_in_range(
+                            s.frame_final_start, s.frame_final_end, strips_in_trim_channel
+                        )
+                        trim_strips(
+                            context, s.frame_final_start, s.frame_final_end, to_trim, to_delete
+                        )
+
+                if not self.keep_selection_offset:
+                    s.channel = comparison_function(limit_channel, s.channel + channel_offset)
                     if s.channel == limit_channel:
                         move_selection(context, [s], 0, 0)
 
@@ -130,7 +137,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
                 start_frame = head.frame_final_start
                 x_difference = 0
                 while not head.channel == limit_channel:
-                    move_selection(context, sequences, -x_difference, movement)
+                    move_selection(context, sequences, -x_difference, channel_offset)
                     x_difference = head.frame_final_start - start_frame
                     if x_difference == 0:
                         break
