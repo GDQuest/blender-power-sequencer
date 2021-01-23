@@ -46,7 +46,9 @@ Here are other recommended add-ons for a better editing workflow:
 
 Daniel Oakey's [rewrite of VSE Transform Tools](https://github.com/doakey3/VSE_Transform_Tools). This tool lets you animate and move strips from the video preview. The original add-on was abandoned a few years ago. Daniel fixed and rewrote it so now it's super slick!
 
-Power Sequencer ships with two separate Python tools:
+We made two separate command-line tools for tech-savy people:
 
 1. [BPSRender](https://github.com/GDquest/BPSRender), a tool to render videos with multiple threads from the terminal.
 1. [BPSProxy](https://github.com/GDquest/BPSProxy), a program to render proxies fast using FFmpeg and, if your graphics card supports it, use hardware acceleration.
+
+We recommend only using them if you're comfortable working with command-line programs. They're intended for use in command-line scripts and for users who use the shell often.

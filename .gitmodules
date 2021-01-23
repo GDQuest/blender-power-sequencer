@@ -1,6 +1,0 @@
-[submodule "scripts/BPSRender"]
-	path = scripts/BPSRender
-	url = https://github.com/GDquest/BPSRender.git
-[submodule "scripts/BPSProxy"]
-	path = scripts/BPSProxy
-	url = https://github.com/GDquest/BPSProxy.git
