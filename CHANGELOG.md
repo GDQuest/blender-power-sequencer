@@ -2,7 +2,17 @@
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
-## Power Sequencer 2.0
+## Power Sequencer 2.0.1
+
+This minor update removes the Align Audios feature to bring this repository in parity with the version of Power Sequencer that ships with Blender, which most people use.
+
+The Align Audios required installing the scipy Python package and ffmpeg on your computer, which isn't great for users. The feature was also slow, working only on two audio files at a time and sometimes freezing your computer during audio processing.
+
+This version also removes the bpsrender and bpsproxy scripts that shipped with the add-on. We never integrated them with Blender's interface. We're faced with technical limitations that prevent them from being user-friendly tools.
+
+So we'll keep them as separate command-line tools for people who are comfortable with the shell and really want to use them. Hopefully, the planned improvements in the Sequencer's performance will make them obsolete in 2021.
+
+## Power Sequencer 2.0.0
 
 This release is only for **Blender 2.83 and above**. The major version change is because of that: the add-on breaks compatibility with older versions of Blender due to a breaking change in the Blender Python API.
 
