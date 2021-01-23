@@ -22,7 +22,6 @@ function make_release
 
     echo "Making the blender version."
     sed -i s/blender_power_sequencer/power_sequencer/ $out_path/tools/__init__.py $out_path/operators/__init__.py
-    rm -rf power_sequencer/operators/align_audios.py power_sequencer/operators/audiosync/
 
     echo "Copying the files to the Blender Addons repository."
     echo "Removing $blender_addons_repo/$out_path."
