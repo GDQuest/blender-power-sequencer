@@ -290,12 +290,22 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
         elif s.frame_final_end > trim_start and s.frame_final_start < trim_start:
             s.frame_final_end = trim_start
 
-    for s in to_delete:
-        bpy.context.sequences.remove(s)
-
+    delete_strips(to_delete)
     for s in initial_selection:
         s.select = True
     return {"FINISHED"}
+
+
+def delete_strips(to_delete):
+    """
+    Deletes the list of sequences `to_delete`
+    """
+    if not to_delete:
+        return
+    bpy.ops.sequencer.select_all(action="DESELECT")
+    for s in to_delete:
+        s.select = True
+    bpy.ops.sequencer.delete()
 
 
 def find_closest_surrounding_cuts(context, frame):
