@@ -296,18 +296,6 @@ def trim_strips(context, frame_start, frame_end, to_trim, to_delete=[]):
     return {"FINISHED"}
 
 
-def delete_strips(to_delete):
-    """
-    Deletes the list of sequences `to_delete`
-    """
-    if not to_delete:
-        return
-    bpy.ops.sequencer.select_all(action="DESELECT")
-    for s in to_delete:
-        s.select = True
-    bpy.ops.sequencer.delete()
-
-
 def find_closest_surrounding_cuts(context, frame):
     """
     Returns a tuple of (strip_before, strip_after), the two closest sequences around a gap.
@@ -352,7 +340,8 @@ def get_sequences_under_cursor(context):
 
 
 def ripple_move(context, sequences, duration_frames, delete=False):
-    """Moves sequences in the list and ripples the change to all sequences after them, in the corresponding channels
+    """
+    Moves sequences in the list and ripples the change to all sequences after them, in the corresponding channels
     The `duration_frames` can be positive or negative.
     If `delete` is True, deletes every sequence in `sequences`.
     """
@@ -365,10 +354,7 @@ def ripple_move(context, sequences, duration_frames, delete=False):
     ]
 
     if delete:
-        bpy.ops.sequencer.select_all(action="DESELECT")
-        for s in sequences:
-            s.select = True
-        bpy.ops.sequencer.delete()
+        delete_strips(sequences)
     else:
         to_ripple = set(to_ripple + sequences)
 
@@ -411,8 +397,19 @@ def find_strips_in_range(frame_start, frame_end, sequences, find_overlapping=Tru
     return strips_inside_range, strips_overlapping_range
 
 
+def delete_strips(to_delete):
+    """
+    Deletes the list of sequences `to_delete`
+    """
+    if not to_delete:
+        return
+    for s in to_delete:
+        bpy.context.sequences.remove(s)
+
+
 def move_selection(context, sequences, frame_offset, channel_offset=0):
-    """Offsets the selected `sequences` horizontally and vertically and preserves
+    """
+    Offsets the selected `sequences` horizontally and vertically and preserves
     the current selected sequences.
     """
     if not sequences:
