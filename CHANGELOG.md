@@ -12,6 +12,12 @@ This version also removes the bpsrender and bpsproxy scripts that shipped with t
 
 So we'll keep them as separate command-line tools for people who are comfortable with the shell and really want to use them. Hopefully, the planned improvements in the Sequencer's performance will make them obsolete in 2021.
 
+Changes:
+
+- Fixed a bug with _Channel Offset_ where moving two overlapping strips in neighboring channel would trim one or the other.
+- Removed _Align Audios_.
+- Removed unused `bpsrender` and `bpsproxy` scripts.
+
 ## Power Sequencer 2.0.0
 
 This release is only for **Blender 2.83 and above**. The major version change is because of that: the add-on breaks compatibility with older versions of Blender due to a breaking change in the Blender Python API.
