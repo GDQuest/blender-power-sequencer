@@ -401,8 +401,6 @@ def delete_strips(to_delete):
     """
     Deletes the list of sequences `to_delete`
     """
-    if not to_delete:
-        return
     for s in to_delete:
         bpy.context.sequences.remove(s)
 
