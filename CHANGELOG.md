@@ -2,6 +2,10 @@
 
 This document lists new features, improvements, changes, and bug fixes in every release of the add-on.
 
+## Power Sequencer 2.0.2
+
+- Fix strips not being deleted with _Channel Offset_.
+
 ## Power Sequencer 2.0.1
 
 This minor update removes the Align Audios feature to bring this repository in parity with the version of Power Sequencer that ships with Blender, which most people use.

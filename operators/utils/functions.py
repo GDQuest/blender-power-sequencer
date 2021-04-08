@@ -402,7 +402,7 @@ def delete_strips(to_delete):
     Deletes the list of sequences `to_delete`
     """
     for s in to_delete:
-        bpy.context.sequences.remove(s)
+        bpy.context.scene.sequence_editor.sequences.remove(s)
 
 
 def move_selection(context, sequences, frame_offset, channel_offset=0):
