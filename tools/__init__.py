@@ -27,7 +27,7 @@ def get_tool_classes():
     module_paths = ["." + os.path.splitext(f)[0] for f in module_files]
     classes = []
     for path in module_paths:
-        module = importlib.import_module(path, package="blender_power_sequencer.tools")
+        module = importlib.import_module(path, package=__package__)
         tool_names = [entry for entry in dir(module) if entry.startswith("POWER_SEQUENCER_TOOL")]
         classes.extend([getattr(module, name) for name in tool_names])
     return classes
