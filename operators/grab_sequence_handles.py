@@ -45,8 +45,8 @@ class POWER_SEQUENCER_OT_grab_sequence_handles(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     always_find_closest: bpy.props.BoolProperty(name="Always find closest", default=False)
-    frame: bpy.props.IntProperty(name="Frame", default=-1, options={"HIDDEN"})
-    channel: bpy.props.IntProperty(name="Channel", default=-1, options={"HIDDEN"})
+    frame: bpy.props.FloatProperty(name="Frame", default=-1.0, options={"HIDDEN"})
+    channel: bpy.props.FloatProperty(name="Channel", default=-1.0, options={"HIDDEN"})
 
     @classmethod
     def poll(cls, context):
