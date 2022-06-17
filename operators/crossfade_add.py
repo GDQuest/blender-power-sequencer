@@ -105,7 +105,7 @@ class POWER_SEQUENCER_OT_crossfade_add(bpy.types.Operator):
         Moves the handles of the two sequences before adding the crossfade
         """
         fade_duration = convert_duration_to_frames(context, self.crossfade_duration)
-        fade_offset = fade_duration / 2
+        fade_offset = int(fade_duration / 2)
 
         if hasattr(sequence_1, "input_1"):
             sequence_1.input_1.frame_final_end -= fade_offset

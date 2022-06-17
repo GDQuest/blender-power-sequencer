@@ -30,14 +30,8 @@ class POWER_SEQUENCER_OT_playback_speed_set(bpy.types.Operator):
         "description": doc_description(__doc__),
         "shortcuts": [
             ({"type": "ONE", "ctrl": True, "value": "PRESS"}, {"speed": "NORMAL"}, "Speed to 1x"),
-            ({"type": "TWO", "ctrl": True, "value": "PRESS"}, {"speed": "FAST"}, "Speed to 1.33x"),
-            (
-                {"type": "THREE", "ctrl": True, "value": "PRESS"},
-                {"speed": "FASTER"},
-                "Speed to 1.66x",
-            ),
-            ({"type": "FOUR", "ctrl": True, "value": "PRESS"}, {"speed": "DOUBLE"}, "Speed to 2x"),
-            ({"type": "FIVE", "ctrl": True, "value": "PRESS"}, {"speed": "TRIPLE"}, "Speed to 3x"),
+            ({"type": "TWO", "ctrl": True, "value": "PRESS"}, {"speed": "DOUBLE"}, "Speed to 2x"),
+            ({"type": "THREE", "ctrl": True, "value": "PRESS"}, {"speed": "TRIPLE"}, "Speed to 3x"),
         ],
         "keymap": "Sequencer",
     }
@@ -49,8 +43,6 @@ class POWER_SEQUENCER_OT_playback_speed_set(bpy.types.Operator):
     speed: bpy.props.EnumProperty(
         items=[
             ("NORMAL", "Normal (1x)", ""),
-            ("FAST", "Fast (1.33x)", ""),
-            ("FASTER", "Faster (1.66x)", ""),
             ("DOUBLE", "Double (2x)", ""),
             ("TRIPLE", "Triple (3x)", ""),
         ],
