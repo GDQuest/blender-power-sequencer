@@ -62,4 +62,10 @@ class POWER_SEQUENCER_OT_select_all_left_or_right(bpy.types.Operator):
         return context.sequences
 
     def execute(self, context):
-        return bpy.ops.sequencer.select("INVOKE_DEFAULT", left_right=self.side)
+        if self.side == "LEFT":
+            for s in context.sequences:
+                s.select = s.frame_final_end < context.scene.frame_current
+        else:
+            for s in context.sequences:
+                s.select = s.frame_final_start > context.scene.frame_current
+        return {"FINISHED"}
