@@ -92,7 +92,7 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
                         frame = k.co[0]
                         if frame <= context.scene.frame_current:
                             continue
-                        frame_target = min(frame_target, frame)
+                        frame_target = int(min(frame_target, frame))
                 break
 
         elif self.direction == "LEFT":
@@ -110,10 +110,10 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
                         frame = k.co[0]
                         if frame >= context.scene.frame_current:
                             continue
-                        frame_target = max(frame_target, frame)
+                        frame_target = int(max(frame_target, frame))
                 break
 
         if frame_target != -1:
-            context.scene.frame_current = max(1, frame_target)
+            context.scene.frame_current = int(max(1, frame_target))
 
         return {"FINISHED"}
