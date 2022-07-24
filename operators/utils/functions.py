@@ -401,8 +401,11 @@ def delete_strips(to_delete):
     """
     Deletes the list of sequences `to_delete`
     """
+    # Effect strips get deleted with their source so we skip them to avoid errors.
+    to_delete = [s for s in to_delete if s.type in SequenceTypes.CUTABLE]
+    sequences = bpy.context.scene.sequence_editor.sequences
     for s in to_delete:
-        bpy.context.scene.sequence_editor.sequences.remove(s)
+        sequences.remove(s)
 
 
 def move_selection(context, sequences, frame_offset, channel_offset=0):
