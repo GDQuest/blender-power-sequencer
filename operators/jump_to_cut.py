@@ -90,7 +90,7 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
                 frame_target = min(candidates)
 
                 for f in fcurves:
-                    if not s.name in f.data_path:
+                    if s.name not in f.data_path:
                         continue
 
                     for k in f.keyframe_points:
@@ -111,12 +111,12 @@ class POWER_SEQUENCER_OT_jump_to_cut(bpy.types.Operator):
                 frame_target = max(candidates)
 
                 for f in fcurves:
-                    if not s.name in f.data_path:
+                    if s.name not in f.data_path:
                         continue
 
                     for k in f.keyframe_points:
                         frame = k.co[0]
-                        if frame <= frame_current:
+                        if frame >= frame_current:
                             continue
                         frame_target = max(frame_target, frame)
 
