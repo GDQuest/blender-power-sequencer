@@ -16,21 +16,17 @@
 #
 import json
 import operator as op
-import os.path
+from os.path import abspath, join
 import sys
 
 import power_sequencer.operators as operators
 
-sys.path.append(os.path.abspath(os.path.join("..", "..", "..")))
+sys.path.append(abspath(join("..", "..", "..")))
 
 
 if __name__ == "__main__":
-    os = dir(operators)
-    os = filter(lambda o: o[0].isupper(), os)
-    os = map(lambda o: op.attrgetter(o), os)
-    os = map(lambda o: o(operators), os)
-    os = map(lambda o: op.attrgetter("bl_idname", "doc")(o), os)
-    os = {k: v for k, v in os if v != {}}
-    os.update(operators.doc)
-
-    json.dump(os, open("power_sequencer_docs.json", "w"), indent=4, sort_keys=True)
+    data = {}
+    for operator in operators.get_operator_classes():
+        idname = getattr(operator, "bl_idname")
+        data[idname] = operator.doc
+    json.dump(data, open("power_sequencer_docs.json", "w"), indent=4, sort_keys=True)
