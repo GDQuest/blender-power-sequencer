@@ -32,7 +32,11 @@ class POWER_SEQUENCER_OT_fade_clear(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "F", "value": "PRESS", "alt": True, "ctrl": True}, {}, "Clear Fades",)
+            (
+                {"type": "F", "value": "PRESS", "alt": True, "ctrl": True},
+                {},
+                "Clear Fades",
+            )
         ],
         "keymap": "Sequencer",
     }

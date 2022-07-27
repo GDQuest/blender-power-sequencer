@@ -4,7 +4,17 @@ This document lists new features, improvements, changes, and bug fixes in every 
 
 ## Power Sequencer 2.0.2
 
-- Fix strips not being deleted with _Channel Offset_.
+This release makes power sequencer compatible with the latest version of Blender.
+
+### Bug fixes
+
+- Fix error when calling grab sequence handles due to type mismatch
+- Remove FAST and FASTER playback speeds, simplify playback speed code
+- Rewrite select_all_left_or_right after API change causing error
+- Fix error with jump_to_cut when encountering animation frames
+- Fix jump_to_cut skipping some strip ends when moving forward in time
+- Jump_to_cut sometimes not working when going left
+- Fix error when trimming effect strips
 
 ## Power Sequencer 2.0.1
 

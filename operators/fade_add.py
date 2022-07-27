@@ -51,7 +51,10 @@ class POWER_SEQUENCER_OT_fade_add(bpy.types.Operator):
     bl_options = {"REGISTER", "UNDO"}
 
     duration_seconds: bpy.props.FloatProperty(
-        name="Fade Duration", description="Duration of the fade in seconds", default=1.0, min=0.01,
+        name="Fade Duration",
+        description="Duration of the fade in seconds",
+        default=1.0,
+        min=0.01,
     )
     type: bpy.props.EnumProperty(
         items=[

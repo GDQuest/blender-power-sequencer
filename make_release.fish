@@ -1,6 +1,6 @@
 #!/usr/bin/env fish
 
-set blender_addons_repo $HOME/Repositories/applications/blender-git/blender/release/scripts/addons/
+set blender_addons_repo $HOME/Repositories/applications/blender-addons/
 set out_path power_sequencer
 
 function make_release

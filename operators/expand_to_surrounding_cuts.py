@@ -33,7 +33,11 @@ class POWER_SEQUENCER_OT_expand_to_surrounding_cuts(bpy.types.Operator):
         "demo": "",
         "description": doc_description(__doc__),
         "shortcuts": [
-            ({"type": "E", "value": "PRESS", "ctrl": True}, {}, "Expand to Surrounding Cuts",)
+            (
+                {"type": "E", "value": "PRESS", "ctrl": True},
+                {},
+                "Expand to Surrounding Cuts",
+            )
         ],
         "keymap": "Sequencer",
     }
