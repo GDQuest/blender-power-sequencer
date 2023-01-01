@@ -6,7 +6,7 @@ Power Sequencer brings smart new editing features to edit faster with Blender's 
 
 ➡ Follow us on [Twitter](https://twitter.com/NathanGDQuest) and [YouTube](https://www.youtube.com/c/gdquest/) for free game creation tutorials, tips, and news! Get one of our [Godot game creation courses](https://gdquest.mavenseed.com/) to support our work on Free Software.
 
-## Installation guide
+## Quick installation guide
 
 Power Sequencer is an add-on for Blender 2.80 and more recent versions of the program.
 
@@ -21,14 +21,12 @@ To install it:
 
 ## Learn Power Sequencer
 
-Read **all the features and shortcuts** in the [Power Sequencer Docs](https://app.gitbook.com/o/DybexkDbiRI9dVCUhhn5/s/j7ndpniv1ajY1CSJwNYM/getting-started)
+Here is the documentation: [Power Sequencer Docs](https://gdquest.gitbook.io/blender-power-sequencer/)
 
-We have video tutorials to get you started:
+We also have video tutorials to get you started:
 
-1. [Intro to Video Editing with Blender's VSE](https://www.youtube.com/watch?v=Zcj4onvP06w), a general introduction to Blender's VSE
-1. [Power Sequencer Workflow tutorial](https://www.youtube.com/watch?v=xZoZaSsuhXw), a video dedicated to the add-on
-
-You can find more in our growing list of [Free Blender VSE tutorials](https://www.youtube.com/playlist?list=PLhqJJNjsQ7KFjp88Cu57Zb9_wFt7nlkEI) on YouTube.
+1. [Intro to Video Editing with Blender's VSE](https://www.youtube.com/watch?v=Zcj4onvP06w), a general introduction to Blender's VSE.
+1. [Power Sequencer Workflow tutorial](https://www.youtube.com/watch?v=xZoZaSsuhXw), a video dedicated to the add-on.
 
 ## Become a Contributor
 
