@@ -21,7 +21,7 @@ To install it:
 
 ## Learn Power Sequencer
 
-Read **all the features and shortcuts** in the [Power Sequencer Docs](http://gdquest.com/blender/power-sequencer/docs/)
+Read **all the features and shortcuts** in the [Power Sequencer Docs](https://app.gitbook.com/o/DybexkDbiRI9dVCUhhn5/s/j7ndpniv1ajY1CSJwNYM/getting-started)
 
 We have video tutorials to get you started:
 
@@ -39,16 +39,3 @@ You can come and chat with us on [GDquest's Discord server](https://discordapp.c
 See our [Contributor's Guidelines](http://gdquest.com/open-source/contributing-guidelines/) to learn about how to contribute efficiently to Free Software. If you're a developer, check our [Blender Python best practices](https://www.gdquest.com/open-source/guidelines/blender-python/). They can help you avoid programming issues.
 
 Then, join the discussion in the [issues tab](https://github.com/GDquest/Blender-power-sequencer/issues) anytime!
-
-## Other add-ons
-
-Here are other recommended add-ons for a better editing workflow:
-
-Daniel Oakey's [rewrite of VSE Transform Tools](https://github.com/doakey3/VSE_Transform_Tools). This tool lets you animate and move strips from the video preview. The original add-on was abandoned a few years ago. Daniel fixed and rewrote it so now it's super slick!
-
-We made two separate command-line tools for tech-savy people:
-
-1. [BPSRender](https://github.com/GDquest/BPSRender), a tool to render videos with multiple threads from the terminal.
-1. [BPSProxy](https://github.com/GDquest/BPSProxy), a program to render proxies fast using FFmpeg and, if your graphics card supports it, use hardware acceleration.
-
-We recommend only using them if you're comfortable working with command-line programs. They're intended for use in command-line scripts and for users who use the shell often.
