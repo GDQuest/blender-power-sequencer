@@ -72,18 +72,7 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
     def execute(self, context):
 
-        max_channel = 32
-        min_channel = 1
-
-        if self.direction == "up":
-            channel_offset = +1
-            limit_channel = max_channel
-            comparison_function = min
-
-        if self.direction == "down":
-            channel_offset = -1
-            limit_channel = min_channel
-            comparison_function = max
+        channel_offset = -1
 
         selection = [s for s in context.selected_sequences if not s.lock]
 
@@ -92,11 +81,12 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
 
         sequences = sorted(selection, key=attrgetter("channel", "frame_final_start"))
         if self.direction == "up":
+            channel_offset = +1
             sequences = [s for s in reversed(sequences)]
 
         head = sequences[0]
         if not self.keep_selection_offset or (
-            head.channel != limit_channel and self.keep_selection_offset
+            head.channel != 1 and self.keep_selection_offset
         ):
             for s in sequences:
                 if self.trim_target_channel:
@@ -114,14 +104,14 @@ class POWER_SEQUENCER_OT_channel_offset(bpy.types.Operator):
                             context, s.frame_final_start, s.frame_final_end, to_trim, to_delete
                         )
 
-                s.channel = comparison_function(limit_channel, s.channel + channel_offset)
-                if s.channel == limit_channel:
+                s.channel = max(1, s.channel + channel_offset)
+                if s.channel == 1:
                     move_selection(context, [s], 0, 0)
 
             if self.keep_selection_offset and not self.trim_target_channel:
                 start_frame = head.frame_final_start
                 x_difference = 0
-                while not head.channel == limit_channel:
+                while not head.channel == 1:
                     move_selection(context, sequences, -x_difference, channel_offset)
                     x_difference = head.frame_final_start - start_frame
                     if x_difference == 0:
