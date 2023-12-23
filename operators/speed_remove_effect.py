@@ -28,7 +28,7 @@ class POWER_SEQUENCER_OT_speed_remove_effect(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.sequence_editor.active_strip.type == "META"
+        return context.scene.sequence_editor.active_strip.type == "META" if context.scene.sequence_editor.active_strip is not None else None
 
     def execute(self, context):
         active = context.scene.sequence_editor.active_strip
