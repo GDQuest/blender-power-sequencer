@@ -37,7 +37,7 @@ class POWER_SEQUENCER_OT_make_hold_frame(bpy.types.Operator):
 
     @classmethod
     def poll(cls, context):
-        return context.scene.sequence_editor.active_strip.type in SequenceTypes.VIDEO
+        return context.scene.sequence_editor.active_strip.type in SequenceTypes.VIDEO if context.scene.sequence_editor.active_strip is not None else None
 
     def invoke(self, context, event):
         window_manager = context.window_manager
