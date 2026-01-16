@@ -4,6 +4,9 @@
 
 Power Sequencer brings smart new editing features to edit faster with Blender's Video Sequence Editor. It is completely Free and Open Source.
 
+This repository is currently unmaintained, and the addon does not work with recent versions of Blender. It should work up to Blender 3. The version on the Blender Extensions platform works up to Blender 4 (but not Blender 5 at the time of writing): https://projects.blender.org/extensions/power_sequencer
+
+
 ➡ Follow us on [Twitter](https://twitter.com/NathanGDQuest) and [YouTube](https://www.youtube.com/c/gdquest/) for free game creation tutorials, tips, and news! Get one of our [Godot game creation courses](https://gdquest.mavenseed.com/) to support our work on Free Software.
 
 ## Quick installation guide
